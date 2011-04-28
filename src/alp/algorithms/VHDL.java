@@ -36,8 +36,8 @@ import alp.core.VHDLType;
  * Used to generate VHDL files for designs, testbenchs and memory initialization
  * 
  * @author <a href="mailto:ricardomenotti@acm.org">Ricardo Menotti</a>
- * @author <a href="http://www.icmc.usp.br/~menotti/">ICMC/USP</a>
- * @author <a href="http://www.cm.utfpr.edu.br/menotti/">UTFPR</a>
+ * @author <a href="http://menotti.pro.br/">Author Page</a>
+ * @author <a href="http://www.dc.ufscar.br/">DC UFSCar</a>
  * @version October, 2008
  */
 public class VHDL {

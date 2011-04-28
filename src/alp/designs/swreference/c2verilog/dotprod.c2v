@@ -1,9 +1,0 @@
-#define N (2048) 
-
-unsigned int dotprod(unsigned int* v, unsigned int* x) {
-  unsigned int sum = 0;
-  for (unsigned int i=0; i<N; i++) {
-    sum += v[i] * x[i];
-  }
-  return sum;
-} 

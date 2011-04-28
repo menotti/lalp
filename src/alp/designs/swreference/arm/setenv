@@ -1,2 +1,0 @@
-#!/bin/bash
-export PATH=/home/menotti/arm/4.1.1-920t/bin:$PATH
