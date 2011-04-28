@@ -24,7 +24,7 @@ import alp.core.PortType;
  * The unsigned NOT operation.
  * 
  * @author <a href="mailto:ricardomenotti@acm.org">Ricardo Menotti</a>
- * @author <a href="http://www.icmc.usp.br/~menotti/">ICMC/USP</a>  * @author <a href="http://www.cm.utfpr.edu.br/menotti/">UTFPR</a>
+ * @author <a href="http://menotti.pro.br/">Author Page</a>  * @author <a href="http://www.dc.ufscar.br/">DC UFSCar</a>
  * @version September, 2007
  */
 public class not_op extends IComponent {

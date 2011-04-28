@@ -1,8 +1,0 @@
-#define N (2048) 
-
-void vec_sum(unsigned int* v, unsigned int* x, unsigned int* z) {
-  for (unsigned int i=0; i<N; i++) {
-    z[i] = v[i] + x[i];
-  }
-  return;
-} 

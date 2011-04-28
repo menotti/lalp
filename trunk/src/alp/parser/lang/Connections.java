@@ -18,8 +18,8 @@ package alp.parser.lang;
  * A set of connections for children used on recursion process
  * 
  * @author <a href="mailto:ricardomenotti@acm.org">Ricardo Menotti</a>
- * @author <a href="http://www.icmc.usp.br/~menotti/">ICMC/USP</a>
- * @author <a href="http://www.cm.utfpr.edu.br/menotti/">UTFPR</a>
+ * @author <a href="http://menotti.pro.br/">Author Page</a>
+ * @author <a href="http://www.dc.ufscar.br/">DC UFSCar</a>
  * @version January, 2009
  *
  */

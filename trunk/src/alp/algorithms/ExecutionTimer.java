@@ -20,8 +20,8 @@ import alp.ALP;
  * Calculates execution time of algorithms
  * 
  * @author <a href="mailto:ricardomenotti@acm.org">Ricardo Menotti</a>
- * @author <a href="http://www.icmc.usp.br/~menotti/">ICMC/USP</a>
- * @author <a href="http://pessoal.utfpr.edu.br/menotti/">UTFPR</a>
+ * @author <a href="http://menotti.pro.br/">Author Page</a>
+ * @author <a href="http://www.dc.ufscar.br/">DC UFSCar</a>
  * @version October, 2008
  */
 public class ExecutionTimer {

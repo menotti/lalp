@@ -25,8 +25,8 @@ import edu.uci.ics.jung.graph.impl.SparseGraph;
  * A hardware design which consists of an <code>Component</code> set and an <code>Signal</code> set.
  * 
  * @author <a href="mailto:ricardomenotti@acm.org">Ricardo Menotti</a>
- * @author <a href="http://www.icmc.usp.br/~menotti/">ICMC/USP</a>
- * @author <a href="http://www.cm.utfpr.edu.br/menotti/">UTFPR</a>
+ * @author <a href="http://menotti.pro.br/">Author Page</a>
+ * @author <a href="http://www.dc.ufscar.br/">DC UFSCar</a>
  * @version January, 2009
  * 
  * @see Component
