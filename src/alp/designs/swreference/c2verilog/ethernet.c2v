@@ -1,0 +1,42 @@
+// Offsets of fields inside IEEE 802.3 Packet
+#define MAC_SRC 8  	// MAC source
+#define MAC_DST 14 	// MAC destination
+#define MAC_LEN 20 	// Packet Length
+#define MAC_PAYLOAD 22 	// Packet payload
+// Protocol constants (ETH header)
+#define MAC_PREAMBLE 170
+#define MAC_DELIM    171
+
+#define MAX_PACKET_SIZE 1500
+
+#define OKAY  0
+#define ERROR 1
+
+typedef unsigned char octate;
+
+static inline int assert_packet_header(octate* packet) {
+    for (int i=0; i<7; i++) if (packet[i] != MAC_PREAMBLE) return ERROR;
+    if (packet[7] != MAC_DELIM) return ERROR;
+    return OKAY;
+}
+
+// This method is the entry point to the module. Our module will strip only one
+// Ethernet packet, starting at raw_offset. You can write another C function
+// to call this function several times over a buffer of packets. 
+int strip_one_packet(octate* raw, unsigned int raw_base, octate* decoded, unsigned int decoded_base) {
+
+    if (assert_packet_header(raw)) return ERROR; //Error in packet header
+
+    // Read the packet size
+    unsigned int packet_len = raw[raw_base + MAC_LEN]<<8 
+        + raw[raw_base + MAC_LEN +1]; 
+
+    // We do not support jumbo packets
+    if (packet_len > MAX_PACKET_SIZE) return ERROR; 
+
+    // Copy the content of the package into the "decoded" port
+    for (int i=0; i<packet_len; i++) {
+        decoded[decoded_base++] = raw[raw_base + MAC_PAYLOAD + i]; 
+    }
+    return OKAY;
+} 

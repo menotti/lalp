@@ -1,0 +1,254 @@
+digraph sobel_alp {
+{
+	node [shape=ellipse, style=filled, color=dodgerblue2];
+	"c100" [color=bisque4 shape=invtriangle label="0xfffffffffffffffe"];
+	"i01" [label="i01" shape=doubleoctagon  color=dodgerblue2 ];
+	"COLS" [color=bisque4 shape=invtriangle label="0xa"];
+	"H" [label="H" shape=doubleoctagon  color=dodgerblue2 ];
+	"c85" [color=bisque4 shape=invtriangle label="0x0"];
+	"c104" [color=bisque4 shape=invtriangle label="0x0"];
+	"i_delay_op_7_add_op_s_COLS_add_op_s_COLS" [label="i_delay_op_7_add_op_s_COLS_add_op_s_COLS:+"  color=dodgerblue2 ];
+	"i_delay_op_4" [label="{|||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"i_delay_op_5" [label="{||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"i00_neg_op_s_add_op_s_-2_mult_op_s_i01_add_op_s_i02_neg_op_s_add_op_s_i20_add_op_s_2_mult_op_s_i21_add_op_s_i22" [label="i00_neg_op_s_add_op_s_-2_mult_op_s_i01_add_op_s_i02_neg_op_s_add_op_s_i20_add_op_s_2_mult_op_s_i21_add_op_s_i22:+"  color=dodgerblue2 ];
+	"O" [label="O" shape=doubleoctagon  color=dodgerblue2 ];
+	"2_mult_op_s_i12" [label="*"  color=dodgerblue2 ];
+	"i00_neg_op_s_add_op_s_i02" [label="i00_neg_op_s_add_op_s_i02:+"  color=dodgerblue2 ];
+	"i20_neg_op_s" [label="!"  color=dodgerblue2 ];
+	"output" [label="output" shape=doubleoctagon  color=dodgerblue2 ];
+	"i12" [label="i12" shape=doubleoctagon  color=dodgerblue2 ];
+	"c87" [color=bisque4 shape=invtriangle label="0x1"];
+	"i_delay_op_3_add_op_s_COLS" [label="i_delay_op_3_add_op_s_COLS:+"  color=dodgerblue2 ];
+	"c102" [color=bisque4 shape=invtriangle label="0xfffffffffffffffe"];
+	"i_delay_op_4_add_op_s_COLS_add_op_s_2" [label="i_delay_op_4_add_op_s_COLS_add_op_s_2:+"  color=dodgerblue2 ];
+	"c106" [color=bisque4 shape=invtriangle label="0xff"];
+	"i_step_delay_op_5_" [label="{||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"i_step_delay_op_3_" [label="{||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"i_step_delay_op_7" [label="{||||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"i_step_delay_op_7_" [label="{||||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"O_if_gt_op_s_255" [label="O_if_gt_op_s_255:>"  color=dodgerblue2 ];
+	"i_delay_op_13" [label="{||||||||||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"i_delay_op_1_add_op_s_1" [label="i_delay_op_1_add_op_s_1:+"  color=dodgerblue2 ];
+	"i_step_delay_op_2" [label="{|}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"c96" [color=bisque4 shape=invtriangle label="0x1"];
+	"i_step_delay_op_5" [label="{||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"i_delay_op_6_add_op_s_COLS_add_op_s_COLS_add_op_s_1" [label="i_delay_op_6_add_op_s_COLS_add_op_s_COLS_add_op_s_1:+"  color=dodgerblue2 ];
+	"i02_neg_op_s_add_op_s_i20" [label="i02_neg_op_s_add_op_s_i20:+"  color=dodgerblue2 ];
+	"i00_neg_op_s_add_op_s_-2_mult_op_s_i01" [label="i00_neg_op_s_add_op_s_-2_mult_op_s_i01:+"  color=dodgerblue2 ];
+	"i00_neg_op_s" [label="!"  color=dodgerblue2 ];
+	"2_mult_op_s_i21_add_op_s_i22" [label="2_mult_op_s_i21_add_op_s_i22:+"  color=dodgerblue2 ];
+	"i20" [label="i20" shape=doubleoctagon  color=dodgerblue2 ];
+	"i22" [label="i22" shape=doubleoctagon  color=dodgerblue2 ];
+	"done" [color=bisque4 shape=invtriangle label="done"];
+	"COLS" [color=bisque4 shape=invtriangle label="0xa"];
+	"COLS" [color=bisque4 shape=invtriangle label="0xa"];
+	"Otrunk" [label="Otrunk"  color=dodgerblue2 ];
+	"COLS" [color=bisque4 shape=invtriangle label="0xa"];
+	"i_delay_op_2" [label="{|}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"COLS" [color=bisque4 shape=invtriangle label="0xa"];
+	"i_step_delay_op_8" [label="{|||||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"i_delay_op_7" [label="{||||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"i_delay_op_6_add_op_s_COLS" [label="i_delay_op_6_add_op_s_COLS:+"  color=dodgerblue2 ];
+	"i00_neg_op_s_add_op_s_i02_add_op_s_-2_mult_op_s_i10_add_op_s_2_mult_op_s_i12_add_op_s_i20_neg_op_s_add_op_s_i22" [label="i00_neg_op_s_add_op_s_i02_add_op_s_-2_mult_op_s_i10_add_op_s_2_mult_op_s_i12_add_op_s_i20_neg_op_s_add_op_s_i22:+"  color=dodgerblue2 ];
+	"i10" [label="i10" shape=doubleoctagon  color=dodgerblue2 ];
+	"V_if_lt_op_s_0" [label="V_if_lt_op_s_0:<"  color=dodgerblue2 ];
+	"H_neg_op_s" [label="!"  color=dodgerblue2 ];
+	"Vpos" [label="Vpos" shape=doubleoctagon  color=dodgerblue2 ];
+	"i02_neg_op_s_add_op_s_i20_add_op_s_2_mult_op_s_i21_add_op_s_i22" [label="i02_neg_op_s_add_op_s_i20_add_op_s_2_mult_op_s_i21_add_op_s_i22:+"  color=dodgerblue2 ];
+	"i_step_delay_op_6_" [label="{|||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"i_step_delay_op_2_" [label="{|}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"c107" [color=bisque4 shape=invtriangle label="0xff"];
+	"i_step_delay_op_3" [label="{||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"c103" [color=bisque4 shape=invtriangle label="0x2"];
+	"i_step_delay_op_4" [label="{|||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"i_delay_op_3" [label="{||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"c86" [color=bisque4 shape=invtriangle label="0x4e"];
+	"i_done_delay_op_13" [label="{||||||||||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"c88" [color=bisque4 shape=invtriangle label="0x2"];
+	"i_step_delay_op_13" [label="{||||||||||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"i_step_delay_op_4_" [label="{|||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"i_delay_op_4_add_op_s_COLS" [label="i_delay_op_4_add_op_s_COLS:+"  color=dodgerblue2 ];
+	"i_delay_op_5_add_op_s_COLS" [label="i_delay_op_5_add_op_s_COLS:+"  color=dodgerblue2 ];
+	"c105" [color=bisque4 shape=invtriangle label="0x0"];
+	"i_delay_op_7_add_op_s_COLS_add_op_s_COLS_add_op_s_2" [label="i_delay_op_7_add_op_s_COLS_add_op_s_COLS_add_op_s_2:+"  color=dodgerblue2 ];
+	"i00" [label="i00" shape=doubleoctagon  color=dodgerblue2 ];
+	"i02" [label="i02" shape=doubleoctagon  color=dodgerblue2 ];
+	"input" [label="input" shape=doubleoctagon  color=dodgerblue2 ];
+	"addr" [label="addr"  color=dodgerblue2 ];
+	"c101" [color=bisque4 shape=invtriangle label="0x2"];
+	"c99" [color=bisque4 shape=invtriangle label="0x2"];
+	"i00_neg_op_s_" [label="!"  color=dodgerblue2 ];
+	"i20_neg_op_s_add_op_s_i22" [label="i20_neg_op_s_add_op_s_i22:+"  color=dodgerblue2 ];
+	"-2_mult_op_s_i10" [label="*"  color=dodgerblue2 ];
+	"-2_mult_op_s_i10_add_op_s_2_mult_op_s_i12" [label="-2_mult_op_s_i10_add_op_s_2_mult_op_s_i12:+"  color=dodgerblue2 ];
+	"i02_neg_op_s" [label="!"  color=dodgerblue2 ];
+	"i_delay_op_6_add_op_s_COLS_add_op_s_COLS" [label="i_delay_op_6_add_op_s_COLS_add_op_s_COLS:+"  color=dodgerblue2 ];
+	"i_delay_op_7_add_op_s_COLS" [label="i_delay_op_7_add_op_s_COLS:+"  color=dodgerblue2 ];
+	"i_step_delay_op_9" [label="{||||||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"i" [label="i" shape=doubleoctagon  color=dodgerblue2 ];
+	"i_delay_op_2_add_op_s_2" [label="i_delay_op_2_add_op_s_2:+"  color=dodgerblue2 ];
+	"i_delay_op_1" [label="{}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"i_step_delay_op_1" [label="{}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"Hpos" [label="Hpos" shape=doubleoctagon  color=dodgerblue2 ];
+	"H_if_lt_op_s_0" [label="H_if_lt_op_s_0:<"  color=dodgerblue2 ];
+	"Hpos_add_op_s_Vpos" [label="Hpos_add_op_s_Vpos:+"  color=dodgerblue2 ];
+	"V_neg_op_s" [label="!"  color=dodgerblue2 ];
+	"-2_mult_op_s_i10_add_op_s_2_mult_op_s_i12_add_op_s_i20_neg_op_s_add_op_s_i22" [label="-2_mult_op_s_i10_add_op_s_2_mult_op_s_i12_add_op_s_i20_neg_op_s_add_op_s_i22:+"  color=dodgerblue2 ];
+	"2_mult_op_s_i21" [label="*"  color=dodgerblue2 ];
+	"-2_mult_op_s_i01" [label="*"  color=dodgerblue2 ];
+	"i_delay_op_6" [label="{|||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"i_step_delay_op_6" [label="{|||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"i_delay_op_5_add_op_s_COLS_add_op_s_COLS" [label="i_delay_op_5_add_op_s_COLS_add_op_s_COLS:+"  color=dodgerblue2 ];
+	"COLS" [color=bisque4 shape=invtriangle label="0xa"];
+	"COLS" [color=bisque4 shape=invtriangle label="0xa"];
+	"COLS" [color=bisque4 shape=invtriangle label="0xa"];
+	"c91" [color=bisque4 shape=invtriangle label="0x2"];
+	"V" [label="V" shape=doubleoctagon  color=dodgerblue2 ];
+	"i21" [label="i21" shape=doubleoctagon  color=dodgerblue2 ];
+	"init" [color=bisque4 shape=invtriangle label="init"];
+}
+	"init" -> "i"
+	"i00" -> "i00_neg_op_s_"
+	"i" -> "i_delay_op_2":input
+	"i02_neg_op_s" -> "i02_neg_op_s_add_op_s_i20"
+	"i_delay_op_2_add_op_s_2" -> "addr"
+	"i01" -> "-2_mult_op_s_i01"
+	"H" -> "H_neg_op_s"
+	"i10" -> "-2_mult_op_s_i10"
+	"c96" -> "i_delay_op_6_add_op_s_COLS_add_op_s_COLS_add_op_s_1"
+	"i_step_delay_op_4" -> "addr"
+	"i_delay_op_5_add_op_s_COLS" -> "i_delay_op_5_add_op_s_COLS_add_op_s_COLS"
+	"i_step_delay_op_3_" -> "i01"
+	"V" -> "V_if_lt_op_s_0"
+	"H_neg_op_s" -> "Hpos"
+	"V" -> "V_neg_op_s"
+	"i_delay_op_1_add_op_s_1" -> "addr"
+	"i" -> "i_step_delay_op_5_":input
+	"input" -> "i02"
+	"i_step_delay_op_5_" -> "i10"
+	"c88" -> "i_delay_op_2_add_op_s_2"
+	"i" -> "i_delay_op_3":input
+	"-2_mult_op_s_i01" -> "i00_neg_op_s_add_op_s_-2_mult_op_s_i01"
+	"i" -> "i_step_delay_op_4":input
+	"i02" -> "i00_neg_op_s_add_op_s_i02"
+	"H" -> "H_if_lt_op_s_0"
+	"i_delay_op_5" -> "i_delay_op_5_add_op_s_COLS"
+	"i12" -> "2_mult_op_s_i12"
+	"COLS" -> "i_delay_op_7_add_op_s_COLS"
+	"i" -> "i_delay_op_7":input
+	"i_delay_op_6_add_op_s_COLS_add_op_s_COLS_add_op_s_1" -> "addr"
+	"COLS" -> "i_delay_op_7_add_op_s_COLS_add_op_s_COLS"
+	"O_if_gt_op_s_255" -> "Otrunk"
+	"Otrunk" -> "output"
+	"i" -> "i_delay_op_13":input
+	"i" -> "i_done_delay_op_13":input
+	"input" -> "i22"
+	"i00" -> "i00_neg_op_s"
+	"i_step_delay_op_3" -> "addr"
+	"i_delay_op_4_add_op_s_COLS" -> "i_delay_op_4_add_op_s_COLS_add_op_s_2"
+	"2_mult_op_s_i21_add_op_s_i22" -> "i02_neg_op_s_add_op_s_i20_add_op_s_2_mult_op_s_i21_add_op_s_i22"
+	"i_delay_op_5_add_op_s_COLS_add_op_s_COLS" -> "addr"
+	"i22" -> "i20_neg_op_s_add_op_s_i22"
+	"V_if_lt_op_s_0" -> "Vpos"
+	"COLS" -> "i_delay_op_6_add_op_s_COLS"
+	"-2_mult_op_s_i10_add_op_s_2_mult_op_s_i12_add_op_s_i20_neg_op_s_add_op_s_i22" -> "i00_neg_op_s_add_op_s_i02_add_op_s_-2_mult_op_s_i10_add_op_s_2_mult_op_s_i12_add_op_s_i20_neg_op_s_add_op_s_i22"
+	"input" -> "i00"
+	"i_step_delay_op_7" -> "addr"
+	"i" -> "i_step_delay_op_7":input
+	"i" -> "i_step_delay_op_3_":input
+	"c87" -> "i_delay_op_1_add_op_s_1"
+	"i" -> "i_delay_op_1":input
+	"addr" -> "input"
+	"c85" -> "i"
+	"i20" -> "i02_neg_op_s_add_op_s_i20"
+	"i21" -> "2_mult_op_s_i21"
+	"i20" -> "i20_neg_op_s"
+	"i02_neg_op_s_add_op_s_i20_add_op_s_2_mult_op_s_i21_add_op_s_i22" -> "i00_neg_op_s_add_op_s_-2_mult_op_s_i01_add_op_s_i02_neg_op_s_add_op_s_i20_add_op_s_2_mult_op_s_i21_add_op_s_i22"
+	"i" -> "i_step_delay_op_3":input
+	"i_delay_op_4" -> "i_delay_op_4_add_op_s_COLS"
+	"i22" -> "2_mult_op_s_i21_add_op_s_i22"
+	"V" -> "Vpos"
+	"i20_neg_op_s_add_op_s_i22" -> "-2_mult_op_s_i10_add_op_s_2_mult_op_s_i12_add_op_s_i20_neg_op_s_add_op_s_i22"
+	"i_delay_op_7_add_op_s_COLS_add_op_s_COLS" -> "i_delay_op_7_add_op_s_COLS_add_op_s_COLS_add_op_s_2"
+	"COLS" -> "i_delay_op_6_add_op_s_COLS_add_op_s_COLS"
+	"i" -> "i_delay_op_6":input
+	"i_step_delay_op_6_" -> "i12"
+	"c106" -> "Otrunk"
+	"Vpos" -> "Hpos_add_op_s_Vpos"
+	"c107" -> "O_if_gt_op_s_255"
+	"i_delay_op_3" -> "i_delay_op_3_add_op_s_COLS"
+	"i" -> "i_step_delay_op_8":input
+	"input" -> "i20"
+	"i_step_delay_op_8" -> "i21"
+	"i" -> "i_step_delay_op_13":input
+	"input" -> "i01"
+	"H" -> "Hpos"
+	"i_delay_op_7_add_op_s_COLS" -> "i_delay_op_7_add_op_s_COLS_add_op_s_COLS"
+	"i_step_delay_op_6" -> "addr"
+	"c104" -> "H_if_lt_op_s_0"
+	"-2_mult_op_s_i10" -> "-2_mult_op_s_i10_add_op_s_2_mult_op_s_i12"
+	"i_delay_op_4_add_op_s_COLS_add_op_s_2" -> "addr"
+	"c102" -> "-2_mult_op_s_i10"
+	"COLS" -> "i_delay_op_5_add_op_s_COLS"
+	"c91" -> "i_delay_op_4_add_op_s_COLS_add_op_s_2"
+	"i00_neg_op_s" -> "i00_neg_op_s_add_op_s_-2_mult_op_s_i01"
+	"c100" -> "-2_mult_op_s_i01"
+	"i02" -> "i02_neg_op_s"
+	"i_done_delay_op_13" -> "done"
+	"i_step_delay_op_9" -> "i22"
+	"i_delay_op_13" -> "output"
+	"i_step_delay_op_13" -> "output"
+	"H_if_lt_op_s_0" -> "Hpos"
+	"O" -> "Otrunk"
+	"i_delay_op_7" -> "i_delay_op_7_add_op_s_COLS"
+	"c105" -> "V_if_lt_op_s_0"
+	"i" -> "i_delay_op_5":input
+	"COLS" -> "i_delay_op_5_add_op_s_COLS_add_op_s_COLS"
+	"c103" -> "2_mult_op_s_i12"
+	"i" -> "i_step_delay_op_6":input
+	"i" -> "i_step_delay_op_2":input
+	"i_step_delay_op_1" -> "addr"
+	"i_step_delay_op_2" -> "addr"
+	"i_delay_op_2" -> "i_delay_op_2_add_op_s_2"
+	"i00_neg_op_s_" -> "i00_neg_op_s_add_op_s_i02"
+	"i00_neg_op_s_add_op_s_-2_mult_op_s_i01_add_op_s_i02_neg_op_s_add_op_s_i20_add_op_s_2_mult_op_s_i21_add_op_s_i22" -> "H"
+	"i" -> "i_step_delay_op_4_":input
+	"i" -> "i_step_delay_op_6_":input
+	"i_step_delay_op_4_" -> "i02"
+	"input" -> "i10"
+	"i" -> "i_step_delay_op_2_":input
+	"O" -> "O_if_gt_op_s_255"
+	"i_delay_op_6" -> "i_delay_op_6_add_op_s_COLS"
+	"i_delay_op_6_add_op_s_COLS_add_op_s_COLS" -> "i_delay_op_6_add_op_s_COLS_add_op_s_COLS_add_op_s_1"
+	"Hpos" -> "Hpos_add_op_s_Vpos"
+	"i00_neg_op_s_add_op_s_i02" -> "i00_neg_op_s_add_op_s_i02_add_op_s_-2_mult_op_s_i10_add_op_s_2_mult_op_s_i12_add_op_s_i20_neg_op_s_add_op_s_i22"
+	"c99" -> "i_delay_op_7_add_op_s_COLS_add_op_s_COLS_add_op_s_2"
+	"COLS" -> "i_delay_op_4_add_op_s_COLS"
+	"COLS" -> "i_delay_op_3_add_op_s_COLS"
+	"i_delay_op_3_add_op_s_COLS" -> "addr"
+	"i20_neg_op_s" -> "i20_neg_op_s_add_op_s_i22"
+	"2_mult_op_s_i12" -> "-2_mult_op_s_i10_add_op_s_2_mult_op_s_i12"
+	"i" -> "i_delay_op_4":input
+	"i_step_delay_op_7_" -> "i20"
+	"i" -> "i_step_delay_op_7_":input
+	"i" -> "i_step_delay_op_9":input
+	"input" -> "i21"
+	"input" -> "i12"
+	"Hpos_add_op_s_Vpos" -> "O"
+	"i_step_delay_op_2_" -> "i00"
+	"i_delay_op_7_add_op_s_COLS_add_op_s_COLS_add_op_s_2" -> "addr"
+	"V_neg_op_s" -> "Vpos"
+	"i_step_delay_op_5" -> "addr"
+	"i00_neg_op_s_add_op_s_i02_add_op_s_-2_mult_op_s_i10_add_op_s_2_mult_op_s_i12_add_op_s_i20_neg_op_s_add_op_s_i22" -> "V"
+	"-2_mult_op_s_i10_add_op_s_2_mult_op_s_i12" -> "-2_mult_op_s_i10_add_op_s_2_mult_op_s_i12_add_op_s_i20_neg_op_s_add_op_s_i22"
+	"i_delay_op_6_add_op_s_COLS" -> "i_delay_op_6_add_op_s_COLS_add_op_s_COLS"
+	"i" -> "i_step_delay_op_5":input
+	"i02_neg_op_s_add_op_s_i20" -> "i02_neg_op_s_add_op_s_i20_add_op_s_2_mult_op_s_i21_add_op_s_i22"
+	"2_mult_op_s_i21" -> "2_mult_op_s_i21_add_op_s_i22"
+	"i00_neg_op_s_add_op_s_-2_mult_op_s_i01" -> "i00_neg_op_s_add_op_s_-2_mult_op_s_i01_add_op_s_i02_neg_op_s_add_op_s_i20_add_op_s_2_mult_op_s_i21_add_op_s_i22"
+	"c101" -> "2_mult_op_s_i21"
+	"i" -> "i_step_delay_op_1":input
+	"i_delay_op_1" -> "i_delay_op_1_add_op_s_1"
+	"i" -> "addr"
+	"c86" -> "i"
+}

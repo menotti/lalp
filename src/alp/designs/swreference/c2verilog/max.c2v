@@ -1,0 +1,10 @@
+#define N (2048) 
+
+unsigned int max(int* v) {
+	unsigned int maxval=0;
+	for (unsigned int i=0;i<N; i++) {
+		if (v[i] > maxval)
+			maxval = v[i];
+	}
+	return maxval;
+}

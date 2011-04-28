@@ -1,0 +1,34 @@
+Sistema Operacional:
+Linux jaguatirica 2.6.28-11-server #42-Ubuntu SMP Fri Apr 17 02:48:10 UTC 2009 i686 GNU/Linux
+
+Simulador:
+sim-uop: SimpleScalar/ARM Tool Set version 3.0 of November, 2000.
+Copyright (c) 1994-2000 by Todd M. Austin.  All Rights Reserved.
+This version of SimpleScalar is licensed for academic non-commercial use only.
+
+Compilador:
+arm-linux-gcc (GCC) 4.1.1
+Copyright (C) 2006 Free Software Foundation, Inc.
+This is free software; see the source for copying conditions.  There is NO
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+Makefile:
+CC=arm-linux-gcc
+CFLAGS=-Wall -static -O3
+
+Benchmark/Datasize/Instrucoes/-O2/-O3:
+ADPCM Coder	1024	114389	55667	55667
+ADPCM Decoder	1024	90834	43205	43205
+Autocorrelation	1600	84627	35772	35772
+Bubble Sort	32	25507	9373	9373
+Dotprod		2048	59597	14530	14530
+FDCT		640	100507	44467	44459
+Fibonacci	32	3807	3043	3043
+Max		2048	41156	14519	14519
+Pop Count	1024	507148	2298	2298
+Sobel		100	11599	4571	4571
+Vecsum		2048	69901	16638	16638
+
+Observacoes:
+O arquivo simplesim-arm-0.2.tar.bz2 contem um copia do simulador de mesmo nome com extensao .gz encontrado na internet, porem com correcoes em dois arquivos referentes a definicoes do CYGWIN
+Assumindo um processador a 200 MHz e uma instrução por ciclo de clock.

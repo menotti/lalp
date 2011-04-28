@@ -1,0 +1,42 @@
+/* Copyright (c) 2009 Ricardo Menotti, All Rights Reserved.
+ *
+ * Permission to use, copy, modify, and distribute this software and its
+ * documentation for NON-COMERCIAL purposes and without fee is hereby granted 
+ * provided that this copyright notice appears in all copies.
+ *
+ * RICARDO MENOTTI MAKES NO REPRESENTATIONS OR WARRANTIES ABOUT THE SUITABILITY
+ * OF THE SOFTWARE, EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, OR
+ * NON-INFRINGEMENT. RICARDO MENOTTI SHALL NOT BE LIABLE FOR ANY DAMAGES
+ * SUFFERED BY LICENSEE AS A RESULT OF USING, MODIFYING OR DISTRIBUTING THIS
+ * SOFTWARE OR ITS DERIVATIVES.
+ *
+ * Generated at Tue Aug 17 21:01:54 BRT 2010
+ */
+
+const c25 = 2048;
+const c24 = 0;
+
+dotprod_alp(out fixed(1,0) done, out fixed(32,1) sum, in fixed(1,0) init) {
+
+	{
+		x:	block_ram(4, 32);
+		x_data_out_mult_op_s_p_y_data_out_6:	mult_op_s_p(32);
+		i:	counter(16, 1, 1, 0, 0);
+		acc:	add_reg_op_s(32);
+		y:	block_ram(4, 32);
+	}
+
+	i.clk_en <-(s14) init;
+	sum <-(s22) acc.O0;
+	i.termination <-(s13) c25;
+	acc.I0 <-(s19) acc.O0;
+	x_data_out_mult_op_s_p_y_data_out_6.I0 <-(s17) x.data_out;
+	y.address <-(s16) i.output;
+	acc.we <-(s21) i.step;
+	i.input <-(s12) c24;
+	acc.I1 <-(s20) x_data_out_mult_op_s_p_y_data_out_6.O0;
+	x.address <-(s15) i.output;
+	done <-(s23) i.done;
+	x_data_out_mult_op_s_p_y_data_out_6.I1 <-(s18) y.data_out;
+}

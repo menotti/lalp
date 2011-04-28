@@ -1,0 +1,16 @@
+Sistema Operacional:
+Linux vesh 2.6.28-15-generic #49-Ubuntu SMP Tue Aug 18 19:25:34 UTC 2009 x86_64 GNU/Linux
+
+Ferramenta:
+Quartus II Version 9.0 Build 184 04/29/2009 SJ Full Version
+Service Pack Installed: 1
+Help Version: Quartus II Help Version 9.0
+
+Benchmark/Datasize/Clock Cycles (3 executions):
+adpcm_coder		1024	745553	745497	746613
+adpcm_decoder		1024	562413	562391	562216
+dotprod			2048	289574	291003	290957
+fdct			640	364043	362577	364550
+fibonacci		32	5010	5027	5027
+max			2048	200130	200213	201468
+sobel			100	53637	53499	53609

@@ -1,0 +1,56 @@
+/* Copyright (c) 2009 Ricardo Menotti, All Rights Reserved.
+ *
+ * Permission to use, copy, modify, and distribute this software and its 
+ * documentation for NON-COMERCIAL purposes and without fee is hereby granted 
+ * provided that this copyright notice appears in all copies.
+ *
+ * RICARDO MENOTTI MAKES NO REPRESENTATIONS OR WARRANTIES ABOUT THE SUITABILITY
+ * OF THE SOFTWARE, EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE 
+ * IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, OR 
+ * NON-INFRINGEMENT. RICARDO MENOTTI SHALL NOT BE LIABLE FOR ANY DAMAGES 
+ * SUFFERED BY LICENSEE AS A RESULT OF USING, MODIFYING OR DISTRIBUTING THIS 
+ * SOFTWARE OR ITS DERIVATIVES. 
+ */
+
+const DATA_WIDTH = 32;
+const ADDRESS_WIDTH = 10; 
+const ITERATIONS = 1024;
+
+typedef fixed(DATA_WIDTH, 1) int;
+typedef fixed(1, 0) bool;
+
+teste(in bool init) {
+
+	{
+		int a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, x, w, y, z;
+	}
+
+	counter (z=0; z<10; z++@3);
+	
+	a = 0;					//A1 // primeira atribuição não deve conter condição 
+	a = 1 when z.step;		//A1 // as demais atribuições devem conter o sinal de controle "Sel" vindo da condição
+	a = 2 when z.step@1;	//A1
+	b = ITERATIONS;		//A2
+	c = b;				//A3
+	d += c;				//A4
+	e = d < 0 ? c : 0 when a;	//A5
+
+	h = g@7;				//B3
+	i += h@7;				//B4
+
+	k = 0 when j != 0;				//C1
+	l = ITERATIONS when k <= 0;		//C2
+	m = l when k == 0;				//C3
+	n += m when l > 0;				//C4
+	o = n < 0 ? m : 0 when l > 0;	//C5
+
+	p = 0 when o != 0@5;				//D1
+	q = ITERATIONS when p <= 0@5;		//D2
+	r = q when p == 0@5;				//D3
+	s += r when q > 0@5;				//D4
+	t = s < 0 ? r : 0 when q > 0@5;		//D5
+
+	w = v@3 when u == 0@5;				//E3
+	x += w@3 when x > 0@5;				//E4
+	y = x < 0 ? w : 0@3 when v > 0@5;	//E5
+}
