@@ -1,0 +1,28 @@
+digraph dotprod_alp {
+	// Components (Nodes)
+	node [shape=ellipse, style=filled, color=dodgerblue2];
+	"y" [label="y" shape=doubleoctagon  color=dodgerblue2 ];
+	"c25" [color=bisque4 shape=invtriangle label="0x800"];
+	"x" [label="x" shape=doubleoctagon  color=dodgerblue2 ];
+	"sum" [color=bisque4 shape=invtriangle label="sum"];
+	"done" [color=bisque4 shape=invtriangle label="done"];
+	"acc" [label="acc" shape=doubleoctagon  color=dodgerblue2 ];
+	"i" [label="i" shape=doubleoctagon  color=dodgerblue2 ];
+	"c24" [color=bisque4 shape=invtriangle label="0x0"];
+	"x_data_out_mult_op_s_p_y_data_out_6" [label="*" shape=doubleoctagon  color=dodgerblue2 ];
+	"init" [color=bisque4 shape=invtriangle label="init"];
+
+	// Signals (Edges)
+	"init" -> "i"
+	"acc" -> "sum"
+	"c25" -> "i"
+	"acc" -> "acc"
+	"x" -> "x_data_out_mult_op_s_p_y_data_out_6"
+	"i" -> "y"
+	"i" -> "acc"
+	"c24" -> "i"
+	"x_data_out_mult_op_s_p_y_data_out_6" -> "acc"
+	"i" -> "x"
+	"i" -> "done"
+	"y" -> "x_data_out_mult_op_s_p_y_data_out_6"
+}

@@ -1,0 +1,34 @@
+/* Copyright (c) 2009 Ricardo Menotti, All Rights Reserved.
+ *
+ * Permission to use, copy, modify, and distribute this software and its 
+ * documentation for NON-COMERCIAL purposes and without fee is hereby granted 
+ * provided that this copyright notice appears in all copies.
+ *
+ * RICARDO MENOTTI MAKES NO REPRESENTATIONS OR WARRANTIES ABOUT THE SUITABILITY
+ * OF THE SOFTWARE, EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE 
+ * IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, OR 
+ * NON-INFRINGEMENT. RICARDO MENOTTI SHALL NOT BE LIABLE FOR ANY DAMAGES 
+ * SUFFERED BY LICENSEE AS A RESULT OF USING, MODIFYING OR DISTRIBUTING THIS 
+ * SOFTWARE OR ITS DERIVATIVES. 
+ */
+
+const DATA_WIDTH = 32;
+const ADDRESS_WIDTH = 10;
+const ITERATIONS = 1024;
+
+typedef fixed(DATA_WIDTH, 1) int;
+typedef fixed(1, 0) bit;
+
+mult_sch(in bit init, out bit done) {
+	{
+		int a[ADDRESS_WIDTH], b[ADDRESS_WIDTH], c[ADDRESS_WIDTH];
+		fixed(ADDRESS_WIDTH, 1) i;
+	}
+	i.clk_en = init;
+	counter (i=0; i<ITERATIONS; i++@2);
+	a.address = i when i.step;
+	b.address = i when i.step;
+	c.address = i@1 when i.step@1;
+	c.data_in = a.data_out * b.data_out;
+	done = i.done;
+}

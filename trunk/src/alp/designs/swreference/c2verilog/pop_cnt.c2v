@@ -1,0 +1,15 @@
+#define ITEMS (1024) 
+//returns the number of 1's in a word 
+static inline unsigned int popCnt(unsigned int input) { 
+    unsigned int sum = 0; 
+    for (int i = 0; i < 32; i++) {
+        sum += (input) & 1; 
+        input = input/2; 
+    } 
+    return sum; 
+} 
+// This program will put the popcount
+// of each word of B[] in A[]
+void my_main(unsigned int* A, unsigned int *B) { 
+    for (int i=0; i<ITEMS; i++)  A[i] = popCnt(B[i]); 
+} 

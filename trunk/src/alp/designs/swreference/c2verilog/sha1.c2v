@@ -1,0 +1,49 @@
+/* NIST Secure Hash Algorithm */
+/* heavily modified by Uwe Hollerbach uh@alumni.caltech edu */
+/* from Peter C. Gutmann's implementation as found in */
+/* Applied Cryptography by Bruce Schneier */
+
+typedef unsigned int LONG;
+
+/* SHA f()-functions */
+#define f1(x,y,z)	((x &y) | (~x & z))
+#define f2(x,y,z)	(x ^ y ^ z)
+#define f3(x,y,z)	((x & y) | (x & z) | (y & z))
+#define f4(x,y,z)	(x ^ y ^ z)
+
+/* SHA constants */
+#define CONST1		0x5a827999L
+#define CONST2		0x6ed9eba1L
+#define CONST3		0x8f1bbcdcL
+#define CONST4		0xca62c1d6L
+
+/* 32-bit rotate */
+#define ROT32(x,n)	((x << n) | (x >> (32 - n)))
+
+#define FUNC(n,i)						\
+    temp = ROT32(A,5) + f##n(B,C,D) + E + W[i] + CONST##n;	\
+    E = D; D = C; C = ROT32(B,30); B = A; A = temp
+
+/* do SHA transformation */
+int sha_transform(LONG digest[5], LONG data[16], LONG W[80]) {
+    int i;
+    LONG temp, A, B, C, D, E;
+    for (i = 0; i < 16; ++i) {
+	W[i] = data[i];
+    }
+    for (i = 16; i < 80; ++i) {
+	W[i] = W[i-3] ^ W[i-8] ^ W[i-14] ^ W[i-16];
+	W[i] = ROT32(W[i], 1);
+    }
+    A = digest[0]; B = digest[1];
+    C = digest[2]; D = digest[3]; E = digest[4];
+    
+    for (i = 0; i < 20; ++i)  { FUNC(1,i); }
+    for (i = 20; i < 40; ++i) { FUNC(2,i); }
+    for (i = 40; i < 60; ++i) { FUNC(3,i); }
+    for (i = 60; i < 80; ++i) { FUNC(4,i); }
+
+    digest[0] += A; digest[1] += B;
+    digest[2] += C; digest[3] += D; digest[4] += E;
+    return 0;
+} 

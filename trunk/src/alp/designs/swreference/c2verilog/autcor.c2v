@@ -1,0 +1,16 @@
+#define N 160   //--- Length of Input array vector (sd[]) -
+#define M 10 //(MULTIPLE of 2)
+
+void autcor(short ac[],  short sd[]) {
+  int i,k,sum;
+
+  for (i = 0; i < M; i++){
+    sum = 0;
+
+    for (k = 0; k < N-M; k++) {
+      sum += sd[k+M] * sd[k+M-i];
+    }
+
+    ac[i] = (sum >> 15);
+  }
+}

@@ -1,0 +1,125 @@
+/* Copyright (c) 2009 Ricardo Menotti, All Rights Reserved.
+ *
+ * Permission to use, copy, modify, and distribute this software and its 
+ * documentation for NON-COMERCIAL purposes and without fee is hereby granted 
+ * provided that this copyright notice appears in all copies.
+ *
+ * RICARDO MENOTTI MAKES NO REPRESENTATIONS OR WARRANTIES ABOUT THE SUITABILITY
+ * OF THE SOFTWARE, EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE 
+ * IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, OR 
+ * NON-INFRINGEMENT. RICARDO MENOTTI SHALL NOT BE LIABLE FOR ANY DAMAGES 
+ * SUFFERED BY LICENSEE AS A RESULT OF USING, MODIFYING OR DISTRIBUTING THIS 
+ * SOFTWARE OR ITS DERIVATIVES. 
+ */
+ 
+const DATASIZE = 1024;
+
+typedef fixed(32,1) int;
+typedef fixed(1,0) bit;
+
+adpcm_coder_alp(in bit init, out int output, out bit done) {
+  
+  	{
+		int indexTable[16] = {
+			-1, -1, -1, -1, 2, 4, 6, 8,
+			-1, -1, -1, -1, 2, 4, 6, 8
+		};
+		int stepSizeTable[89] = {
+			7,		8,		9,		10,		11,		12,		13,		14,		16,		17,
+			19,		21,		23,		25,		28,		31,		34,		37,		41,		45,
+			50,		55,		60,		66,		73,		80,		88,		97,		107,	118,
+			130,	143,	157,	173,	190,	209,	230,	253,	279,	307,
+			337,	371,	408,	449,	494,	544,	598,	658,	724,	796,
+			876,	963,	1060,	1166,	1282,	1411,	1552,	1707,	1878,	2066,
+			2272,	2499,	2749,	3024,	3327,	3660,	4026,	4428,	4871,	5358,
+			5894,	6484,	7132,	7845,	8630,	9493,	10442,	11487,	12635,	13899,
+			15289,	16818,	18500,	20350,	22385,	24623,	27086,	29794,	32767
+		};
+		int indata[1024] = {
+			7, 17, 27, 37, 47, 57, 67, 77, 87, 97, 107, 117, 0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 3, 13, 23, 33, 43, 53, 63, 73, 83, 93, 103, 113, 123, 6, 16, 26, 36, 46, 56, 66, 76, 86, 96, 106, 116, 126, 9, 19, 29, 39, 49, 59, 69, 79, 89, 99, 109, 119, 2, 12, 22, 32, 42, 52, 62, 72, 82, 92, 102, 112, 122, 5, 15, 25, 35, 45, 55, 65, 75, 85, 95, 105, 115, 125, 8, 18, 28, 38, 48, 58, 68, 78, 88, 98, 108, 118, 1, 11, 21, 31, 41, 51, 61, 71, 81, 91, 101, 111, 121, 4, 14, 24, 34, 44, 54, 64, 74, 84, 94, 104, 114, 124, 7, 
+			17, 27, 37, 47, 57, 67, 77, 87, 97, 107, 117, 0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 3, 13, 23, 33, 43, 53, 63, 73, 83, 93, 103, 113, 123, 6, 16, 26, 36, 46, 56, 66, 76, 86, 96, 106, 116, 126, 9, 19, 29, 39, 49, 59, 69, 79, 89, 99, 109, 119, 2, 12, 22, 32, 42, 52, 62, 72, 82, 92, 102, 112, 122, 5, 15, 25, 35, 45, 55, 65, 75, 85, 95, 105, 115, 125, 8, 18, 28, 38, 48, 58, 68, 78, 88, 98, 108, 118, 1, 11, 21, 31, 41, 51, 61, 71, 81, 91, 101, 111, 121, 4, 14, 24, 34, 44, 54, 64, 74, 84, 94, 104, 114, 124, 7, 17, 
+			27, 37, 47, 57, 67, 77, 87, 97, 107, 117, 0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 3, 13, 23, 33, 43, 53, 63, 73, 83, 93, 103, 113, 123, 6, 16, 26, 36, 46, 56, 66, 76, 86, 96, 106, 116, 126, 9, 19, 29, 39, 49, 59, 69, 79, 89, 99, 109, 119, 2, 12, 22, 32, 42, 52, 62, 72, 82, 92, 102, 112, 122, 5, 15, 25, 35, 45, 55, 65, 75, 85, 95, 105, 115, 125, 8, 18, 28, 38, 48, 58, 68, 78, 88, 98, 108, 118, 1, 11, 21, 31, 41, 51, 61, 71, 81, 91, 101, 111, 121, 4, 14, 24, 34, 44, 54, 64, 74, 84, 94, 104, 114, 124, 7, 17, 27, 
+			37, 47, 57, 67, 77, 87, 97, 107, 117, 0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 3, 13, 23, 33, 43, 53, 63, 73, 83, 93, 103, 113, 123, 6, 16, 26, 36, 46, 56, 66, 76, 86, 96, 106, 116, 126, 9, 19, 29, 39, 49, 59, 69, 79, 89, 99, 109, 119, 2, 12, 22, 32, 42, 52, 62, 72, 82, 92, 102, 112, 122, 5, 15, 25, 35, 45, 55, 65, 75, 85, 95, 105, 115, 125, 8, 18, 28, 38, 48, 58, 68, 78, 88, 98, 108, 118, 1, 11, 21, 31, 41, 51, 61, 71, 81, 91, 101, 111, 121, 4, 14, 24, 34, 44, 54, 64, 74, 84, 94, 104, 114, 124, 7, 17, 27, 37, 
+			47, 57, 67, 77, 87, 97, 107, 117, 0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 3, 13, 23, 33, 43, 53, 63, 73, 83, 93, 103, 113, 123, 6, 16, 26, 36, 46, 56, 66, 76, 86, 96, 106, 116, 126, 9, 19, 29, 39, 49, 59, 69, 79, 89, 99, 109, 119, 2, 12, 22, 32, 42, 52, 62, 72, 82, 92, 102, 112, 122, 5, 15, 25, 35, 45, 55, 65, 75, 85, 95, 105, 115, 125, 8, 18, 28, 38, 48, 58, 68, 78, 88, 98, 108, 118, 1, 11, 21, 31, 41, 51, 61, 71, 81, 91, 101, 111, 121, 4, 14, 24, 34, 44, 54, 64, 74, 84, 94, 104, 114, 124, 7, 17, 27, 37, 47, 
+			57, 67, 77, 87, 97, 107, 117, 0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 3, 13, 23, 33, 43, 53, 63, 73, 83, 93, 103, 113, 123, 6, 16, 26, 36, 46, 56, 66, 76, 86, 96, 106, 116, 126, 9, 19, 29, 39, 49, 59, 69, 79, 89, 99, 109, 119, 2, 12, 22, 32, 42, 52, 62, 72, 82, 92, 102, 112, 122, 5, 15, 25, 35, 45, 55, 65, 75, 85, 95, 105, 115, 125, 8, 18, 28, 38, 48, 58, 68, 78, 88, 98, 108, 118, 1, 11, 21, 31, 41, 51, 61, 71, 81, 91, 101, 111, 121, 4, 14, 24, 34, 44, 54, 64, 74, 84, 94, 104, 114, 124, 7, 17, 27, 37, 47, 57, 
+			67, 77, 87, 97, 107, 117, 0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 3, 13, 23, 33, 43, 53, 63, 73, 83, 93, 103, 113, 123, 6, 16, 26, 36, 46, 56, 66, 76, 86, 96, 106, 116, 126, 9, 19, 29, 39, 49, 59, 69, 79, 89, 99, 109, 119, 2, 12, 22, 32, 42, 52, 62, 72, 82, 92, 102, 112, 122, 5, 15, 25, 35, 45, 55, 65, 75, 85, 95, 105, 115, 125, 8, 18, 28, 38, 48, 58, 68, 78, 88, 98, 108, 118, 1, 11, 21, 31, 41, 51, 61, 71, 81, 91, 101, 111, 121, 4, 14, 24, 34, 44, 54, 64, 74, 84, 94, 104, 114, 124, 7, 17, 27, 37, 47, 57, 67, 
+			77, 87, 97, 107, 117, 0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 3, 13, 23, 33, 43, 53, 63, 73, 83, 93, 103, 113, 123, 6, 16, 26, 36, 46, 56, 66, 76, 86, 96, 106, 116, 126, 9, 19, 29, 39, 49, 59, 69, 79, 89, 99, 109, 119, 2, 12, 22, 32, 42, 52, 62, 72, 82, 92, 102, 112, 122, 5, 15, 25, 35, 45, 55, 65, 75, 85, 95, 105, 115, 125, 8, 18, 28, 38, 48, 58, 68, 78, 88, 98, 108, 118, 1, 11, 21, 31, 41, 51, 61, 71, 81, 91, 101, 111, 121, 4, 14, 24, 34, 44, 54, 64, 74, 84, 94, 104, 114, 124, 7, 17, 27, 37, 47, 57, 67, 77
+		}; //1024
+	    int outdata[512]; //512 
+	   	fixed(9,0) i;
+		fixed(11,0) len;
+		int val;		
+		int sign;		
+		int delta, delta2, delta3, delta4;
+		int diff, diff2, diff3, diff4;		
+		int valpred, valpred2, valpred3;	
+		int vpdiff, vpdiff2, vpdiff3, vpdiff4;
+		int index, index2, index3;		
+		int outputbuffer;
+		bit bufferstep = 1;
+		int step, step2, step3;
+	}
+  
+  	counter (len=0; len<DATASIZE; len++@10);
+  	len.clk_en = init;
+  	
+  	//step@1
+  	indata.address = len;
+
+  	//step@2
+  	val = indata.data_out;
+  	
+  	//step@3
+	diff = val - valpred when len.step@3;
+	
+  	//step@4
+	sign = diff < 0 ? 8 : 0 when len.step@4;
+	stepSizeTable.address = index;
+
+  	//step@5
+	step = stepSizeTable.data_out when len.step@5;
+	diff2 = sign != 0 ? -diff : diff when len.step@5;
+
+	//step@6
+	delta = diff2 >= step ? 4 : 0 when len.step@6;
+	diff3 = diff2 >= step ? diff2 - step : diff2 when len.step@6;
+	step2 = step >> 1 when len.step@6;
+	vpdiff = (step >> 3) when len.step@6;
+	
+	//step@7
+	delta2 = diff3 >= step2 ? delta | 2 : delta when len.step@7;
+	diff4 = diff3 >= step2 ? diff3 - step2 : diff3 when len.step@7;
+	vpdiff2 = diff2 >= step ? vpdiff + step : vpdiff when len.step@7;
+	step3 = step2 >> 1 when len.step@7;
+	
+    //step@8			
+	delta3 = diff4 >= step3 ? delta2 | 1 : delta2 when len.step@8;
+	vpdiff3 = diff3 >= step2 ? vpdiff2 + step2 : vpdiff2 when len.step@8;
+
+    //step@9
+	vpdiff4 = diff4 > step3 ? vpdiff3 + step3 : vpdiff3 when len.step@9;
+	delta4 = delta3 | sign when len.step@9;
+    
+    //step@10
+    valpred2 = sign != 0 ? valpred - vpdiff4 : valpred + vpdiff4 when len.step@10;
+	indexTable.address = delta4;
+	outdata.address = i;
+	outputbuffer = (delta4 << 4) & 0xf0 when bufferstep & (len.step@10);
+	
+    //step@11
+	valpred3 = valpred2 > 32767 ? 32767 : valpred2 when len.step@11;
+    index2 = index + indexTable.data_out when len.step@11;   
+	outdata.data_in = (delta4 & 0x0f) | outputbuffer when !bufferstep & (len.step@11);
+
+    //step@12
+    index3 = index2 < 0 ? 0 : index2 when len.step@12;
+	valpred = valpred3 < -32768 ? -32768 : valpred3 when len.step@12;
+	i += 1 when !bufferstep & (len.step@12);
+	
+	//step@13
+	index = index3 > 88 ? 88 : index3 when len.step@13;
+	bufferstep = !bufferstep when len.step@13;
+
+	output = outdata.data_out;
+	done = len.done@2;
+}

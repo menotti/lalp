@@ -1,0 +1,282 @@
+/* Copyright (c) 2009 Ricardo Menotti, All Rights Reserved.
+ *
+ * Permission to use, copy, modify, and distribute this software and its 
+ * documentation for NON-COMERCIAL purposes and without fee is hereby granted 
+ * provided that this copyright notice appears in all copies.
+ *
+ * RICARDO MENOTTI MAKES NO REPRESENTATIONS OR WARRANTIES ABOUT THE SUITABILITY
+ * OF THE SOFTWARE, EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE 
+ * IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, OR 
+ * NON-INFRINGEMENT. RICARDO MENOTTI SHALL NOT BE LIABLE FOR ANY DAMAGES 
+ * SUFFERED BY LICENSEE AS A RESULT OF USING, MODIFYING OR DISTRIBUTING THIS 
+ * SOFTWARE OR ITS DERIVATIVES. 
+ */
+
+const k = 6; //number of stages in multipliers
+
+const C0 = 0xB505;
+const C1 = 0x2C62;
+const C2 = 0x29CF;
+const C3 = 0x25A0;
+const C5 = 0x1924;
+const C6 = 0x1151;
+const C7 = 0x08D4;
+
+const N = 8;
+const M = 64; //N*N
+const num_fdcts = 640;
+const SIZE = 10; // 2^10=1024 < 640=num_fdcts*M;
+	
+typedef fixed(32,1) int;
+typedef fixed(10,0) address;
+typedef fixed(1,0) bool;
+
+fdct_alp(in bool init, out bool done, out int output) {
+  
+	{
+		int dct_io_ptr[SIZE] = {
+			-232,	-231,	-236,	-229,	-228,	-242,	-226,	-225,	
+			-248,	-223,	-222,	-254,	-220,	-219,	-260,	-217,	
+			-216,	-266,	-214,	-213,	-272,	-211,	-210,	-278,	
+			-208,	-207,	-284,	-205,	-204,	-290,	-202,	-201,	
+			-296,	-199,	-198,	-302,	-196,	-195,	-308,	-193,	
+			-192,	-314,	-190,	-189,	-320,	-187,	-186,	-326,	
+			-184,	-183,	-332,	-181,	-180,	-338,	-178,	-177,	
+			-344,	-175,	-174,	-350,	-172,	-171,	-356,	-169,	
+			
+			-168,	-362,	-166,	-165,	-368,	-163,	-162,	-374,	
+			-160,	-159,	-380,	-157,	-156,	-386,	-154,	-153,	
+			-392,	-151,	-150,	-398,	-148,	-147,	-404,	-145,	
+			-144,	-410,	-142,	-141,	-416,	-139,	-138,	-422,	
+			-136,	-135,	-428,	-133,	-132,	-434,	-130,	-129,	
+			-440,	-127,	-126,	-446,	-124,	-123,	-452,	-121,	
+			-120,	-458,	-118,	-117,	-464,	-115,	-114,	-470,	
+			-112,	-111,	-476,	-109,	-108,	-482,	-106,	-105,	
+			
+			-488,	-103,	-102,	-494,	-100,	-99,	-500,	-97,	
+			-96,	-506,	-94,	-93,	-512,	-91,	-90,	-518,	
+			-88,	-87,	-524,	-85,	-84,	-530,	-82,	-81,	
+			-536,	-79,	-78,	-542,	-76,	-75,	-548,	-73,	
+			-72,	-554,	-70,	-69,	-560,	-67,	-66,	-566,	
+			-64,	-63,	-572,	-61,	-60,	-578,	-58,	-57,	
+			-584,	-55,	-54,	-590,	-52,	-51,	-596,	-49,	
+			-48,	-602,	-46,	-45,	-608,	-43,	-42,	-614,	
+			
+			-40,	-39,	-620,	-37,	-36,	-626,	-34,	-33,	
+			-632,	-31,	-30,	-638,	-28,	-27,	-644,	-25,	
+			-24,	-650,	-22,	-21,	-656,	-19,	-18,	-662,	
+			-16,	-15,	-668,	-13,	-12,	-674,	-10,	-9,	
+			-680,	-7,	-6,	-686,	-4,	-3,	-692,	-1,	
+			0,	-698,	2,	3,	-704,	5,	6,	-710,	
+			8,	9,	-716,	11,	12,	-722,	14,	15,	
+			-728,	17,	18,	-734,	20,	21,	-740,	23,	
+			
+			24,	-746,	26,	27,	-752,	29,	30,	-758,	
+			32,	33,	-764,	35,	36,	-770,	38,	39,	
+			-776,	41,	42,	-782,	44,	45,	-788,	47,	
+			48,	-794,	50,	51,	-800,	53,	54,	-806,	
+			56,	57,	-812,	59,	60,	-818,	62,	63,	
+			-824,	65,	66,	-830,	68,	69,	-836,	71,	
+			72,	-842,	74,	75,	-848,	77,	78,	-854,	
+			80,	81,	-860,	83,	84,	-866,	86,	87,	
+			
+			-872,	89,	90,	-878,	92,	93,	-884,	95,	
+			96,	-890,	98,	99,	-896,	101,	102,	-902,	
+			104,	105,	-908,	107,	108,	-914,	110,	111,	
+			-920,	113,	114,	-926,	116,	117,	-932,	119,	
+			120,	-938,	122,	123,	-944,	125,	126,	-950,	
+			128,	129,	-956,	131,	132,	-962,	134,	135,	
+			-968,	137,	138,	-974,	140,	141,	-980,	143,	
+			144,	-986,	146,	147,	-992,	149,	150,	-998,	
+			
+			152,	153,	-1004,	155,	156,	-1010,	158,	159,	
+			-1016,	161,	162,	-1022,	164,	165,	-1028,	167,	
+			168,	-1034,	170,	171,	-1040,	173,	174,	-1046,	
+			176,	177,	-1052,	179,	180,	-1058,	182,	183,	
+			-1064,	185,	186,	-1070,	188,	189,	-1076,	191,	
+			192,	-1082,	194,	195,	-1088,	197,	198,	-1094,	
+			200,	201,	-1100,	203,	204,	-1106,	206,	207,	
+			-1112,	209,	210,	-1118,	212,	213,	-1124,	215,	
+
+			216,	-1130,	218,	219,	-1136,	221,	222,	-1142,	
+			224,	225,	-1148,	227,	228,	-1154,	230,	231,	
+			-1160,	233,	234,	-1166,	236,	237,	-1172,	239,	
+			240,	-1178,	242,	243,	-1184,	245,	246,	-1190,	
+			248,	249,	-1196,	251,	252,	-1202,	254,	255,	
+			-1208,	257,	258,	-1214,	260,	261,	-1220,	263,	
+			264,	-1226,	266,	267,	-1232,	269,	270,	-1238,				
+			272,	273,	-1244,	275,	276,	-1250,	278,	279,	
+			
+			-1256,	281,	282,	-1262,	284,	285,	-1268,	287,	
+			288,	-1274,	290,	291,	-1280,	293,	294,	-1286,	
+			296,	297,	-1292,	299,	300,	-1298,	302,	303,	
+			-1304,	305,	306,	-1310,	308,	309,	-1316,	311,	
+			312,	-1322,	314,	315,	-1328,	317,	318,	-1334,	
+			320,	321,	-1340,	323,	324,	-1346,	326,	327,	
+			-1352,	329,	330,	-1358,	332,	333,	-1364,	335,	
+			336,	-1370,	338,	339,	-1376,	341,	342,	-1382,	
+
+			344,	345,	-1388,	347,	348,	-1394,	350,	351,	
+			-1400,	353,	354,	-1406,	356,	357,	-1412,	359,	
+			360,	-1418,	362,	363,	-1424,	365,	366,	-1430,	
+			368,	369,	-1436,	371,	372,	-1442,	374,	375,	
+			-1448,	377,	378,	-1454,	380,	381,	-1460,	383,	
+			384,	-1466,	386,	387,	-1472,	389,	390,	-1478,	
+			392,	393,	-1484,	395,	396,	-1490,	398,	399,	
+			-1496,	401,	402,	-1502,	404,	405,	-1508,	407
+		}, dct_io_tmp[SIZE], dct_o[SIZE];
+		
+		address i, j, i_1, i_plus_8, j_plus_64;
+		
+		int f0, f1, f2, f3,f4, f5, f6, f7;       // Spatial domain samples.       
+		int g0, g1, h0, h1,p0, p1;               // Even-half intermediate.     
+		int r0, r1;               // Even-half intermediate.     
+		int P_0, P_1, R_0, R_1;       // Even-half intermediate.         
+		int g2, g3, h2, h3;       // Odd-half intermediate.           
+		int q0a,s0a,q0, q1,s0, s1;               // Odd-half intermediate.          
+		int Q_0, Q_1, S_0, S_1;       // Odd-half intermediate.       
+		int F_0, F_1, F_2, F_3, F_4, F_5, F_6, F_7;       // Freq. domain results. 
+		//int F_0r,F_1r,F_2r,F_3r,F_4r,F_5r,F_6r,F_7r;      // Rounded, truncated results.  
+		
+	    int mf, xmf;
+	    
+	    address dct_io_tmp_address;
+	    
+	    address xi, xj;
+		int xf0, xf1, xf2, xf3, xf4, xf5, xf6, xf7;
+		int xg0, xh0, xp0, xr0;
+		int xg1, xh1, xp1, xr1;
+		int xP_0, xP_1, xR_0, xR_1;
+		int xg2, xh2, xg3, xh3;
+		int xq0a, xq0, xq1;
+		int xs0a, xs0, xs1;
+		int xQ_0, xQ_1, xS_0, xS_1;
+		int xF_0, xF_1, xF_2, xF_3, xF_4, xF_5, xF_6, xF_7;
+		int xF0r, xF1r, xF2r, xF3r, xF4r, xF5r, xF6r, xF7r;
+	}
+		
+	counter (i=0; i<num_fdcts; i+=64@72);
+	i.clk_en = init;
+	
+	counter (j=i; j<i_plus_8; j++@9);
+	j.clk_en = init;
+	j.load = i.step;
+	
+	counter (i_1=j; i_1<j_plus_64; i_1+=8);
+	i_1.clk_en = init@2;
+	i_1.load = j.step;
+	
+	i_plus_8 = i + 8;
+	j_plus_64 = j + 64;
+	
+	dct_io_ptr.address = i_1;
+	
+	f0 = dct_io_ptr.data_out when (j.step@3);
+	f1 = dct_io_ptr.data_out when (j.step@4);
+	f2 = dct_io_ptr.data_out when (j.step@5);
+	f3 = dct_io_ptr.data_out when (j.step@6);
+	f4 = dct_io_ptr.data_out when (j.step@7);
+	f5 = dct_io_ptr.data_out when (j.step@8);
+	f6 = dct_io_ptr.data_out when (j.step@9);
+	f7 = dct_io_ptr.data_out when (j.step@10);
+	
+	g0 = f0 + f7 when j.step@11;               h2 = f0 - f7 when j.step@11;
+	g1 = f1 + f6 when j.step@11;               h3 = f1 - f6 when j.step@11;
+	h1 = f2 + f5 when j.step@11;               g3 = f2 - f5 when j.step@11;
+	h0 = f3 + f4 when j.step@11;               g2 = f3 - f4 when j.step@11;
+
+	p0 = g0 + h0 when j.step@12;               r0 = g0 - h0 when j.step@12;
+	p1 = g1 + h1 when j.step@12;               r1 = g1 - h1 when j.step@12;
+	q1 = g2 when j.step@12;                    s1 = h2 when j.step@12;
+	s0a= h3 + g3 when j.step@12;               q0a= h3 - g3 when j.step@12;
+	
+	s0 = (s0a *@k C0 + 0x7FFF) >> 16 when j.step@13+k;					
+	q0 = (q0a *@k C0 + 0x7FFF) >> 16 when j.step@13+k;
+	
+	P_0 = p0 + p1 when j.step@14+k;               P_1 = p0 - p1 when j.step@14+k;
+	R_1 = C6 *@k r1 + C2 *@k r0 when j.step@14+2*k;     R_0 = C6 *@k r0 - C2 *@k r1 when j.step@14+2*k;
+	Q_1 = q1 + q0 when j.step@14+k;               Q_0 = q1 - q0 when j.step@14+k;
+	S_1 = s1 + s0 when j.step@14+k;               S_0 = s1 - s0 when j.step@14+k;           
+
+	F_0 = P_0 when j.step@15+2*k;                   F_4 = P_1 when j.step@15+2*k;
+	F_2 = R_1 when j.step@15+2*k;                   F_6 = R_0 when j.step@15+2*k;
+	F_1 = C7 *@k Q_1 + C1 *@k S_1 when j.step@15+3*k;   F_7 = C7 *@k S_1 - C1 *@k Q_1 when j.step@15+3*k;
+	F_5 = C3 *@k Q_0 + C5 *@k S_0 when j.step@15+3*k;   F_3 = C3 *@k S_0 - C5 *@k Q_0 when j.step@15+3*k;
+
+	mf = F_0;
+	mf = F_1 >> 13 when j.step@16+3*k;
+	mf = F_2 >> 13 when j.step@17+3*k;
+	mf = F_3 >> 13 when j.step@18+3*k;
+	mf = F_4 when j.step@19+3*k;
+	mf = F_5 >> 13 when j.step@20+3*k;
+	mf = F_6 >> 13 when j.step@21+3*k;
+	mf = F_7 >> 13 when j.step@22+3*k;
+
+	dct_io_tmp.address = dct_io_tmp_address;
+
+	dct_io_tmp.data_in = mf when (i_1.step@15+3*k) & !(i.done@17+3*k);
+	dct_io_tmp_address = xi.step ? xi : (i_1@13+3*k);
+	
+	counter (xi=0; xi<num_fdcts; xi++);
+	xi.clk_en = i.done@17+3*k;
+	
+	counter (xj=0; xj<num_fdcts; xj+=8@8);
+	xj.clk_en = i.done@17+3*k;
+	
+	xf0 = dct_io_tmp.data_out when xj.step@2;
+	xf1 = dct_io_tmp.data_out when xj.step@3;
+	xf2 = dct_io_tmp.data_out when xj.step@4;
+	xf3 = dct_io_tmp.data_out when xj.step@5;
+	xf4 = dct_io_tmp.data_out when xj.step@6;
+	xf5 = dct_io_tmp.data_out when xj.step@7;
+	xf6 = dct_io_tmp.data_out when xj.step@8;
+	xf7 = dct_io_tmp.data_out when xj.step@9;
+	
+	xg0 = xf0 + xf7 when xj.step@10;               xh2 = xf0 - xf7 when xj.step@10;
+	xg1 = xf1 + xf6 when xj.step@10;               xh3 = xf1 - xf6 when xj.step@10;
+	xh1 = xf2 + xf5 when xj.step@10;               xg3 = xf2 - xf5 when xj.step@10;
+	xh0 = xf3 + xf4 when xj.step@10;               xg2 = xf3 - xf4 when xj.step@10;
+
+	xp0 = xg0 + xh0 when xj.step@11;               xr0 = xg0 - xh0 when xj.step@11;
+	xp1 = xg1 + xh1 when xj.step@11;               xr1 = xg1 - xh1 when xj.step@11;
+	xq1 = xg2 when xj.step@11;                     xs1 = xh2 when xj.step@11;
+	xs0a= xh3 + xg3 when xj.step@11;               xq0a= xh3 - xg3 when xj.step@11;
+	            
+	xq0 = (xq0a *@k C0 + 0x7FFF) >> 16 when xj.step@12+k;
+	xs0 = (xs0a *@k C0 + 0x7FFF) >> 16 when xj.step@12+k;
+	
+	xP_0 = xp0 + xp1 when xj.step@13+k;               xP_1 = xp0 - xp1 when xj.step@13+k;
+	xR_1 = C6 *@k xr1 + C2 *@k xr0 when xj.step@13+2*k;     xR_0 = C6 *@k xr0 - C2 *@k xr1 when xj.step@13+2*k;
+	xQ_1 = xq1 + xq0 when xj.step@13+k;               xQ_0 = xq1 - xq0 when xj.step@13+k;
+	xS_1 = xs1 + xs0 when xj.step@13+k;               xS_0 = xs1 - xs0 when xj.step@13+k;
+	
+	xF_0 = xP_0 when xj.step@14+2*k;                     xF_4 = xP_1 when xj.step@14+2*k;                          
+	xF_2 = xR_1 when xj.step@14+2*k;                     xF_6 = xR_0 when xj.step@14+2*k;                          
+	xF_1 = C7 *@k xQ_1 + C1 *@k xS_1 when xj.step@14+3*k;    xF_7 = C7 *@k xS_1 - C1 *@k xQ_1 when xj.step@14+3*k;           
+	xF_5 = C3 *@k xQ_0 + C5 *@k xS_0 when xj.step@14+3*k;    xF_3 = C3 *@k xS_0 - C5 *@k xQ_0 when xj.step@14+3*k;
+	
+	xF0r = (xF_0 + 0x0006) >>  3 when xj.step@15+3*k;
+	xF1r = (xF_1 + 0x7FFF) >> 16 when xj.step@15+3*k;
+	xF2r = (xF_2 + 0x7FFF) >> 16 when xj.step@15+3*k;
+	xF3r = (xF_3 + 0x7FFF) >> 16 when xj.step@15+3*k;
+	xF4r = (xF_4 + 0x0004) >>  3 when xj.step@15+3*k;
+	xF5r = (xF_5 + 0x7FFF) >> 16 when xj.step@15+3*k;
+	xF6r = (xF_6 + 0x7FFF) >> 16 when xj.step@15+3*k;
+	xF7r = (xF_7 + 0x7FFF) >> 16 when xj.step@15+3*k;
+
+	xmf = xF0r;
+	xmf = xF1r when xj.step@16+3*k;
+	xmf = xF2r when xj.step@17+3*k;
+	xmf = xF3r when xj.step@18+3*k;
+	xmf = xF4r when xj.step@19+3*k;
+	xmf = xF5r when xj.step@20+3*k;
+	xmf = xF6r when xj.step@21+3*k;
+	xmf = xF7r when xj.step@22+3*k;
+
+	dct_o.data_in = xmf;
+	dct_o.address = xi@16+3*k;
+	dct_o.we = xi.step@16+3*k;
+	done = xi.done@16+3*k;
+	output = dct_o.data_out;
+}
+

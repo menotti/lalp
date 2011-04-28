@@ -1,0 +1,44 @@
+/* Copyright (c) 2009 Ricardo Menotti, All Rights Reserved.
+ *
+ * Permission to use, copy, modify, and distribute this software and its 
+ * documentation for NON-COMERCIAL purposes and without fee is hereby granted 
+ * provided that this copyright notice appears in all copies.
+ *
+ * RICARDO MENOTTI MAKES NO REPRESENTATIONS OR WARRANTIES ABOUT THE SUITABILITY
+ * OF THE SOFTWARE, EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE 
+ * IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, OR 
+ * NON-INFRINGEMENT. RICARDO MENOTTI SHALL NOT BE LIABLE FOR ANY DAMAGES 
+ * SUFFERED BY LICENSEE AS A RESULT OF USING, MODIFYING OR DISTRIBUTING THIS 
+ * SOFTWARE OR ITS DERIVATIVES. 
+ */
+
+const DW = 16;
+const SIZE = 2048;
+
+typedef fixed(16,1) int16;
+typedef fixed(1,0) bit;
+
+dotprod(in bit init, out bit done, out int16 sum) {
+
+	{
+		for1:		module_for(11, SIZE);
+		ramx,ramy:	block_ram(11, DW);
+		d1:			delay_op(1);
+		d2:			delay_op(1, 2);
+		mult1:		mult_op_s(DW);
+		acc1:		add_reg_op_s(DW);
+	}
+	
+	for1 <- init;
+	ramx <- for1;
+	ramy <- for1;
+	d1 <- for1.step;
+	d2 <- for1.done;
+	mult1.I0 <- ramx;
+	mult1.I1 <- ramy;
+	acc1.I0 <- acc1; 
+	acc1.I1 <- mult1;
+	acc1.we <- d1;
+	done <- d2;
+	sum <- acc1;
+}
