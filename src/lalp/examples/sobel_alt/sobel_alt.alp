@@ -36,15 +36,15 @@ sobel_alt(in bit init, out bit done, out int result) {
 	    
 		int input[SIZE] = {
 				50, 65, 62, 83, 34, 45, 96, 67, 18, 29, 
-				14,	14, 72, 13, 14, 15, 16, 17, 18, 39, 
-				20,	23, 82, 23, 20, 25, 26, 27, 28, 29, 
+				14, 14, 72, 13, 14, 15, 16, 17, 18, 39, 
+				20, 23, 82, 23, 20, 25, 26, 27, 28, 29, 
 				54, 12, 72, 83, 34, 45, 96, 97, 18, 29, 
-				40,	41, 42, 73, 44, 45, 46, 47, 48, 89, 
+				40, 41, 42, 73, 44, 45, 46, 47, 48, 89, 
 				52, 60, 82, 83, 34, 45, 96, 37, 18, 29, 
-				60,	69, 62, 66, 64, 65, 64, 67, 68, 69, 
+				60, 69, 62, 66, 64, 65, 64, 67, 68, 69, 
 				53, 68, 72, 83, 34, 55, 96, 37, 18, 29, 
-				84,	87, 82, 83, 84, 85, 86, 87, 28, 89, 
-				95,	96, 92, 93, 94, 95, 96, 97, 38, 99
+				84, 87, 82, 83, 84, 85, 86, 87, 28, 89, 
+				95, 96, 92, 93, 94, 95, 96, 97, 38, 99
 		};
 		int output[SIZE];
 	}
@@ -70,11 +70,11 @@ sobel_alt(in bit init, out bit done, out int result) {
 	i22h = i22 when i.step@25;
 
 	i00v = -i00 when i.step@25;
-	i02v = i02 when i.step@25;
 	i10v = -(i10 + i10) when i.step@25;
-
-	i12v = i12 + i12 when i.step@25;
 	i20v = -i20 when i.step@25;
+
+	i02v = i02 when i.step@25;
+	i12v = i12 + i12 when i.step@25;
 	i22v = i22 when i.step@25;
 	
 	i00hi01h = i00h + i01h;
@@ -82,10 +82,10 @@ sobel_alt(in bit init, out bit done, out int result) {
 	i20hi21h = i20h + i21h;
 	i02vi12v = i02v + i12v;
 	
-	i00hi01hi02h = i00hi01h + i02h;
-	i20hi21hi22h = i20hi21h + i22h;
-	i00vi10vi20v = i00vi10v + i20v;
-	i02vi12vi22v = i02vi12v + i22v;
+	i00hi01hi02h = i00hi01h + i02h@1;
+	i20hi21hi22h = i20hi21h + i22h@1;
+	i00vi10vi20v = i00vi10v + i20v@1;
+	i02vi12vi22v = i02vi12v + i22v@1;
 	
 	H = i00hi01hi02h + i20hi21hi22h;
 	V = i00vi10vi20v + i02vi12vi22v;
