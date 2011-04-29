@@ -45,26 +45,26 @@ import lalp.parser.lang.SimpleNode;
  */
 public class LALP {
 
-	private final static String version = "LALP version 0.1, Copyright (c) 2010 Ricardo Menotti";
+	private final static String version = "LALP version 0.1, Copyright (c) 2011 Ricardo Menotti";
 	
 	private static final String usage = 
 		"Usage: LALP [-options] file\n" +
 		"where options include:\n" +
-		"	-as		run SCC algorithm\n" + 
-		"	-ad		run Dijkstra algorithm\n" + 
-		"	-ao		run Dominators algorithm\n" + 
-		"	-aa		run AsapAlap scheduling algorithm\n" + 
-		"   -at		run Topological algorithm\n" +
-		"   -ab		run Balance algorithm\n" +
-		"	-do		generate debug output pins\n" +
-		"	-gv		generate Graphviz\n" +
-		"	-gs		generate Graphviz subgraphs\n" +
-		"	-vh		generate VHDL\n" + 
-		"	-vi		generate VHDL memory initialization\n" + 
-		"	-vt		generate VHDL testbench\n" + 
-		"	-alpg	generate ALPG source code\n" + 
-		"	-verbose	print verbose output\n" + 
-		"	-version	print product version and exit\n";
+		"  -as       run SCC algorithm\n" + 
+		"  -ad       run Dijkstra algorithm\n" + 
+		"  -ao       run Dominators algorithm\n" + 
+		"  -aa       run AsapAlap scheduling algorithm\n" + 
+		"  -at       run Topological algorithm\n" +
+		"  -ab       run Balance algorithm\n" +
+		"  -do       generate debug output pins\n" +
+		"  -gv       generate Graphviz\n" +
+		"  -gs       generate Graphviz subgraphs\n" +
+		"  -vh       generate VHDL\n" + 
+		"  -vi       generate VHDL memory initialization\n" + 
+		"  -vt       generate VHDL testbench\n" + 
+		"  -alpg     generate ALPG source code\n" + 
+		"  -verbose  print verbose output\n" + 
+		"  -version  print product version and exit\n";
 	
 	/**
 	 * @param args options and input file
@@ -154,7 +154,7 @@ public class LALP {
 				error(usage);
 			}
 			String extension = st.nextToken().toUpperCase();
-			if (extension.equals("LALP")) {
+			if (extension.equals("ALP")) {
 				System.out.print("Reading from file " + args[args.length-1] + "...");
 				inStream = new FileInputStream(args[args.length-1]);
 				lp = new LangParser(inStream);
