@@ -45,7 +45,7 @@ import lalp.core.VHDLType;
 public class Graphviz {
 	
 //	private final static String DEFAULT_DIRECTORY = "out";
-	private final static String DEFAULT_DIRECTORY = "/Users/ricardomenotti/Documents/workspace/designs/lalps";
+	private final static String DEFAULT_DIRECTORY = ".";
 
 	private boolean legend = false;
 	private boolean schedulingTimes = false;

@@ -45,10 +45,10 @@ public class VHDL {
 	
 //	private static final String DEFAULT_DIRECTORY = "../designs/hardware/";
 //	private final static String DEFAULT_DIRECTORY = "/Users/ricardomenotti/Documents/workspace/designs/alpsched/";
-	private final static String DEFAULT_DIRECTORY = "/Users/ricardomenotti/Documents/workspace/designs/lalps/";
+	private final static String DEFAULT_DIRECTORY = ".";
 	
 	public void generateVHDL(Design design) {
-		generateVHDL(design, DEFAULT_DIRECTORY + design.getName());
+		generateVHDL(design, DEFAULT_DIRECTORY);
 	}
 	public void generateVHDL(Design design, String path) {
 		System.out.print("Generating VHDL...");
@@ -263,7 +263,7 @@ public class VHDL {
 	}
 	
 	public void generateVHDLInitialization(Design design) {
-		generateVHDLInitialization(design, DEFAULT_DIRECTORY + design.getName());
+		generateVHDLInitialization(design, DEFAULT_DIRECTORY);
 	}
 	
 	public void generateVHDLInitialization(Design design, String path) {
@@ -289,7 +289,7 @@ public class VHDL {
 	 * Generate the VHDL testbench file
 	 */
 	public void generateVHDLTestbench(Design design) {
-		generateVHDLTestbench(design, DEFAULT_DIRECTORY + design.getName());
+		generateVHDLTestbench(design, DEFAULT_DIRECTORY);
 	}
 	public void generateVHDLTestbench(Design design, String path) {
 		System.out.print("Generating VHDL testbench...");

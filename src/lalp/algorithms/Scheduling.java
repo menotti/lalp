@@ -336,7 +336,7 @@ public class Scheduling {
 		}
 	    t.end();
 	    System.out.println("Balancing and synchronizing operations...Ok! " + t.duration() + " ms");
-	    System.out.println("Iserted " + ats + " @s");
+	    System.out.println("Inserted " + ats + " @s");
 	}
 	
 	private int calculateASAP(Component comp) {
