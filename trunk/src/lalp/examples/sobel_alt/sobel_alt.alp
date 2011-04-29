@@ -82,10 +82,10 @@ sobel_alt(in bit init, out bit done, out int result) {
 	i20hi21h = i20h + i21h;
 	i02vi12v = i02v + i12v;
 	
-	i00hi01hi02h = i00hi01h + i02h@1;
-	i20hi21hi22h = i20hi21h + i22h@1;
-	i00vi10vi20v = i00vi10v + i20v@1;
-	i02vi12vi22v = i02vi12v + i22v@1;
+	i00hi01hi02h = i00hi01h + (i02h@1);
+	i20hi21hi22h = i20hi21h + (i22h@1);
+	i00vi10vi20v = i00vi10v + (i20v@1);
+	i02vi12vi22v = i02vi12v + (i22v@1);
 	
 	H = i00hi01hi02h + i20hi21hi22h;
 	V = i00vi10vi20v + i02vi12vi22v;

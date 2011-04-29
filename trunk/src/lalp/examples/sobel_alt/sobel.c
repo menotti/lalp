@@ -42,7 +42,7 @@ int main() {
     if (O > 255) 
       O = 255;
     out[i + 1] = (char)O;
-    printf("%d\n", O);
+    printf("%d = %d\n", i+1, O);
   }
   return 0;
 }
