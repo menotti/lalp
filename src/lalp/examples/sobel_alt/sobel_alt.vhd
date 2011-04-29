@@ -12,7 +12,7 @@
 -- SUFFERED BY LICENSEE AS A RESULT OF USING, MODIFYING OR DISTRIBUTING THIS
 -- SOFTWARE OR ITS DERIVATIVES.
 --
--- Generated at Fri Apr 29 18:24:03 BRT 2011
+-- Generated at Fri Apr 29 19:34:44 BRT 2011
 --
 
 -- IEEE Libraries --
@@ -24,127 +24,6 @@ entity sobel_alt is
 	port (
 		\clear\	: in	std_logic;
 		\clk\	: in	std_logic;
-		\d_H_O0\	: out	std_logic_vector(15 downto 0);
-		\d_H_if_lt_op_s_0_O0\	: out	std_logic_vector(0 downto 0);
-		\d_H_neg_op_s_O0\	: out	std_logic_vector(15 downto 0);
-		\d_Hpos_O0\	: out	std_logic_vector(15 downto 0);
-		\d_Hpos_add_op_s_Vpos_O0\	: out	std_logic_vector(15 downto 0);
-		\d_O_O0\	: out	std_logic_vector(15 downto 0);
-		\d_O_if_gt_op_s_255_O0\	: out	std_logic_vector(0 downto 0);
-		\d_Otrunk_O0\	: out	std_logic_vector(15 downto 0);
-		\d_V_O0\	: out	std_logic_vector(15 downto 0);
-		\d_V_if_lt_op_s_0_O0\	: out	std_logic_vector(0 downto 0);
-		\d_V_neg_op_s_O0\	: out	std_logic_vector(15 downto 0);
-		\d_Vpos_O0\	: out	std_logic_vector(15 downto 0);
-		\d_c106_a_delayed\	: out	std_logic_vector(15 downto 0);
-		\d_c107_a_delayed\	: out	std_logic_vector(0 downto 0);
-		\d_c108_a_delayed\	: out	std_logic_vector(0 downto 0);
-		\d_c109_a_delayed\	: out	std_logic_vector(0 downto 0);
-		\d_c110_a_delayed\	: out	std_logic_vector(0 downto 0);
-		\d_c111_a_delayed\	: out	std_logic_vector(0 downto 0);
-		\d_c112_a_delayed\	: out	std_logic_vector(0 downto 0);
-		\d_c113_a_delayed\	: out	std_logic_vector(0 downto 0);
-		\d_c114_a_delayed\	: out	std_logic_vector(0 downto 0);
-		\d_c115_a_delayed\	: out	std_logic_vector(0 downto 0);
-		\d_c116_a_delayed\	: out	std_logic_vector(0 downto 0);
-		\d_c117_a_delayed\	: out	std_logic_vector(0 downto 0);
-		\d_c118_a_delayed\	: out	std_logic_vector(0 downto 0);
-		\d_c119_a_delayed\	: out	std_logic_vector(0 downto 0);
-		\d_c120_a_delayed\	: out	std_logic_vector(0 downto 0);
-		\d_c121_a_delayed\	: out	std_logic_vector(0 downto 0);
-		\d_c122_a_delayed\	: out	std_logic_vector(0 downto 0);
-		\d_c123_a_delayed\	: out	std_logic_vector(0 downto 0);
-		\d_c124_a_delayed\	: out	std_logic_vector(0 downto 0);
-		\d_c125_a_delayed\	: out	std_logic_vector(0 downto 0);
-		\d_c126_a_delayed\	: out	std_logic_vector(0 downto 0);
-		\d_c127_a_delayed\	: out	std_logic_vector(0 downto 0);
-		\d_c128_a_delayed\	: out	std_logic_vector(0 downto 0);
-		\d_c129_a_delayed\	: out	std_logic_vector(0 downto 0);
-		\d_c130_a_delayed\	: out	std_logic_vector(15 downto 0);
-		\d_i00_O0\	: out	std_logic_vector(15 downto 0);
-		\d_i00_neg_op_s_O0\	: out	std_logic_vector(15 downto 0);
-		\d_i00_neg_op_s__O0\	: out	std_logic_vector(15 downto 0);
-		\d_i00h_O0\	: out	std_logic_vector(15 downto 0);
-		\d_i00h_add_op_s_i01h_O0\	: out	std_logic_vector(15 downto 0);
-		\d_i00hi01h_O0\	: out	std_logic_vector(15 downto 0);
-		\d_i00hi01h_add_op_s_i02h_O0\	: out	std_logic_vector(15 downto 0);
-		\d_i00hi01h_add_op_s_i02h_delay_op_1_a_delayed\	: out	std_logic_vector(15 downto 0);
-		\d_i00hi01hi02h_O0\	: out	std_logic_vector(15 downto 0);
-		\d_i00hi01hi02h_add_op_s_i20hi21hi22h_O0\	: out	std_logic_vector(15 downto 0);
-		\d_i00v_O0\	: out	std_logic_vector(15 downto 0);
-		\d_i00v_add_op_s_i10v_O0\	: out	std_logic_vector(15 downto 0);
-		\d_i00vi10v_O0\	: out	std_logic_vector(15 downto 0);
-		\d_i00vi10v_add_op_s_i20v_O0\	: out	std_logic_vector(15 downto 0);
-		\d_i00vi10v_add_op_s_i20v_delay_op_1_a_delayed\	: out	std_logic_vector(15 downto 0);
-		\d_i00vi10vi20v_O0\	: out	std_logic_vector(15 downto 0);
-		\d_i00vi10vi20v_add_op_s_i02vi12vi22v_O0\	: out	std_logic_vector(15 downto 0);
-		\d_i01_O0\	: out	std_logic_vector(15 downto 0);
-		\d_i01_add_op_s_i01_O0\	: out	std_logic_vector(15 downto 0);
-		\d_i01_add_op_s_i01_neg_op_s_O0\	: out	std_logic_vector(15 downto 0);
-		\d_i01h_O0\	: out	std_logic_vector(15 downto 0);
-		\d_i02_O0\	: out	std_logic_vector(15 downto 0);
-		\d_i02_neg_op_s_O0\	: out	std_logic_vector(15 downto 0);
-		\d_i02h_O0\	: out	std_logic_vector(15 downto 0);
-		\d_i02v_O0\	: out	std_logic_vector(15 downto 0);
-		\d_i02v_add_op_s_i12v_O0\	: out	std_logic_vector(15 downto 0);
-		\d_i02vi12v_O0\	: out	std_logic_vector(15 downto 0);
-		\d_i02vi12v_add_op_s_i22v_O0\	: out	std_logic_vector(15 downto 0);
-		\d_i02vi12v_add_op_s_i22v_delay_op_1_a_delayed\	: out	std_logic_vector(15 downto 0);
-		\d_i02vi12vi22v_O0\	: out	std_logic_vector(15 downto 0);
-		\d_i03_O0\	: out	std_logic_vector(15 downto 0);
-		\d_i04_O0\	: out	std_logic_vector(15 downto 0);
-		\d_i05_O0\	: out	std_logic_vector(15 downto 0);
-		\d_i06_O0\	: out	std_logic_vector(15 downto 0);
-		\d_i07_O0\	: out	std_logic_vector(15 downto 0);
-		\d_i08_O0\	: out	std_logic_vector(15 downto 0);
-		\d_i09_O0\	: out	std_logic_vector(15 downto 0);
-		\d_i10_O0\	: out	std_logic_vector(15 downto 0);
-		\d_i10_add_op_s_i10_O0\	: out	std_logic_vector(15 downto 0);
-		\d_i10_add_op_s_i10_neg_op_s_O0\	: out	std_logic_vector(15 downto 0);
-		\d_i10v_O0\	: out	std_logic_vector(15 downto 0);
-		\d_i11_O0\	: out	std_logic_vector(15 downto 0);
-		\d_i12_O0\	: out	std_logic_vector(15 downto 0);
-		\d_i12_add_op_s_i12_O0\	: out	std_logic_vector(15 downto 0);
-		\d_i12v_O0\	: out	std_logic_vector(15 downto 0);
-		\d_i13_O0\	: out	std_logic_vector(15 downto 0);
-		\d_i14_O0\	: out	std_logic_vector(15 downto 0);
-		\d_i15_O0\	: out	std_logic_vector(15 downto 0);
-		\d_i16_O0\	: out	std_logic_vector(15 downto 0);
-		\d_i17_O0\	: out	std_logic_vector(15 downto 0);
-		\d_i18_O0\	: out	std_logic_vector(15 downto 0);
-		\d_i19_O0\	: out	std_logic_vector(15 downto 0);
-		\d_i20_O0\	: out	std_logic_vector(15 downto 0);
-		\d_i20_neg_op_s_O0\	: out	std_logic_vector(15 downto 0);
-		\d_i20h_O0\	: out	std_logic_vector(15 downto 0);
-		\d_i20h_add_op_s_i21h_O0\	: out	std_logic_vector(15 downto 0);
-		\d_i20hi21h_O0\	: out	std_logic_vector(15 downto 0);
-		\d_i20hi21h_add_op_s_i22h_O0\	: out	std_logic_vector(15 downto 0);
-		\d_i20hi21h_add_op_s_i22h_delay_op_1_a_delayed\	: out	std_logic_vector(15 downto 0);
-		\d_i20hi21hi22h_O0\	: out	std_logic_vector(15 downto 0);
-		\d_i20v_O0\	: out	std_logic_vector(15 downto 0);
-		\d_i21_O0\	: out	std_logic_vector(15 downto 0);
-		\d_i21_add_op_s_i21_O0\	: out	std_logic_vector(15 downto 0);
-		\d_i21h_O0\	: out	std_logic_vector(15 downto 0);
-		\d_i22_O0\	: out	std_logic_vector(15 downto 0);
-		\d_i22h_O0\	: out	std_logic_vector(15 downto 0);
-		\d_i22v_O0\	: out	std_logic_vector(15 downto 0);
-		\d_i_done\	: out	std_logic;
-		\d_i_output\	: out	std_logic_vector(15 downto 0);
-		\d_i_step\	: out	std_logic;
-		\d_i_step_delay_op_25____________a_delayed\	: out	std_logic_vector(0 downto 0);
-		\d_i_step_delay_op_25___________a_delayed\	: out	std_logic_vector(0 downto 0);
-		\d_i_step_delay_op_25__________a_delayed\	: out	std_logic_vector(0 downto 0);
-		\d_i_step_delay_op_25_________a_delayed\	: out	std_logic_vector(0 downto 0);
-		\d_i_step_delay_op_25________a_delayed\	: out	std_logic_vector(0 downto 0);
-		\d_i_step_delay_op_25_______a_delayed\	: out	std_logic_vector(0 downto 0);
-		\d_i_step_delay_op_25______a_delayed\	: out	std_logic_vector(0 downto 0);
-		\d_i_step_delay_op_25_____a_delayed\	: out	std_logic_vector(0 downto 0);
-		\d_i_step_delay_op_25____a_delayed\	: out	std_logic_vector(0 downto 0);
-		\d_i_step_delay_op_25___a_delayed\	: out	std_logic_vector(0 downto 0);
-		\d_i_step_delay_op_25__a_delayed\	: out	std_logic_vector(0 downto 0);
-		\d_i_step_delay_op_25_a_delayed\	: out	std_logic_vector(0 downto 0);
-		\d_input_data_out\	: out	std_logic_vector(15 downto 0);
-		\d_output_data_out\	: out	std_logic_vector(15 downto 0);
 		\done\	: out	std_logic;
 		\init\	: in	std_logic;
 		\reset\	: in	std_logic;
@@ -310,159 +189,184 @@ port (
 );
 end component;
 
+signal s174	: std_logic_vector(0 downto 0);
 signal s0	: std_logic_vector(15 downto 0);
-signal s466	: std_logic_vector(0 downto 0);
-signal s462	: std_logic_vector(15 downto 0);
-signal s411	: std_logic_vector(15 downto 0);
-signal s407	: std_logic_vector(0 downto 0);
-signal s441	: std_logic_vector(15 downto 0);
-signal s445	: std_logic_vector(15 downto 0);
-signal s386	: std_logic_vector(15 downto 0);
-signal s390	: std_logic_vector(15 downto 0);
-signal s394	: std_logic_vector(15 downto 0);
-signal s479	: std_logic_vector(15 downto 0);
-signal s424	: std_logic_vector(0 downto 0);
-signal s369	: std_logic_vector(15 downto 0);
-signal s428	: std_logic_vector(0 downto 0);
-signal s373	: std_logic_vector(0 downto 0);
-signal s458	: std_logic_vector(15 downto 0);
-signal s403	: std_logic_vector(0 downto 0);
-signal s399	: std_logic_vector(0 downto 0);
-signal s111	: std_logic_vector(15 downto 0);
-signal s433	: std_logic_vector(15 downto 0);
-signal s378	: std_logic_vector(15 downto 0);
-signal s437	: std_logic_vector(0 downto 0);
-signal s1	: std_logic_vector(15 downto 0);
-signal s382	: std_logic_vector(0 downto 0);
-signal s467	: std_logic_vector(15 downto 0);
-signal s475	: std_logic_vector(0 downto 0);
-signal s471	: std_logic_vector(0 downto 0);
-signal s128	: std_logic_vector(15 downto 0);
-signal s420	: std_logic_vector(15 downto 0);
-signal s416	: std_logic_vector(15 downto 0);
-signal s450	: std_logic_vector(15 downto 0);
-signal s365	: std_logic_vector(15 downto 0);
-signal s454	: std_logic_vector(15 downto 0);
-signal s395	: std_logic_vector(15 downto 0);
-signal s429	: std_logic_vector(0 downto 0);
-signal s425	: std_logic_vector(0 downto 0);
-signal s480	: std_logic_vector(15 downto 0);
-signal s404	: std_logic_vector(15 downto 0);
-signal s463	: std_logic_vector(0 downto 0);
-signal s459	: std_logic_vector(15 downto 0);
-signal s374	: std_logic_vector(15 downto 0);
-signal s370	: std_logic_vector(15 downto 0);
-signal s442	: std_logic_vector(15 downto 0);
-signal s412	: std_logic_vector(15 downto 0);
-signal s408	: std_logic_vector(0 downto 0);
-signal s179	: std_logic;
-signal s476	: std_logic_vector(15 downto 0);
-signal s391	: std_logic_vector(15 downto 0);
-signal s387	: std_logic;
-signal s446	: std_logic_vector(15 downto 0);
-signal s366	: std_logic_vector(0 downto 0);
-signal s362	: std_logic_vector(15 downto 0);
-signal s451	: std_logic_vector(15 downto 0);
-signal s421	: std_logic_vector(0 downto 0);
-signal s417	: std_logic_vector(15 downto 0);
-signal s400	: std_logic_vector(0 downto 0);
-signal s396	: std_logic_vector(15 downto 0);
-signal s455	: std_logic_vector(0 downto 0);
-signal s438	: std_logic_vector(15 downto 0);
-signal s434	: std_logic_vector(15 downto 0);
-signal s472	: std_logic_vector(15 downto 0);
-signal s413	: std_logic_vector(0 downto 0);
-signal s468	: std_logic_vector(15 downto 0);
-signal s383	: std_logic_vector(15 downto 0);
-signal s379	: std_logic_vector(15 downto 0);
-signal s477	: std_logic_vector(0 downto 0);
-signal s392	: std_logic_vector(15 downto 0);
-signal s388	: std_logic_vector(15 downto 0);
-signal s422	: std_logic_vector(15 downto 0);
-signal s481	: std_logic_vector(15 downto 0);
-signal s443	: std_logic_vector(15 downto 0);
-signal s447	: std_logic_vector(0 downto 0);
-signal s464	: std_logic_vector(0 downto 0);
-signal s405	: std_logic_vector(15 downto 0);
+signal s100	: std_logic_vector(15 downto 0);
+signal s11	: std_logic_vector(15 downto 0);
+signal s89	: std_logic_vector(15 downto 0);
+signal s15	: std_logic_vector(15 downto 0);
+signal s85	: std_logic_vector(15 downto 0);
+signal s119	: std_logic_vector(0 downto 0);
+signal s104	: std_logic_vector(15 downto 0);
+signal s178	: std_logic_vector(0 downto 0);
+signal s34	: std_logic_vector(15 downto 0);
+signal s64	: std_logic_vector(0 downto 0);
+signal s123	: std_logic_vector(15 downto 0);
+signal s121	: std_logic_vector(15 downto 0);
+signal s9	: std_logic_vector(15 downto 0);
+signal s66	: std_logic_vector(15 downto 0);
+signal s13	: std_logic_vector(15 downto 0);
+signal s17	: std_logic_vector(15 downto 0);
+signal s172	: std_logic_vector(0 downto 0);
+signal s87	: std_logic_vector(15 downto 0);
+signal s28	: std_logic_vector(15 downto 0);
+signal s102	: std_logic_vector(15 downto 0);
 signal s117	: std_logic_vector(15 downto 0);
-signal s409	: std_logic_vector(15 downto 0);
-signal s426	: std_logic_vector(15 downto 0);
-signal s430	: std_logic_vector(15 downto 0);
-signal s371	: std_logic_vector(0 downto 0);
-signal s375	: std_logic_vector(0 downto 0);
-signal s460	: std_logic_vector(15 downto 0);
-signal s473	: std_logic_vector(0 downto 0);
-signal s414	: std_logic_vector(0 downto 0);
-signal s418	: std_logic_vector(0 downto 0);
-signal s435	: std_logic_vector(15 downto 0);
-signal s439	: std_logic_vector(0 downto 0);
-signal s380	: std_logic_vector(15 downto 0);
-signal s384	: std_logic_vector(15 downto 0);
-signal s469	: std_logic_vector(15 downto 0);
-signal s401	: std_logic_vector(0 downto 0);
-signal s397	: std_logic_vector(0 downto 0);
-signal s431	: std_logic_vector(15 downto 0);
-signal s452	: std_logic_vector(15 downto 0);
-signal s367	: std_logic_vector(15 downto 0);
-signal s363	: std_logic_vector(15 downto 0);
-signal s456	: std_logic_vector(0 downto 0);
-signal s440	: std_logic_vector(15 downto 0);
-signal s410	: std_logic_vector(15 downto 0);
-signal s465	: std_logic_vector(15 downto 0);
-signal s406	: std_logic_vector(15 downto 0);
-signal s461	: std_logic_vector(0 downto 0);
-signal s376	: std_logic_vector(0 downto 0);
-signal s372	: std_logic_vector(0 downto 0);
-signal s427	: std_logic_vector(15 downto 0);
-signal s368	: std_logic_vector(15 downto 0);
-signal s423	: std_logic_vector(15 downto 0);
-signal s482	: std_logic_vector(15 downto 0);
-signal s389	: std_logic_vector(15 downto 0);
-signal s393	: std_logic_vector(15 downto 0);
-signal s478	: std_logic_vector(15 downto 0);
-signal s444	: std_logic_vector(15 downto 0);
-signal s448	: std_logic_vector(0 downto 0);
-signal s377	: std_logic_vector(15 downto 0);
-signal s436	: std_logic_vector(15 downto 0);
-signal s432	: std_logic_vector(15 downto 0);
-signal s398	: std_logic_vector(15 downto 0);
-signal s402	: std_logic_vector(15 downto 0);
-signal s453	: std_logic_vector(15 downto 0);
-signal s457	: std_logic_vector(15 downto 0);
-signal s449	: std_logic_vector(0 downto 0);
-signal s364	: std_logic_vector(15 downto 0);
-signal s419	: std_logic_vector(15 downto 0);
+signal s32	: std_logic_vector(15 downto 0);
+signal s176	: std_logic_vector(0 downto 0);
+signal s106	: std_logic_vector(15 downto 0);
+signal s51	: std_logic_vector(15 downto 0);
+signal s47	: std_logic_vector(0 downto 0);
+signal s53	: std_logic_vector(15 downto 0);
+signal s136	: std_logic_vector(0 downto 0);
+signal s138	: std_logic_vector(0 downto 0);
+signal s140	: std_logic_vector(0 downto 0);
+signal s142	: std_logic_vector(0 downto 0);
+signal s81	: std_logic_vector(15 downto 0);
+signal s83	: std_logic_vector(15 downto 0);
+signal s22	: std_logic_vector(15 downto 0);
+signal s96	: std_logic_vector(15 downto 0);
+signal s181	: std_logic_vector(0 downto 0);
+signal s170	: std_logic_vector(0 downto 0);
+signal s111	: std_logic_vector(15 downto 0);
+signal s126	: std_logic_vector(15 downto 0);
+signal s115	: std_logic_vector(15 downto 0);
+signal s60	: std_logic_vector(0 downto 0);
+signal s56	: std_logic_vector(15 downto 0);
+signal s7	: std_logic_vector(15 downto 0);
+signal s3	: std_logic_vector(15 downto 0);
+signal s1	: std_logic_vector(15 downto 0);
+signal s90	: std_logic_vector(15 downto 0);
+signal s92	: std_logic_vector(15 downto 0);
+signal s168	: std_logic_vector(0 downto 0);
+signal s109	: std_logic_vector(15 downto 0);
+signal s98	: std_logic_vector(15 downto 0);
+signal s20	: std_logic_vector(15 downto 0);
+signal s94	: std_logic_vector(15 downto 0);
+signal s128	: std_logic_vector(15 downto 0);
+signal s113	: std_logic_vector(0 downto 0);
+signal s54	: std_logic_vector(0 downto 0);
+signal s39	: std_logic_vector(0 downto 0);
+signal s132	: std_logic_vector(15 downto 0);
+signal s130	: std_logic_vector(15 downto 0);
+signal s134	: std_logic_vector(15 downto 0);
+signal s18	: std_logic_vector(15 downto 0);
+signal s164	: std_logic_vector(0 downto 0);
+signal s162	: std_logic_vector(0 downto 0);
+signal s77	: std_logic_vector(15 downto 0);
+signal s75	: std_logic_vector(0 downto 0);
+signal s166	: std_logic_vector(0 downto 0);
+signal s79	: std_logic_vector(15 downto 0);
+signal s63	: std_logic_vector(15 downto 0);
+signal s122	: std_logic_vector(15 downto 0);
+signal s177	: std_logic;
+signal s107	: std_logic_vector(15 downto 0);
+signal s29	: std_logic_vector(0 downto 0);
+signal s103	: std_logic_vector(15 downto 0);
+signal s86	: std_logic_vector(15 downto 0);
+signal s84	: std_logic_vector(15 downto 0);
+signal s88	: std_logic_vector(15 downto 0);
+signal s82	: std_logic_vector(15 downto 0);
+signal s120	: std_logic_vector(15 downto 0);
+signal s50	: std_logic_vector(0 downto 0);
+signal s124	: std_logic_vector(15 downto 0);
+signal s31	: std_logic_vector(15 downto 0);
+signal s35	: std_logic_vector(0 downto 0);
+signal s105	: std_logic_vector(15 downto 0);
+signal s179	: std_logic;
+signal s46	: std_logic_vector(15 downto 0);
+signal s10	: std_logic_vector(15 downto 0);
+signal s12	: std_logic_vector(15 downto 0);
+signal s158	: std_logic_vector(0 downto 0);
+signal s160	: std_logic_vector(0 downto 0);
+signal s101	: std_logic_vector(15 downto 0);
+signal s99	: std_logic_vector(15 downto 0);
+signal s71	: std_logic_vector(15 downto 0);
+signal s67	: std_logic_vector(0 downto 0);
+signal s156	: std_logic_vector(0 downto 0);
+signal s154	: std_logic_vector(0 downto 0);
+signal s69	: std_logic_vector(15 downto 0);
+signal s144	: std_logic_vector(0 downto 0);
+signal s59	: std_logic_vector(15 downto 0);
+signal s133	: std_logic_vector(15 downto 0);
+signal s44	: std_logic_vector(15 downto 0);
+signal s129	: std_logic_vector(0 downto 0);
+signal s114	: std_logic_vector(15 downto 0);
+signal s19	: std_logic_vector(15 downto 0);
+signal s21	: std_logic_vector(15 downto 0);
+signal s108	: std_logic_vector(15 downto 0);
+signal s23	: std_logic_vector(15 downto 0);
+signal s76	: std_logic_vector(15 downto 0);
+signal s74	: std_logic_vector(15 downto 0);
+signal s80	: std_logic_vector(15 downto 0);
+signal s78	: std_logic_vector(15 downto 0);
+signal s146	: std_logic_vector(0 downto 0);
+signal s72	: std_logic_vector(0 downto 0);
+signal s61	: std_logic_vector(15 downto 0);
+signal s57	: std_logic_vector(15 downto 0);
 signal s127	: std_logic_vector(15 downto 0);
-signal s474	: std_logic_vector(15 downto 0);
-signal s415	: std_logic_vector(15 downto 0);
-signal s470	: std_logic_vector(0 downto 0);
-signal s385	: std_logic;
-signal s381	: std_logic_vector(15 downto 0);
+signal s38	: std_logic_vector(15 downto 0);
+signal s42	: std_logic_vector(0 downto 0);
+signal s180	: std_logic;
+signal s95	: std_logic_vector(15 downto 0);
+signal s93	: std_logic_vector(15 downto 0);
+signal s97	: std_logic_vector(15 downto 0);
+signal s152	: std_logic_vector(0 downto 0);
+signal s91	: std_logic_vector(15 downto 0);
+signal s150	: std_logic_vector(0 downto 0);
+signal s148	: std_logic_vector(0 downto 0);
+signal s8	: std_logic_vector(15 downto 0);
 
 begin
 
-	\i02vi12v_add_op_s_i22v_delay_op_1\: delay_op
+	\V\: reg_op
 	generic map (
-		bits => 16,
-		delay => 1
+		initial => 0,
+		w_in => 16
 	)
 	port map (
-		a => s435,
-		a_delayed => s363,
+		I0 => s109,
+		O0 => s121,
 		clk => \clk\,
-		reset => \reset\
+		reset => \reset\,
+		we => s172(0)
 	);
 
-	\i20hi21h_add_op_s_i22h_delay_op_1\: delay_op
+	\i02vi12v_add_op_s_i22v_delay_op_1\: add_op_s
 	generic map (
-		bits => 16,
-		delay => 1
+		w_in1 => 16,
+		w_in2 => 16,
+		w_out => 16
 	)
 	port map (
-		a => s434,
-		a_delayed => s365,
+		I0 => s101,
+		I1 => s102,
+		O0 => s103
+	);
+
+	\H\: reg_op
+	generic map (
+		initial => 0,
+		w_in => 16
+	)
+	port map (
+		I0 => s106,
+		O0 => s115,
 		clk => \clk\,
-		reset => \reset\
+		reset => \reset\,
+		we => s170(0)
+	);
+
+	\i20hi21h_add_op_s_i22h_delay_op_1\: add_op_s
+	generic map (
+		w_in1 => 16,
+		w_in2 => 16,
+		w_out => 16
+	)
+	port map (
+		I0 => s93,
+		I1 => s94,
+		O0 => s95
 	);
 
 	\c119\: delay_op
@@ -471,10 +375,23 @@ begin
 		delay => 26
 	)
 	port map (
-		a(0) => s387,
-		a_delayed => s366,
+		a(0) => s177,
+		a_delayed => s160,
 		clk => \clk\,
 		reset => \reset\
+	);
+
+	\i20hi21hi22h\: reg_op
+	generic map (
+		initial => 0,
+		w_in => 16
+	)
+	port map (
+		I0 => s95,
+		O0 => s105,
+		clk => \clk\,
+		reset => \reset\,
+		we => s164(0)
 	);
 
 	\output\: block_ram
@@ -483,11 +400,11 @@ begin
 		data_width => 16
 	)
 	port map (
-		address(6 downto 0) => s384(6 downto 0),
+		address(6 downto 0) => s134(6 downto 0),
 		clk => \clk\,
-		data_in => s379,
-		data_out => s368,
-		we => s429(0)
+		data_in => s130,
+		data_out => s132,
+		we => s136(0)
 	);
 
 	\i08\: reg_op
@@ -496,8 +413,8 @@ begin
 		w_in => 16
 	)
 	port map (
-		I0 => s431,
-		O0 => s369,
+		I0 => s17,
+		O0 => s18,
 		clk => \clk\,
 		reset => \reset\
 	);
@@ -509,9 +426,9 @@ begin
 		w_out => 16
 	)
 	port map (
-		I0 => s481,
-		I1 => s481,
-		O0 => s370
+		I0 => s44,
+		I1 => s44,
+		O0 => s46
 	);
 
 	\c123\: delay_op
@@ -520,8 +437,32 @@ begin
 		delay => 27
 	)
 	port map (
-		a(0) => s387,
-		a_delayed => s371,
+		a(0) => s177,
+		a_delayed => s168,
+		clk => \clk\,
+		reset => \reset\
+	);
+
+	\c121\: delay_op
+	generic map (
+		bits => 1,
+		delay => 27
+	)
+	port map (
+		a(0) => s177,
+		a_delayed => s164,
+		clk => \clk\,
+		reset => \reset\
+	);
+
+	\c125\: delay_op
+	generic map (
+		bits => 1,
+		delay => 28
+	)
+	port map (
+		a(0) => s177,
+		a_delayed => s172,
 		clk => \clk\,
 		reset => \reset\
 	);
@@ -532,11 +473,11 @@ begin
 		w_in => 16
 	)
 	port map (
-		I0 => s392,
-		O0 => s374,
+		I0 => s91,
+		O0 => s104,
 		clk => \clk\,
 		reset => \reset\,
-		we => s437(0)
+		we => s162(0)
 	);
 
 	\i_step_delay_op_25______\: delay_op
@@ -545,10 +486,32 @@ begin
 		delay => 25
 	)
 	port map (
-		a(0) => s387,
-		a_delayed => s375,
+		a(0) => s177,
+		a_delayed => s54,
 		clk => \clk\,
 		reset => \reset\
+	);
+
+	\i_step_delay_op_25_____\: delay_op
+	generic map (
+		bits => 1,
+		delay => 25
+	)
+	port map (
+		a(0) => s177,
+		a_delayed => s50,
+		clk => \clk\,
+		reset => \reset\
+	);
+
+	\i10_add_op_s_i10_neg_op_s\: neg_op_s
+	generic map (
+		w_in => 16,
+		w_out => 16
+	)
+	port map (
+		I0 => s57,
+		O0 => s59
 	);
 
 	\O\: reg_op
@@ -557,11 +520,11 @@ begin
 		w_in => 16
 	)
 	port map (
-		I0 => s409,
-		O0 => s378,
+		I0 => s124,
+		O0 => s126,
 		clk => \clk\,
 		reset => \reset\,
-		we => s413(0)
+		we => s178(0)
 	);
 
 	\Otrunk\: mux_m_op
@@ -571,20 +534,70 @@ begin
 		w_in => 16
 	)
 	port map (
-		I0(31 downto 16) => s378(15 downto 0),
+		I0(31 downto 16) => s126(15 downto 0),
 		I0(15 downto 0) => s128(15 downto 0),
-		O0 => s379,
-		Sel(0 downto 0) => s447(0 downto 0)
+		O0 => s130,
+		Sel(0 downto 0) => s129(0 downto 0)
+	);
+
+	\i00vi10v_add_op_s_i20v_delay_op_1\: add_op_s
+	generic map (
+		w_in1 => 16,
+		w_in2 => 16,
+		w_out => 16
+	)
+	port map (
+		I0 => s97,
+		I1 => s98,
+		O0 => s99
+	);
+
+	\i20v\: reg_op
+	generic map (
+		initial => 0,
+		w_in => 16
+	)
+	port map (
+		I0 => s63,
+		O0 => s96,
+		clk => \clk\,
+		reset => \reset\,
+		we => s64(0)
+	);
+
+	\c117\: delay_op
+	generic map (
+		bits => 1,
+		delay => 26
+	)
+	port map (
+		a(0) => s177,
+		a_delayed => s156,
+		clk => \clk\,
+		reset => \reset\
+	);
+
+	\i20h\: reg_op
+	generic map (
+		initial => 0,
+		w_in => 16
+	)
+	port map (
+		I0 => s61,
+		O0 => s82,
+		clk => \clk\,
+		reset => \reset\,
+		we => s42(0)
 	);
 
 	\c106\: delay_op
 	generic map (
 		bits => 16,
-		delay => 28
+		delay => 31
 	)
 	port map (
-		a => s386,
-		a_delayed => s384,
+		a => s133,
+		a_delayed => s134,
 		clk => \clk\,
 		reset => \reset\
 	);
@@ -600,12 +613,25 @@ begin
 	port map (
 		clk => \clk\,
 		clk_en => s179,
-		done => s385,
+		done => s180,
 		input => s0,
-		output => s386,
+		output => s133,
 		reset => \reset\,
-		step => s387,
+		step => s177,
 		termination => s1
+	);
+
+	\i20hi21h\: reg_op
+	generic map (
+		initial => 0,
+		w_in => 16
+	)
+	port map (
+		I0 => s84,
+		O0 => s93,
+		clk => \clk\,
+		reset => \reset\,
+		we => s158(0)
 	);
 
 	\i02vi12vi22v\: reg_op
@@ -614,11 +640,24 @@ begin
 		w_in => 16
 	)
 	port map (
-		I0 => s363,
-		O0 => s390,
+		I0 => s103,
+		O0 => s108,
 		clk => \clk\,
 		reset => \reset\,
-		we => s371(0)
+		we => s168(0)
+	);
+
+	\i00vi10vi20v\: reg_op
+	generic map (
+		initial => 0,
+		w_in => 16
+	)
+	port map (
+		I0 => s99,
+		O0 => s107,
+		clk => \clk\,
+		reset => \reset\,
+		we => s166(0)
 	);
 
 	\i02v_add_op_s_i12v\: add_op_s
@@ -628,9 +667,21 @@ begin
 		w_out => 16
 	)
 	port map (
-		I0 => s415,
-		I1 => s438,
-		O0 => s391
+		I0 => s85,
+		I1 => s86,
+		O0 => s87
+	);
+
+	\i00hi01h_add_op_s_i02h_delay_op_1\: add_op_s
+	generic map (
+		w_in1 => 16,
+		w_in2 => 16,
+		w_out => 16
+	)
+	port map (
+		I0 => s89,
+		I1 => s90,
+		O0 => s91
 	);
 
 	\i14\: reg_op
@@ -639,8 +690,8 @@ begin
 		w_in => 16
 	)
 	port map (
-		I0 => s460,
-		O0 => s393,
+		I0 => s11,
+		O0 => s12,
 		clk => \clk\,
 		reset => \reset\
 	);
@@ -651,719 +702,8 @@ begin
 		w_in => 16
 	)
 	port map (
-		I0 => s459,
-		O0 => s394,
-		clk => \clk\,
-		reset => \reset\
-	);
-
-	\c111\: delay_op
-	generic map (
-		bits => 1,
-		delay => 4
-	)
-	port map (
-		a(0) => s387,
-		a_delayed => s397,
-		clk => \clk\,
-		reset => \reset\
-	);
-
-	\c115\: delay_op
-	generic map (
-		bits => 1,
-		delay => 4
-	)
-	port map (
-		a(0) => s387,
-		a_delayed => s400,
-		clk => \clk\,
-		reset => \reset\
-	);
-
-	\i_step_delay_op_25_\: delay_op
-	generic map (
-		bits => 1,
-		delay => 25
-	)
-	port map (
-		a(0) => s387,
-		a_delayed => s401,
-		clk => \clk\,
-		reset => \reset\
-	);
-
-	\i00_neg_op_s\: neg_op_s
-	generic map (
-		w_in => 16,
-		w_out => 16
-	)
-	port map (
-		I0 => s416,
-		O0 => s404
-	);
-
-	\i00hi01hi02h_add_op_s_i20hi21hi22h\: add_op_s
-	generic map (
-		w_in1 => 16,
-		w_in2 => 16,
-		w_out => 16
-	)
-	port map (
-		I0 => s374,
-		I1 => s367,
-		O0 => s406
-	);
-
-	\Hpos_add_op_s_Vpos\: add_op_s
-	generic map (
-		w_in1 => 16,
-		w_in2 => 16,
-		w_out => 16
-	)
-	port map (
-		I0 => s411,
-		I1 => s479,
-		O0 => s409
-	);
-
-	\Hpos\: reg_mux_op
-	generic map (
-		initial => 0,
-		w_in => 16
-	)
-	port map (
-		I0 => s364,
-		I1 => s478,
-		O0 => s411,
-		Sel1 => s407,
-		clk => \clk\,
-		reset => \reset\,
-		we => s399(0)
-	);
-
-	\c128\: delay_op
-	generic map (
-		bits => 1,
-		delay => 27
-	)
-	port map (
-		a(0) => s387,
-		a_delayed => s413,
-		clk => \clk\,
-		reset => \reset\
-	);
-
-	\i00\: reg_op
-	generic map (
-		initial => 0,
-		w_in => 16
-	)
-	port map (
-		I0 => s474,
-		O0 => s416,
-		clk => \clk\,
-		reset => \reset\
-	);
-
-	\i00v\: reg_op
-	generic map (
-		initial => 0,
-		w_in => 16
-	)
-	port map (
-		I0 => s450,
-		O0 => s417,
-		clk => \clk\,
-		reset => \reset\,
-		we => s375(0)
-	);
-
-	\i_step_delay_op_25________\: delay_op
-	generic map (
-		bits => 1,
-		delay => 25
-	)
-	port map (
-		a(0) => s387,
-		a_delayed => s418,
-		clk => \clk\,
-		reset => \reset\
-	);
-
-	\i18\: reg_op
-	generic map (
-		initial => 0,
-		w_in => 16
-	)
-	port map (
-		I0 => s445,
-		O0 => s420,
-		clk => \clk\,
-		reset => \reset\
-	);
-
-	\i_step_delay_op_25___________\: delay_op
-	generic map (
-		bits => 1,
-		delay => 25
-	)
-	port map (
-		a(0) => s387,
-		a_delayed => s421,
-		clk => \clk\,
-		reset => \reset\
-	);
-
-	\i22h\: reg_op
-	generic map (
-		initial => 0,
-		w_in => 16
-	)
-	port map (
-		I0 => s457,
-		O0 => s426,
-		clk => \clk\,
-		reset => \reset\,
-		we => s376(0)
-	);
-
-	\i00h\: reg_op
-	generic map (
-		initial => 0,
-		w_in => 16
-	)
-	port map (
-		I0 => s404,
-		O0 => s427,
-		clk => \clk\,
-		reset => \reset\,
-		we => s470(0)
-	);
-
-	\c107\: delay_op
-	generic map (
-		bits => 1,
-		delay => 28
-	)
-	port map (
-		a(0) => s387,
-		a_delayed => s429,
-		clk => \clk\,
-		reset => \reset\
-	);
-
-	\i10\: reg_op
-	generic map (
-		initial => 0,
-		w_in => 16
-	)
-	port map (
-		I0 => s394,
-		O0 => s432,
-		clk => \clk\,
-		reset => \reset\,
-		we => s475(0)
-	);
-
-	\i00vi10v_add_op_s_i20v\: add_op_s
-	generic map (
-		w_in1 => 16,
-		w_in2 => 16,
-		w_out => 16
-	)
-	port map (
-		I0 => s412,
-		I1 => s381,
-		O0 => s433
-	);
-
-	\i00hi01h_add_op_s_i02h\: add_op_s
-	generic map (
-		w_in1 => 16,
-		w_in2 => 16,
-		w_out => 16
-	)
-	port map (
-		I0 => s444,
-		I1 => s446,
-		O0 => s436
-	);
-
-	\c120\: delay_op
-	generic map (
-		bits => 1,
-		delay => 26
-	)
-	port map (
-		a(0) => s387,
-		a_delayed => s437,
-		clk => \clk\,
-		reset => \reset\
-	);
-
-	\c124\: delay_op
-	generic map (
-		bits => 1,
-		delay => 28
-	)
-	port map (
-		a(0) => s387,
-		a_delayed => s439,
-		clk => \clk\,
-		reset => \reset\
-	);
-
-	\i10v\: reg_op
-	generic map (
-		initial => 0,
-		w_in => 16
-	)
-	port map (
-		I0 => s377,
-		O0 => s440,
-		clk => \clk\,
-		reset => \reset\,
-		we => s449(0)
-	);
-
-	\i07\: reg_op
-	generic map (
-		initial => 0,
-		w_in => 16
-	)
-	port map (
-		I0 => s369,
-		O0 => s441,
-		clk => \clk\,
-		reset => \reset\
-	);
-
-	\i21h\: reg_op
-	generic map (
-		initial => 0,
-		w_in => 16
-	)
-	port map (
-		I0 => s370,
-		O0 => s443,
-		clk => \clk\,
-		reset => \reset\,
-		we => s448(0)
-	);
-
-	\i00hi01h\: reg_op
-	generic map (
-		initial => 0,
-		w_in => 16
-	)
-	port map (
-		I0 => s467,
-		O0 => s444,
-		clk => \clk\,
-		reset => \reset\,
-		we => s473(0)
-	);
-
-	\O_if_gt_op_s_255\: if_gt_op_s
-	generic map (
-		w_in1 => 16,
-		w_in2 => 16,
-		w_out => 1
-	)
-	port map (
-		I0 => s378,
-		I1 => s127,
-		O0 => s447
-	);
-
-	\i_step_delay_op_25____\: delay_op
-	generic map (
-		bits => 1,
-		delay => 25
-	)
-	port map (
-		a(0) => s387,
-		a_delayed => s448,
-		clk => \clk\,
-		reset => \reset\
-	);
-
-	\i10_add_op_s_i10\: add_op_s
-	generic map (
-		w_in1 => 16,
-		w_in2 => 16,
-		w_out => 16
-	)
-	port map (
-		I0 => s432,
-		I1 => s432,
-		O0 => s451
-	);
-
-	\i03\: reg_op
-	generic map (
-		initial => 0,
-		w_in => 16
-	)
-	port map (
-		I0 => s472,
-		O0 => s453,
-		clk => \clk\,
-		reset => \reset\
-	);
-
-	\i02vi12v\: reg_op
-	generic map (
-		initial => 0,
-		w_in => 16
-	)
-	port map (
-		I0 => s391,
-		O0 => s454,
-		clk => \clk\,
-		reset => \reset\,
-		we => s366(0)
-	);
-
-	\c129\: delay_op
-	generic map (
-		bits => 1,
-		delay => 29
-	)
-	port map (
-		a(0) => s385,
-		a_delayed => s455,
-		clk => \clk\,
-		reset => \reset\
-	);
-
-	\i17\: reg_op
-	generic map (
-		initial => 0,
-		w_in => 16
-	)
-	port map (
-		I0 => s420,
-		O0 => s458,
-		clk => \clk\,
-		reset => \reset\
-	);
-
-	\i13\: reg_op
-	generic map (
-		initial => 0,
-		w_in => 16
-	)
-	port map (
-		I0 => s393,
-		O0 => s462,
-		clk => \clk\,
-		reset => \reset\,
-		we => s397(0)
-	);
-
-	\c108\: delay_op
-	generic map (
-		bits => 1,
-		delay => 3
-	)
-	port map (
-		a(0) => s387,
-		a_delayed => s463,
-		clk => \clk\,
-		reset => \reset\
-	);
-
-	\i_step_delay_op_25_________\: delay_op
-	generic map (
-		bits => 1,
-		delay => 25
-	)
-	port map (
-		a(0) => s387,
-		a_delayed => s466,
-		clk => \clk\,
-		reset => \reset\
-	);
-
-	\i00h_add_op_s_i01h\: add_op_s
-	generic map (
-		w_in1 => 16,
-		w_in2 => 16,
-		w_out => 16
-	)
-	port map (
-		I0 => s427,
-		I1 => s430,
-		O0 => s467
-	);
-
-	\i02_neg_op_s\: neg_op_s
-	generic map (
-		w_in => 16,
-		w_out => 16
-	)
-	port map (
-		I0 => s398,
-		O0 => s469
-	);
-
-	\i_step_delay_op_25\: delay_op
-	generic map (
-		bits => 1,
-		delay => 25
-	)
-	port map (
-		a(0) => s387,
-		a_delayed => s470,
-		clk => \clk\,
-		reset => \reset\
-	);
-
-	\c116\: delay_op
-	generic map (
-		bits => 1,
-		delay => 26
-	)
-	port map (
-		a(0) => s387,
-		a_delayed => s473,
-		clk => \clk\,
-		reset => \reset\
-	);
-
-	\c112\: delay_op
-	generic map (
-		bits => 1,
-		delay => 2
-	)
-	port map (
-		a(0) => s387,
-		a_delayed => s475,
-		clk => \clk\,
-		reset => \reset\
-	);
-
-	\i06\: reg_op
-	generic map (
-		initial => 0,
-		w_in => 16
-	)
-	port map (
-		I0 => s441,
-		O0 => s476,
-		clk => \clk\,
-		reset => \reset\,
-		we => s414(0)
-	);
-
-	\V_if_lt_op_s_0\: if_lt_op_s
-	generic map (
-		w_in1 => 16,
-		w_in2 => 16,
-		w_out => 1
-	)
-	port map (
-		I0 => s362,
-		I1 => s117,
-		O0 => s477
-	);
-
-	\i00vi10vi20v_add_op_s_i02vi12vi22v\: add_op_s
-	generic map (
-		w_in1 => 16,
-		w_in2 => 16,
-		w_out => 16
-	)
-	port map (
-		I0 => s389,
-		I1 => s390,
-		O0 => s480
-	);
-
-	\i21\: reg_op
-	generic map (
-		initial => 0,
-		w_in => 16
-	)
-	port map (
-		I0 => s457,
-		O0 => s481,
-		clk => \clk\,
-		reset => \reset\,
-		we => s463(0)
-	);
-
-	\V\: reg_op
-	generic map (
-		initial => 0,
-		w_in => 16
-	)
-	port map (
-		I0 => s480,
-		O0 => s362,
-		clk => \clk\,
-		reset => \reset\,
-		we => s373(0)
-	);
-
-	\H\: reg_op
-	generic map (
-		initial => 0,
-		w_in => 16
-	)
-	port map (
-		I0 => s406,
-		O0 => s364,
-		clk => \clk\,
-		reset => \reset\,
-		we => s439(0)
-	);
-
-	\i20hi21hi22h\: reg_op
-	generic map (
-		initial => 0,
-		w_in => 16
-	)
-	port map (
-		I0 => s365,
-		O0 => s367,
-		clk => \clk\,
-		reset => \reset\,
-		we => s372(0)
-	);
-
-	\c121\: delay_op
-	generic map (
-		bits => 1,
-		delay => 28
-	)
-	port map (
-		a(0) => s387,
-		a_delayed => s372,
-		clk => \clk\,
-		reset => \reset\
-	);
-
-	\c125\: delay_op
-	generic map (
-		bits => 1,
-		delay => 28
-	)
-	port map (
-		a(0) => s387,
-		a_delayed => s373,
-		clk => \clk\,
-		reset => \reset\
-	);
-
-	\i_step_delay_op_25_____\: delay_op
-	generic map (
-		bits => 1,
-		delay => 25
-	)
-	port map (
-		a(0) => s387,
-		a_delayed => s376,
-		clk => \clk\,
-		reset => \reset\
-	);
-
-	\i10_add_op_s_i10_neg_op_s\: neg_op_s
-	generic map (
-		w_in => 16,
-		w_out => 16
-	)
-	port map (
-		I0 => s451,
-		O0 => s377
-	);
-
-	\i00vi10v_add_op_s_i20v_delay_op_1\: delay_op
-	generic map (
-		bits => 16,
-		delay => 1
-	)
-	port map (
-		a => s433,
-		a_delayed => s380,
-		clk => \clk\,
-		reset => \reset\
-	);
-
-	\i20v\: reg_op
-	generic map (
-		initial => 0,
-		w_in => 16
-	)
-	port map (
-		I0 => s468,
-		O0 => s381,
-		clk => \clk\,
-		reset => \reset\,
-		we => s418(0)
-	);
-
-	\i20h\: reg_op
-	generic map (
-		initial => 0,
-		w_in => 16
-	)
-	port map (
-		I0 => s405,
-		O0 => s383,
-		clk => \clk\,
-		reset => \reset\,
-		we => s424(0)
-	);
-
-	\c117\: delay_op
-	generic map (
-		bits => 1,
-		delay => 26
-	)
-	port map (
-		a(0) => s387,
-		a_delayed => s382,
-		clk => \clk\,
-		reset => \reset\
-	);
-
-	\i20hi21h\: reg_op
-	generic map (
-		initial => 0,
-		w_in => 16
-	)
-	port map (
-		I0 => s465,
-		O0 => s388,
-		clk => \clk\,
-		reset => \reset\,
-		we => s428(0)
-	);
-
-	\i00vi10vi20v\: reg_op
-	generic map (
-		initial => 0,
-		w_in => 16
-	)
-	port map (
-		I0 => s380,
-		O0 => s389,
-		clk => \clk\,
-		reset => \reset\,
-		we => s425(0)
-	);
-
-	\i00hi01h_add_op_s_i02h_delay_op_1\: delay_op
-	generic map (
-		bits => 16,
-		delay => 1
-	)
-	port map (
-		a => s436,
-		a_delayed => s392,
+		I0 => s69,
+		O0 => s15,
 		clk => \clk\,
 		reset => \reset\
 	);
@@ -1374,8 +714,8 @@ begin
 		w_out => 16
 	)
 	port map (
-		I0 => s362,
-		O0 => s395
+		I0 => s121,
+		O0 => s120
 	);
 
 	\i05\: reg_op
@@ -1384,8 +724,32 @@ begin
 		w_in => 16
 	)
 	port map (
-		I0 => s476,
-		O0 => s396,
+		I0 => s20,
+		O0 => s21,
+		clk => \clk\,
+		reset => \reset\
+	);
+
+	\c111\: delay_op
+	generic map (
+		bits => 1,
+		delay => 11
+	)
+	port map (
+		a(0) => s177,
+		a_delayed => s144,
+		clk => \clk\,
+		reset => \reset\
+	);
+
+	\c126\: delay_op
+	generic map (
+		bits => 1,
+		delay => 29
+	)
+	port map (
+		a(0) => s177,
+		a_delayed => s174,
 		clk => \clk\,
 		reset => \reset\
 	);
@@ -1396,20 +760,32 @@ begin
 		w_in => 16
 	)
 	port map (
-		I0 => s453,
-		O0 => s398,
+		I0 => s23,
+		O0 => s66,
 		clk => \clk\,
 		reset => \reset\
 	);
 
-	\c126\: delay_op
+	\c115\: delay_op
 	generic map (
 		bits => 1,
-		delay => 27
+		delay => 23
 	)
 	port map (
-		a(0) => s387,
-		a_delayed => s399,
+		a(0) => s177,
+		a_delayed => s152,
+		clk => \clk\,
+		reset => \reset\
+	);
+
+	\i_step_delay_op_25_\: delay_op
+	generic map (
+		bits => 1,
+		delay => 25
+	)
+	port map (
+		a(0) => s177,
+		a_delayed => s35,
 		clk => \clk\,
 		reset => \reset\
 	);
@@ -1421,9 +797,19 @@ begin
 		w_out => 16
 	)
 	port map (
-		I0 => s474,
-		I1 => s474,
-		O0 => s402
+		I0 => s31,
+		I1 => s31,
+		O0 => s32
+	);
+
+	\i00_neg_op_s\: neg_op_s
+	generic map (
+		w_in => 16,
+		w_out => 16
+	)
+	port map (
+		I0 => s51,
+		O0 => s28
 	);
 
 	\i_step_delay_op_25__\: delay_op
@@ -1432,8 +818,8 @@ begin
 		delay => 25
 	)
 	port map (
-		a(0) => s387,
-		a_delayed => s403,
+		a(0) => s177,
+		a_delayed => s39,
 		clk => \clk\,
 		reset => \reset\
 	);
@@ -1444,10 +830,22 @@ begin
 		w_in => 16
 	)
 	port map (
-		I0 => s481,
-		O0 => s405,
+		I0 => s44,
+		O0 => s61,
 		clk => \clk\,
 		reset => \reset\
+	);
+
+	\i00hi01hi02h_add_op_s_i20hi21hi22h\: add_op_s
+	generic map (
+		w_in1 => 16,
+		w_in2 => 16,
+		w_out => 16
+	)
+	port map (
+		I0 => s104,
+		I1 => s105,
+		O0 => s106
 	);
 
 	\H_if_lt_op_s_0\: if_lt_op_s
@@ -1457,19 +855,19 @@ begin
 		w_out => 1
 	)
 	port map (
-		I0 => s364,
+		I0 => s115,
 		I1 => s111,
-		O0 => s407
+		O0 => s113
 	);
 
 	\c109\: delay_op
 	generic map (
 		bits => 1,
-		delay => 4
+		delay => 5
 	)
 	port map (
-		a(0) => s387,
-		a_delayed => s408,
+		a(0) => s177,
+		a_delayed => s140,
 		clk => \clk\,
 		reset => \reset\
 	);
@@ -1480,10 +878,22 @@ begin
 		w_in => 16
 	)
 	port map (
-		I0 => s458,
-		O0 => s410,
+		I0 => s9,
+		O0 => s10,
 		clk => \clk\,
 		reset => \reset\
+	);
+
+	\Hpos_add_op_s_Vpos\: add_op_s
+	generic map (
+		w_in1 => 16,
+		w_in2 => 16,
+		w_out => 16
+	)
+	port map (
+		I0 => s122,
+		I1 => s123,
+		O0 => s124
 	);
 
 	\i00vi10v\: reg_op
@@ -1492,21 +902,48 @@ begin
 		w_in => 16
 	)
 	port map (
-		I0 => s423,
-		O0 => s412,
+		I0 => s81,
+		O0 => s97,
 		clk => \clk\,
 		reset => \reset\,
-		we => s382(0)
+		we => s156(0)
+	);
+
+	\Hpos\: reg_mux_op
+	generic map (
+		initial => 0,
+		w_in => 16
+	)
+	port map (
+		I0 => s115,
+		I1 => s114,
+		O0 => s122,
+		Sel1 => s113,
+		clk => \clk\,
+		reset => \reset\,
+		we => s174(0)
+	);
+
+	\c128\: delay_op
+	generic map (
+		bits => 1,
+		delay => 30
+	)
+	port map (
+		a(0) => s177,
+		a_delayed => s178,
+		clk => \clk\,
+		reset => \reset\
 	);
 
 	\c113\: delay_op
 	generic map (
 		bits => 1,
-		delay => 4
+		delay => 18
 	)
 	port map (
-		a(0) => s387,
-		a_delayed => s414,
+		a(0) => s177,
+		a_delayed => s148,
 		clk => \clk\,
 		reset => \reset\
 	);
@@ -1517,21 +954,70 @@ begin
 		w_in => 16
 	)
 	port map (
-		I0 => s398,
-		O0 => s415,
+		I0 => s66,
+		O0 => s85,
 		clk => \clk\,
 		reset => \reset\,
-		we => s466(0)
+		we => s67(0)
 	);
 
-	\c130\: delay_op
+	\i00\: reg_op
 	generic map (
-		bits => 16,
-		delay => 2
+		initial => 0,
+		w_in => 16
 	)
 	port map (
-		a => s398,
-		a_delayed => s419,
+		I0 => s31,
+		O0 => s51,
+		clk => \clk\,
+		reset => \reset\
+	);
+
+	\i00v\: reg_op
+	generic map (
+		initial => 0,
+		w_in => 16
+	)
+	port map (
+		I0 => s53,
+		O0 => s79,
+		clk => \clk\,
+		reset => \reset\,
+		we => s54(0)
+	);
+
+	\i_step_delay_op_25________\: delay_op
+	generic map (
+		bits => 1,
+		delay => 25
+	)
+	port map (
+		a(0) => s177,
+		a_delayed => s64,
+		clk => \clk\,
+		reset => \reset\
+	);
+
+	\i18\: reg_op
+	generic map (
+		initial => 0,
+		w_in => 16
+	)
+	port map (
+		I0 => s7,
+		O0 => s8,
+		clk => \clk\,
+		reset => \reset\
+	);
+
+	\i_step_delay_op_25___________\: delay_op
+	generic map (
+		bits => 1,
+		delay => 25
+	)
+	port map (
+		a(0) => s177,
+		a_delayed => s75,
 		clk => \clk\,
 		reset => \reset\
 	);
@@ -1543,9 +1029,9 @@ begin
 		w_out => 16
 	)
 	port map (
-		I0 => s459,
-		I1 => s459,
-		O0 => s422
+		I0 => s69,
+		I1 => s69,
+		O0 => s71
 	);
 
 	\i00v_add_op_s_i10v\: add_op_s
@@ -1555,9 +1041,9 @@ begin
 		w_out => 16
 	)
 	port map (
-		I0 => s417,
-		I1 => s440,
-		O0 => s423
+		I0 => s79,
+		I1 => s80,
+		O0 => s81
 	);
 
 	\i_step_delay_op_25___\: delay_op
@@ -1566,8 +1052,8 @@ begin
 		delay => 25
 	)
 	port map (
-		a(0) => s387,
-		a_delayed => s424,
+		a(0) => s177,
+		a_delayed => s42,
 		clk => \clk\,
 		reset => \reset\
 	);
@@ -1578,10 +1064,36 @@ begin
 		delay => 27
 	)
 	port map (
-		a(0) => s387,
-		a_delayed => s425,
+		a(0) => s177,
+		a_delayed => s166,
 		clk => \clk\,
 		reset => \reset\
+	);
+
+	\i22h\: reg_op
+	generic map (
+		initial => 0,
+		w_in => 16
+	)
+	port map (
+		I0 => s74,
+		O0 => s92,
+		clk => \clk\,
+		reset => \reset\,
+		we => s50(0)
+	);
+
+	\i00h\: reg_op
+	generic map (
+		initial => 0,
+		w_in => 16
+	)
+	port map (
+		I0 => s28,
+		O0 => s76,
+		clk => \clk\,
+		reset => \reset\,
+		we => s29(0)
 	);
 
 	\c118\: delay_op
@@ -1590,8 +1102,20 @@ begin
 		delay => 26
 	)
 	port map (
-		a(0) => s387,
-		a_delayed => s428,
+		a(0) => s177,
+		a_delayed => s158,
+		clk => \clk\,
+		reset => \reset\
+	);
+
+	\c107\: delay_op
+	generic map (
+		bits => 1,
+		delay => 31
+	)
+	port map (
+		a(0) => s177,
+		a_delayed => s136,
 		clk => \clk\,
 		reset => \reset\
 	);
@@ -1602,11 +1126,11 @@ begin
 		w_in => 16
 	)
 	port map (
-		I0 => s452,
-		O0 => s430,
+		I0 => s34,
+		O0 => s77,
 		clk => \clk\,
 		reset => \reset\,
-		we => s401(0)
+		we => s35(0)
 	);
 
 	\i09\: reg_op
@@ -1615,34 +1139,83 @@ begin
 		w_in => 16
 	)
 	port map (
-		I0 => s432,
-		O0 => s431,
+		I0 => s56,
+		O0 => s17,
 		clk => \clk\,
 		reset => \reset\
 	);
 
-	\i20hi21h_add_op_s_i22h\: add_op_s
+	\i10\: reg_op
 	generic map (
-		w_in1 => 16,
-		w_in2 => 16,
-		w_out => 16
+		initial => 0,
+		w_in => 16
 	)
 	port map (
-		I0 => s388,
-		I1 => s426,
-		O0 => s434
+		I0 => s15,
+		O0 => s56,
+		clk => \clk\,
+		reset => \reset\,
+		we => s146(0)
 	);
 
-	\i02vi12v_add_op_s_i22v\: add_op_s
+	\i20v_delay_op_1\: delay_op
 	generic map (
-		w_in1 => 16,
-		w_in2 => 16,
-		w_out => 16
+		bits => 16,
+		delay => 1
 	)
 	port map (
-		I0 => s454,
-		I1 => s442,
-		O0 => s435
+		a => s96,
+		a_delayed => s98,
+		clk => \clk\,
+		reset => \reset\
+	);
+
+	\i22h_delay_op_1\: delay_op
+	generic map (
+		bits => 16,
+		delay => 1
+	)
+	port map (
+		a => s92,
+		a_delayed => s94,
+		clk => \clk\,
+		reset => \reset\
+	);
+
+	\i22v_delay_op_1\: delay_op
+	generic map (
+		bits => 16,
+		delay => 1
+	)
+	port map (
+		a => s100,
+		a_delayed => s102,
+		clk => \clk\,
+		reset => \reset\
+	);
+
+	\i02h_delay_op_1\: delay_op
+	generic map (
+		bits => 16,
+		delay => 1
+	)
+	port map (
+		a => s88,
+		a_delayed => s90,
+		clk => \clk\,
+		reset => \reset\
+	);
+
+	\c120\: delay_op
+	generic map (
+		bits => 1,
+		delay => 27
+	)
+	port map (
+		a(0) => s177,
+		a_delayed => s162,
+		clk => \clk\,
+		reset => \reset\
 	);
 
 	\i12v\: reg_op
@@ -1651,11 +1224,48 @@ begin
 		w_in => 16
 	)
 	port map (
-		I0 => s422,
-		O0 => s438,
+		I0 => s71,
+		O0 => s86,
 		clk => \clk\,
 		reset => \reset\,
-		we => s464(0)
+		we => s72(0)
+	);
+
+	\c124\: delay_op
+	generic map (
+		bits => 1,
+		delay => 28
+	)
+	port map (
+		a(0) => s177,
+		a_delayed => s170,
+		clk => \clk\,
+		reset => \reset\
+	);
+
+	\i10v\: reg_op
+	generic map (
+		initial => 0,
+		w_in => 16
+	)
+	port map (
+		I0 => s59,
+		O0 => s80,
+		clk => \clk\,
+		reset => \reset\,
+		we => s60(0)
+	);
+
+	\i07\: reg_op
+	generic map (
+		initial => 0,
+		w_in => 16
+	)
+	port map (
+		I0 => s18,
+		O0 => s19,
+		clk => \clk\,
+		reset => \reset\
 	);
 
 	\i22v\: reg_op
@@ -1664,11 +1274,37 @@ begin
 		w_in => 16
 	)
 	port map (
-		I0 => s457,
-		O0 => s442,
+		I0 => s74,
+		O0 => s100,
 		clk => \clk\,
 		reset => \reset\,
-		we => s421(0)
+		we => s75(0)
+	);
+
+	\i21h\: reg_op
+	generic map (
+		initial => 0,
+		w_in => 16
+	)
+	port map (
+		I0 => s46,
+		O0 => s83,
+		clk => \clk\,
+		reset => \reset\,
+		we => s47(0)
+	);
+
+	\i00hi01h\: reg_op
+	generic map (
+		initial => 0,
+		w_in => 16
+	)
+	port map (
+		I0 => s78,
+		O0 => s89,
+		clk => \clk\,
+		reset => \reset\,
+		we => s154(0)
 	);
 
 	\i19\: reg_op
@@ -1677,11 +1313,11 @@ begin
 		w_in => 16
 	)
 	port map (
-		I0 => s405,
-		O0 => s445,
+		I0 => s61,
+		O0 => s7,
 		clk => \clk\,
 		reset => \reset\,
-		we => s408(0)
+		we => s140(0)
 	);
 
 	\i02h\: reg_op
@@ -1690,11 +1326,35 @@ begin
 		w_in => 16
 	)
 	port map (
-		I0 => s469,
-		O0 => s446,
+		I0 => s38,
+		O0 => s88,
 		clk => \clk\,
 		reset => \reset\,
-		we => s403(0)
+		we => s39(0)
+	);
+
+	\O_if_gt_op_s_255\: if_gt_op_s
+	generic map (
+		w_in1 => 16,
+		w_in2 => 16,
+		w_out => 1
+	)
+	port map (
+		I0 => s126,
+		I1 => s127,
+		O0 => s129
+	);
+
+	\i_step_delay_op_25____\: delay_op
+	generic map (
+		bits => 1,
+		delay => 25
+	)
+	port map (
+		a(0) => s177,
+		a_delayed => s47,
+		clk => \clk\,
+		reset => \reset\
 	);
 
 	\i_step_delay_op_25_______\: delay_op
@@ -1703,8 +1363,8 @@ begin
 		delay => 25
 	)
 	port map (
-		a(0) => s387,
-		a_delayed => s449,
+		a(0) => s177,
+		a_delayed => s60,
 		clk => \clk\,
 		reset => \reset\
 	);
@@ -1715,8 +1375,20 @@ begin
 		w_out => 16
 	)
 	port map (
-		I0 => s416,
-		O0 => s450
+		I0 => s51,
+		O0 => s53
+	);
+
+	\i10_add_op_s_i10\: add_op_s
+	generic map (
+		w_in1 => 16,
+		w_in2 => 16,
+		w_out => 16
+	)
+	port map (
+		I0 => s56,
+		I1 => s56,
+		O0 => s57
 	);
 
 	\i01_add_op_s_i01_neg_op_s\: neg_op_s
@@ -1725,18 +1397,55 @@ begin
 		w_out => 16
 	)
 	port map (
-		I0 => s402,
-		O0 => s452
+		I0 => s32,
+		O0 => s34
+	);
+
+	\i03\: reg_op
+	generic map (
+		initial => 0,
+		w_in => 16
+	)
+	port map (
+		I0 => s22,
+		O0 => s23,
+		clk => \clk\,
+		reset => \reset\
+	);
+
+	\i02vi12v\: reg_op
+	generic map (
+		initial => 0,
+		w_in => 16
+	)
+	port map (
+		I0 => s87,
+		O0 => s101,
+		clk => \clk\,
+		reset => \reset\,
+		we => s160(0)
+	);
+
+	\c129\: delay_op
+	generic map (
+		bits => 1,
+		delay => 33
+	)
+	port map (
+		a(0) => s180,
+		a_delayed => s181,
+		clk => \clk\,
+		reset => \reset\
 	);
 
 	\c114\: delay_op
 	generic map (
 		bits => 1,
-		delay => 4
+		delay => 20
 	)
 	port map (
-		a(0) => s387,
-		a_delayed => s456,
+		a(0) => s177,
+		a_delayed => s150,
 		clk => \clk\,
 		reset => \reset\
 	);
@@ -1747,8 +1456,20 @@ begin
 		w_in => 16
 	)
 	port map (
-		I0 => s482,
-		O0 => s457,
+		I0 => s3,
+		O0 => s74,
+		clk => \clk\,
+		reset => \reset\
+	);
+
+	\i17\: reg_op
+	generic map (
+		initial => 0,
+		w_in => 16
+	)
+	port map (
+		I0 => s8,
+		O0 => s9,
 		clk => \clk\,
 		reset => \reset\
 	);
@@ -1759,8 +1480,8 @@ begin
 		w_in => 16
 	)
 	port map (
-		I0 => s462,
-		O0 => s459,
+		I0 => s13,
+		O0 => s69,
 		clk => \clk\,
 		reset => \reset\
 	);
@@ -1771,23 +1492,48 @@ begin
 		w_in => 16
 	)
 	port map (
-		I0 => s410,
-		O0 => s460,
+		I0 => s10,
+		O0 => s11,
 		clk => \clk\,
 		reset => \reset\,
-		we => s461(0)
+		we => s142(0)
 	);
 
 	\c110\: delay_op
 	generic map (
 		bits => 1,
-		delay => 4
+		delay => 9
 	)
 	port map (
-		a(0) => s387,
-		a_delayed => s461,
+		a(0) => s177,
+		a_delayed => s142,
 		clk => \clk\,
 		reset => \reset\
+	);
+
+	\c108\: delay_op
+	generic map (
+		bits => 1,
+		delay => 3
+	)
+	port map (
+		a(0) => s177,
+		a_delayed => s138,
+		clk => \clk\,
+		reset => \reset\
+	);
+
+	\i13\: reg_op
+	generic map (
+		initial => 0,
+		w_in => 16
+	)
+	port map (
+		I0 => s12,
+		O0 => s13,
+		clk => \clk\,
+		reset => \reset\,
+		we => s144(0)
 	);
 
 	\i_step_delay_op_25__________\: delay_op
@@ -1796,8 +1542,20 @@ begin
 		delay => 25
 	)
 	port map (
-		a(0) => s387,
-		a_delayed => s464,
+		a(0) => s177,
+		a_delayed => s72,
+		clk => \clk\,
+		reset => \reset\
+	);
+
+	\i_step_delay_op_25_________\: delay_op
+	generic map (
+		bits => 1,
+		delay => 25
+	)
+	port map (
+		a(0) => s177,
+		a_delayed => s67,
 		clk => \clk\,
 		reset => \reset\
 	);
@@ -1809,9 +1567,21 @@ begin
 		w_out => 16
 	)
 	port map (
-		I0 => s383,
-		I1 => s443,
-		O0 => s465
+		I0 => s82,
+		I1 => s83,
+		O0 => s84
+	);
+
+	\i00h_add_op_s_i01h\: add_op_s
+	generic map (
+		w_in1 => 16,
+		w_in2 => 16,
+		w_out => 16
+	)
+	port map (
+		I0 => s76,
+		I1 => s77,
+		O0 => s78
 	);
 
 	\i20_neg_op_s\: neg_op_s
@@ -1820,18 +1590,40 @@ begin
 		w_out => 16
 	)
 	port map (
-		I0 => s405,
-		O0 => s468
+		I0 => s61,
+		O0 => s63
+	);
+
+	\i02_neg_op_s\: neg_op_s
+	generic map (
+		w_in => 16,
+		w_out => 16
+	)
+	port map (
+		I0 => s66,
+		O0 => s38
+	);
+
+	\i_step_delay_op_25\: delay_op
+	generic map (
+		bits => 1,
+		delay => 25
+	)
+	port map (
+		a(0) => s177,
+		a_delayed => s29,
+		clk => \clk\,
+		reset => \reset\
 	);
 
 	\c127\: delay_op
 	generic map (
 		bits => 1,
-		delay => 27
+		delay => 29
 	)
 	port map (
-		a(0) => s387,
-		a_delayed => s471,
+		a(0) => s177,
+		a_delayed => s176,
 		clk => \clk\,
 		reset => \reset\
 	);
@@ -1842,11 +1634,35 @@ begin
 		w_in => 16
 	)
 	port map (
-		I0 => s396,
-		O0 => s472,
+		I0 => s21,
+		O0 => s22,
 		clk => \clk\,
 		reset => \reset\,
-		we => s456(0)
+		we => s150(0)
+	);
+
+	\c116\: delay_op
+	generic map (
+		bits => 1,
+		delay => 26
+	)
+	port map (
+		a(0) => s177,
+		a_delayed => s154,
+		clk => \clk\,
+		reset => \reset\
+	);
+
+	\c112\: delay_op
+	generic map (
+		bits => 1,
+		delay => 14
+	)
+	port map (
+		a(0) => s177,
+		a_delayed => s146,
+		clk => \clk\,
+		reset => \reset\
 	);
 
 	\i01\: reg_op
@@ -1855,11 +1671,36 @@ begin
 		w_in => 16
 	)
 	port map (
-		I0 => s419,
-		O0 => s474,
+		I0 => s66,
+		O0 => s31,
 		clk => \clk\,
 		reset => \reset\,
-		we => s400(0)
+		we => s152(0)
+	);
+
+	\i06\: reg_op
+	generic map (
+		initial => 0,
+		w_in => 16
+	)
+	port map (
+		I0 => s19,
+		O0 => s20,
+		clk => \clk\,
+		reset => \reset\,
+		we => s148(0)
+	);
+
+	\V_if_lt_op_s_0\: if_lt_op_s
+	generic map (
+		w_in1 => 16,
+		w_in2 => 16,
+		w_out => 1
+	)
+	port map (
+		I0 => s121,
+		I1 => s117,
+		O0 => s119
 	);
 
 	\H_neg_op_s\: neg_op_s
@@ -1868,8 +1709,8 @@ begin
 		w_out => 16
 	)
 	port map (
-		I0 => s364,
-		O0 => s478
+		I0 => s115,
+		O0 => s114
 	);
 
 	\Vpos\: reg_mux_op
@@ -1878,13 +1719,25 @@ begin
 		w_in => 16
 	)
 	port map (
-		I0 => s362,
-		I1 => s395,
-		O0 => s479,
-		Sel1 => s477,
+		I0 => s121,
+		I1 => s120,
+		O0 => s123,
+		Sel1 => s119,
 		clk => \clk\,
 		reset => \reset\,
-		we => s471(0)
+		we => s176(0)
+	);
+
+	\i00vi10vi20v_add_op_s_i02vi12vi22v\: add_op_s
+	generic map (
+		w_in1 => 16,
+		w_in2 => 16,
+		w_out => 16
+	)
+	port map (
+		I0 => s107,
+		I1 => s108,
+		O0 => s109
 	);
 
 	\input\: block_ram_input
@@ -1893,141 +1746,33 @@ begin
 		data_width => 16
 	)
 	port map (
-		address(6 downto 0) => s386(6 downto 0),
+		address(6 downto 0) => s133(6 downto 0),
 		clk => \clk\,
-		data_out => s482
+		data_out => s3
 	);
 
-	\d_i20_O0\ <= s405;
-	\d_i_step_delay_op_25___________a_delayed\ <= s464;
-	\d_Hpos_add_op_s_Vpos_O0\ <= s409;
-	\d_c124_a_delayed\ <= s439;
-	\d_i21h_O0\ <= s443;
-	\d_c106_a_delayed\ <= s384;
-	\d_i20hi21h_O0\ <= s388;
-	\d_V_if_lt_op_s_0_O0\ <= s477;
-	\d_i00hi01h_add_op_s_i02h_delay_op_1_a_delayed\ <= s392;
-	s111 <= conv_std_logic_vector(0, 16);
-	\d_i21_O0\ <= s481;
-	\d_i12_add_op_s_i12_O0\ <= s422;
-	\d_i22h_O0\ <= s426;
-	\d_i20hi21hi22h_O0\ <= s367;
-	\d_c114_a_delayed\ <= s456;
-	\d_i15_O0\ <= s460;
-	\d_c123_a_delayed\ <= s371;
-	\d_i_step_delay_op_25__a_delayed\ <= s401;
-	\d_i09_O0\ <= s431;
-	\d_i02vi12v_add_op_s_i22v_O0\ <= s435;
-	\d_i_step_delay_op_25______a_delayed\ <= s376;
-	\d_i20h_add_op_s_i21h_O0\ <= s465;
-	s179 <= \init\;
-	\d_i02_neg_op_s_O0\ <= s469;
-	\d_i00vi10v_add_op_s_i20v_delay_op_1_a_delayed\ <= s380;
-	\d_c113_a_delayed\ <= s414;
-	\d_c116_a_delayed\ <= s473;
-	\d_i_step_delay_op_25_________a_delayed\ <= s418;
-	\d_i_step_delay_op_25_____a_delayed\ <= s448;
-	\d_i02vi12v_add_op_s_i22v_delay_op_1_a_delayed\ <= s363;
-	\d_i01_add_op_s_i01_neg_op_s_O0\ <= s452;
-	\d_i14_O0\ <= s393;
-	\d_c111_a_delayed\ <= s397;
-	\d_i00h_O0\ <= s427;
-	\d_output_data_out\ <= s368;
-	\d_input_data_out\ <= s482;
-	\d_i00v_add_op_s_i10v_O0\ <= s423;
-	s117 <= conv_std_logic_vector(0, 16);
-	\d_i01_add_op_s_i01_O0\ <= s402;
-	\d_i00hi01hi02h_add_op_s_i20hi21hi22h_O0\ <= s406;
-	\d_c121_a_delayed\ <= s372;
-	\d_i22_O0\ <= s457;
-	\d_c110_a_delayed\ <= s461;
-	\d_i10v_O0\ <= s440;
-	\d_i16_O0\ <= s410;
-	\d_i01_O0\ <= s474;
-	\d_H_neg_op_s_O0\ <= s478;
-	\d_i00vi10vi20v_O0\ <= s389;
-	\d_i00hi01h_O0\ <= s444;
-	\d_i_done\ <= s385;
-	\d_H_O0\ <= s364;
-	\d_i_step_delay_op_25________a_delayed\ <= s449;
-	\d_c130_a_delayed\ <= s419;
-	\d_i02_O0\ <= s398;
-	\d_i03_O0\ <= s453;
-	\d_i11_O0\ <= s394;
-	\d_i00hi01h_add_op_s_i02h_O0\ <= s436;
-	\d_i10_add_op_s_i10_neg_op_s_O0\ <= s377;
-	\d_i10_O0\ <= s432;
-	\d_Hpos_O0\ <= s411;
-	\d_i02v_O0\ <= s415;
-	\d_i20v_O0\ <= s381;
-	\d_i_step_delay_op_25__________a_delayed\ <= s466;
-	\d_i_step_delay_op_25_a_delayed\ <= s470;
-	\d_i02vi12vi22v_O0\ <= s390;
+	\i21\: reg_op
+	generic map (
+		initial => 0,
+		w_in => 16
+	)
+	port map (
+		I0 => s74,
+		O0 => s44,
+		clk => \clk\,
+		reset => \reset\,
+		we => s138(0)
+	);
+
 	s0 <= conv_std_logic_vector(0, 16);
-	\d_Vpos_O0\ <= s479;
-	\d_c112_a_delayed\ <= s475;
 	s127 <= conv_std_logic_vector(255, 16);
-	\d_i_step_delay_op_25____a_delayed\ <= s424;
-	\d_i18_O0\ <= s420;
-	\d_i07_O0\ <= s441;
-	\d_i_output\ <= s386;
-	\d_i19_O0\ <= s445;
-	\d_i_step_delay_op_25___a_delayed\ <= s403;
-	\d_i13_O0\ <= s462;
-	\d_H_if_lt_op_s_0_O0\ <= s407;
-	\d_c118_a_delayed\ <= s428;
-	\d_i08_O0\ <= s369;
-	\d_i17_O0\ <= s458;
-	\d_c125_a_delayed\ <= s373;
-	\d_i00vi10v_O0\ <= s412;
-	\d_c127_a_delayed\ <= s471;
-	\d_i00_O0\ <= s416;
-	\d_c120_a_delayed\ <= s437;
-	\d_O_O0\ <= s378;
-	\result\ <= s368;
-	\d_i00h_add_op_s_i01h_O0\ <= s467;
-	\d_c117_a_delayed\ <= s382;
-	\d_c126_a_delayed\ <= s399;
-	\d_i00vi10v_add_op_s_i20v_O0\ <= s433;
-	\d_c107_a_delayed\ <= s429;
-	\d_i00_neg_op_s__O0\ <= s450;
-	\d_i20hi21h_add_op_s_i22h_delay_op_1_a_delayed\ <= s365;
-	\d_V_neg_op_s_O0\ <= s395;
-	\d_i02vi12v_O0\ <= s454;
-	\d_i22v_O0\ <= s442;
-	\d_i12v_O0\ <= s438;
-	\d_c109_a_delayed\ <= s408;
-	\d_i00_neg_op_s_O0\ <= s404;
-	\d_c108_a_delayed\ <= s463;
-	\d_i12_O0\ <= s459;
-	\d_i00hi01hi02h_O0\ <= s374;
-	\d_i21_add_op_s_i21_O0\ <= s370;
-	\d_c119_a_delayed\ <= s366;
-	\d_c122_a_delayed\ <= s425;
-	\d_i_step_delay_op_25____________a_delayed\ <= s421;
+	s111 <= conv_std_logic_vector(0, 16);
+	s179 <= \init\;
+	\result\ <= s132;
+	s117 <= conv_std_logic_vector(0, 16);
 	s128 <= conv_std_logic_vector(255, 16);
-	\d_i00vi10vi20v_add_op_s_i02vi12vi22v_O0\ <= s480;
-	\d_i06_O0\ <= s476;
-	\d_i02v_add_op_s_i12v_O0\ <= s391;
 	s1 <= conv_std_logic_vector(78, 16);
-	\d_i02h_O0\ <= s446;
-	\d_i_step\ <= s387;
-	\d_i_step_delay_op_25_______a_delayed\ <= s375;
-	\d_i20hi21h_add_op_s_i22h_O0\ <= s434;
-	\d_i01h_O0\ <= s430;
-	\d_c115_a_delayed\ <= s400;
-	\d_c129_a_delayed\ <= s455;
-	\d_i05_O0\ <= s396;
-	\d_V_O0\ <= s362;
-	\d_i10_add_op_s_i10_O0\ <= s451;
-	\d_O_if_gt_op_s_255_O0\ <= s447;
-	\d_i00v_O0\ <= s417;
-	\d_c128_a_delayed\ <= s413;
-	\d_i04_O0\ <= s472;
-	\d_i20_neg_op_s_O0\ <= s468;
-	\d_i20h_O0\ <= s383;
-	\d_Otrunk_O0\ <= s379;
-	\done\ <= s455(0);
+	\done\ <= s181(0);
 
 end behavior;
 

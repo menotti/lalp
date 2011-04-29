@@ -3,9 +3,9 @@ digraph sobel_alt {
 	node [shape=ellipse, style=filled, color=dodgerblue2];
 	"c100" [color=bisque4 shape=invtriangle label="0x0"];
 	"V" [label="V" shape=doubleoctagon  color=dodgerblue2 ];
-	"i02vi12v_add_op_s_i22v_delay_op_1" [label="{}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"i02vi12v_add_op_s_i22v_delay_op_1" [label="i02vi12v_add_op_s_i22v_delay_op_1:+"  color=dodgerblue2 ];
 	"H" [label="H" shape=doubleoctagon  color=dodgerblue2 ];
-	"i20hi21h_add_op_s_i22h_delay_op_1" [label="{}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"i20hi21h_add_op_s_i22h_delay_op_1" [label="i20hi21h_add_op_s_i22h_delay_op_1:+"  color=dodgerblue2 ];
 	"c119" [label="{|||||||||||||||||||||||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
 	"c104" [color=bisque4 shape=invtriangle label="0xff"];
 	"i20hi21hi22h" [label="i20hi21hi22h" shape=doubleoctagon  color=dodgerblue2 ];
@@ -13,7 +13,7 @@ digraph sobel_alt {
 	"i08" [label="i08" shape=doubleoctagon  color=dodgerblue2 ];
 	"i21_add_op_s_i21" [label="i21_add_op_s_i21:+"  color=dodgerblue2 ];
 	"c123" [label="{||||||||||||||||||||||||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
-	"c121" [label="{|||||||||||||||||||||||||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"c121" [label="{||||||||||||||||||||||||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
 	"c125" [label="{|||||||||||||||||||||||||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
 	"i00hi01hi02h" [label="i00hi01hi02h" shape=doubleoctagon  color=dodgerblue2 ];
 	"i_step_delay_op_25______" [label="{||||||||||||||||||||||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
@@ -21,26 +21,26 @@ digraph sobel_alt {
 	"i10_add_op_s_i10_neg_op_s" [label="!"  color=dodgerblue2 ];
 	"O" [label="O" shape=doubleoctagon  color=dodgerblue2 ];
 	"Otrunk" [label="Otrunk"  color=dodgerblue2 ];
-	"i00vi10v_add_op_s_i20v_delay_op_1" [label="{}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"i00vi10v_add_op_s_i20v_delay_op_1" [label="i00vi10v_add_op_s_i20v_delay_op_1:+"  color=dodgerblue2 ];
 	"i20v" [label="i20v" shape=doubleoctagon  color=dodgerblue2 ];
 	"c102" [color=bisque4 shape=invtriangle label="0x0"];
 	"c117" [label="{|||||||||||||||||||||||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
 	"i20h" [label="i20h" shape=doubleoctagon  color=dodgerblue2 ];
-	"c106" [label="{|||||||||||||||||||||||||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"c106" [label="{||||||||||||||||||||||||||||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
 	"i" [label="i" shape=doubleoctagon  color=dodgerblue2 ];
 	"i20hi21h" [label="i20hi21h" shape=doubleoctagon  color=dodgerblue2 ];
 	"i02vi12vi22v" [label="i02vi12vi22v" shape=doubleoctagon  color=dodgerblue2 ];
 	"i00vi10vi20v" [label="i00vi10vi20v" shape=doubleoctagon  color=dodgerblue2 ];
 	"i02v_add_op_s_i12v" [label="i02v_add_op_s_i12v:+"  color=dodgerblue2 ];
-	"i00hi01h_add_op_s_i02h_delay_op_1" [label="{}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"i00hi01h_add_op_s_i02h_delay_op_1" [label="i00hi01h_add_op_s_i02h_delay_op_1:+"  color=dodgerblue2 ];
 	"i14" [label="i14" shape=doubleoctagon  color=dodgerblue2 ];
 	"i11" [label="i11" shape=doubleoctagon  color=dodgerblue2 ];
 	"V_neg_op_s" [label="!"  color=dodgerblue2 ];
 	"i05" [label="i05" shape=doubleoctagon  color=dodgerblue2 ];
-	"c111" [label="{|||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
-	"c126" [label="{||||||||||||||||||||||||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"c111" [label="{||||||||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"c126" [label="{||||||||||||||||||||||||||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
 	"i02" [label="i02" shape=doubleoctagon  color=dodgerblue2 ];
-	"c115" [label="{|||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"c115" [label="{||||||||||||||||||||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
 	"i_step_delay_op_25_" [label="{||||||||||||||||||||||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
 	"i01_add_op_s_i01" [label="i01_add_op_s_i01:+"  color=dodgerblue2 ];
 	"i00_neg_op_s" [label="!"  color=dodgerblue2 ];
@@ -50,18 +50,17 @@ digraph sobel_alt {
 	"result" [color=bisque4 shape=invtriangle label="result"];
 	"i00hi01hi02h_add_op_s_i20hi21hi22h" [label="i00hi01hi02h_add_op_s_i20hi21hi22h:+"  color=dodgerblue2 ];
 	"H_if_lt_op_s_0" [label="H_if_lt_op_s_0:<"  color=dodgerblue2 ];
-	"c109" [label="{|||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"c109" [label="{||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
 	"i16" [label="i16" shape=doubleoctagon  color=dodgerblue2 ];
 	"Hpos_add_op_s_Vpos" [label="Hpos_add_op_s_Vpos:+"  color=dodgerblue2 ];
 	"i00vi10v" [label="i00vi10v" shape=doubleoctagon  color=dodgerblue2 ];
 	"Hpos" [label="Hpos" shape=doubleoctagon  color=dodgerblue2 ];
-	"c128" [label="{||||||||||||||||||||||||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
-	"c113" [label="{|||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"c128" [label="{|||||||||||||||||||||||||||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"c113" [label="{|||||||||||||||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
 	"i02v" [label="i02v" shape=doubleoctagon  color=dodgerblue2 ];
 	"i00" [label="i00" shape=doubleoctagon  color=dodgerblue2 ];
 	"i00v" [label="i00v" shape=doubleoctagon  color=dodgerblue2 ];
 	"i_step_delay_op_25________" [label="{||||||||||||||||||||||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
-	"c130" [label="{|}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
 	"i18" [label="i18" shape=doubleoctagon  color=dodgerblue2 ];
 	"i_step_delay_op_25___________" [label="{||||||||||||||||||||||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
 	"i12_add_op_s_i12" [label="i12_add_op_s_i12:+"  color=dodgerblue2 ];
@@ -71,16 +70,16 @@ digraph sobel_alt {
 	"i22h" [label="i22h" shape=doubleoctagon  color=dodgerblue2 ];
 	"i00h" [label="i00h" shape=doubleoctagon  color=dodgerblue2 ];
 	"c118" [label="{|||||||||||||||||||||||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
-	"c107" [label="{|||||||||||||||||||||||||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"c107" [label="{||||||||||||||||||||||||||||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
 	"i01h" [label="i01h" shape=doubleoctagon  color=dodgerblue2 ];
 	"c103" [color=bisque4 shape=invtriangle label="0x0"];
 	"i09" [label="i09" shape=doubleoctagon  color=dodgerblue2 ];
 	"i10" [label="i10" shape=doubleoctagon  color=dodgerblue2 ];
-	"i00vi10v_add_op_s_i20v" [label="i00vi10v_add_op_s_i20v:+"  color=dodgerblue2 ];
-	"i20hi21h_add_op_s_i22h" [label="i20hi21h_add_op_s_i22h:+"  color=dodgerblue2 ];
-	"i02vi12v_add_op_s_i22v" [label="i02vi12v_add_op_s_i22v:+"  color=dodgerblue2 ];
-	"i00hi01h_add_op_s_i02h" [label="i00hi01h_add_op_s_i02h:+"  color=dodgerblue2 ];
-	"c120" [label="{|||||||||||||||||||||||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"i20v_delay_op_1" [label="{}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"i22h_delay_op_1" [label="{}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"i22v_delay_op_1" [label="{}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"i02h_delay_op_1" [label="{}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"c120" [label="{||||||||||||||||||||||||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
 	"i12v" [label="i12v" shape=doubleoctagon  color=dodgerblue2 ];
 	"c124" [label="{|||||||||||||||||||||||||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
 	"i10v" [label="i10v" shape=doubleoctagon  color=dodgerblue2 ];
@@ -100,13 +99,13 @@ digraph sobel_alt {
 	"i01_add_op_s_i01_neg_op_s" [label="!"  color=dodgerblue2 ];
 	"i03" [label="i03" shape=doubleoctagon  color=dodgerblue2 ];
 	"i02vi12v" [label="i02vi12v" shape=doubleoctagon  color=dodgerblue2 ];
-	"c129" [label="{||||||||||||||||||||||||||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
-	"c114" [label="{|||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"c129" [label="{||||||||||||||||||||||||||||||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"c114" [label="{|||||||||||||||||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
 	"i22" [label="i22" shape=doubleoctagon  color=dodgerblue2 ];
 	"i17" [label="i17" shape=doubleoctagon  color=dodgerblue2 ];
 	"i12" [label="i12" shape=doubleoctagon  color=dodgerblue2 ];
 	"i15" [label="i15" shape=doubleoctagon  color=dodgerblue2 ];
-	"c110" [label="{|||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"c110" [label="{||||||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
 	"c108" [label="{||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
 	"i13" [label="i13" shape=doubleoctagon  color=dodgerblue2 ];
 	"i_step_delay_op_25__________" [label="{||||||||||||||||||||||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
@@ -116,10 +115,10 @@ digraph sobel_alt {
 	"i20_neg_op_s" [label="!"  color=dodgerblue2 ];
 	"i02_neg_op_s" [label="!"  color=dodgerblue2 ];
 	"i_step_delay_op_25" [label="{||||||||||||||||||||||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
-	"c127" [label="{||||||||||||||||||||||||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"c127" [label="{||||||||||||||||||||||||||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
 	"i04" [label="i04" shape=doubleoctagon  color=dodgerblue2 ];
 	"c116" [label="{|||||||||||||||||||||||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
-	"c112" [label="{|}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"c112" [label="{|||||||||||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
 	"i01" [label="i01" shape=doubleoctagon  color=dodgerblue2 ];
 	"i06" [label="i06" shape=doubleoctagon  color=dodgerblue2 ];
 	"V_if_lt_op_s_0" [label="V_if_lt_op_s_0:<"  color=dodgerblue2 ];
@@ -134,9 +133,9 @@ digraph sobel_alt {
 	"c126" -> "Hpos"
 	"c100" -> "i"
 	"i" -> "c119":input
-	"i02vi12v" -> "i02vi12v_add_op_s_i22v"
+	"i22v" -> "i22v_delay_op_1":input
 	"i15" -> "i14"
-	"i02h" -> "i00hi01h_add_op_s_i02h"
+	"i00hi01h" -> "i00hi01h_add_op_s_i02h_delay_op_1"
 	"i11" -> "i10"
 	"i02v" -> "i02v_add_op_s_i12v"
 	"V_if_lt_op_s_0" -> "Vpos"
@@ -162,7 +161,7 @@ digraph sobel_alt {
 	"i02v_add_op_s_i12v" -> "i02vi12v"
 	"i" -> "c120":input
 	"i00_neg_op_s" -> "i00h"
-	"i02vi12v_add_op_s_i22v" -> "i02vi12v_add_op_s_i22v_delay_op_1":input
+	"i22v_delay_op_1" -> "i02vi12v_add_op_s_i22v_delay_op_1"
 	"c103" -> "V_if_lt_op_s_0"
 	"i01_add_op_s_i01" -> "i01_add_op_s_i01_neg_op_s"
 	"c127" -> "Vpos"
@@ -179,7 +178,7 @@ digraph sobel_alt {
 	"i21h" -> "i20h_add_op_s_i21h"
 	"i04" -> "i03"
 	"i00" -> "i00_neg_op_s"
-	"i00vi10v" -> "i00vi10v_add_op_s_i20v"
+	"i20v" -> "i20v_delay_op_1":input
 	"c129" -> "done"
 	"c124" -> "H"
 	"i" -> "i_step_delay_op_25__":input
@@ -199,14 +198,14 @@ digraph sobel_alt {
 	"c101" -> "i"
 	"i" -> "c115":input
 	"i" -> "c114":input
-	"i00hi01h_add_op_s_i02h" -> "i00hi01h_add_op_s_i02h_delay_op_1":input
-	"i20hi21h" -> "i20hi21h_add_op_s_i22h"
-	"c130" -> "i01"
+	"i02h_delay_op_1" -> "i00hi01h_add_op_s_i02h_delay_op_1"
+	"i22h" -> "i22h_delay_op_1":input
 	"c123" -> "i02vi12vi22v"
 	"i00vi10vi20v_add_op_s_i02vi12vi22v" -> "V"
-	"i00vi10v_add_op_s_i20v" -> "i00vi10v_add_op_s_i20v_delay_op_1":input
+	"i20v_delay_op_1" -> "i00vi10v_add_op_s_i20v_delay_op_1"
 	"i06" -> "i05"
-	"i20hi21h_add_op_s_i22h" -> "i20hi21h_add_op_s_i22h_delay_op_1":input
+	"i02" -> "i01"
+	"i22h_delay_op_1" -> "i20hi21h_add_op_s_i22h_delay_op_1"
 	"c105" -> "Otrunk"
 	"H_if_lt_op_s_0" -> "Hpos"
 	"i_step_delay_op_25______" -> "i00v"
@@ -240,7 +239,7 @@ digraph sobel_alt {
 	"i12v" -> "i02v_add_op_s_i12v"
 	"i20h_add_op_s_i21h" -> "i20hi21h"
 	"i" -> "c127":input
-	"i00hi01h" -> "i00hi01h_add_op_s_i02h"
+	"i02h" -> "i02h_delay_op_1":input
 	"i" -> "c111":input
 	"i20h" -> "i20h_add_op_s_i21h"
 	"i" -> "c110":input
@@ -260,7 +259,7 @@ digraph sobel_alt {
 	"i14" -> "i13"
 	"c118" -> "i20hi21h"
 	"c119" -> "i02vi12v"
-	"i22v" -> "i02vi12v_add_op_s_i22v"
+	"i02vi12v" -> "i02vi12v_add_op_s_i22v_delay_op_1"
 	"i00vi10v_add_op_s_i20v_delay_op_1" -> "i00vi10vi20v"
 	"i" -> "i_step_delay_op_25_________":input
 	"i12_add_op_s_i12" -> "i12v"
@@ -299,12 +298,11 @@ digraph sobel_alt {
 	"V" -> "V_if_lt_op_s_0"
 	"H" -> "H_neg_op_s"
 	"i_step_delay_op_25___" -> "i20h"
-	"i02" -> "c130":input
 	"i02" -> "i02_neg_op_s"
 	"i" -> "c129":input
 	"i20hi21h_add_op_s_i22h_delay_op_1" -> "i20hi21hi22h"
-	"i22h" -> "i20hi21h_add_op_s_i22h"
-	"i20v" -> "i00vi10v_add_op_s_i20v"
+	"i20hi21h" -> "i20hi21h_add_op_s_i22h_delay_op_1"
+	"i00vi10v" -> "i00vi10v_add_op_s_i20v_delay_op_1"
 	"c115" -> "i01"
 	"i00hi01h_add_op_s_i02h_delay_op_1" -> "i00hi01hi02h"
 	"c114" -> "i04"
