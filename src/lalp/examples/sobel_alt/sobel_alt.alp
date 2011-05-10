@@ -23,17 +23,16 @@ typedef fixed(8, 0) byte;
 
 sobel_alt(in bit init, out bit done, out int result) {
 	{
-	
-	    int H, O, V, Hpos, Vpos, Otrunk; 
-	    int i;
-	    int i00, i01, i02, i03, i04, i05, i06, i07, i08, i09;
-	    int i10, i11, i12, i13, i14, i15, i16, i17, i18, i19;
-	    int i20, i21, i22;
-	    int	i00h, i01h, i02h, i20h, i21h, i22h;
+		int H, O, V, Hpos, Vpos, Otrunk; 
+		int i;
+		int i00, i01, i02, i03, i04, i05, i06, i07, i08, i09;
+		int i10, i11, i12, i13, i14, i15, i16, i17, i18, i19;
+		int i20, i21, i22;
+		int	i00h, i01h, i02h, i20h, i21h, i22h;
 		int i00v, i10v, i20v, i02v, i12v, i22v;
 		int i00hi01h, i00vi10v, i20hi21h, i02vi12v;
 		int i00hi01hi02h, i20hi21hi22h, i00vi10vi20v, i02vi12vi22v;		
-	    
+			
 		int input[SIZE] = {
 				50, 65, 62, 83, 34, 45, 96, 67, 18, 29, 
 				14, 14, 72, 13, 14, 15, 16, 17, 18, 39, 
@@ -89,7 +88,7 @@ sobel_alt(in bit init, out bit done, out int result) {
 	
 	H = i00hi01hi02h + i20hi21hi22h;
 	V = i00vi10vi20v + i02vi12vi22v;
-		            
+								
 	Hpos = H < 0 ? -H : H;
 	Vpos = V < 0 ? -V : V;
 	

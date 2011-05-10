@@ -12,7 +12,7 @@
 -- SUFFERED BY LICENSEE AS A RESULT OF USING, MODIFYING OR DISTRIBUTING THIS
 -- SOFTWARE OR ITS DERIVATIVES.
 --
--- Generated at Tue May 10 19:36:59 BRT 2011
+-- Generated at Tue May 10 19:41:46 BRT 2011
 --
 
 -- IEEE Libraries --
@@ -20,19 +20,19 @@ library IEEE;
 use IEEE.std_logic_1164.all;
 use IEEE.std_logic_arith.all;
 use IEEE.std_logic_unsigned.all;
-entity t_sobel_alt is
-end t_sobel_alt;
+entity t_dotprod_alp is
+end t_dotprod_alp;
 
-architecture behavior of t_sobel_alt is
+architecture behavior of t_dotprod_alp is
 
-component sobel_alt
+component dotprod_alp
 	port (
 		\clear\	: in	std_logic;
 		\clk\	: in	std_logic;
 		\done\	: out	std_logic;
 		\init\	: in	std_logic;
 		\reset\	: in	std_logic;
-		\result\	: out	std_logic_vector(15 downto 0)
+		\sum\	: out	std_logic_vector(31 downto 0)
 	);
 end component;
 
@@ -41,18 +41,18 @@ signal \clk\	: std_logic	:= '0';
 signal \done\	: std_logic	:= '0';
 signal \init\	: std_logic	:= '0';
 signal \reset\	: std_logic	:= '0';
-signal \result\	: std_logic_vector(15 downto 0)	:= (others => '0');
+signal \sum\	: std_logic_vector(31 downto 0)	:= (others => '0');
 
 begin
 
-uut: sobel_alt
+uut: dotprod_alp
 port map (
 	\clear\ => \clear\,
 	\clk\ => \clk\,
 	\done\ => \done\,
 	\init\ => \init\,
 	\reset\ => \reset\,
-	\result\ => \result\
+	\sum\ => \sum\
 );
 
 clock: process

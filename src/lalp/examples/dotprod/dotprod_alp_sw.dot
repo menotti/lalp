@@ -1,0 +1,36 @@
+digraph dotprod_alp {
+	// Components (Nodes)
+	node [shape=ellipse, style=filled, color=dodgerblue2];
+	"c13" [color=bisque4 shape=invtriangle label="0x0"];
+	"y_delay_op_1" [label="{}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"c15" [label="{||||||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"c14" [color=bisque4 shape=invtriangle label="0x800"];
+	"c16" [label="{|||||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"x_delay_op_1" [label="{}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"x_delay_op_1_mult_op_s_p_y_delay_op_1_5" [label="*" shape=doubleoctagon  color=dodgerblue2 ];
+	"i" [label="i" shape=doubleoctagon  color=dodgerblue2 ];
+	"y" [label="y" shape=doubleoctagon  color=dodgerblue2 ];
+	"init" [color=bisque4 shape=invtriangle label="init"];
+	"done" [color=bisque4 shape=invtriangle label="done"];
+	"x" [label="x" shape=doubleoctagon  color=dodgerblue2 ];
+	"acc" [label="acc" shape=doubleoctagon  color=dodgerblue2 ];
+	"sum" [color=bisque4 shape=invtriangle label="sum"];
+
+	// Signals (Edges)
+	"c13" -> "i"
+	"i" -> "c15":input
+	"acc" -> "sum"
+	"i" -> "c16":input
+	"c15" -> "done"
+	"c16" -> "acc"
+	"init" -> "i"
+	"y_delay_op_1" -> "x_delay_op_1_mult_op_s_p_y_delay_op_1_5"
+	"x_delay_op_1_mult_op_s_p_y_delay_op_1_5" -> "acc"
+	"y" -> "y_delay_op_1":input
+	"i" -> "y"
+	"c14" -> "i"
+	"x_delay_op_1" -> "x_delay_op_1_mult_op_s_p_y_delay_op_1_5"
+	"acc" -> "acc" [style=dashed];
+	"x" -> "x_delay_op_1":input
+	"i" -> "x"
+}
