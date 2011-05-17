@@ -12,7 +12,7 @@
 -- SUFFERED BY LICENSEE AS A RESULT OF USING, MODIFYING OR DISTRIBUTING THIS
 -- SOFTWARE OR ITS DERIVATIVES.
 --
--- Generated at Wed May 11 10:00:30 BRT 2011
+-- Generated at Wed May 11 18:30:54 BRT 2011
 --
 
 -- IEEE Libraries --
@@ -20,19 +20,19 @@ library IEEE;
 use IEEE.std_logic_1164.all;
 use IEEE.std_logic_arith.all;
 use IEEE.std_logic_unsigned.all;
-entity t_dotprod_alp is
-end t_dotprod_alp;
+entity t_fdct is
+end t_fdct;
 
-architecture behavior of t_dotprod_alp is
+architecture behavior of t_fdct is
 
-component dotprod_alp
+component fdct
 	port (
 		\clear\	: in	std_logic;
 		\clk\	: in	std_logic;
 		\done\	: out	std_logic;
 		\init\	: in	std_logic;
-		\reset\	: in	std_logic;
-		\sum\	: out	std_logic_vector(31 downto 0)
+		\output\	: out	std_logic_vector(31 downto 0);
+		\reset\	: in	std_logic
 	);
 end component;
 
@@ -40,19 +40,19 @@ signal \clear\	: std_logic	:= '0';
 signal \clk\	: std_logic	:= '0';
 signal \done\	: std_logic	:= '0';
 signal \init\	: std_logic	:= '0';
+signal \output\	: std_logic_vector(31 downto 0)	:= (others => '0');
 signal \reset\	: std_logic	:= '0';
-signal \sum\	: std_logic_vector(31 downto 0)	:= (others => '0');
 
 begin
 
-uut: dotprod_alp
+uut: fdct
 port map (
 	\clear\ => \clear\,
 	\clk\ => \clk\,
 	\done\ => \done\,
 	\init\ => \init\,
-	\reset\ => \reset\,
-	\sum\ => \sum\
+	\output\ => \output\,
+	\reset\ => \reset\
 );
 
 clock: process
