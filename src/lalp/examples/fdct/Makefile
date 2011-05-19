@@ -1,5 +1,5 @@
 #On Windows systems comment the line below and use: make TESTBENCH=t_<EntityName>
-TESTBENCH = `ls -1 t_*.vhd | sed 's/\(.*\)\..*/\1/'`
+#TESTBENCH = `ls -1 t_*.vhd | sed 's/\(.*\)\..*/\1/'`
 
 LALP_CMD = lalp
 LALP_FLAGS = -gv -gs -vh -vi -vt -aa -at -ab -as -ad -ao -verbose

@@ -72,7 +72,7 @@ digraph fdct {
 	"xh3_sub_op_s_xg3" [label="xh3_sub_op_s_xg3:-"  color=dodgerblue2 ];
 	"f6" [label="f6" shape=doubleoctagon  color=dodgerblue2 ];
 	"c408" [label="{||||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
-	"xi_step_delay_op_29_" [label="{||||||||||||||||||||||||||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"xi_output_delay_op_29" [label="{||||||||||||||||||||||||||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
 	"xF_1_add_op_s_32767_shr_c_op_s_16" [label="xF_1_add_op_s_32767_shr_c_op_s_16:>>"  color=dodgerblue2 ];
 	"i_1" [label="i_1" shape=doubleoctagon  color=dodgerblue2 ];
 	"c332" [label="{|||||||||||||||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
@@ -495,7 +495,7 @@ digraph fdct {
 	"c355" -> "xp0"
 	"c427" -> "F_6"
 	"xg1" -> "xg1_sub_op_s_xh1"
-	"xi" -> "xi_step_delay_op_29_":input
+	"xi" -> "xi_output_delay_op_29":input
 	"j_step_delay_op_9" -> "f5"
 	"g0" -> "g0_sub_op_s_h0"
 	"i_1" -> "c328":input
@@ -857,7 +857,7 @@ digraph fdct {
 	"xj" -> "xj_step_delay_op_4":input
 	"s1" -> "c428":input
 	"j" -> "j_step_delay_op_10":input
-	"xi_step_delay_op_29_" -> "dct_o"
+	"xi_output_delay_op_29" -> "dct_o"
 	"s0" -> "s1_add_op_s_s0"
 	"xj" -> "c356":input
 	"xh1" -> "xg1_sub_op_s_xh1"

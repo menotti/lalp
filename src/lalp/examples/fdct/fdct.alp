@@ -306,7 +306,7 @@ fdct(in bool init, out bool done, out int output) {
 	xmf = xF7r when xj.step@36;
 
 	dct_o.data_in = xmf when xi.step@29;
-	dct_o.address = xi.step@29;
+	dct_o.address = xi.output@29;
 	output = dct_o.data_out;
 	done = xi.done;
 }

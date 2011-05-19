@@ -12,7 +12,7 @@
 -- SUFFERED BY LICENSEE AS A RESULT OF USING, MODIFYING OR DISTRIBUTING THIS
 -- SOFTWARE OR ITS DERIVATIVES.
 --
--- Generated at Thu May 19 14:49:07 BRT 2011
+-- Generated at Thu May 19 15:33:47 BRT 2011
 --
 
 -- IEEE Libraries --
@@ -262,14 +262,13 @@ signal s94	: std_logic_vector(31 downto 0);
 signal s505	: std_logic_vector(0 downto 0);
 signal s649	: std_logic_vector(31 downto 0);
 signal s272	: std_logic_vector(31 downto 0);
-signal s416	: std_logic;
+signal s416	: std_logic_vector(9 downto 0);
 signal s39	: std_logic_vector(0 downto 0);
 signal s73	: std_logic_vector(31 downto 0);
 signal s217	: std_logic_vector(0 downto 0);
 signal s361	: std_logic_vector(31 downto 0);
 signal s539	: std_logic_vector(0 downto 0);
 signal s306	: std_logic_vector(31 downto 0);
-signal s196	: std_logic_vector(9 downto 0);
 signal s573	: std_logic_vector(31 downto 0);
 signal s429	: std_logic_vector(0 downto 0);
 signal s285	: std_logic_vector(31 downto 0);
@@ -319,6 +318,7 @@ signal s112	: std_logic_vector(31 downto 0);
 signal s646	: std_logic_vector(31 downto 0);
 signal s36	: std_logic_vector(0 downto 0);
 signal s180	: std_logic_vector(31 downto 0);
+signal s413	: std_logic;
 signal s557	: std_logic_vector(0 downto 0);
 signal s91	: std_logic_vector(31 downto 0);
 signal s612	: std_logic_vector(31 downto 0);
@@ -520,7 +520,7 @@ signal s595	: std_logic_vector(31 downto 0);
 signal s362	: std_logic_vector(31 downto 0);
 signal s451	: std_logic_vector(0 downto 0);
 signal s650	: std_logic_vector(31 downto 0);
-signal s417	: std_logic_vector(0 downto 0);
+signal s417	: std_logic_vector(9 downto 0);
 signal s273	: std_logic_vector(31 downto 0);
 signal s19	: std_logic_vector(0 downto 0);
 signal s629	: std_logic_vector(31 downto 0);
@@ -1435,13 +1435,13 @@ begin
 		reset => \reset\
 	);
 
-	\xi_step_delay_op_29_\: delay_op
+	\xi_output_delay_op_29\: delay_op
 	generic map (
-		bits => 1,
+		bits => 10,
 		delay => 29
 	)
 	port map (
-		a(0) => s416,
+		a => s416,
 		a_delayed => s417,
 		clk => \clk\,
 		reset => \reset\
@@ -2276,9 +2276,9 @@ begin
 		clk_en => s210(0),
 		done => s419,
 		input => s207,
-		output => s196,
+		output => s416,
 		reset => \reset\,
-		step => s416,
+		step => s413,
 		termination => s208
 	);
 
@@ -2288,7 +2288,7 @@ begin
 		data_width => 32
 	)
 	port map (
-		address(0 downto 0) => s417(0 downto 0),
+		address => s417,
 		clk => \clk\,
 		data_in => s414,
 		data_out => s418,
@@ -3058,7 +3058,7 @@ begin
 		delay => 29
 	)
 	port map (
-		a(0) => s416,
+		a(0) => s413,
 		a_delayed => s415,
 		clk => \clk\,
 		reset => \reset\
@@ -4506,9 +4506,9 @@ begin
 	)
 	port map (
 		I0 => s197,
-		I1 => s196,
+		I1 => s416,
 		O0 => s199,
-		Sel1(0) => s416,
+		Sel1(0) => s413,
 		clk => \clk\,
 		reset => \reset\,
 		we => s198
