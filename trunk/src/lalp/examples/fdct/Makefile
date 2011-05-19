@@ -1,5 +1,5 @@
 #On Windows systems comment the line below and use: make TESTBENCH=t_<EntityName>
-#TESTBENCH = `ls -1 t_*.vhd | sed 's/\(.*\)\..*/\1/'`
+TESTBENCH = `ls -1 t_*.vhd | sed 's/\(.*\)\..*/\1/'`
 
 LALP_CMD = lalp
 LALP_FLAGS = -gv -gs -vh -vi -vt -aa -at -ab -as -ad -ao -verbose
@@ -9,7 +9,7 @@ GHDL_FLAGS  = -fexplicit --std=02 --ieee=synopsys --warn-no-vital-generic
 
 #GHDL_SIM_OPT = --assert-level=error
 #GHDL_SIM_OPT = --stop-time=500ns
-GHDL_SIM_OPT = --disp-tree --stats --stop-time=1000ns
+GHDL_SIM_OPT = --disp-tree --stats --stop-time=20000ns
 
 WAVEFORM_VIEWER = gtkwave
 
