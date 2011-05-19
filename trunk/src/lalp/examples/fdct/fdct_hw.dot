@@ -71,7 +71,7 @@ digraph fdct {
 	"xh3_sub_op_s_xg3" [shape=record, fontcolor=blue, label="{{<I0>I0[32]|<I1>I1[32]}|sub_op_s:xh3_sub_op_s_xg3|{<O0>O0[32]}}"];
 	"f6" [shape=record, fontcolor=blue, style="filled", fillcolor="lightgray", label="{{<I0>I0[32]|<clk>clk|<reset>reset|<we>we}|reg_op:f6|{<O0>O0[32]}}"];
 	"c408" [shape=record, fontcolor=blue, style="filled", fillcolor="lightgray", label="{{<a>a[32]|<clk>clk|<reset>reset}|delay_op:c408\ndelay=7|{<a_delayed>a_delayed[32]}}"];
-	"xi_step_delay_op_29_" [shape=record, fontcolor=blue, style="filled", fillcolor="lightgray", label="{{<a>a[1]|<clk>clk|<reset>reset}|delay_op:xi_step_delay_op_29_\ndelay=29|{<a_delayed>a_delayed[1]}}"];
+	"xi_output_delay_op_29" [shape=record, fontcolor=blue, style="filled", fillcolor="lightgray", label="{{<a>a[10]|<clk>clk|<reset>reset}|delay_op:xi_output_delay_op_29\ndelay=29|{<a_delayed>a_delayed[10]}}"];
 	"xF_1_add_op_s_32767_shr_c_op_s_16" [shape=record, fontcolor=blue, label="{{<I0>I0[32]}|shr_c_op_s:xF_1_add_op_s_32767_shr_c_op_s_16\namount=16|{<O0>O0[32]}}"];
 	"i_1" [shape=record, fontcolor=blue, style="filled", fillcolor="lightgray", label="{{<clk>clk|<clk_en>clk_en|<input>input[10]|<load>load|<reset>reset|<termination>termination[10]}|counter:i_1\n\<\n+=8\nsteps=1|{<done>done|<output>output[10]|<step>step}}"];
 	"c332" [shape=record, fontcolor=blue, style="filled", fillcolor="lightgray", label="{{<a>a[1]|<clk>clk|<reset>reset}|delay_op:c332\ndelay=18|{<a_delayed>a_delayed[1]}}"];
@@ -494,7 +494,7 @@ digraph fdct {
 	"c355":a_delayed -> "xp0":we [label="s505[1]" color=red fontcolor=red];
 	"c427":a_delayed -> "F_6":I0 [label="s649[32]" color=red fontcolor=red];
 	"xg1":O0 -> "xg1_sub_op_s_xh1":I0 [label="s272[32]" color=red fontcolor=red];
-	"xi":step -> "xi_step_delay_op_29_":a [label="s416" color=olivedrab];
+	"xi":output -> "xi_output_delay_op_29":a [label="s416[10]" color=red fontcolor=red];
 	"j_step_delay_op_9":a_delayed -> "f5":we [label="s39[1]" color=red fontcolor=red];
 	"g0":O0 -> "g0_sub_op_s_h0":I0 [label="s73[32]" color=red fontcolor=red];
 	"i_1":step -> "c328":a [label="s450" color=olivedrab];
@@ -856,7 +856,7 @@ digraph fdct {
 	"xj":step -> "xj_step_delay_op_4":a [label="s218" color=olivedrab];
 	"s1":O0 -> "c428":a [label="s650[32]" color=red fontcolor=red];
 	"j":step -> "j_step_delay_op_10":a [label="s40" color=olivedrab];
-	"xi_step_delay_op_29_":a_delayed -> "dct_o":address [label="s417[1]" color=red fontcolor=red];
+	"xi_output_delay_op_29":a_delayed -> "dct_o":address [label="s417[10]" color=red fontcolor=red];
 	"s0":O0 -> "s1_add_op_s_s0":I1 [label="s129[32]" color=red fontcolor=red];
 	"xj":step -> "c356":a [label="s506" color=olivedrab];
 	"xh1":O0 -> "xg1_sub_op_s_xh1":I1 [label="s273[32]" color=red fontcolor=red];
