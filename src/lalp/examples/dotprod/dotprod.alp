@@ -1,4 +1,4 @@
-/* Copyright (c) 2010 Ricardo Menotti, All Rights Reserved.
+/* Copyright (c) 2011 Ricardo Menotti, All Rights Reserved.
  *
  * Permission to use, copy, modify, and distribute this software and its 
  * documentation for NON-COMERCIAL purposes and without fee is hereby granted 
@@ -19,16 +19,24 @@ typedef fixed(DATA_WIDTH, 1) int;
 typedef fixed(1, 0) bit;
 
 dotprod(out int sum, out bit done, in bit init) {
-  {
-    int x[ITERATIONS] = {1, 2, 3};
-    int y[ITERATIONS] = {4, 5, 6};
-    int acc;
-    fixed(16, 0) i;
-  }
-  counter (i=0; i<ITERATIONS; i++);
-  x.address = i;
-  y.address = i;
-  acc += x * y when i.step;
-  //acc += (x@1) *@5 (y@1) when i.step;
-  sum = acc;
+	{
+		int x[ITERATIONS] = {1, 2, 3};
+		int y[ITERATIONS] = {4, 5, 6};
+		int acc;
+		fixed(16, 0) i;
+	}
+
+	counter (i=0; i<ITERATIONS; i++);
+
+	x.address = i;
+	y.address = i;
+
+	acc += x * y when i.step;
+	//acc += (x@1) *@5 (y@1) when i.step;
+
+	sum = acc;
+	
+	/* sum 
+	4	14	32	...
+	*/
 }
