@@ -45,7 +45,8 @@ public class LALPServlet extends HttpServlet {
 		PrintWriter out = response.getWriter();
 		try {
 
-			/* TODO output your page here */out.println("<html>");
+			/* TODO output your page here */
+			out.println("<html>");
 			out.println("<head>");
 			out.println("<title>Servlet SampleServlet</title>");
 			out.println("</head>");
@@ -92,13 +93,15 @@ public class LALPServlet extends HttpServlet {
 	@Override
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
-		String[] args = new String[1];
-		args[0] = request.getParameter("args"); //recebe parâmetros enviados
-
+		int length = Integer.parseInt(request.getParameter("length"));
+		String[] args = new String[length];
+		for (int i = 0; i < length; i++) {
+			args[i] = request.getParameter("args"); // estudar o recebimento de um array Javascript (JSON)
+		}
 		String result = compile(args);
 		response.setContentType("text/plain");
 		PrintWriter out = response.getWriter();
-		out.println(result); //resposta
+		out.println(result); // resposta
 	}
 
 	/**
@@ -114,23 +117,21 @@ public class LALPServlet extends HttpServlet {
 	public String compile(String[] args) {
 		final String version = "LALP version 0.1, Copyright (c) 2011 Ricardo Menotti";
 		String result = new String();
-		
+
 		for (int i = 0; i < args.length; i++) {
 			if (args[i].equals("-version")) {
-				result = info(version);				
-			}
-			else if (args[i].equals("-as")) {
+				result = info(version);
+			} else if (args[i].equals("-as")) {
 				Parameters.runScc = true;
 				result = "SCC Algorithm not working yet!";
-			}
-			else if (args[i].equals("-ad")) {
+			} else if (args[i].equals("-ad")) {
 				Parameters.runDijkstra = true;
 				result = "Dijkstra Algorithm not working yet!";
 			}
-		}	
+		}
 		return result;
 	}
-	
+
 	public String info(String s) {
 		return ("Info: " + s);
 	}
