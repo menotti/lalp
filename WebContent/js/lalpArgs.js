@@ -1,22 +1,24 @@
 $(document).ready(function(){
 	var selected = false;
-	var args = new String();
+	var args = new Array();	
 	var menuArgs = $("form input:radio");    
-	menuArgs.click(function() { //seleciona argumento do radio list
+	menuArgs.click(function() { //seleciona opção do radio list
 		for (var i = 0; i < menuArgs.length; i++) {
+			var j = 0;
 			if (menuArgs[i].checked) {
 				selected = true;
-				args = menuArgs[i].value.toString();				
+				args[j] = menuArgs[i].value.toString(); //analisar casos com passagem de mais de um parâmetro			
 			}
-	    }
+	    }		
 	});	
-	$("#submitBtn").click(function(){ //envia argumentos
+	$("#submitBtn").click(function(){ //envia parâmetros
 		if (selected) {
 			$.ajax({
 				url: 'LALPServlet',
 				type: "POST",
 				data: {
-					args:args
+					args:args[0], //analisar como passar o array Javascript dinâmicamente (JSON)
+					length:args.length
 				},
 				error: function(){
 					alert("AJAX: Response from server failed!")
