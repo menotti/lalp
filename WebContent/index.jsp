@@ -4,26 +4,50 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<script type="text/javascript"
-	src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
-<script type="text/javascript" src="js/lalpArgs.js"></script>
-<link rel="stylesheet" type="text/css" href="css/lalpHome.css"></link>
+<link rel="stylesheet" type="text/css" href="css/custom-file.css"></link>
+	<link rel="stylesheet" type="text/css" href="css/lalpHome.css"></link>
+	<script type="text/javascript" src="js/head.min.js"></script>
+	<script>
+		head.js(//"http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js",
+				"js/jquery-1.6.4.min.js",
+				"js/jQuery.fileinput.js",
+				"js/lalpArgs.js");						
+	</script>
 <title>A Web Interface for the LALP Compiler</title>
 </head>
 <body>
 	<h1>LALP Web Compiler</h1>
-	<div class="menuArgs">
-		<h2>Options</h2>
+	<div id="menuArgs" class="menuArgs">
 		<form>
-			<input id="r1" name="menu" type="radio" value="-as">run SCC	Algorithm<br /> 
-			<input id="r2" name="menu" type="radio" value="-ad">run	Dijkstra Algorithm<br /> 
-			<input id="rVersion" name="menu" type="radio" value="-version">view compiler version<br />
+		<b>Options</b>
+		<fieldset>		
+			<input type="radio" id="r1" name="menu"  value="-as">run SCC Algorithm<br /> 
+			<input type="radio" id="r2" name="menu"  value="-ad">run Dijkstra Algorithm<br /> 			
+		</fieldset>
 		</form>
 	</div>
-	<div class="submitForm">
+	<br />
+	<div id="submitForm" class="submitForm">
 		<form>
-			<input id="submitBtn" type="button" value="Submit Choice" />
+		<b>Choose .alp file</b>
+			<fieldset>
+				<input type="file" id="file" name="file" class="file" onchange="handleFiles(this.files);" />			
+				<input type="button" name="upload" id="upload" value="Start Compilation" />
+			</fieldset>
 		</form>
+	</div>
+	<br />
+	<div id="sourceCode" class="sourceCode">
+	<form>
+	<b>Source Code:</b>	
+	<fieldset>	
+	<textarea id="sourceCodeArea" disabled="disabled" rows="25" cols="50">	
+	</textarea>
+	</fieldset>
+	</form>
 	</div>
 </body>
+<footer>
+LALP version 0.1, Copyright (c) 2011 Ricardo Menotti
+</footer>
 </html>
