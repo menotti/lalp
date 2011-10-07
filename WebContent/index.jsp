@@ -10,28 +10,19 @@
 	head.js("js/jquery-1.6.4.min.js",
 	//"http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js",
 	//"http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.9/jquery-ui.min.js",	
-	"js/ajaxfileupload.js", "js/lalpArgs.js");
+	"js/ajaxfileupload.js", "js/lalpArgs.js",
+			"http://connect.facebook.net/en_US/all.js", head.ready(function() {
+				FB.init({
+					appId : '286442874716822',
+					cookie : true,
+					status : true,
+					xfbml : true
+				});
+			}));
 </script>
 <title>A Web Interface for the LALP Compiler</title>
 </head>
 <body>
-	<!-- 	 <div id="fb-root"></div> -->
-	<!--       <script src="http://connect.facebook.net/en_US/all.js"></script> -->
-	<!--       <script> -->
-	<!--          FB.init({  -->
-	<!--             appId:'286442874716822', cookie:true,  -->
-	<!--             status:true, xfbml:true  -->
-	<!--          }); -->
-	<!--       </script> -->
-	<!-- 	 <div id="fb-root"></div> -->
-	<!--       <script src="http://connect.facebook.net/en_US/all.js"></script> -->
-	<!--       <script> -->
-	<!--          FB.init({  -->
-	<!--             appId:'286442874716822', cookie:true,  -->
-	<!--             status:true, xfbml:true  -->
-	<!--          }); -->
-	<!--       </script> -->
-	<!--       <fb:login-button>Login with Facebook</fb:login-button> -->
 	<h1>LALP Web Compiler</h1>
 	<div id="menuArgs" class="menuArgs">
 		<form>
@@ -71,9 +62,17 @@
 				</textarea>
 			</fieldset>
 		</form>
+		<iframe
+			src="http://www.facebook.com/plugins/like.php?href=http://200.18.98.61:8080/lalp"
+			scrolling="no" frameborder="0" style="border: none; width: 450px;"></iframe>
 	</div>
-	<!-- 	<iframe src="http://www.facebook.com/plugins/like.php?href=http://200.18.98.61:8080/lalp" -->
-	<!--         scrolling="no" frameborder="0" style="border:none; width:450px; height:80px"></iframe> -->
+
 </body>
-<footer> LALP version 0.1, Copyright (c) 2011 Ricardo Menotti </footer>
+<footer>
+<div id="fb-root">
+	<fb:login-button>Login with Facebook</fb:login-button>
+</div>
+<br />
+<br />
+LALP version 0.1, Copyright (c) 2011 Ricardo Menotti </footer>
 </html>
