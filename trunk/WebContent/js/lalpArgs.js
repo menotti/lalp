@@ -18,17 +18,20 @@ menuArgs.click(function() { // select radio list option
 
 $('#upload').click(function() {
 	$.ajaxFileUpload({
-			url : 'UploadServlet',
-			secureuri : false,
-			fileElementId : 'file_1',
-			dataType : 'multipart/form-data',
-			success : function(data, status) {
-				$('#sourceCodeArea').html(data);
-			},
-			error : function(data, status, e) {
-				alert(e);
-			}
-		});
+		url : 'UploadServlet',
+		secureuri : false,
+		fileElementId : 'file_1',
+		dataType : 'multipart/form-data',
+		success : function(data, status) {
+			data = data.replace("<pre>", "");
+			data = data.replace("</pre>", "");
+			data = data.trim();
+			$('#sourceCodeArea').html(data);
+		},
+		error : function(data, status, e) {
+			alert(e);
+		}
+	});
 });
 
 $('#compile').attr('disabled', false);
@@ -37,8 +40,8 @@ $('#compile').click(function() {
 		url : 'LALPServlet',
 		type : 'POST',
 		data : {
-			'args[]' : args,
-			length : args.length
+			'args[]' : args,			
+			sourceCode : $('#sourceCodeArea').html()
 		},
 		error : function() {
 			alert('AJAX: Response from server failed!');
@@ -48,4 +51,3 @@ $('#compile').click(function() {
 		}
 	});
 });
-
