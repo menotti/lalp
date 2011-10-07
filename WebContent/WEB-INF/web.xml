@@ -4,9 +4,17 @@
     <servlet-name>UploadServlet</servlet-name>
     <servlet-class>lalp.web.UploadServlet</servlet-class>
   </servlet>
+  <servlet>
+    <servlet-name>LALPServlet</servlet-name>
+    <servlet-class>lalp.web.LALPServlet</servlet-class>
+  </servlet>
   <servlet-mapping>
     <servlet-name>UploadServlet</servlet-name>
     <url-pattern>/UploadServlet</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>LALPServlet</servlet-name>
+    <url-pattern>/LALPServlet</url-pattern>
   </servlet-mapping>
   <session-config>
     <session-timeout>30</session-timeout>

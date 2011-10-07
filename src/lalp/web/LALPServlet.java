@@ -16,7 +16,7 @@ import lalp.core.Parameters;
 
 /**
  * 
- * @author Gabriel
+ * @author Gabriel, Túlio
  */
 
 @SuppressWarnings("serial")
@@ -26,30 +26,35 @@ public class LALPServlet extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
-		
+		PrintWriter out = response.getWriter();
+		out.println("LALP Servlet");
 	}
 
 	@Override
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		int length = Integer.parseInt(request.getParameter("length"));
-		String[] args = new String[length];
-		args = request.getParameterValues("args[]");
-		String result = compile(args);
+	protected void doPost(HttpServletRequest request,
+			HttpServletResponse response) throws ServletException, IOException {
+
 		response.setContentType("text/plain");
 		PrintWriter out = response.getWriter();
+		String[] args = request.getParameterValues("args[]"); // retrieve data
+																// from request
+		String sourceCode = request.getParameter("sourceCode");
+
+		String result = compile(args, sourceCode);
+
 		out.println(result); // response
 	}
 
-	public String compile(String[] args) {
+	public String compile(String[] args, String sourceCode) {
 		String result = new String();
 
 		for (int i = 0; i < args.length; i++) {
 			if (args[i].equals("-as")) {
 				Parameters.runScc = true;
-				result = "SCC Algorithm not working yet!";
+				result = info("SCC Algorithm not working yet!");
 			} else if (args[i].equals("-ad")) {
 				Parameters.runDijkstra = true;
-				result = "Dijkstra Algorithm not working yet!";
+				result = info("Dijkstra Algorithm not working yet!");
 			}
 		}
 		return result;
