@@ -36,13 +36,18 @@ public class LALPServlet extends HttpServlet {
 
 		response.setContentType("text/plain");
 		PrintWriter out = response.getWriter();
-		String[] args = request.getParameterValues("args[]"); // retrieve data
-																// from request
-		String sourceCode = request.getParameter("sourceCode");
 
-		String result = compile(args, sourceCode);
-
-		out.println(result); // response
+		try {
+			String[] args = request.getParameterValues("args[]");
+			String sourceCode = request.getParameter("sourceCode");
+			String result = compile(args, sourceCode);
+			out.println(result); // response
+		} catch (Exception e) {
+			out.println("Choose parameters");
+			throw new RuntimeException(e);			
+		} finally {
+			out.close();
+		}
 	}
 
 	public String compile(String[] args, String sourceCode) {
