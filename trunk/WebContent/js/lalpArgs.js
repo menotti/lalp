@@ -26,7 +26,8 @@ $('#upload').click(function() {
 			data = data.replace("<pre>", "");
 			data = data.replace("</pre>", "");
 			data = data.trim();
-			$('#sourceCodeArea').html(data);
+			$('#sourceCodeArea').val(data);			
+			$('#fileName').val($('form input:file').val());
 		},
 		error : function(data, status, e) {
 			alert(e);
@@ -35,13 +36,13 @@ $('#upload').click(function() {
 });
 
 $('#compile').attr('disabled', false);
-$('#compile').click(function() {
+$('#compile').click(function() {	
 	$.ajax({
 		url : 'LALPServlet',
 		type : 'POST',
 		data : {
-			'args[]' : args,			
-			sourceCode : $('#sourceCodeArea').html()
+			'args[]' : args,
+			sourceCode : $('#sourceCodeArea').val()
 		},
 		error : function() {
 			alert('AJAX: Response from server failed!');

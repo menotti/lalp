@@ -53,12 +53,13 @@ public class UploadServlet extends HttpServlet {
 				new DiskFileItemFactory());
 		PrintWriter writer = response.getWriter();
 		response.setContentType("text/plain");
+		
 		try {
 			List<FileItem> items = uploadHandler.parseRequest(request);
 			for (FileItem item : items) {
 				if (!item.isFormField()) {
 					File file = File.createTempFile(item.getName(), "");
-					item.write(file);
+					item.write(file);		
 					writer.println(item.getString());
 					break; // assume we only get one file at a time
 				}
