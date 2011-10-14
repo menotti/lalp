@@ -16,6 +16,10 @@ menuArgs.click(function() { // select radio list option
 	}
 });
 
+$('#download').click(function() {
+	$('#downloadForm').submit();
+});
+
 $('#upload').click(function() {
 	$.ajaxFileUpload({
 		url : 'UploadServlet',

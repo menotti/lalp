@@ -55,15 +55,15 @@
 	<br />
 
 	<div id="sourceCode" class="sourceCode">
-		<form action="/lalp/DownloadServlet" method="post">
+		<form id="downloadForm" action="DownloadServlet" method="post">
 			<fieldset>
 				<legend>
 					<b>Source code</b>
 				</legend>
 				<textarea id="sourceCodeArea" name="sourceCode" rows="20" cols="100"></textarea>
-				<br /> File name: <input id="fileName" type="text" name="fileName"> 
-					<input	type="submit" value="Download"> 
-					<input type="button" id="compile" name="compile" value="Begin Compilation"
+				<br /> File name: <input id="fileName" type="text" name="fileName">
+				<input id="download" type="button" value="Download"> <input
+					type="button" id="compile" name="compile" value="Begin Compilation"
 					disabled="disabled">
 			</fieldset>
 		</form>
