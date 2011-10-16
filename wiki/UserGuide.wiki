@@ -1,0 +1,26 @@
+#summary The LALP Compiper User Guide
+#labels Featured,Phase-Support
+
+=Installation=
+
+Before using LALP compiler you need to install the following libraries:
+
+  * [http://jung.sourceforge.net/ JUNG]
+  * [http://acs.lbl.gov/software/colt/ Colt]
+  * [http://commons.apache.org/collections/ Commons Collections]
+
+==Setting Environment Variables==
+
+===Unix Systems===
+{{{
+export LALP_HOME=/path/to/lalp
+export PATH=$LALP_HOME:$PATH
+}}}
+
+===Windows Systems===
+{{{
+set LALP_HOME=c:\path\to\lalp
+set PATH=%LALP_HOME%;%PATH%
+}}}
+
+= Examples =
