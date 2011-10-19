@@ -39,12 +39,12 @@ PARSER_BEGIN(ALPParser)
  * SOFTWARE OR ITS DERIVATIVES. 
  */
 
-package alp.parser.lang;
+package lalp.parser.lang;
 
 import java.util.*;
 
-import alp.core.*;
-import alp.components.*;
+import lalp.core.*;
+import lalp.components.*;
 
 /**
  * @author <a href="mailto:ricardomenotti@acm.org">Ricardo Menotti</a>
@@ -64,6 +64,7 @@ public class ALPParser/*@bgen(jjtree)*/implements ALPParserTreeConstants/*@egen*
 	public Hashtable<String, Integer> allTypedefs = new Hashtable<String, Integer>();
 	public Hashtable<String, SimpleNode> allPins = new Hashtable<String, SimpleNode>();
 	public Hashtable<String, SimpleNode> allVariables = new Hashtable<String, SimpleNode>();
+	public Hashtable<String, SimpleNode> allResults = new Hashtable<String, SimpleNode>();
 	public Hashtable<String, Integer> allAttribution = new Hashtable<String, Integer>();
 	public TreeMap<Integer, String> allAttributionLines = new TreeMap<Integer, String>();
 
@@ -301,12 +302,13 @@ SimpleNode Start() : {/*@bgen(jjtree) Start */
  		jjtn000.setIdentifier(t.image);
  	}
  	<LPAREN> (Pin() (<COMMA> Pin())*)? <RPAREN> 
- 	<LBRACE> Statements() <RBRACE>/*@bgen(jjtree)*/
+ 	<LBRACE> Statements() <RBRACE>
+ 	(Testbench())?/*@bgen(jjtree)*/
         {
           jjtree.closeNodeScope(jjtn000, true);
           jjtc000 = false;
         }
-/*@egen*/
+/*@egen*/ 
 	{
  		return jjtn000;
  	}/*@bgen(jjtree)*/
@@ -331,6 +333,115 @@ SimpleNode Start() : {/*@bgen(jjtree) Start */
         }
 /*@egen*/
 }
+
+void Testbench() : {/*@bgen(jjtree) Testbench */
+        SimpleNode jjtn000 = new SimpleNode(this, JJTTESTBENCH);
+        boolean jjtc000 = true;
+        jjtree.openNodeScope(jjtn000);
+/*@egen*/
+	Token t;
+}
+{/*@bgen(jjtree) Testbench */
+        try {
+/*@egen*/
+	{
+		Info("This file has a testbench!");
+	}	
+	<LBRACE> 
+	(Results())+ 
+	<RBRACE>/*@bgen(jjtree)*/
+        } catch (Throwable jjte000) {
+          if (jjtc000) {
+            jjtree.clearNodeScope(jjtn000);
+            jjtc000 = false;
+          } else {
+            jjtree.popNode();
+          }
+          if (jjte000 instanceof RuntimeException) {
+            throw (RuntimeException)jjte000;
+          }
+          if (jjte000 instanceof ParseException) {
+            throw (ParseException)jjte000;
+          }
+          throw (Error)jjte000;
+        } finally {
+          if (jjtc000) {
+            jjtree.closeNodeScope(jjtn000, true);
+          }
+        }
+/*@egen*/
+}
+
+
+void Results() : {/*@bgen(jjtree) Results */
+        SimpleNode jjtn000 = new SimpleNode(this, JJTRESULTS);
+        boolean jjtc000 = true;
+        jjtree.openNodeScope(jjtn000);
+/*@egen*/
+	Token varType=null;
+	int varWidth=0;
+}
+{/*@bgen(jjtree) Results */
+        try {
+/*@egen*/
+	(varType=<IDENTIFIER> | varWidth=Fixed()) 
+	{
+		if (varType != null) {
+			if (allTypedefs.containsKey(varType.image)) {
+				varWidth=(Integer)(allTypedefs.get(varType.image));
+			}
+			else {
+				ErrorToken("Type " + varType.image + " NOT found!", varType);
+			}
+		}
+	}
+	Result(varWidth) <SEMICOLON>/*@bgen(jjtree)*/
+        } catch (Throwable jjte000) {
+          if (jjtc000) {
+            jjtree.clearNodeScope(jjtn000);
+            jjtc000 = false;
+          } else {
+            jjtree.popNode();
+          }
+          if (jjte000 instanceof RuntimeException) {
+            throw (RuntimeException)jjte000;
+          }
+          if (jjte000 instanceof ParseException) {
+            throw (ParseException)jjte000;
+          }
+          throw (Error)jjte000;
+        } finally {
+          if (jjtc000) {
+            jjtree.closeNodeScope(jjtn000, true);
+          }
+        }
+/*@egen*/
+}
+
+/*
+Vector<Long> TestResult(Vector<Long> inits) #void : {
+	Token t1, t2=null;
+}
+{
+	"{" t1=<INTEGER_LITERAL>
+	{
+		if (inits == null) {
+			inits = new Vector<Long>();
+		}
+		inits.add(StringToLong(t1.image));
+	}
+	( "," t2=<INTEGER_LITERAL>
+	{
+		if (t2 != null) {
+			inits.add(StringToLong(t2.image));
+		}
+	}
+	)* "}"
+	{
+		return inits;
+	}
+}
+*/
 
 void Name() : {/*@bgen(jjtree) Name */
         SimpleNode jjtn000 = new SimpleNode(this, JJTNAME);
@@ -618,6 +729,67 @@ void Variable(int varWidth) : {/*@bgen(jjtree) Variable */
 /*@egen*/
 }
 
+void Result(int varWidth) : {/*@bgen(jjtree) Result */
+        SimpleNode jjtn000 = new SimpleNode(this, JJTRESULT);
+        boolean jjtc000 = true;
+        jjtree.openNodeScope(jjtn000);
+/*@egen*/
+	Token tName;
+	Integer size = null;
+	Long init = null;
+	Vector<Long> inits = null;
+}
+{/*@bgen(jjtree) Result */
+        try {
+/*@egen*/
+	tName=<IDENTIFIER> (<LBRACKET> (size=ConstOrInt())? <RBRACKET>)? ("=" (init=ConstOrLong() | inits=MemoryInit(inits)))?/*@bgen(jjtree)*/
+        {
+          jjtree.closeNodeScope(jjtn000, true);
+          jjtc000 = false;
+        }
+/*@egen*/
+	{
+		if (allResults.containsKey(tName.image)) {
+			ErrorToken("Redefinition of Result " + tName.image, tName);
+		}
+		jjtn000.setIdentifier(tName.image);
+		if (size == null && inits != null && inits.size() != 0)
+			size = inits.size();
+		jjtn000.setArraySize(size);
+		jjtn000.jjtSetValue(init);
+		jjtn000.setInits(inits);
+		jjtn000.setWidth(varWidth);
+		jjtn000.setToken(tName);
+		allResults.put(tName.image, jjtn000);
+		// comp = design.addComponent(comp);
+		// jjtThis.setComponent(comp);
+		// allComponents.put(tName.image, comp);
+		//DEBUG 
+		//InfoToken("Variable " + tName.image + (size>0 ? "[" + size +"]" : "") + (init != null ? " with initial value " + init : "") +" found", tName);
+	}/*@bgen(jjtree)*/
+        } catch (Throwable jjte000) {
+          if (jjtc000) {
+            jjtree.clearNodeScope(jjtn000);
+            jjtc000 = false;
+          } else {
+            jjtree.popNode();
+          }
+          if (jjte000 instanceof RuntimeException) {
+            throw (RuntimeException)jjte000;
+          }
+          if (jjte000 instanceof ParseException) {
+            throw (ParseException)jjte000;
+          }
+          throw (Error)jjte000;
+        } finally {
+          if (jjtc000) {
+            jjtree.closeNodeScope(jjtn000, true);
+          }
+        }
+/*@egen*/
+}
+
+
 Vector<Long> MemoryInit(Vector<Long> inits)       : {
 	Token t1, t2=null;
 }
@@ -720,8 +892,7 @@ void Counter() : {/*@bgen(jjtree) Counter */
 	
 	{
 		if (!(tVarInit.image.equals(tVarTerm.image) && tVarTerm.image.equals(tVarInc.image))) {
-			System.out.println("Counter Initialization/Termination/Increment must use the same variable");
-			System.exit(1);
+			Error("Counter Initialization/Termination/Increment must use the same variable");
 		}
 		String incOper=tIncOper.image;
 		if (incOper.charAt(0)=='-') {
