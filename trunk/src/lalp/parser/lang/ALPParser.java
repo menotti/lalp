@@ -18,9 +18,8 @@ package lalp.parser.lang;
 
 import java.util.*;
 
-import lalp.components.*;
 import lalp.core.*;
-
+import lalp.components.*;
 
 /**
  * @author <a href="mailto:ricardomenotti@acm.org">Ricardo Menotti</a>
@@ -37,6 +36,7 @@ public class ALPParser/*@bgen(jjtree)*/implements ALPParserTreeConstants, ALPPar
         public Hashtable<String, Integer> allTypedefs = new Hashtable<String, Integer>();
         public Hashtable<String, SimpleNode> allPins = new Hashtable<String, SimpleNode>();
         public Hashtable<String, SimpleNode> allVariables = new Hashtable<String, SimpleNode>();
+        public Hashtable<String, SimpleNode> allResults = new Hashtable<String, SimpleNode>();
         public Hashtable<String, Integer> allAttribution = new Hashtable<String, Integer>();
         public TreeMap<Integer, String> allAttributionLines = new TreeMap<Integer, String>();
 
@@ -99,6 +99,14 @@ public class ALPParser/*@bgen(jjtree)*/implements ALPParserTreeConstants, ALPPar
       jj_consume_token(LBRACE);
       Statements();
       jj_consume_token(RBRACE);
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case LBRACE:
+        Testbench();
+        break;
+      default:
+        jj_la1[4] = jj_gen;
+        ;
+      }
           jjtree.closeNodeScope(jjtn000, true);
           jjtc000 = false;
                 {if (true) return jjtn000;}
@@ -124,6 +132,123 @@ public class ALPParser/*@bgen(jjtree)*/implements ALPParserTreeConstants, ALPPar
     throw new Error("Missing return statement in function");
   }
 
+  final public void Testbench() throws ParseException {
+                    /*@bgen(jjtree) Testbench */
+        SimpleNode jjtn000 = new SimpleNode(this, JJTTESTBENCH);
+        boolean jjtc000 = true;
+        jjtree.openNodeScope(jjtn000);Token t;
+    try {
+                Info("This file has a testbench!");
+      jj_consume_token(LBRACE);
+      label_4:
+      while (true) {
+        Results();
+        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+        case FIXED:
+        case IDENTIFIER:
+          ;
+          break;
+        default:
+          jj_la1[5] = jj_gen;
+          break label_4;
+        }
+      }
+      jj_consume_token(RBRACE);
+    } catch (Throwable jjte000) {
+          if (jjtc000) {
+            jjtree.clearNodeScope(jjtn000);
+            jjtc000 = false;
+          } else {
+            jjtree.popNode();
+          }
+          if (jjte000 instanceof RuntimeException) {
+            {if (true) throw (RuntimeException)jjte000;}
+          }
+          if (jjte000 instanceof ParseException) {
+            {if (true) throw (ParseException)jjte000;}
+          }
+          {if (true) throw (Error)jjte000;}
+    } finally {
+          if (jjtc000) {
+            jjtree.closeNodeScope(jjtn000, true);
+          }
+    }
+  }
+
+  final public void Results() throws ParseException {
+                  /*@bgen(jjtree) Results */
+        SimpleNode jjtn000 = new SimpleNode(this, JJTRESULTS);
+        boolean jjtc000 = true;
+        jjtree.openNodeScope(jjtn000);Token varType=null;
+        int varWidth=0;
+    try {
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case IDENTIFIER:
+        varType = jj_consume_token(IDENTIFIER);
+        break;
+      case FIXED:
+        varWidth = Fixed();
+        break;
+      default:
+        jj_la1[6] = jj_gen;
+        jj_consume_token(-1);
+        throw new ParseException();
+      }
+                if (varType != null) {
+                        if (allTypedefs.containsKey(varType.image)) {
+                                varWidth=(Integer)(allTypedefs.get(varType.image));
+                        }
+                        else {
+                                ErrorToken("Type " + varType.image + " NOT found!", varType);
+                        }
+                }
+      Result(varWidth);
+      jj_consume_token(SEMICOLON);
+    } catch (Throwable jjte000) {
+          if (jjtc000) {
+            jjtree.clearNodeScope(jjtn000);
+            jjtc000 = false;
+          } else {
+            jjtree.popNode();
+          }
+          if (jjte000 instanceof RuntimeException) {
+            {if (true) throw (RuntimeException)jjte000;}
+          }
+          if (jjte000 instanceof ParseException) {
+            {if (true) throw (ParseException)jjte000;}
+          }
+          {if (true) throw (Error)jjte000;}
+    } finally {
+          if (jjtc000) {
+            jjtree.closeNodeScope(jjtn000, true);
+          }
+    }
+  }
+
+/*
+Vector<Long> TestResult(Vector<Long> inits) #void : {
+	Token t1, t2=null;
+}
+{
+	"{" t1=<INTEGER_LITERAL>
+	{
+		if (inits == null) {
+			inits = new Vector<Long>();
+		}
+		inits.add(StringToLong(t1.image));
+	}
+	( "," t2=<INTEGER_LITERAL>
+	{
+		if (t2 != null) {
+			inits.add(StringToLong(t2.image));
+		}
+	}
+	)* "}"
+	{
+		return inits;
+	}
+}
+*/
   final public void Name() throws ParseException {
                /*@bgen(jjtree) Name */
         SimpleNode jjtn000 = new SimpleNode(this, JJTNAME);
@@ -137,7 +262,7 @@ public class ALPParser/*@bgen(jjtree)*/implements ALPParserTreeConstants, ALPPar
         tPort = jj_consume_token(IDENTIFIER);
         break;
       default:
-        jj_la1[4] = jj_gen;
+        jj_la1[7] = jj_gen;
         ;
       }
           jjtree.closeNodeScope(jjtn000, true);
@@ -245,7 +370,7 @@ public class ALPParser/*@bgen(jjtree)*/implements ALPParserTreeConstants, ALPPar
       ConstOrInt();
       break;
     default:
-      jj_la1[5] = jj_gen;
+      jj_la1[8] = jj_gen;
       ;
     }
     jj_consume_token(RPAREN);
@@ -268,7 +393,7 @@ public class ALPParser/*@bgen(jjtree)*/implements ALPParserTreeConstants, ALPPar
         pinDir = jj_consume_token(OUT);
         break;
       default:
-        jj_la1[6] = jj_gen;
+        jj_la1[9] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -280,7 +405,7 @@ public class ALPParser/*@bgen(jjtree)*/implements ALPParserTreeConstants, ALPPar
         pinWidth = Fixed();
         break;
       default:
-        jj_la1[7] = jj_gen;
+        jj_la1[10] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -340,10 +465,10 @@ public class ALPParser/*@bgen(jjtree)*/implements ALPParserTreeConstants, ALPPar
       Declarations();
       break;
     default:
-      jj_la1[8] = jj_gen;
+      jj_la1[11] = jj_gen;
       ;
     }
-    label_4:
+    label_5:
     while (true) {
       Statement();
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -352,15 +477,15 @@ public class ALPParser/*@bgen(jjtree)*/implements ALPParserTreeConstants, ALPPar
         ;
         break;
       default:
-        jj_la1[9] = jj_gen;
-        break label_4;
+        jj_la1[12] = jj_gen;
+        break label_5;
       }
     }
   }
 
   final public void Declarations() throws ParseException {
     jj_consume_token(LBRACE);
-    label_5:
+    label_6:
     while (true) {
       Declaration();
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -369,8 +494,8 @@ public class ALPParser/*@bgen(jjtree)*/implements ALPParserTreeConstants, ALPPar
         ;
         break;
       default:
-        jj_la1[10] = jj_gen;
-        break label_5;
+        jj_la1[13] = jj_gen;
+        break label_6;
       }
     }
     jj_consume_token(RBRACE);
@@ -387,7 +512,7 @@ public class ALPParser/*@bgen(jjtree)*/implements ALPParserTreeConstants, ALPPar
       varWidth = Fixed();
       break;
     default:
-      jj_la1[11] = jj_gen;
+      jj_la1[14] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -400,15 +525,15 @@ public class ALPParser/*@bgen(jjtree)*/implements ALPParserTreeConstants, ALPPar
                         }
                 }
     Variable(varWidth);
-    label_6:
+    label_7:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case COMMA:
         ;
         break;
       default:
-        jj_la1[12] = jj_gen;
-        break label_6;
+        jj_la1[15] = jj_gen;
+        break label_7;
       }
       jj_consume_token(COMMA);
       Variable(varWidth);
@@ -435,13 +560,13 @@ public class ALPParser/*@bgen(jjtree)*/implements ALPParserTreeConstants, ALPPar
           size = ConstOrInt();
           break;
         default:
-          jj_la1[13] = jj_gen;
+          jj_la1[16] = jj_gen;
           ;
         }
         jj_consume_token(RBRACKET);
         break;
       default:
-        jj_la1[14] = jj_gen;
+        jj_la1[17] = jj_gen;
         ;
       }
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -456,13 +581,13 @@ public class ALPParser/*@bgen(jjtree)*/implements ALPParserTreeConstants, ALPPar
           inits = MemoryInit(inits);
           break;
         default:
-          jj_la1[15] = jj_gen;
+          jj_la1[18] = jj_gen;
           jj_consume_token(-1);
           throw new ParseException();
         }
         break;
       default:
-        jj_la1[16] = jj_gen;
+        jj_la1[19] = jj_gen;
         ;
       }
           jjtree.closeNodeScope(jjtn000, true);
@@ -506,6 +631,96 @@ public class ALPParser/*@bgen(jjtree)*/implements ALPParserTreeConstants, ALPPar
     }
   }
 
+  final public void Result(int varWidth) throws ParseException {
+                             /*@bgen(jjtree) Result */
+        SimpleNode jjtn000 = new SimpleNode(this, JJTRESULT);
+        boolean jjtc000 = true;
+        jjtree.openNodeScope(jjtn000);Token tName;
+        Integer size = null;
+        Long init = null;
+        Vector<Long> inits = null;
+    try {
+      tName = jj_consume_token(IDENTIFIER);
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case LBRACKET:
+        jj_consume_token(LBRACKET);
+        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+        case INTEGER_LITERAL:
+        case IDENTIFIER:
+          size = ConstOrInt();
+          break;
+        default:
+          jj_la1[20] = jj_gen;
+          ;
+        }
+        jj_consume_token(RBRACKET);
+        break;
+      default:
+        jj_la1[21] = jj_gen;
+        ;
+      }
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case ASSIGN:
+        jj_consume_token(ASSIGN);
+        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+        case INTEGER_LITERAL:
+        case IDENTIFIER:
+          init = ConstOrLong();
+          break;
+        case LBRACE:
+          inits = MemoryInit(inits);
+          break;
+        default:
+          jj_la1[22] = jj_gen;
+          jj_consume_token(-1);
+          throw new ParseException();
+        }
+        break;
+      default:
+        jj_la1[23] = jj_gen;
+        ;
+      }
+          jjtree.closeNodeScope(jjtn000, true);
+          jjtc000 = false;
+                if (allResults.containsKey(tName.image)) {
+                        ErrorToken("Redefinition of Result " + tName.image, tName);
+                }
+                jjtn000.setIdentifier(tName.image);
+                if (size == null && inits != null && inits.size() != 0)
+                        size = inits.size();
+                jjtn000.setArraySize(size);
+                jjtn000.jjtSetValue(init);
+                jjtn000.setInits(inits);
+                jjtn000.setWidth(varWidth);
+                jjtn000.setToken(tName);
+                allResults.put(tName.image, jjtn000);
+                // comp = design.addComponent(comp);
+                // jjtThis.setComponent(comp);
+                // allComponents.put(tName.image, comp);
+                //DEBUG 
+                //InfoToken("Variable " + tName.image + (size>0 ? "[" + size +"]" : "") + (init != null ? " with initial value " + init : "") +" found", tName);
+
+    } catch (Throwable jjte000) {
+          if (jjtc000) {
+            jjtree.clearNodeScope(jjtn000);
+            jjtc000 = false;
+          } else {
+            jjtree.popNode();
+          }
+          if (jjte000 instanceof RuntimeException) {
+            {if (true) throw (RuntimeException)jjte000;}
+          }
+          if (jjte000 instanceof ParseException) {
+            {if (true) throw (ParseException)jjte000;}
+          }
+          {if (true) throw (Error)jjte000;}
+    } finally {
+          if (jjtc000) {
+            jjtree.closeNodeScope(jjtn000, true);
+          }
+    }
+  }
+
   final public Vector<Long> MemoryInit(Vector<Long> inits) throws ParseException {
         Token t1, t2=null;
     jj_consume_token(LBRACE);
@@ -514,15 +729,15 @@ public class ALPParser/*@bgen(jjtree)*/implements ALPParserTreeConstants, ALPPar
                         inits = new Vector<Long>();
                 }
                 inits.add(StringToLong(t1.image));
-    label_7:
+    label_8:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case COMMA:
         ;
         break;
       default:
-        jj_la1[17] = jj_gen;
-        break label_7;
+        jj_la1[24] = jj_gen;
+        break label_8;
       }
       jj_consume_token(COMMA);
       t2 = jj_consume_token(INTEGER_LITERAL);
@@ -559,7 +774,7 @@ public class ALPParser/*@bgen(jjtree)*/implements ALPParserTreeConstants, ALPPar
         vLoad = jj_consume_token(IDENTIFIER);
         break;
       default:
-        jj_la1[18] = jj_gen;
+        jj_la1[25] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -593,7 +808,7 @@ public class ALPParser/*@bgen(jjtree)*/implements ALPParserTreeConstants, ALPPar
         vTerm = jj_consume_token(IDENTIFIER);
         break;
       default:
-        jj_la1[19] = jj_gen;
+        jj_la1[26] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -628,7 +843,7 @@ public class ALPParser/*@bgen(jjtree)*/implements ALPParserTreeConstants, ALPPar
         increment = ConstOrInt();
         break;
       default:
-        jj_la1[20] = jj_gen;
+        jj_la1[27] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -638,7 +853,7 @@ public class ALPParser/*@bgen(jjtree)*/implements ALPParserTreeConstants, ALPPar
         steps = ConstOrInt();
         break;
       default:
-        jj_la1[21] = jj_gen;
+        jj_la1[28] = jj_gen;
         ;
       }
                 jjtn000.setIncOper(tIncOper.image);
@@ -648,8 +863,7 @@ public class ALPParser/*@bgen(jjtree)*/implements ALPParserTreeConstants, ALPPar
           jjtree.closeNodeScope(jjtn000, true);
           jjtc000 = false;
                 if (!(tVarInit.image.equals(tVarTerm.image) && tVarTerm.image.equals(tVarInc.image))) {
-                        System.out.println("Counter Initialization/Termination/Increment must use the same variable");
-                        System.exit(1);
+                        Error("Counter Initialization/Termination/Increment must use the same variable");
                 }
                 String incOper=tIncOper.image;
                 if (incOper.charAt(0)=='-') {
@@ -699,7 +913,7 @@ public class ALPParser/*@bgen(jjtree)*/implements ALPParserTreeConstants, ALPPar
       t = jj_consume_token(NE);
       break;
     default:
-      jj_la1[22] = jj_gen;
+      jj_la1[29] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -716,7 +930,7 @@ public class ALPParser/*@bgen(jjtree)*/implements ALPParserTreeConstants, ALPPar
       Counter();
       break;
     default:
-      jj_la1[23] = jj_gen;
+      jj_la1[30] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -737,7 +951,7 @@ public class ALPParser/*@bgen(jjtree)*/implements ALPParserTreeConstants, ALPPar
         When();
         break;
       default:
-        jj_la1[24] = jj_gen;
+        jj_la1[31] = jj_gen;
         ;
       }
           jjtree.closeNodeScope(jjtn000, true);
@@ -806,7 +1020,7 @@ public class ALPParser/*@bgen(jjtree)*/implements ALPParserTreeConstants, ALPPar
         tPort = jj_consume_token(IDENTIFIER);
         break;
       default:
-        jj_la1[25] = jj_gen;
+        jj_la1[32] = jj_gen;
         ;
       }
           jjtree.closeNodeScope(jjtn000, true);
@@ -870,7 +1084,7 @@ public class ALPParser/*@bgen(jjtree)*/implements ALPParserTreeConstants, ALPPar
       t = jj_consume_token(ORASSIGN);
       break;
     default:
-      jj_la1[26] = jj_gen;
+      jj_la1[33] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -949,7 +1163,7 @@ public class ALPParser/*@bgen(jjtree)*/implements ALPParserTreeConstants, ALPPar
                                  jjtn000.setStepDelay(amount);
         break;
       default:
-        jj_la1[27] = jj_gen;
+        jj_la1[34] = jj_gen;
         ;
       }
     } catch (Throwable jjte000) {
@@ -989,7 +1203,7 @@ public class ALPParser/*@bgen(jjtree)*/implements ALPParserTreeConstants, ALPPar
         ConditionalOrExpression();
         break;
       default:
-        jj_la1[28] = jj_gen;
+        jj_la1[35] = jj_gen;
         ;
       }
     } catch (Throwable jjte000) {
@@ -1020,15 +1234,15 @@ public class ALPParser/*@bgen(jjtree)*/implements ALPParserTreeConstants, ALPPar
   jjtree.openNodeScope(jjtn000);
     try {
       ConditionalAndExpression();
-      label_8:
+      label_9:
       while (true) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case SC_OR:
           ;
           break;
         default:
-          jj_la1[29] = jj_gen;
-          break label_8;
+          jj_la1[36] = jj_gen;
+          break label_9;
         }
                                 jjtn000.setComponentClass(or_op.class);
         jj_consume_token(SC_OR);
@@ -1062,15 +1276,15 @@ public class ALPParser/*@bgen(jjtree)*/implements ALPParserTreeConstants, ALPPar
   jjtree.openNodeScope(jjtn000);
     try {
       InclusiveOrExpression();
-      label_9:
+      label_10:
       while (true) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case SC_AND:
           ;
           break;
         default:
-          jj_la1[30] = jj_gen;
-          break label_9;
+          jj_la1[37] = jj_gen;
+          break label_10;
         }
                              jjtn000.setComponentClass(and_op.class);
         jj_consume_token(SC_AND);
@@ -1104,15 +1318,15 @@ public class ALPParser/*@bgen(jjtree)*/implements ALPParserTreeConstants, ALPPar
   jjtree.openNodeScope(jjtn000);
     try {
       ExclusiveOrExpression();
-      label_10:
+      label_11:
       while (true) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case BIT_OR:
           ;
           break;
         default:
-          jj_la1[31] = jj_gen;
-          break label_10;
+          jj_la1[38] = jj_gen;
+          break label_11;
         }
                              jjtn000.setComponentClass(or_op.class);
         jj_consume_token(BIT_OR);
@@ -1146,15 +1360,15 @@ public class ALPParser/*@bgen(jjtree)*/implements ALPParserTreeConstants, ALPPar
   jjtree.openNodeScope(jjtn000);
     try {
       AndExpression();
-      label_11:
+      label_12:
       while (true) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case XOR:
           ;
           break;
         default:
-          jj_la1[32] = jj_gen;
-          break label_11;
+          jj_la1[39] = jj_gen;
+          break label_12;
         }
                      jjtn000.setComponentClass(and_op.class);
         jj_consume_token(XOR);
@@ -1188,15 +1402,15 @@ public class ALPParser/*@bgen(jjtree)*/implements ALPParserTreeConstants, ALPPar
   jjtree.openNodeScope(jjtn000);
     try {
       EqualityExpression();
-      label_12:
+      label_13:
       while (true) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case BIT_AND:
           ;
           break;
         default:
-          jj_la1[33] = jj_gen;
-          break label_12;
+          jj_la1[40] = jj_gen;
+          break label_13;
         }
            jjtn000.setComponentClass(and_op.class);
         jj_consume_token(BIT_AND);
@@ -1230,7 +1444,7 @@ public class ALPParser/*@bgen(jjtree)*/implements ALPParserTreeConstants, ALPPar
   jjtree.openNodeScope(jjtn000);
     try {
       RelationalExpression();
-      label_13:
+      label_14:
       while (true) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case EQ:
@@ -1238,8 +1452,8 @@ public class ALPParser/*@bgen(jjtree)*/implements ALPParserTreeConstants, ALPPar
           ;
           break;
         default:
-          jj_la1[34] = jj_gen;
-          break label_13;
+          jj_la1[41] = jj_gen;
+          break label_14;
         }
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case EQ:
@@ -1251,7 +1465,7 @@ public class ALPParser/*@bgen(jjtree)*/implements ALPParserTreeConstants, ALPPar
               jjtn000.setComponentClass(if_ne_op_s.class);
           break;
         default:
-          jj_la1[35] = jj_gen;
+          jj_la1[42] = jj_gen;
           jj_consume_token(-1);
           throw new ParseException();
         }
@@ -1285,7 +1499,7 @@ public class ALPParser/*@bgen(jjtree)*/implements ALPParserTreeConstants, ALPPar
   jjtree.openNodeScope(jjtn000);
     try {
       ShiftExpression();
-      label_14:
+      label_15:
       while (true) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case GT:
@@ -1295,8 +1509,8 @@ public class ALPParser/*@bgen(jjtree)*/implements ALPParserTreeConstants, ALPPar
           ;
           break;
         default:
-          jj_la1[36] = jj_gen;
-          break label_14;
+          jj_la1[43] = jj_gen;
+          break label_15;
         }
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case LT:
@@ -1316,7 +1530,7 @@ public class ALPParser/*@bgen(jjtree)*/implements ALPParserTreeConstants, ALPPar
         jjtn000.setComponentClass(if_ge_op_s.class);
           break;
         default:
-          jj_la1[37] = jj_gen;
+          jj_la1[44] = jj_gen;
           jj_consume_token(-1);
           throw new ParseException();
         }
@@ -1350,7 +1564,7 @@ public class ALPParser/*@bgen(jjtree)*/implements ALPParserTreeConstants, ALPPar
         jjtree.openNodeScope(jjtn000);Integer amount = null;
     try {
       AdditiveExpression();
-      label_15:
+      label_16:
       while (true) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case LSHIFT:
@@ -1359,8 +1573,8 @@ public class ALPParser/*@bgen(jjtree)*/implements ALPParserTreeConstants, ALPPar
           ;
           break;
         default:
-          jj_la1[38] = jj_gen;
-          break label_15;
+          jj_la1[45] = jj_gen;
+          break label_16;
         }
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case LSHIFT:
@@ -1375,7 +1589,7 @@ public class ALPParser/*@bgen(jjtree)*/implements ALPParserTreeConstants, ALPPar
           jj_consume_token(RUNSIGNEDSHIFT);
           break;
         default:
-          jj_la1[39] = jj_gen;
+          jj_la1[46] = jj_gen;
           jj_consume_token(-1);
           throw new ParseException();
         }
@@ -1410,7 +1624,7 @@ public class ALPParser/*@bgen(jjtree)*/implements ALPParserTreeConstants, ALPPar
   jjtree.openNodeScope(jjtn000);
     try {
       MultiplicativeExpression();
-      label_16:
+      label_17:
       while (true) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case PLUS:
@@ -1418,8 +1632,8 @@ public class ALPParser/*@bgen(jjtree)*/implements ALPParserTreeConstants, ALPPar
           ;
           break;
         default:
-          jj_la1[40] = jj_gen;
-          break label_16;
+          jj_la1[47] = jj_gen;
+          break label_17;
         }
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case PLUS:
@@ -1431,7 +1645,7 @@ public class ALPParser/*@bgen(jjtree)*/implements ALPParserTreeConstants, ALPPar
        jjtn000.setComponentClass(sub_op_s.class);
           break;
         default:
-          jj_la1[41] = jj_gen;
+          jj_la1[48] = jj_gen;
           jj_consume_token(-1);
           throw new ParseException();
         }
@@ -1465,7 +1679,7 @@ public class ALPParser/*@bgen(jjtree)*/implements ALPParserTreeConstants, ALPPar
         jjtree.openNodeScope(jjtn000);Integer amount = null;
     try {
       UnaryExpression();
-      label_17:
+      label_18:
       while (true) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case STAR:
@@ -1474,8 +1688,8 @@ public class ALPParser/*@bgen(jjtree)*/implements ALPParserTreeConstants, ALPPar
           ;
           break;
         default:
-          jj_la1[42] = jj_gen;
-          break label_17;
+          jj_la1[49] = jj_gen;
+          break label_18;
         }
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case STAR:
@@ -1493,7 +1707,7 @@ public class ALPParser/*@bgen(jjtree)*/implements ALPParserTreeConstants, ALPPar
        jjtn000.setComponentClass(div_op_s.class);
           break;
         default:
-          jj_la1[43] = jj_gen;
+          jj_la1[50] = jj_gen;
           jj_consume_token(-1);
           throw new ParseException();
         }
@@ -1538,7 +1752,7 @@ public class ALPParser/*@bgen(jjtree)*/implements ALPParserTreeConstants, ALPPar
        jjtn000.setComponentClass(neg_op_s.class);
           break;
         default:
-          jj_la1[44] = jj_gen;
+          jj_la1[51] = jj_gen;
           jj_consume_token(-1);
           throw new ParseException();
         }
@@ -1560,7 +1774,7 @@ public class ALPParser/*@bgen(jjtree)*/implements ALPParserTreeConstants, ALPPar
         UnaryExpressionNotPlusMinus();
         break;
       default:
-        jj_la1[45] = jj_gen;
+        jj_la1[52] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -1663,7 +1877,7 @@ public class ALPParser/*@bgen(jjtree)*/implements ALPParserTreeConstants, ALPPar
        jjtn000.setComponentClass(not_op.class);
           break;
         default:
-          jj_la1[46] = jj_gen;
+          jj_la1[53] = jj_gen;
           jj_consume_token(-1);
           throw new ParseException();
         }
@@ -1677,7 +1891,7 @@ public class ALPParser/*@bgen(jjtree)*/implements ALPParserTreeConstants, ALPPar
         PostfixExpression();
         break;
       default:
-        jj_la1[47] = jj_gen;
+        jj_la1[54] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -1721,13 +1935,13 @@ public class ALPParser/*@bgen(jjtree)*/implements ALPParserTreeConstants, ALPPar
           jj_consume_token(DECR);
           break;
         default:
-          jj_la1[48] = jj_gen;
+          jj_la1[55] = jj_gen;
           jj_consume_token(-1);
           throw new ParseException();
         }
         break;
       default:
-        jj_la1[49] = jj_gen;
+        jj_la1[56] = jj_gen;
         ;
       }
     } catch (Throwable jjte000) {
@@ -1772,7 +1986,7 @@ public class ALPParser/*@bgen(jjtree)*/implements ALPParserTreeConstants, ALPPar
         Name();
         break;
       default:
-        jj_la1[50] = jj_gen;
+        jj_la1[57] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -1814,7 +2028,7 @@ public class ALPParser/*@bgen(jjtree)*/implements ALPParserTreeConstants, ALPPar
         t = jj_consume_token(STRING_LITERAL);
         break;
       default:
-        jj_la1[51] = jj_gen;
+        jj_la1[58] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -1839,7 +2053,7 @@ public class ALPParser/*@bgen(jjtree)*/implements ALPParserTreeConstants, ALPPar
       t = jj_consume_token(IDENTIFIER);
       break;
     default:
-      jj_la1[52] = jj_gen;
+      jj_la1[59] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -1869,7 +2083,7 @@ public class ALPParser/*@bgen(jjtree)*/implements ALPParserTreeConstants, ALPPar
       t = jj_consume_token(IDENTIFIER);
       break;
     default:
-      jj_la1[53] = jj_gen;
+      jj_la1[60] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -1930,7 +2144,7 @@ public class ALPParser/*@bgen(jjtree)*/implements ALPParserTreeConstants, ALPPar
   public Token jj_nt;
   private int jj_ntk;
   private int jj_gen;
-  final private int[] jj_la1 = new int[54];
+  final private int[] jj_la1 = new int[61];
   static private int[] jj_la1_0;
   static private int[] jj_la1_1;
   static private int[] jj_la1_2;
@@ -1940,13 +2154,13 @@ public class ALPParser/*@bgen(jjtree)*/implements ALPParserTreeConstants, ALPPar
       jj_la1_init_2();
    }
    private static void jj_la1_init_0() {
-      jj_la1_0 = new int[] {0x20000,0x2000,0x0,0x18000,0x0,0x0,0x18000,0x2004000,0x40000000,0x2040000,0x2004000,0x2004000,0x0,0x2100000,0x0,0x42100000,0x0,0x0,0x2100000,0x2100000,0x0,0x0,0x0,0x2040000,0x80000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x13900000,0x0,0x13900000,0x0,0x0,0x13900000,0x1900000,0x2100000,0x2100000,};
+      jj_la1_0 = new int[] {0x20000,0x2000,0x0,0x18000,0x40000000,0x2004000,0x2004000,0x0,0x0,0x18000,0x2004000,0x40000000,0x2040000,0x2004000,0x2004000,0x0,0x2100000,0x0,0x42100000,0x0,0x2100000,0x0,0x42100000,0x0,0x0,0x2100000,0x2100000,0x0,0x0,0x0,0x2040000,0x80000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x13900000,0x0,0x13900000,0x0,0x0,0x13900000,0x1900000,0x2100000,0x2100000,};
    }
    private static void jj_la1_init_1() {
-      jj_la1_1 = new int[] {0x0,0x0,0x8,0x0,0x10,0x8,0x0,0x0,0x0,0x0,0x0,0x0,0x8,0x0,0x1,0x0,0x20,0x8,0x0,0x0,0x180000,0x40,0x1e180,0x0,0x0,0x10,0x20,0x40,0x800,0x20000,0x40000,0x4000000,0x8000000,0x2000000,0x12000,0x12000,0xc180,0xc180,0xe0000000,0xe0000000,0x600000,0x600000,0x1800000,0x1800000,0x600000,0x780600,0x600,0x600,0x180000,0x180000,0x0,0x0,0x0,0x0,};
+      jj_la1_1 = new int[] {0x0,0x0,0x8,0x0,0x0,0x0,0x0,0x10,0x8,0x0,0x0,0x0,0x0,0x0,0x0,0x8,0x0,0x1,0x0,0x20,0x0,0x1,0x0,0x20,0x8,0x0,0x0,0x180000,0x40,0x1e180,0x0,0x0,0x10,0x20,0x40,0x800,0x20000,0x40000,0x4000000,0x8000000,0x2000000,0x12000,0x12000,0xc180,0xc180,0xe0000000,0xe0000000,0x600000,0x600000,0x1800000,0x1800000,0x600000,0x780600,0x600,0x600,0x180000,0x180000,0x0,0x0,0x0,0x0,};
    }
    private static void jj_la1_init_2() {
-      jj_la1_2 = new int[] {0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x3,0x0,0x0,0x0,0x0,0x0,0x7ff,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x800,0x800,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,};
+      jj_la1_2 = new int[] {0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x3,0x0,0x0,0x0,0x0,0x0,0x7ff,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x800,0x800,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,};
    }
 
   /** Constructor with InputStream. */
@@ -1960,7 +2174,7 @@ public class ALPParser/*@bgen(jjtree)*/implements ALPParserTreeConstants, ALPPar
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 54; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 61; i++) jj_la1[i] = -1;
   }
 
   /** Reinitialise. */
@@ -1975,7 +2189,7 @@ public class ALPParser/*@bgen(jjtree)*/implements ALPParserTreeConstants, ALPPar
     jj_ntk = -1;
     jjtree.reset();
     jj_gen = 0;
-    for (int i = 0; i < 54; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 61; i++) jj_la1[i] = -1;
   }
 
   /** Constructor. */
@@ -1985,7 +2199,7 @@ public class ALPParser/*@bgen(jjtree)*/implements ALPParserTreeConstants, ALPPar
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 54; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 61; i++) jj_la1[i] = -1;
   }
 
   /** Reinitialise. */
@@ -1996,7 +2210,7 @@ public class ALPParser/*@bgen(jjtree)*/implements ALPParserTreeConstants, ALPPar
     jj_ntk = -1;
     jjtree.reset();
     jj_gen = 0;
-    for (int i = 0; i < 54; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 61; i++) jj_la1[i] = -1;
   }
 
   /** Constructor with generated Token Manager. */
@@ -2005,7 +2219,7 @@ public class ALPParser/*@bgen(jjtree)*/implements ALPParserTreeConstants, ALPPar
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 54; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 61; i++) jj_la1[i] = -1;
   }
 
   /** Reinitialise. */
@@ -2015,7 +2229,7 @@ public class ALPParser/*@bgen(jjtree)*/implements ALPParserTreeConstants, ALPPar
     jj_ntk = -1;
     jjtree.reset();
     jj_gen = 0;
-    for (int i = 0; i < 54; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 61; i++) jj_la1[i] = -1;
   }
 
   private Token jj_consume_token(int kind) throws ParseException {
@@ -2071,7 +2285,7 @@ public class ALPParser/*@bgen(jjtree)*/implements ALPParserTreeConstants, ALPPar
       la1tokens[jj_kind] = true;
       jj_kind = -1;
     }
-    for (int i = 0; i < 54; i++) {
+    for (int i = 0; i < 61; i++) {
       if (jj_la1[i] == jj_gen) {
         for (int j = 0; j < 32; j++) {
           if ((jj_la1_0[i] & (1<<j)) != 0) {

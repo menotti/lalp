@@ -16,9 +16,8 @@
 
 package lalp.parser.lang;
 import java.util.*;
-
-import lalp.components.*;
 import lalp.core.*;
+import lalp.components.*;
 
 /** Token Manager. */
 public class ALPParserTokenManager implements ALPParserConstants
