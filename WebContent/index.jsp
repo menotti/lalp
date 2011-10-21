@@ -20,6 +20,12 @@
 				});
 			}));*/
 </script>
+<script type="text/javascript">
+function newColor(color)
+{
+document.getElementById('sourceCodeArea').style.color=color;
+}
+</script>
 <title>A Web Interface for the LALP Compiler</title>
 </head>
 <body>
@@ -60,7 +66,7 @@
 				<legend>
 					<b>Source code</b>
 				</legend>
-				<textarea id="sourceCodeArea" name="sourceCode" rows="20" cols="100"></textarea>
+				<textarea id="sourceCodeArea" name="sourceCode" rows="20" cols="100" onkeyup="newColor('red')"></textarea>
 				<br /> File name: <input id="fileName" type="text" name="fileName">
 				<input id="download" type="button" value="Download"> <input
 					type="button" id="compile" name="compile" value="Begin Compilation"
