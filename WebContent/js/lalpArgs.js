@@ -27,7 +27,7 @@ $('#upload').click(function() {
 		fileElementId : 'file_1',
 		dataType : 'multipart/form-data',
 		success : function(data, status) {
-			data = data.replace(/^<pre.*\n?/m,"");
+			data = data.replace(/^<pre.*>/m,"");
 			//data = data.replace("<pre>", "");
 			data = data.replace("</pre>", "");
 			data = data.trim();
