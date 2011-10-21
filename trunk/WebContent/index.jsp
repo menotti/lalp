@@ -68,7 +68,7 @@ document.getElementById('sourceCodeArea').style.color=color;
 				</legend>
 				<textarea id="sourceCodeArea" name="sourceCode" rows="20" cols="100" onkeyup="newColor('red')"></textarea>
 				<br /> File name: <input id="fileName" type="text" name="fileName">
-				<input id="download" type="button" value="Download"> <input
+				<input id="download" type="button" value="Download" onClick="newColor('blue')"> <input
 					type="button" id="compile" name="compile" value="Begin Compilation"
 					disabled="disabled">
 			</fieldset>
