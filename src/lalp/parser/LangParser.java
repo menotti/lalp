@@ -55,7 +55,7 @@ public class LangParser {
 			root.accessComponents();
 		} catch (Exception e) {
 			e.printStackTrace();
-			System.exit(1);
+			//System.exit(1);
 		}
 	}
 	
@@ -82,7 +82,7 @@ public class LangParser {
 			createOperations();
 		} catch (Exception e) {
 			e.printStackTrace();
-			System.exit(1);
+			//System.exit(1);
 		}
 		System.out.println("Ok!");
 	}
@@ -113,7 +113,7 @@ public class LangParser {
 			}
 			catch (Exception ex) {
 				ex.printStackTrace();
-				System.exit(1);
+				//System.exit(1);
 			}
 			comp = parser.design.addComponent(comp);
 			n.setComponent(comp);
@@ -216,7 +216,7 @@ public class LangParser {
 				}
 				catch (Exception ex) {
 					ex.printStackTrace();
-					System.exit(1);
+					//System.exit(1);
 				}
 				if (comp != null) {
 					comp = parser.design.addComponent(comp);
@@ -263,7 +263,7 @@ public class LangParser {
 			}
 			catch (Exception ex) {
 				ex.printStackTrace();
-				System.exit(1);
+				//System.exit(1);
 			}
 			comp = parser.design.addComponent(comp);
 			while (SimpleNode.allComponents.containsKey(name)) {
@@ -388,7 +388,7 @@ public class LangParser {
 
 	final public void Error(String s) {
 		System.err.println(s);
-		System.exit(1);
+		//System.exit(1);
 	}
 
 	final public void ErrorToken(String s, Token t) {
