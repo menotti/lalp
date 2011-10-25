@@ -68,6 +68,6 @@ public final class Parameters {
 
 	public static void error(String error) {
 		System.err.println("Error: " + error);
-		System.exit(1);
+		//System.exit(1);
 	}
 }
