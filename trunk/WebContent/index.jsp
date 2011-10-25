@@ -20,17 +20,10 @@
 				});
 			}));*/
 </script>
-<script type="text/javascript">
-function newColor(color)
-{
-document.getElementById('sourceCodeArea').style.color=color;
-}
-</script>
 <title>A Web Interface for the LALP Compiler</title>
 </head>
 <body>
 	<h1>LALP Web Compiler</h1>
-
 	<div id="menuArgs" class="menuArgs">
 		<form>
 			<fieldset>
@@ -44,7 +37,6 @@ document.getElementById('sourceCodeArea').style.color=color;
 		</form>
 	</div>
 	<br />
-
 	<div id="submitForm" class="submitForm">
 		<form id="file_upload">
 			<fieldset>
@@ -59,26 +51,37 @@ document.getElementById('sourceCodeArea').style.color=color;
 		</form>
 	</div>
 	<br />
-
 	<div id="sourceCode" class="sourceCode">
-		<form id="downloadForm" action="DownloadServlet" method="post">
+		<form id="downloadForm" action="DownloadSourceServlet" method="post">
 			<fieldset>
 				<legend>
 					<b>Source code</b>
 				</legend>
-				<textarea id="sourceCodeArea" name="sourceCode" rows="20" cols="100" onkeyup="newColor('red')"></textarea>
-				<br /> File name: <input id="fileName" type="text" name="fileName">
-				<input id="download" type="button" value="Download" onClick="newColor('blue')"> <input
-					type="button" id="compile" name="compile" value="Begin Compilation"
-					disabled="disabled">
+				<textarea id="sourceCodeArea" name="sourceCode" rows="20" cols="100"></textarea>
+				<br /> File name: <input type="text" id="fileName" name="fileName">
+				<input type="button" id="download" value="Download">								 
+				<input type="button" id="compile" name="compile" value="Begin Compilation" disabled="disabled">
 			</fieldset>
 		</form>
-		<!-- 		<iframe -->
-		<!-- 			src="http://www.facebook.com/plugins/like.php?href=http://200.18.98.61:8080/lalp" -->
-		<!-- 			scrolling="no" frameborder="0" style="border: none; width: 450px;"></iframe> -->
+	</div>
+	<br />
+	<div id="targetCode" class="targetCode">
+		<form id="targetDownloadForm" action="DownloadTargetServlet"
+			method="post">
+			<fieldset>
+				<legend>
+					<b>Target code</b>
+				</legend>
+				<textarea id="targetCodeArea" name="targetCode" rows="20" cols="100"></textarea>
+				<br /> File name: <input type="text" id="targetFileName" name="fileName"> 
+				<input type="button" id="targetDownload" value="Download">
+			</fieldset>
+		</form>
 	</div>
 </body>
-<footer> <!-- <div id="fb-root"> --> <!-- 	<fb:login-button>Login with Facebook</fb:login-button> -->
+<footer> <!-- 		<iframe --> <!-- 			src="http://www.facebook.com/plugins/like.php?href=http://200.18.98.61:8080/lalp" -->
+<!-- 			scrolling="no" frameborder="0" style="border: none; width: 450px;"></iframe> -->
+<!-- <div id="fb-root"> --> <!-- 	<fb:login-button>Login with Facebook</fb:login-button> -->
 <!-- </div> --> <br />
 LALP version 0.1, Copyright (c) 2011 Ricardo Menotti </footer>
 </html>

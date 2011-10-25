@@ -16,8 +16,14 @@ menuArgs.click(function() { // select radio list option
 	}
 });
 
+//download source code
 $('#download').click(function() {
 	$('#downloadForm').submit();
+});
+
+//download target code
+$('#targetDownload').click(function() {
+	$('#targetDownloadForm').submit();
 });
 
 $('#upload').click(function() {
@@ -31,7 +37,7 @@ $('#upload').click(function() {
 			//data = data.replace("<pre>", "");
 			data = data.replace("</pre>", "");
 			data = data.trim();
-			$('#sourceCodeArea').val(data);			
+			$('#sourceCodeArea').html(data);
 			$('#fileName').val($('form input:file').val());
 		},
 		error : function(data, status, e) {
@@ -41,19 +47,22 @@ $('#upload').click(function() {
 });
 
 $('#compile').attr('disabled', false);
-$('#compile').click(function() {	
+$('#compile').click(function() {
 	$.ajax({
 		url : 'LALPServlet',
 		type : 'POST',
 		data : {
 			'args[]' : args,
+			fileName : $('#fileName').val(),
 			sourceCode : $('#sourceCodeArea').val()
 		},
 		error : function() {
 			alert('AJAX: Response from server failed!');
 		},
 		success : function(data) {
-			alert(data);
+			$('#targetCodeArea').html('');
+			$('#targetCodeArea').html(data);
+			$('#targetFileName').val($('#fileName').val().replace(".alp", ".vhd"));
 		}
 	});
 });
