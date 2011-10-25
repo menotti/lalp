@@ -40,7 +40,7 @@ public class GraphParser {
 		} catch (ParseException e) {
 			System.out.println(e.getMessage());
 			System.out.println(e.getStackTrace());
-			System.exit(1);
+			//System.exit(1);
 		}
 		design = parser.getDesign();
 	}
