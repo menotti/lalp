@@ -515,7 +515,7 @@ public class SimpleNode implements Node {
 			}
 			catch (Exception e) {
 				e.printStackTrace();
-				System.exit(1);
+				//System.exit(1);
 			}
 		}
 	}
