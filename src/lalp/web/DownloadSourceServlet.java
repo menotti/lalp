@@ -15,8 +15,8 @@ import javax.servlet.http.HttpServletResponse;
 /**
  * Servlet implementation class DownloadServlet
  */
-@WebServlet("/DownloadServlet")
-public class DownloadServlet extends HttpServlet {
+@WebServlet("/DownloadSourceServlet")
+public class DownloadSourceServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
 	/**
@@ -28,27 +28,20 @@ public class DownloadServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 		PrintWriter out = response.getWriter();
-		out.println("Download Servlet");
+		out.println("DownloadSource Servlet");
 	}
 
 	@Override
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
-
 		String fileName = request.getParameter("fileName");
 		String sourceCode = request.getParameter("sourceCode");
 		response.addHeader("Cache-Control:", "Cache-Control: ");
 		response.addHeader("Content-Disposition:",
-				"Content-Disposition: attachment; filename=" + fileName.concat(".alp"));
+				"Content-Disposition: attachment; filename=" + fileName);
 		response.setContentType("Content-type: text/plain");
 		PrintWriter out = response.getWriter();
-
-		try {
-			File file = File.createTempFile(fileName, ".alp");
-			FileWriter fstream = new FileWriter(file);
-			BufferedWriter outFile = new BufferedWriter(fstream);
-			outFile.write(sourceCode);
-			outFile.close();
+		try {		
 			out.println(sourceCode);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
