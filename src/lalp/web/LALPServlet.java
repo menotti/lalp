@@ -9,10 +9,12 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.StringTokenizer;
 
 import javax.servlet.ServletException;
@@ -20,6 +22,8 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.io.IOUtils;
 
 /*import lalp.algorithms.Dijkstra;
  import lalp.algorithms.StrongConnectedComponents;
@@ -53,15 +57,30 @@ public class LALPServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 
-		response.setContentType("text/plain");
 		PrintWriter out = response.getWriter();
 
+		String[] args = request.getParameterValues("args[]");
+		String fileName = request.getParameter("fileName");
+		String sourceCode = request.getParameter("sourceCode");
+		String graphViz = request.getParameter("graphViz");
+
+		/*
+		 * if (graphViz.equals("yes")) { response.addHeader("Cache-Control:",
+		 * "Cache-Control: "); response.addHeader("Content-Disposition:",
+		 * "Content-Disposition: attachment; filename=" +
+		 * fileName.replace(".alp", ".svg"));
+		 * response.setContentType("Content-type: image/svg+xml"); } else {
+		 */
+		response.setContentType("text/plain");
+
 		try {
-			String[] args = request.getParameterValues("args[]");
-			String fileName = request.getParameter("fileName");
-			String sourceCode = request.getParameter("sourceCode");
 			String result = compile(args, fileName, sourceCode);
-			out.print(result); // response
+			/*if (graphViz.equals("yes")) {
+				File imgFile = new File(result);
+				result = readFile(imgFile.getAbsolutePath());
+				out.print(result);
+			} else*/
+				out.print(result); // response
 		} catch (Exception e) {
 			out.print("Choose parameters");
 			throw new RuntimeException(e);
@@ -83,6 +102,14 @@ public class LALPServlet extends HttpServlet {
 			} else if (args[i].equals("-ad")) {
 				Parameters.runDijkstra = true;
 				// result = info("Dijkstra Algorithm not working yet!");
+			} else if (args[i].equals("-gv")) {
+				Parameters.graphviz = true;
+			} else if (args[i].equals("-gs")) {
+				if (Parameters.graphviz) {
+					Parameters.graphvizSubgraphs = true;
+				} else {
+					error("Option -gs requires option -gv before");
+				}
 			}
 		}
 
@@ -167,6 +194,64 @@ public class LALPServlet extends HttpServlet {
 				dijkstra.detectBigestCycle(design);
 				return result = design.toString();
 			}
+
+			if (Parameters.graphviz) {
+				Graphviz dot = new Graphviz();
+				if (Parameters.runScc)
+					dot.setSccLevels(true);
+				// if (Parameters.runAsapAlap && schedResult == 0)
+				// dot.setSchedulingTimes(true);
+				// if (Parameters.runTopological)
+				// dot.setLines(true);
+				// if (schedResult == 0)
+				// dot.setRank(true);
+				// dot.setDominator(true);
+				// write graph files in server
+				dot.generateHardwareVisualization(design);
+				dot.generateSoftwareVisualization(design);
+				if (Parameters.graphvizSubgraphs)
+					dot.generateSCCSubgraphs(design);
+
+				GraphViz gv = new GraphViz();
+				// read graph files from server
+				File dotSW = new File(realPath
+						+ fileName.replace(".alp", "_sw.dot"));
+				File dotHW = new File(realPath
+						+ fileName.replace(".alp", "_hw.dot"));
+
+				gv.readSource(dotSW.getAbsolutePath());
+				result = gv.getDotSource();
+
+				// Choose Type
+				// String type = ".gif";
+				// String type = ".dot";
+				// String type = ".fig"; // open with xfig
+				// String type = ".pdf";
+				// String type = ".ps";
+				String type = ".svg"; // open with inkscape
+				// String type = ".png";
+				// String type = ".plain";
+				Runtime rt = Runtime.getRuntime();
+
+				// create visualization files
+				File imgFile = new File(realPath
+						+ dotSW.getName().replace(".dot", type)); // Linux
+				String[] dotArgs = { "dot", "-T" + type.replace(".", ""),
+						dotSW.getAbsolutePath(), "-o",
+						imgFile.getAbsolutePath() };
+				Process p = rt.exec(dotArgs);
+				p.waitFor();
+
+				imgFile = new File(realPath
+						+ dotHW.getName().replace(".dot", type)); // Linux
+				dotArgs = new String[] { "dot", "-T" + type.replace(".", ""),
+						dotHW.getAbsolutePath(), "-o",
+						imgFile.getAbsolutePath() };
+				p = rt.exec(dotArgs);
+				p.waitFor();
+
+				result = imgFile.getAbsolutePath();
+			}
 		} catch (Exception e) {
 			return result = error(e.toString());
 		}
@@ -183,5 +268,13 @@ public class LALPServlet extends HttpServlet {
 
 	public String error(String s) {
 		return ("Error: " + s);
+	}
+
+	public String readFile(String fileName) throws IOException {
+
+		StringWriter stringWriter = new StringWriter();
+		IOUtils.copy(new FileInputStream(new File(fileName)), stringWriter);
+
+		return stringWriter.toString();
 	}
 }
