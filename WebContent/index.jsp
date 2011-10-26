@@ -4,10 +4,12 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<style type="text/css">@import "css/jquery.svg.css";</style> 
 <link rel="stylesheet" type="text/css" href="css/lalpHome.css"></link>
 <script type="text/javascript" src="js/head.min.js"></script>
 <script>
 	head.js("js/jquery-1.6.4.min.js",
+			"js/jquery.svg.js",
 	//"http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js",
 	//"http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.9/jquery-ui.min.js",	
 	"js/ajaxfileupload.js", "js/lalpArgs.js");
@@ -79,6 +81,7 @@
 			</fieldset>
 		</form>
 	</div>
+	<div id="svgArea"></div>
 	</div>
 </body>
 <footer> <!-- 		<iframe --> <!-- 			src="http://www.facebook.com/plugins/like.php?href=http://200.18.98.61:8080/lalp" -->

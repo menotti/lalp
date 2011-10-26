@@ -57,29 +57,27 @@ public class LALPServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 
-		PrintWriter out = response.getWriter();
+		PrintWriter out = response.getWriter();		
 
 		String[] args = request.getParameterValues("args[]");
 		String fileName = request.getParameter("fileName");
 		String sourceCode = request.getParameter("sourceCode");
 		String graphViz = request.getParameter("graphViz");
 
-		/*
-		 * if (graphViz.equals("yes")) { response.addHeader("Cache-Control:",
-		 * "Cache-Control: "); response.addHeader("Content-Disposition:",
-		 * "Content-Disposition: attachment; filename=" +
-		 * fileName.replace(".alp", ".svg"));
-		 * response.setContentType("Content-type: image/svg+xml"); } else {
-		 */
-		response.setContentType("text/plain");
+		if (graphViz.equals("yes")) {			
+			response.setContentType("text/xml");
+		} else {
+			response.setContentType("text/plain");
+		}
 
 		try {
 			String result = compile(args, fileName, sourceCode);
-			/*if (graphViz.equals("yes")) {
+
+			if (graphViz.equals("yes")) {
 				File imgFile = new File(result);
 				result = readFile(imgFile.getAbsolutePath());
 				out.print(result);
-			} else*/
+			} else
 				out.print(result); // response
 		} catch (Exception e) {
 			out.print("Choose parameters");

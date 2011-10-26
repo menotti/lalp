@@ -55,26 +55,46 @@ $('#compile').click(
 		function() {
 			if (graphviz) {
 				graphviz_arg = "yes";
+				$.ajax({
+					url : 'LALPServlet',
+					type : 'POST',
+					dataType : 'xml',
+					data : {
+						'args[]' : args,
+						fileName : $('#fileName').val(),
+						sourceCode : $('#sourceCodeArea').val(),
+						graphViz : graphviz_arg
+					},
+					error : function() {
+						alert('AJAX: Response from server failed!');
+					},
+					success : function(data) {
+						// alert(jQuery.isXMLDoc(data));
+						//window.open('data:text/xml,' + data);
+						//$('#svgArea').svg();
+						$('#svgArea').append(data);
+					}
+				});
 			} else {
 				graphviz_arg = "no";
+				$.ajax({
+					url : 'LALPServlet',
+					type : 'POST',
+					data : {
+						'args[]' : args,
+						fileName : $('#fileName').val(),
+						sourceCode : $('#sourceCodeArea').val(),
+						graphViz : graphviz_arg
+					},
+					error : function() {
+						alert('AJAX: Response from server failed!');
+					},
+					success : function(data) {
+						$('#targetCodeArea').html(data);
+						$('#targetFileName').val(
+								$('#fileName').val().replace(".alp", ".vhd"));
+					}
+				});
 			}
-			$.ajax({
-				url : 'LALPServlet',
-				type : 'POST',
-				data : {
-					'args[]' : args,
-					fileName : $('#fileName').val(),
-					sourceCode : $('#sourceCodeArea').val(),
-					graphViz : graphviz_arg
-				},
-				error : function() {
-					alert('AJAX: Response from server failed!');
-				},
-				success : function(data) {
-					$('#targetCodeArea').html(data);
-					$('#targetFileName').val(
-							$('#fileName').val().replace(".alp", ".vhd"));
 
-				}
-			});
 		});
