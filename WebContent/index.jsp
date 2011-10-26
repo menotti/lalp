@@ -62,7 +62,7 @@
 	<br />
 	<div id="codeArea">
 		<div id="sourceCode" class="sourceCode">
-			<form id="downloadForm" action="DownloadSourceServlet" method="post">
+			<form id="downloadForm" action="DownloadServlet" method="post">
 				<fieldset>
 					<legend>
 						<b>Source code</b>
@@ -83,8 +83,8 @@
 			</form>
 		</div>
 		<div id="targetCode" class="targetCode">
-			<form id="targetDownloadForm" action="DownloadTargetServlet"
-				method="post">
+			<form id="targetDownloadForm" action="DownloadServlet"
+				method="get">
 				<fieldset>
 					<legend>
 						<b>Target code</b>
