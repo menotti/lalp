@@ -5,13 +5,9 @@
     <servlet-class>lalp.web.UploadServlet</servlet-class>
   </servlet>
   <servlet>
-    <servlet-name>DownloadSourceServlet</servlet-name>
-    <servlet-class>lalp.web.DownloadSourceServlet</servlet-class>
-  </servlet>
-  <servlet>
-    <servlet-name>DownloadTargetServlet</servlet-name>
-    <servlet-class>lalp.web.DownloadTargetServlet</servlet-class>
-  </servlet>
+    <servlet-name>DownloadServlet</servlet-name>
+    <servlet-class>lalp.web.DownloadServlet</servlet-class>
+  </servlet>  
   <servlet>
     <servlet-name>LALPServlet</servlet-name>
     <servlet-class>lalp.web.LALPServlet</servlet-class>
@@ -21,13 +17,9 @@
     <url-pattern>/UploadServlet</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
-    <servlet-name>DownloadSourceServlet</servlet-name>
-    <url-pattern>/DownloadSourceServlet</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>DownloadTargetServlet</servlet-name>
-    <url-pattern>/DownloadTargetServlet</url-pattern>
-  </servlet-mapping>
+    <servlet-name>DownloadServlet</servlet-name>
+    <url-pattern>/DownloadServlet</url-pattern>
+  </servlet-mapping>  
   <servlet-mapping>
     <servlet-name>LALPServlet</servlet-name>
     <url-pattern>/LALPServlet</url-pattern>

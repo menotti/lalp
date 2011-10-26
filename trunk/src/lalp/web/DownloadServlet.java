@@ -15,8 +15,8 @@ import javax.servlet.http.HttpServletResponse;
 /**
  * Servlet implementation class DownloadServlet
  */
-@WebServlet("/DownloadSourceServlet")
-public class DownloadSourceServlet extends HttpServlet {
+@WebServlet("/DownloadServlet")
+public class DownloadServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
 	/**
@@ -27,19 +27,37 @@ public class DownloadSourceServlet extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
+		
+		String fileName = request.getParameter("fileName");
+		String targetCode = request.getParameter("targetCode");
+		
+		response.addHeader("Cache-Control:", "Cache-Control: ");
+		response.addHeader("Content-Disposition:",
+				"Content-Disposition: attachment; filename=" + fileName);
+		response.setContentType("Content-type: text/plain");
+		
 		PrintWriter out = response.getWriter();
-		out.println("DownloadSource Servlet");
+		try {		
+			out.println(targetCode);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		} finally {
+			out.close();
+		}
 	}
 
 	@Override
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
+		
 		String fileName = request.getParameter("fileName");
 		String sourceCode = request.getParameter("sourceCode");
+		
 		response.addHeader("Cache-Control:", "Cache-Control: ");
 		response.addHeader("Content-Disposition:",
 				"Content-Disposition: attachment; filename=" + fileName);
 		response.setContentType("Content-type: text/plain");
+		
 		PrintWriter out = response.getWriter();
 		try {		
 			out.println(sourceCode);

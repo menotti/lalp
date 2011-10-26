@@ -8,21 +8,17 @@ import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.StringTokenizer;
-
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.io.IOUtils;
 
 /*import lalp.algorithms.Dijkstra;
@@ -66,7 +62,7 @@ public class LALPServlet extends HttpServlet {
 			result = readFile(imgFile.getAbsolutePath());
 			out.print(result);
 		} catch (Exception e) {
-			out.print("Choose parameters");
+			e.printStackTrace(out);
 			throw new RuntimeException(e);
 		} finally {
 			out.flush();
@@ -228,8 +224,6 @@ public class LALPServlet extends HttpServlet {
 				dot.generateSoftwareVisualization(design);
 				if (Parameters.graphvizSubgraphs)
 					dot.generateSCCSubgraphs(design);
-
-				//GraphViz gv = new GraphViz();
 
 				// Choose Type
 				// String type = ".gif";
