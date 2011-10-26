@@ -51,6 +51,7 @@
 		</form>
 	</div>
 	<br />
+	<div id="codeArea">
 	<div id="sourceCode" class="sourceCode">
 		<form id="downloadForm" action="DownloadSourceServlet" method="post">
 			<fieldset>
@@ -63,8 +64,7 @@
 				<input type="button" id="compile" name="compile" value="Begin Compilation" disabled="disabled">
 			</fieldset>
 		</form>
-	</div>
-	<br />
+	</div>	
 	<div id="targetCode" class="targetCode">
 		<form id="targetDownloadForm" action="DownloadTargetServlet"
 			method="post">
@@ -77,6 +77,7 @@
 				<input type="button" id="targetDownload" value="Download">
 			</fieldset>
 		</form>
+	</div>
 	</div>
 </body>
 <footer> <!-- 		<iframe --> <!-- 			src="http://www.facebook.com/plugins/like.php?href=http://200.18.98.61:8080/lalp" -->

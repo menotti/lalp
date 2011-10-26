@@ -5,6 +5,7 @@
 package lalp.web;
 
 import java.io.BufferedWriter;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -45,7 +46,7 @@ public class LALPServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 		PrintWriter out = response.getWriter();
-		out.println("LALP Servlet");
+		out.print("LALP Servlet");
 	}
 
 	@Override
@@ -60,26 +61,20 @@ public class LALPServlet extends HttpServlet {
 			String fileName = request.getParameter("fileName");
 			String sourceCode = request.getParameter("sourceCode");
 			String result = compile(args, fileName, sourceCode);
-			out.println(result); // response
+			out.print(result); // response
 		} catch (Exception e) {
-			out.println("Choose parameters");
+			out.print("Choose parameters");
 			throw new RuntimeException(e);
 		} finally {
+			out.flush();
 			out.close();
-			try {
-				this.finalize();
-			} catch (Throwable e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			response.getWriter().flush();
+			response.getWriter().close();
 		}
 	}
 
-	public String compile(String[] args, String fileName, String sourceCode) {
-		String result = new String();
-		FileInputStream inStream = null;
-		Design design = null;
-		LangParser lp = null;
+	public String compile(String[] args, String fileName, String sourceCode)
+			throws IOException {
 
 		for (int i = 0; i < args.length; i++) {
 			if (args[i].equals("-as")) {
@@ -91,28 +86,44 @@ public class LALPServlet extends HttpServlet {
 			}
 		}
 
+		String realPath = null;
+		File inputFile = null;
+		FileWriter fstream = null;
+		BufferedWriter outFile = null;
+		try {
+			// server path for writing/reading files
+			realPath = this.getServletConfig().getServletContext()
+					.getRealPath("/");
+			log("realPath=" + realPath);
+			// creates input file and writes source code
+			inputFile = new File(realPath + fileName);
+			fstream = new FileWriter(inputFile);
+			outFile = new BufferedWriter(fstream);
+			outFile.write(sourceCode);
+		} catch (Exception e) {
+		} finally {
+			outFile.flush();
+			outFile.close();
+		}
+
+		String result = null;
+		FileInputStream inStream = null;
+		InputStream is = null;
+		Design design = null;
+		LangParser lp = null;
 		try {
 			StringTokenizer st = new StringTokenizer(fileName, ".");
 			st.nextToken();
 			if (!st.hasMoreTokens()) {
 				return result = error("Select file");
 			}
-			// server path for writing/reading files
-			String realPath = this.getServletConfig().getServletContext()
-					.getRealPath("/");
-			log("realPath=" + realPath);
-			// creates input file and writes source code
-			File inputFile = new File(realPath + fileName);
-			FileWriter fstream = new FileWriter(inputFile);
-			BufferedWriter outFile = new BufferedWriter(fstream);
-			outFile.write(sourceCode);
-			outFile.close();
 			String extension = st.nextToken().toUpperCase();
 			if (extension.equals("ALP")) {
 				// System.out.print("Reading from file " +
 				// args[args.length-1] + "...");
 				inStream = new FileInputStream(inputFile);
-				lp = new LangParser(inStream);
+				is = new ByteArrayInputStream(sourceCode.getBytes());
+				lp = new LangParser(is);
 				// System.out.println("Ok!");
 				if (Parameters.verbose)
 					lp.dump();
@@ -139,6 +150,9 @@ public class LALPServlet extends HttpServlet {
 			return result = error(e.toString());
 			// e.printStackTrace();
 			// System.exit(1);
+		} finally {
+			inStream.close();
+			is.close();
 		}
 
 		try {

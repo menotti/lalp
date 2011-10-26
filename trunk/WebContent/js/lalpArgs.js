@@ -39,6 +39,7 @@ $('#upload').click(function() {
 			data = data.trim();
 			$('#sourceCodeArea').html(data);
 			$('#fileName').val($('form input:file').val());
+			$('#targetCodeArea').html('');
 		},
 		error : function(data, status, e) {
 			alert(e);
@@ -59,8 +60,7 @@ $('#compile').click(function() {
 		error : function() {
 			alert('AJAX: Response from server failed!');
 		},
-		success : function(data) {
-			$('#targetCodeArea').html('');
+		success : function(data) {			
 			$('#targetCodeArea').html(data);
 			$('#targetFileName').val($('#fileName').val().replace(".alp", ".vhd"));
 		}
