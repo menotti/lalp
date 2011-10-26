@@ -41,7 +41,10 @@ $('#upload').click(function() {
 			data = data.replace("</pre>", "");
 			data = data.trim();
 			$('#sourceCodeArea').html(data);
-			$('#fileName').val($('form input:file').val());
+			$('#graphCode').html(data);
+			fileName = $('form input:file').val();
+			$('#fileName').val(fileName);
+			$('#graphFileName').val(fileName);
 			$('#targetCodeArea').html('');
 		},
 		error : function(data, status, e) {
@@ -53,30 +56,9 @@ $('#upload').click(function() {
 $('#compile').attr('disabled', false);
 $('#compile').click(
 		function() {
-			if (graphviz) {
-				graphviz_arg = "yes";
-				$.ajax({
-					url : 'LALPServlet',
-					type : 'POST',
-					dataType : 'xml',
-					data : {
-						'args[]' : args,
-						fileName : $('#fileName').val(),
-						sourceCode : $('#sourceCodeArea').val(),
-						graphViz : graphviz_arg
-					},
-					error : function() {
-						alert('AJAX: Response from server failed!');
-					},
-					success : function(data) {
-						// alert(jQuery.isXMLDoc(data));
-						//window.open('data:text/xml,' + data);
-						//$('#svgArea').svg();
-						$('#svgArea').append(data);
-					}
-				});
+			if (graphviz) {			
+				$('#graphForm').submit();							
 			} else {
-				graphviz_arg = "no";
 				$.ajax({
 					url : 'LALPServlet',
 					type : 'POST',
@@ -84,7 +66,6 @@ $('#compile').click(
 						'args[]' : args,
 						fileName : $('#fileName').val(),
 						sourceCode : $('#sourceCodeArea').val(),
-						graphViz : graphviz_arg
 					},
 					error : function() {
 						alert('AJAX: Response from server failed!');
