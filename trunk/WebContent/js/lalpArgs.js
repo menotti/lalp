@@ -2,21 +2,25 @@
 var selected = false;
 var graphviz = false;
 var args = new Array();
+$('#graphMenu').hide();
 
 // parameters
-var menuArgs = $('form input:radio');
+var menuArgs = $('form input:radio[name=menu]');
 menuArgs.click(function() { // select radio list option
-	for ( var i = 0; i < menuArgs.length; i++) {
-		if (menuArgs[i].checked) {
-			selected = true;
-			// args.push(menuArgs[i].value.toString());
-			args[0] = menuArgs[i].value.toString();
-			if (menuArgs[i].value == "-gv")
-				graphviz = true;
-			else
-				graphviz = false;
-		}
-	}
+	args[0] = $(this).val();
+	if (args[0] == "-gv") {
+		graphviz = true;		
+		$('#graphType').val($('form input:radio[name=subMenu]').val());
+		$('#graphMenu').show();
+	} else {
+		graphviz = false;
+		$('#graphMenu').hide();
+	}		
+});
+
+var graphMenuArgs = $('form input:radio[name=subMenu]');
+graphMenuArgs.click(function() { // select radio list option	
+	$('#graphType').val($(this).val());
 });
 
 // download source code

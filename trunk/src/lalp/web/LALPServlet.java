@@ -58,9 +58,10 @@ public class LALPServlet extends HttpServlet {
 		args[0] = "-gv";
 		String fileName = request.getParameter("graphFileName");
 		String sourceCode = request.getParameter("graphCode");
+		String graphType = request.getParameter("graphType");
 
 		try {
-			String result = compile(args, fileName, sourceCode);
+			String result = compile(args, fileName, sourceCode, graphType);
 			File imgFile = new File(result);
 			result = readFile(imgFile.getAbsolutePath());
 			out.print(result);
@@ -86,9 +87,10 @@ public class LALPServlet extends HttpServlet {
 		String[] args = request.getParameterValues("args[]");
 		String fileName = request.getParameter("fileName");
 		String sourceCode = request.getParameter("sourceCode");
-
+		String graphType = "";
+		
 		try {
-			String result = compile(args, fileName, sourceCode);
+			String result = compile(args, fileName, sourceCode, graphType);
 			out.print(result); // response
 		} catch (Exception e) {
 			out.print("Choose parameters");
@@ -101,8 +103,14 @@ public class LALPServlet extends HttpServlet {
 		}
 	}
 
-	public String compile(String[] args, String fileName, String sourceCode)
+	public String compile(String[] args, String fileName, String sourceCode, String graphType)
 			throws IOException {
+		
+		//reset previous args
+		Parameters.runScc = false;
+		Parameters.runDijkstra = false;
+		Parameters.graphviz = false;
+		Parameters.graphvizSubgraphs = false;		
 
 		for (int i = 0; i < args.length; i++) {
 			if (args[i].equals("-as")) {
@@ -221,15 +229,7 @@ public class LALPServlet extends HttpServlet {
 				if (Parameters.graphvizSubgraphs)
 					dot.generateSCCSubgraphs(design);
 
-				GraphViz gv = new GraphViz();
-				// read graph files from server
-				File dotSW = new File(realPath
-						+ fileName.replace(".alp", "_sw.dot"));
-				File dotHW = new File(realPath
-						+ fileName.replace(".alp", "_hw.dot"));
-
-				gv.readSource(dotSW.getAbsolutePath());
-				result = gv.getDotSource();
+				//GraphViz gv = new GraphViz();
 
 				// Choose Type
 				// String type = ".gif";
@@ -240,24 +240,29 @@ public class LALPServlet extends HttpServlet {
 				String type = ".svg"; // open with inkscape
 				// String type = ".png";
 				// String type = ".plain";
+				
+				// read graph files from server and create visualization files (default svg)
+				File dotFile;
+				File imgFile;
+				if (graphType.equals("sw")) {
+					dotFile = new File(realPath
+							+ fileName.replace(".alp", "_sw.dot"));
+					imgFile = new File(realPath
+							+ dotFile.getName().replace(".dot", type));
+				} else {
+					dotFile = new File(realPath
+							+ fileName.replace(".alp", "_hw.dot"));
+					imgFile = new File(realPath
+							+ dotFile.getName().replace(".dot", type));
+				}			
+								
+				//render visualization
 				Runtime rt = Runtime.getRuntime();
-
-				// create visualization files
-				File imgFile = new File(realPath
-						+ dotSW.getName().replace(".dot", type)); // Linux
 				String[] dotArgs = { "dot", "-T" + type.replace(".", ""),
-						dotSW.getAbsolutePath(), "-o",
+						dotFile.getAbsolutePath(), "-o",
 						imgFile.getAbsolutePath() };
 				Process p = rt.exec(dotArgs);
-				p.waitFor();
-
-				imgFile = new File(realPath
-						+ dotHW.getName().replace(".dot", type)); // Linux
-				dotArgs = new String[] { "dot", "-T" + type.replace(".", ""),
-						dotHW.getAbsolutePath(), "-o",
-						imgFile.getAbsolutePath() };
-				p = rt.exec(dotArgs);
-				p.waitFor();
+				p.waitFor();				
 
 				result = imgFile.getAbsolutePath();
 			}

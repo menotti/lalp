@@ -4,12 +4,13 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<style type="text/css">@import "css/jquery.svg.css";</style> 
+<style type="text/css">
+@import "css/jquery.svg.css";
+</style>
 <link rel="stylesheet" type="text/css" href="css/lalpHome.css"></link>
 <script type="text/javascript" src="js/head.min.js"></script>
 <script>
-	head.js("js/jquery-1.6.4.min.js",
-			"js/jquery.svg.js",
+	head.js("js/jquery-1.6.4.min.js", "js/jquery.svg.js",
 	//"http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js",
 	//"http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.9/jquery-ui.min.js",	
 	"js/ajaxfileupload.js", "js/lalpArgs.js");
@@ -34,8 +35,13 @@
 				</legend>
 				<input type="radio" id="r1" name="menu" value="-as">Run SCC
 				Algorithm<br /> <input type="radio" id="r2" name="menu" value="-ad">Run
-				Dijkstra Algorithm<br />
-				<input type="radio" id="r3" name="menu" value="-gv">Generate Graphviz
+				Dijkstra Algorithm<br /> <input type="radio" id="r3" name="menu"
+					value="-gv">Generate Graphviz
+				<div id="graphMenu">
+					<input type="radio" id="r3sub1" name="subMenu" value="sw" checked>SW
+					File <br /> <input type="radio" id="r3sub2" name="subMenu"
+						value="hw">HW File
+				</div>
 			</fieldset>
 		</form>
 	</div>
@@ -55,38 +61,43 @@
 	</div>
 	<br />
 	<div id="codeArea">
-	<div id="sourceCode" class="sourceCode">
-		<form id="downloadForm" action="DownloadSourceServlet" method="post">
-			<fieldset>
-				<legend>
-					<b>Source code</b>
-				</legend>
-				<textarea id="sourceCodeArea" name="sourceCode" rows="20" cols="100"></textarea>
-				<br /> File name: <input type="text" id="fileName" name="fileName">
-				<input type="button" id="download" value="Download">								 
-				<input type="button" id="compile" name="compile" value="Begin Compilation" disabled="disabled">
-			</fieldset>
-		</form>
-		<form id="graphForm" action="LALPServlet" method="get" hidden="true">
-				<input type="text" id="args[]" name="args[]">			
+		<div id="sourceCode" class="sourceCode">
+			<form id="downloadForm" action="DownloadSourceServlet" method="post">
+				<fieldset>
+					<legend>
+						<b>Source code</b>
+					</legend>
+					<textarea id="sourceCodeArea" name="sourceCode" rows="20"
+						cols="100"></textarea>
+					<br /> File name: <input type="text" id="fileName" name="fileName">
+					<input type="button" id="download" value="Download"> <input
+						type="button" id="compile" name="compile"
+						value="Begin Compilation" disabled="disabled">
+				</fieldset>
+			</form>
+			<form id="graphForm" action="LALPServlet" method="get" hidden="true">
+				<input type="text" id="args[]" name="args[]">
 				<textarea id="graphCode" name="graphCode" rows="20" cols="100"></textarea>
-				<input type="text" id="graphFileName" name="graphFileName">							
-		</form>
-	</div>	
-	<div id="targetCode" class="targetCode">
-		<form id="targetDownloadForm" action="DownloadTargetServlet"
-			method="post">
-			<fieldset>
-				<legend>
-					<b>Target code</b>
-				</legend>
-				<textarea id="targetCodeArea" name="targetCode" rows="20" cols="100"></textarea>
-				<br /> File name: <input type="text" id="targetFileName" name="fileName"> 
-				<input type="button" id="targetDownload" value="Download">
-			</fieldset>
-		</form>
-	</div>
-	<div id="svgArea"></div>
+				<input type="text" id="graphFileName" name="graphFileName">
+				<input type="text" id="graphType" name="graphType">
+			</form>
+		</div>
+		<div id="targetCode" class="targetCode">
+			<form id="targetDownloadForm" action="DownloadTargetServlet"
+				method="post">
+				<fieldset>
+					<legend>
+						<b>Target code</b>
+					</legend>
+					<textarea id="targetCodeArea" name="targetCode" rows="20"
+						cols="100"></textarea>
+					<br /> File name: <input type="text" id="targetFileName"
+						name="fileName"> <input type="button" id="targetDownload"
+						value="Download">
+				</fieldset>
+			</form>
+		</div>
+		<div id="svgArea"></div>
 	</div>
 </body>
 <footer> <!-- 		<iframe --> <!-- 			src="http://www.facebook.com/plugins/like.php?href=http://200.18.98.61:8080/lalp" -->
