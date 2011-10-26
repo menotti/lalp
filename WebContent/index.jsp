@@ -67,6 +67,11 @@
 				<input type="button" id="compile" name="compile" value="Begin Compilation" disabled="disabled">
 			</fieldset>
 		</form>
+		<form id="graphForm" action="LALPServlet" method="get" hidden="true">
+				<input type="text" id="args[]" name="args[]">			
+				<textarea id="graphCode" name="graphCode" rows="20" cols="100"></textarea>
+				<input type="text" id="graphFileName" name="graphFileName">							
+		</form>
 	</div>	
 	<div id="targetCode" class="targetCode">
 		<form id="targetDownloadForm" action="DownloadTargetServlet"

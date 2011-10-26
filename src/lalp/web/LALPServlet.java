@@ -50,35 +50,46 @@ public class LALPServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 		PrintWriter out = response.getWriter();
-		out.print("LALP Servlet");
+
+		response.setContentType("text/xml");
+		//response.setContentType("text/plain");
+
+		String[] args = new String[1];
+		args[0] = "-gv";
+		String fileName = request.getParameter("graphFileName");
+		String sourceCode = request.getParameter("graphCode");
+
+		try {
+			String result = compile(args, fileName, sourceCode);
+			File imgFile = new File(result);
+			result = readFile(imgFile.getAbsolutePath());
+			out.print(result);
+		} catch (Exception e) {
+			out.print("Choose parameters");
+			throw new RuntimeException(e);
+		} finally {
+			out.flush();
+			out.close();
+			response.getWriter().flush();
+			response.getWriter().close();
+		}
 	}
 
 	@Override
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 
-		PrintWriter out = response.getWriter();		
+		PrintWriter out = response.getWriter();
+
+		response.setContentType("text/plain");
 
 		String[] args = request.getParameterValues("args[]");
 		String fileName = request.getParameter("fileName");
 		String sourceCode = request.getParameter("sourceCode");
-		String graphViz = request.getParameter("graphViz");
-
-		if (graphViz.equals("yes")) {			
-			response.setContentType("text/xml");
-		} else {
-			response.setContentType("text/plain");
-		}
 
 		try {
 			String result = compile(args, fileName, sourceCode);
-
-			if (graphViz.equals("yes")) {
-				File imgFile = new File(result);
-				result = readFile(imgFile.getAbsolutePath());
-				out.print(result);
-			} else
-				out.print(result); // response
+			out.print(result); // response
 		} catch (Exception e) {
 			out.print("Choose parameters");
 			throw new RuntimeException(e);
