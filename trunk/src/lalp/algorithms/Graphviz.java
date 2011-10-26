@@ -45,7 +45,9 @@ import lalp.core.VHDLType;
 public class Graphviz {
 	
 //	private final static String DEFAULT_DIRECTORY = "out";
-	private final static String DEFAULT_DIRECTORY = ".";
+//	private final static String DEFAULT_DIRECTORY = ".";
+	//change to server path
+	private final static String DEFAULT_DIRECTORY = "/home/gabriel/DEV/Java/EclipseProjects/.metadata/.plugins/org.eclipse.wst.server.core/tmp0/wtpwebapps/lalp/";
 
 	private boolean legend = false;
 	private boolean schedulingTimes = false;

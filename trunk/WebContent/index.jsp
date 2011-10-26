@@ -33,6 +33,7 @@
 				<input type="radio" id="r1" name="menu" value="-as">Run SCC
 				Algorithm<br /> <input type="radio" id="r2" name="menu" value="-ad">Run
 				Dijkstra Algorithm<br />
+				<input type="radio" id="r3" name="menu" value="-gv">Generate Graphviz
 			</fieldset>
 		</form>
 	</div>
