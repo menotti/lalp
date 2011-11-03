@@ -310,4 +310,7 @@ fdct(in bool init, out bool done, out int output) {
 	output = dct_o.data_out;
 	done = xi.done;
 }
+{
+	int output = {-1856, -9, 0, -12, 1, -54, 6};
+}
 

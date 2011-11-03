@@ -12,7 +12,7 @@
 -- SUFFERED BY LICENSEE AS A RESULT OF USING, MODIFYING OR DISTRIBUTING THIS
 -- SOFTWARE OR ITS DERIVATIVES.
 --
--- Generated at Thu Jul 21 11:45:35 BRT 2011
+-- Generated at Fri Oct 21 17:46:15 BRST 2011
 --
 
 -- IEEE Libraries --
@@ -70,5 +70,58 @@ begin
 	\init\  <= '1';
 	wait;
 end process stimulus;
+
+process
+
+begin
+
+	wait until \maxval\ =  conv_std_logic_vector(1,32);
+	assert \maxval\ = conv_std_logic_vector(1,32)
+		report "value different from the expected" severity error;
+
+	wait for 12 ns;
+	assert \maxval\ = conv_std_logic_vector(2,32)
+		report "value different from the expected" severity error;
+
+	wait for 10 ns;
+	assert \maxval\ = conv_std_logic_vector(3,32)
+		report "value different from the expected" severity error;
+
+	wait for 10 ns;
+	assert \maxval\ = conv_std_logic_vector(4,32)
+		report "value different from the expected" severity error;
+
+	wait for 10 ns;
+	assert \maxval\ = conv_std_logic_vector(5,32)
+		report "value different from the expected" severity error;
+
+	wait for 10 ns;
+	assert \maxval\ = conv_std_logic_vector(6,32)
+		report "value different from the expected" severity error;
+
+	wait for 10 ns;
+	assert \maxval\ = conv_std_logic_vector(7,32)
+		report "value different from the expected" severity error;
+
+	wait for 10 ns;
+	assert \maxval\ = conv_std_logic_vector(8,32)
+		report "value different from the expected" severity error;
+
+	wait for 10 ns;
+	assert \maxval\ = conv_std_logic_vector(8,32)
+		report "value different from the expected" severity error;
+
+	wait for 10 ns;
+	assert \maxval\ = conv_std_logic_vector(8,32)
+		report "value different from the expected" severity error;
+
+	wait for 10 ns;
+	assert \maxval\ = conv_std_logic_vector(8,32)
+		report "value different from the expected" severity error;
+
+	assert false report "end of test" severity note;
+
+wait;
+end process;
 
 end behavior;

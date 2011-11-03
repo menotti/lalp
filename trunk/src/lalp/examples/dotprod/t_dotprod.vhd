@@ -12,7 +12,7 @@
 -- SUFFERED BY LICENSEE AS A RESULT OF USING, MODIFYING OR DISTRIBUTING THIS
 -- SOFTWARE OR ITS DERIVATIVES.
 --
--- Generated at Wed Oct 05 13:35:13 BRT 2011
+-- Generated at Thu Nov 03 10:37:51 BRST 2011
 --
 
 -- IEEE Libraries --
@@ -70,5 +70,28 @@ begin
 	\init\  <= '1';
 	wait;
 end process stimulus;
+
+process
+
+begin
+
+	wait for 10 ns;
+
+	wait on \sum\;
+	assert \sum\ = conv_std_logic_vector(4,32)
+		report "value differente from the expected" severity error;
+
+	wait on \sum\;
+	assert \sum\ = conv_std_logic_vector(14,32)
+		report "value differente from the expected" severity error;
+
+	wait on \sum\;
+	assert \sum\ = conv_std_logic_vector(32,32)
+		report "value differente from the expected" severity error;
+
+	assert false report "end of test" severity note;
+
+wait;
+end process;
 
 end behavior;
