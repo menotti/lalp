@@ -246,7 +246,8 @@ public class LALP {
 			if (Parameters.vhdlMemory)
 				vhd.generateVHDLInitialization(design);
 			if (Parameters.vhdlTestbench)
-				vhd.generateVHDLTestbench(design);
+				vhd.generateVHDLTestbench(lp);
+       
 		}
 		
 		if (Parameters.alpg) {

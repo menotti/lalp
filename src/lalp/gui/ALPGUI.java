@@ -149,6 +149,7 @@ class ALPGUI extends JPanel {
 	private Design design = null;
 	private Component graph;
 	private JSplitPane splitPane;
+	LangParser lp;
 
 	static {
 		try {
@@ -833,7 +834,7 @@ class ALPGUI extends JPanel {
 				if (extension.equals("LALP")) {
 					System.out.print("Reading from file " + file + "...");
 					FileInputStream inStream = new FileInputStream(directory + file);
-					LangParser lp = new LangParser(inStream);
+					lp = new LangParser(inStream);
 					System.out.println("Ok!");
 					//DEBUG
 //					lp.dump();
@@ -934,7 +935,7 @@ class ALPGUI extends JPanel {
 				if (Parameters.vhdlMemory)
 					vhd.generateVHDLInitialization(design, path);
 				if (Parameters.vhdlTestbench)
-					vhd.generateVHDLTestbench(design, path);
+					vhd.generateVHDLTestbench(lp, path);
 			}
 			
 			if (Parameters.alpg) {

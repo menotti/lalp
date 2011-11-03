@@ -40,7 +40,6 @@ dotprod(out int sum, out bit done, in bit init) {
 	4	14	32	...
 	*/
 }
-
 {
-  int sum[ITERATIONS] = {4, 14, 32}; 
+    int sum = {4, 14, 32};
 }

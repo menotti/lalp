@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.util.Calendar;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.Vector;
 
 import lalp.components.const_op;
 import lalp.core.Component;
@@ -30,6 +31,8 @@ import lalp.core.Port;
 import lalp.core.PortType;
 import lalp.core.Signal;
 import lalp.core.VHDLType;
+import lalp.parser.LangParser;
+import lalp.parser.lang.SimpleNode;
 
 
 
@@ -127,6 +130,7 @@ public class VHDL {
 				for (Component c : design.getComponents())
 					if (c.isIOComponent())
 						cl.put(c.getName(), c);
+                                
 				dp = false;
 				for (Map.Entry<String, Component> c : cl.entrySet()) {
 					IOComponent ioc = (IOComponent)c.getValue();
@@ -288,18 +292,22 @@ public class VHDL {
 	/**
 	 * Generate the VHDL testbench file
 	 */
-	public void generateVHDLTestbench(Design design) {
-		generateVHDLTestbench(design, DEFAULT_DIRECTORY);
-	}
-	public void generateVHDLTestbench(Design design, String path) {
-		System.out.print("Generating VHDL testbench...");
+        public void generateVHDLTestbench(LangParser lp)
+        {
+            generateVHDLTestbench(lp, DEFAULT_DIRECTORY);
+        }
+        
+        public void generateVHDLTestbench(LangParser lp, String path) {
+                Design design = lp.getDesign();
+                System.out.print("Generating VHDL testbench...");
 		String fileName = design.getName(); 
 		try {
+			//lp.getParser().allResults;
 			FileOutputStream outputFile = new FileOutputStream(path + System.getProperty("file.separator") + "t_" + fileName + ".vhd");
 			DataOutputStream dataOut = new DataOutputStream(outputFile);
 			generateVHDLFileHeader(design, dataOut);
 			generateVHDLEntity(design, dataOut, true);
-			generateVHDLComponent(design, dataOut);
+			generateVHDLComponent(lp, dataOut);
 			dataOut.close();
 		}
 		catch(IOException e) {
@@ -309,7 +317,8 @@ public class VHDL {
 		}
 		System.out.println("Ok!");
 	}
-	private void generateVHDLComponent(Design design, DataOutputStream dos) throws IOException {
+	private void generateVHDLComponent(LangParser lp, DataOutputStream dos) throws IOException {
+		Design design = lp.getDesign();
 		boolean dp, f = false;
 		Map<String, Component> cl = new TreeMap<String, Component>();
 		String size, type, init;
@@ -401,7 +410,58 @@ public class VHDL {
 		dos.writeBytes("\t\\init\\  <= '1';\n");
 		dos.writeBytes("\twait;\n");
 		dos.writeBytes("end process stimulus;\n");
-		dos.writeBytes("\nend behavior;\n");
+		GenerateVHDLAsserts(lp, dos);
+		
 	}
+	
+	private void GenerateVHDLAsserts(LangParser lp, DataOutputStream dos) throws IOException
+	{
+		String signal;
+		Vector<Long> values;
+		dos.writeBytes("\nprocess\n"); //Cria o processo que irá checar se os resultados são os esperados
+		dos.writeBytes("\nbegin\n");
+		for(Map.Entry<String, SimpleNode> result : lp.getParser().allResults.entrySet())
+		{
+			signal = "\\" + result.getKey() + "\\"; 
+			values = result.getValue().getInits();
+			
+			/*
+			for(int i = 0; i < result.getValue().getArraySize(); i++)
+			{
+				if(i == 0)
+				{
+					dos.writeBytes("\n\twait until "+signal+" =  conv_std_logic_vector(" + values.get(i) + "," + result.getValue().getWidth() + ");\n");
+					dos.writeBytes("\tassert " + signal + " = " + "conv_std_logic_vector(" + values.get(i) + "," + result.getValue().getWidth() +")");
+					dos.writeBytes("\n\t\treport \"value different from the expected\" severity error;\n");
+				}
+				else if(i == 1)
+				{
+					dos.writeBytes("\n\twait for 12 ns;\n");
+					dos.writeBytes("\tassert " + signal + " = " + "conv_std_logic_vector(" + values.get(i) + "," + result.getValue().getWidth() +")");
+					dos.writeBytes("\n\t\treport \"value different from the expected\" severity error;\n");
+				}
+				else
+				{
+					dos.writeBytes("\n\twait for 10 ns;\n");
+					dos.writeBytes("\tassert " + signal + " = " + "conv_std_logic_vector(" + values.get(i) + "," + result.getValue().getWidth() +")");
+					dos.writeBytes("\n\t\treport \"value different from the expected\" severity error;\n");					
+				}
+			}*/
+			
+			dos.writeBytes("\n\twait for 10 ns;\n");
+			for(int i = 0; i < result.getValue().getArraySize(); i++)
+			{
+				dos.writeBytes("\n\twait on " + signal + ";\n");
+				dos.writeBytes("\tassert " + signal + " = " + "conv_std_logic_vector(" + values.get(i) + "," + result.getValue().getWidth() +")");
+				dos.writeBytes("\n\t\treport \"value differente from the expected\" severity error;\n");
+			}
+		}
+		
+		dos.writeBytes("\n\tassert false report \"end of test\" severity note;");
+		dos.writeBytes("\n\nwait;\n");
+		dos.writeBytes("end process;\n");
+		dos.writeBytes("\nend behavior;\n");	
+	}
+	
 
 }
