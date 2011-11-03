@@ -12,7 +12,7 @@
 -- SUFFERED BY LICENSEE AS A RESULT OF USING, MODIFYING OR DISTRIBUTING THIS
 -- SOFTWARE OR ITS DERIVATIVES.
 --
--- Generated at Fri Oct 21 17:50:02 BRST 2011
+-- Generated at Thu Nov 03 12:20:04 BRST 2011
 --
 
 -- IEEE Libraries --
@@ -75,105 +75,107 @@ process
 
 begin
 
-	wait until \result\ =  conv_std_logic_vector(29,16);
+	wait for 10 ns;
+
+	wait on \result\;
 	assert \result\ = conv_std_logic_vector(29,16)
-		report "value different from the expected" severity error;
+		report "value differente from the expected" severity error;
 
-	wait for 12 ns;
+	wait on \result\;
 	assert \result\ = conv_std_logic_vector(55,16)
-		report "value different from the expected" severity error;
+		report "value differente from the expected" severity error;
 
-	wait for 10 ns;
+	wait on \result\;
 	assert \result\ = conv_std_logic_vector(71,16)
-		report "value different from the expected" severity error;
+		report "value differente from the expected" severity error;
 
-	wait for 10 ns;
+	wait on \result\;
 	assert \result\ = conv_std_logic_vector(59,16)
-		report "value different from the expected" severity error;
+		report "value differente from the expected" severity error;
 
-	wait for 10 ns;
+	wait on \result\;
 	assert \result\ = conv_std_logic_vector(41,16)
-		report "value different from the expected" severity error;
+		report "value differente from the expected" severity error;
 
-	wait for 10 ns;
+	wait on \result\;
 	assert \result\ = conv_std_logic_vector(47,16)
-		report "value different from the expected" severity error;
+		report "value differente from the expected" severity error;
 
-	wait for 10 ns;
+	wait on \result\;
 	assert \result\ = conv_std_logic_vector(86,16)
-		report "value different from the expected" severity error;
+		report "value differente from the expected" severity error;
 
-	wait for 10 ns;
+	wait on \result\;
 	assert \result\ = conv_std_logic_vector(93,16)
-		report "value different from the expected" severity error;
+		report "value differente from the expected" severity error;
 
-	wait for 10 ns;
+	wait on \result\;
 	assert \result\ = conv_std_logic_vector(92,16)
-		report "value different from the expected" severity error;
+		report "value differente from the expected" severity error;
 
-	wait for 10 ns;
+	wait on \result\;
 	assert \result\ = conv_std_logic_vector(82,16)
-		report "value different from the expected" severity error;
+		report "value differente from the expected" severity error;
 
-	wait for 10 ns;
+	wait on \result\;
 	assert \result\ = conv_std_logic_vector(54,16)
-		report "value different from the expected" severity error;
+		report "value differente from the expected" severity error;
 
-	wait for 10 ns;
+	wait on \result\;
 	assert \result\ = conv_std_logic_vector(102,16)
-		report "value different from the expected" severity error;
+		report "value differente from the expected" severity error;
 
-	wait for 10 ns;
+	wait on \result\;
 	assert \result\ = conv_std_logic_vector(116,16)
-		report "value different from the expected" severity error;
+		report "value differente from the expected" severity error;
 
-	wait for 10 ns;
+	wait on \result\;
 	assert \result\ = conv_std_logic_vector(131,16)
-		report "value different from the expected" severity error;
+		report "value differente from the expected" severity error;
 
-	wait for 10 ns;
+	wait on \result\;
 	assert \result\ = conv_std_logic_vector(76,16)
-		report "value different from the expected" severity error;
+		report "value differente from the expected" severity error;
 
-	wait for 10 ns;
+	wait on \result\;
 	assert \result\ = conv_std_logic_vector(24,16)
-		report "value different from the expected" severity error;
+		report "value differente from the expected" severity error;
 
-	wait for 10 ns;
+	wait on \result\;
 	assert \result\ = conv_std_logic_vector(55,16)
-		report "value different from the expected" severity error;
+		report "value differente from the expected" severity error;
 
-	wait for 10 ns;
+	wait on \result\;
 	assert \result\ = conv_std_logic_vector(84,16)
-		report "value different from the expected" severity error;
+		report "value differente from the expected" severity error;
 
-	wait for 10 ns;
+	wait on \result\;
 	assert \result\ = conv_std_logic_vector(63,16)
-		report "value different from the expected" severity error;
+		report "value differente from the expected" severity error;
 
-	wait for 10 ns;
+	wait on \result\;
 	assert \result\ = conv_std_logic_vector(47,16)
-		report "value different from the expected" severity error;
+		report "value differente from the expected" severity error;
 
-	wait for 10 ns;
+	wait on \result\;
 	assert \result\ = conv_std_logic_vector(46,16)
-		report "value different from the expected" severity error;
+		report "value differente from the expected" severity error;
 
-	wait for 10 ns;
+	wait on \result\;
 	assert \result\ = conv_std_logic_vector(83,16)
-		report "value different from the expected" severity error;
+		report "value differente from the expected" severity error;
 
-	wait for 10 ns;
+	wait on \result\;
 	assert \result\ = conv_std_logic_vector(108,16)
-		report "value different from the expected" severity error;
+		report "value differente from the expected" severity error;
 
-	wait for 10 ns;
+	wait on \result\;
 	assert \result\ = conv_std_logic_vector(124,16)
-		report "value different from the expected" severity error;
+		report "value differente from the expected" severity error;
 
-	wait for 10 ns;
+	wait on \result\;
 	assert \result\ = conv_std_logic_vector(89,16)
-		report "value different from the expected" severity error;
+		report "value differente from the expected" severity error;
 
 	assert false report "end of test" severity note;
 
