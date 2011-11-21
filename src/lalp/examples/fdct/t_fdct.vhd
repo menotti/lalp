@@ -12,7 +12,7 @@
 -- SUFFERED BY LICENSEE AS A RESULT OF USING, MODIFYING OR DISTRIBUTING THIS
 -- SOFTWARE OR ITS DERIVATIVES.
 --
--- Generated at Thu Nov 03 12:19:38 BRST 2011
+-- Generated at Mon Nov 21 11:34:51 BRST 2011
 --
 
 -- IEEE Libraries --
@@ -101,11 +101,7 @@ begin
 	assert \output\ = conv_std_logic_vector(-54,32)
 		report "value differente from the expected" severity error;
 
-	wait on \output\;
-	assert \output\ = conv_std_logic_vector(6,32)
-		report "value differente from the expected" severity error;
-
-	assert false report "end of test" severity note;
+	assert false report "end of test of \output\" severity note;
 
 wait;
 end process;
