@@ -418,13 +418,13 @@ public class VHDL {
 	{
 		String signal;
 		Vector<Long> values;
-		dos.writeBytes("\nprocess\n"); //Cria o processo que irá checar se os resultados são os esperados
-		dos.writeBytes("\nbegin\n");
+		
 		for(Map.Entry<String, SimpleNode> result : lp.getParser().allResults.entrySet())
 		{
 			signal = "\\" + result.getKey() + "\\"; 
 			values = result.getValue().getInits();
-			
+			dos.writeBytes("\nprocess\n"); //Cria o processo que irá checar se os resultados são os esperados
+			dos.writeBytes("\nbegin\n");
 			/*
 			for(int i = 0; i < result.getValue().getArraySize(); i++)
 			{
@@ -455,12 +455,13 @@ public class VHDL {
 				dos.writeBytes("\tassert " + signal + " = " + "conv_std_logic_vector(" + values.get(i) + "," + result.getValue().getWidth() +")");
 				dos.writeBytes("\n\t\treport \"value differente from the expected\" severity error;\n");
 			}
+			dos.writeBytes("\n\tassert false report \"end of test of "+signal+"\" severity note;");
+			dos.writeBytes("\n\nwait;\n");
+			dos.writeBytes("end process;\n");
+				
 		}
+		dos.writeBytes("\nend behavior;\n");
 		
-		dos.writeBytes("\n\tassert false report \"end of test\" severity note;");
-		dos.writeBytes("\n\nwait;\n");
-		dos.writeBytes("end process;\n");
-		dos.writeBytes("\nend behavior;\n");	
 	}
 	
 

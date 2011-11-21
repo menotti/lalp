@@ -12,7 +12,7 @@
 -- SUFFERED BY LICENSEE AS A RESULT OF USING, MODIFYING OR DISTRIBUTING THIS
 -- SOFTWARE OR ITS DERIVATIVES.
 --
--- Generated at Thu Nov 03 12:22:43 BRST 2011
+-- Generated at Fri Nov 18 22:14:14 BRST 2011
 --
 
 -- IEEE Libraries --
@@ -70,6 +70,23 @@ begin
 	\init\  <= '1';
 	wait;
 end process stimulus;
+
+process
+
+begin
+
+	wait for 10 ns;
+
+	wait on \done\;
+	assert \done\ = conv_std_logic_vector(1,32)
+		report "value differente from the expected" severity error;
+
+	assert false report "end of test" severity note;
+
+wait;
+end process;
+
+end behavior;
 
 process
 

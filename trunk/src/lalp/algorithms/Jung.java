@@ -21,6 +21,7 @@ import lalp.core.Design;
 
 
 import edu.uci.ics.jung.graph.ArchetypeVertex;
+import edu.uci.ics.jung.graph.Vertex;
 import edu.uci.ics.jung.graph.decorators.VertexStringer;
 import edu.uci.ics.jung.visualization.ISOMLayout;
 import edu.uci.ics.jung.visualization.Layout;
@@ -46,6 +47,12 @@ public class Jung {
         	public String getLabel(ArchetypeVertex v) {
                 return ((Component)v).getFullName();
             }
+
+			@Override
+			public String getLabel(Vertex arg0) {
+				// TODO Auto-generated method stub
+				return null;
+			}
         });
         VisualizationViewer vv = new VisualizationViewer(l, pr);
         jf.getContentPane().add(vv);
