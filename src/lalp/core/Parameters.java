@@ -44,6 +44,7 @@ public final class Parameters {
 	public static boolean debugOutputs = false;
 	public static boolean alpg = false;
 	public static boolean verbose = false;
+	public static boolean gui = false;
 	
 	public static int getDefaultAddressWidth() {
 		return defaultAddressWidth;
