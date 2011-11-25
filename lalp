@@ -25,7 +25,7 @@ else
 	LALP_HOME="$(my_pdirname "$LALP_BIN")"
 fi
 
-LALP_LIBS="$LALP_HOME/lib"
+LALP_LIBS="$LALP_HOME/WebContent/WEB-INF/lib"
 
 LALP_JAR_JUNG="$LALP_LIBS/jung-1.7.6.jar"
 LALP_JAR_COLT="$LALP_LIBS/colt.jar"

@@ -25,7 +25,7 @@ if "%OS%" == "Windows_NT" goto :winnt
 
 :vars_ready
 
-set LALP_LIBS=%LALP_HOME%\lib
+set LALP_LIBS=%LALP_HOME%\WebContent\WEB-INF\lib
 
 set LALP_JAR_JUNG=%LALP_LIBS%\jung-1.7.6.jar
 set LALP_JAR_COLT=%LALP_LIBS%\colt.jar
