@@ -172,8 +172,7 @@ public class LALPServlet extends HttpServlet {
 				// System.out.print("Connecting hardware components...");
 				lp.getRoot().connectComponents();
 				if (SimpleNode.allComponents.containsKey("init")) {
-					lp.getParser().design.setInit(SimpleNode.allComponents
-							.get("init"));
+					lp.getParser().design.setInit(SimpleNode.allComponents.get("init"));
 				}
 				// System.out.println("Ok!");
 			} else if (extension.equals("ALPG")) {
@@ -193,6 +192,8 @@ public class LALPServlet extends HttpServlet {
 		} finally {
 			inStream.close();
 			is.close();
+			if (lp != null)
+				lp.getRoot().reset();
 		}
 
 		try {
