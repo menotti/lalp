@@ -48,7 +48,19 @@ public class VHDL {
 	
 //	private static final String DEFAULT_DIRECTORY = "../designs/hardware/";
 //	private final static String DEFAULT_DIRECTORY = "/Users/ricardomenotti/Documents/workspace/designs/alpsched/";
-	private final static String DEFAULT_DIRECTORY = ".";
+	//private final static String DEFAULT_DIRECTORY = ".";
+	//change to server path
+	//private final static String DEFAULT_DIRECTORY = "/home/gabriel/DEV/Java/EclipseProjects/.metadata/.plugins/org.eclipse.wst.server.core/tmp1/wtpwebapps/lalp/";
+	private static String DEFAULT_DIRECTORY = ".";
+	
+	public VHDL() {
+		
+	}
+	
+	// sets server path for writing VHDL files
+	public VHDL(String servletRealPath) {
+		VHDL.DEFAULT_DIRECTORY = servletRealPath;
+	}
 	
 	public void generateVHDL(Design design) {
 		generateVHDL(design, DEFAULT_DIRECTORY);
@@ -71,7 +83,8 @@ public class VHDL {
 		}
 		System.out.println("Ok!");
 		System.out.println(path + System.getProperty("file.separator") + fileName + ".vhd");
-	}
+	}	
+	
     /**
 	 * Generate the VHDL file header including copyright information and IEEE libraries
 	 * @param dos The <code>DataOutputStream</code> for the VHDL file

@@ -23,6 +23,8 @@ import java.util.TreeMap;
 import java.util.Vector;
 import java.util.Map.Entry;
 
+import javax.servlet.ServletContext;
+
 import lalp.components.delay_op;
 import lalp.core.Component;
 import lalp.core.Design;
@@ -31,7 +33,8 @@ import lalp.core.Port;
 import lalp.core.PortType;
 import lalp.core.Signal;
 import lalp.core.VHDLType;
-
+import javax.servlet.*;
+import javax.servlet.http.HttpServlet;
 
 
 /**
@@ -45,10 +48,11 @@ import lalp.core.VHDLType;
 public class Graphviz {
 	
 //	private final static String DEFAULT_DIRECTORY = "out";
-//	private final static String DEFAULT_DIRECTORY = ".";
+	//private final static String DEFAULT_DIRECTORY = ".";
 	//change to server path
-//	private final static String DEFAULT_DIRECTORY = "/home/gabriel/DEV/Java/EclipseProjects/.metadata/.plugins/org.eclipse.wst.server.core/tmp0/wtpwebapps/lalp/";
-	private final static String DEFAULT_DIRECTORY = "/Users/menotti/Documents/workspace/.metadata/.plugins/org.eclipse.wst.server.core/tmp0/wtpwebapps/lalp/";
+	//private final static String DEFAULT_DIRECTORY = "/home/gabriel/DEV/Java/EclipseProjects/.metadata/.plugins/org.eclipse.wst.server.core/tmp1/wtpwebapps/lalp/";
+	//private final static String DEFAULT_DIRECTORY = "/Users/menotti/Documents/workspace/.metadata/.plugins/org.eclipse.wst.server.core/tmp0/wtpwebapps/lalp/";
+	private static String DEFAULT_DIRECTORY = ".";
 	private boolean legend = false;
 	private boolean schedulingTimes = false;
 	private boolean sccLevels = false;
@@ -58,6 +62,15 @@ public class Graphviz {
 	private boolean dominator = false;
 	private String fileName = null;
 
+	public Graphviz() {
+		
+	}
+	
+	// sets server path for writing DOT files
+	public Graphviz(String realPath) {
+		Graphviz.DEFAULT_DIRECTORY = realPath;
+	}
+	
 	/**
 	 * Show legend
 	 */

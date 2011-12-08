@@ -4,10 +4,12 @@
  */
 package lalp.web;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -29,6 +31,7 @@ import org.apache.commons.io.IOUtils;
  import lalp.parser.LangParser;
  import lalp.parser.lang.SimpleNode;*/
 import lalp.core.*;
+import lalp.modGui.LalpIDE;
 import lalp.parser.*;
 import lalp.parser.lang.*;
 import lalp.algorithms.*;
@@ -48,18 +51,41 @@ public class LALPServlet extends HttpServlet {
 		PrintWriter out = response.getWriter();
 
 		response.setContentType("text/xml");
-		//response.setContentType("text/plain");
+		// response.setContentType("text/plain");
 
-		String[] args = new String[1];
-		args[0] = "-gv";
-		String fileName = request.getParameter("graphFileName");
-		String sourceCode = request.getParameter("graphCode");
-		String graphType = request.getParameter("graphType");
+		String fileName = request.getParameter("fileName");
+		String graphType = request.getParameter("graphType"); // SW | HW
 
+		if (graphType.equals("sw")) {
+			fileName = fileName.replace(".alp", "_sw.dot");
+		} else if (graphType.equals("hw")) {
+			fileName = fileName.replace(".alp", "_hw.dot");
+		}
+
+		// Choose Type
+		// String type = ".gif";
+		// String type = ".dot";
+		// String type = ".fig"; // open with xfig
+		// String type = ".pdf";
+		// String type = ".ps";
+		String type = ".svg"; // open with inkscape
+		// String type = ".png";
+		// String type = ".plain";
+
+		// read graph files from server and create visualization files
+		// (default svg)
+		String realPath = this.getServletConfig().getServletContext().getRealPath("/");
+		File dotFile = new File(realPath + fileName);
+		File imgFile = new File(realPath + dotFile.getName().replace(".dot", type));
+	
 		try {
-			String result = compile(args, fileName, sourceCode, graphType);
-			File imgFile = new File(result);
-			result = readFile(imgFile.getAbsolutePath());
+			// render visualization
+			Runtime rt = Runtime.getRuntime();
+			String[] dotArgs = { "dot", "-T" + type.replace(".", ""),
+					dotFile.getAbsolutePath(), "-o", imgFile.getAbsolutePath() };
+			Process p = rt.exec(dotArgs);
+			p.waitFor();
+			String result = readFile(imgFile.getAbsolutePath()); //read SVG file content
 			out.print(result);
 		} catch (Exception e) {
 			e.printStackTrace(out);
@@ -82,11 +108,10 @@ public class LALPServlet extends HttpServlet {
 
 		String[] args = request.getParameterValues("args[]");
 		String fileName = request.getParameter("fileName");
-		String sourceCode = request.getParameter("sourceCode");
-		String graphType = "";
-		
+		String sourceCode = request.getParameter("sourceCode");	
+
 		try {
-			String result = compile(args, fileName, sourceCode, graphType);
+			String result = compile(args, fileName, sourceCode);
 			out.print(result); // response
 		} catch (Exception e) {
 			out.print("Choose parameters");
@@ -99,32 +124,42 @@ public class LALPServlet extends HttpServlet {
 		}
 	}
 
-	public String compile(String[] args, String fileName, String sourceCode, String graphType)
-			throws IOException {
-		
-		//reset previous args
-		Parameters.runScc = false;
-		Parameters.runDijkstra = false;
-		Parameters.graphviz = false;
-		Parameters.graphvizSubgraphs = false;		
+	public String compile(String[] args, String fileName, String sourceCode) throws IOException {
 
-		for (int i = 0; i < args.length; i++) {
-			if (args[i].equals("-as")) {
-				Parameters.runScc = true;
-				// result = info("SCC Algorithm not working yet!");
-			} else if (args[i].equals("-ad")) {
-				Parameters.runDijkstra = true;
-				// result = info("Dijkstra Algorithm not working yet!");
-			} else if (args[i].equals("-gv")) {
-				Parameters.graphviz = true;
-			} else if (args[i].equals("-gs")) {
-				if (Parameters.graphviz) {
-					Parameters.graphvizSubgraphs = true;
-				} else {
-					error("Option -gs requires option -gv before");
-				}
-			}
-		}
+		// reset previous args
+		// resetParameters();
+		// only working configuration at the moment (all args enabled)
+		setParameters();
+
+		// from LALP.java, not accepting user args yet
+		/*
+		 * for (int i = 0; i < args.length; i++) { if (args[i].equals("-as")) {
+		 * Parameters.runScc = true; } else if (args[i].equals("-ad")) {
+		 * Parameters.runDijkstra = true; } else if (args[i].equals("-ao")) {
+		 * Parameters.runDominators = true; } else if (args[i].equals("-aa")) {
+		 * Parameters.runAsapAlap = true; } else if (args[i].equals("-at")) { if
+		 * (Parameters.runAsapAlap) Parameters.runTopological = true; else
+		 * error("Option -at requires option -aa before"); } else if
+		 * (args[i].equals("-ab")) { if (Parameters.runAsapAlap)
+		 * Parameters.runBalance = true; else
+		 * error("Option -ab requires option -aa before"); } else if
+		 * (args[i].equals("-do")) { Parameters.debugOutputs = true; } else if
+		 * (args[i].equals("-gv")) { Parameters.graphviz = true; } else if
+		 * (args[i].equals("-gs")) { if (Parameters.graphviz) {
+		 * Parameters.graphvizSubgraphs = true; } else {
+		 * error("Option -gs requires option -gv before"); } } else if
+		 * (args[i].equals("-vh")) { Parameters.vhdl = true; } else if
+		 * (args[i].equals("-vt")) { if (Parameters.vhdl) {
+		 * Parameters.vhdlTestbench = true; } else {
+		 * error("Option -vt requires option -vh before"); } } else if
+		 * (args[i].equals("-vi")) { if (Parameters.vhdl) {
+		 * Parameters.vhdlMemory = true; } else {
+		 * error("Option -vi requires option -vh before"); } } else if
+		 * (args[i].equals("-alpg")) { Parameters.alpg = true; } else if
+		 * (args[i].equals("-verbose")) { Parameters.verbose = true; } else if
+		 * (args[i].equals("-gui")) { Parameters.gui = true; } else if (i !=
+		 * args.length - 1) { error("Unrecognized option: " + args[i]); } }
+		 */
 
 		String realPath = null;
 		File inputFile = null;
@@ -146,7 +181,7 @@ public class LALPServlet extends HttpServlet {
 			outFile.close();
 		}
 
-		String result = null;
+		String result = new String();
 		FileInputStream inStream = null;
 		InputStream is = null;
 		Design design = null;
@@ -172,7 +207,8 @@ public class LALPServlet extends HttpServlet {
 				// System.out.print("Connecting hardware components...");
 				lp.getRoot().connectComponents();
 				if (SimpleNode.allComponents.containsKey("init")) {
-					lp.getParser().design.setInit(SimpleNode.allComponents.get("init"));
+					lp.getParser().design.setInit(SimpleNode.allComponents
+							.get("init"));
 				}
 				// System.out.println("Ok!");
 			} else if (extension.equals("ALPG")) {
@@ -196,21 +232,37 @@ public class LALPServlet extends HttpServlet {
 				lp.getRoot().reset();
 		}
 
+		// from LALP.java
 		try {
+			int schedResult = -1;
+			if (Parameters.runAsapAlap) {
+				Scheduling aa = new Scheduling(design);
+				if (Parameters.runTopological)
+					aa.detectBackwardEdges(design, lp);
+				// schedResult = aa.ASAP(design);
+				schedResult = aa.ALAP(design);
+				if (Parameters.runBalance)
+					aa.balanceAndSyncrhonize(design);
+			}
+
 			if (Parameters.runScc) {
 				StrongConnectedComponents scc = new StrongConnectedComponents();
 				scc.detectStrongConnectedComponents(design);
-				return result = design.toString();
 			}
 
 			if (Parameters.runDijkstra) {
 				Dijkstra dijkstra = new Dijkstra();
 				dijkstra.detectBigestCycle(design);
-				return result = design.toString();
+			}
+
+			if (Parameters.runDominators) {
+				// Dominators dom = new Dominators();
+				// dom.detectBackwardEdges(design);
+				// dom.generateReport(design);
 			}
 
 			if (Parameters.graphviz) {
-				Graphviz dot = new Graphviz();
+				Graphviz dot = new Graphviz(realPath);
 				if (Parameters.runScc)
 					dot.setSccLevels(true);
 				// if (Parameters.runAsapAlap && schedResult == 0)
@@ -220,51 +272,97 @@ public class LALPServlet extends HttpServlet {
 				// if (schedResult == 0)
 				// dot.setRank(true);
 				// dot.setDominator(true);
-				// write graph files in server
+				// write dot files in server
 				dot.generateHardwareVisualization(design);
 				dot.generateSoftwareVisualization(design);
 				if (Parameters.graphvizSubgraphs)
 					dot.generateSCCSubgraphs(design);
+			}
 
-				// Choose Type
-				// String type = ".gif";
-				// String type = ".dot";
-				// String type = ".fig"; // open with xfig
-				// String type = ".pdf";
-				// String type = ".ps";
-				String type = ".svg"; // open with inkscape
-				// String type = ".png";
-				// String type = ".plain";
-				
-				// read graph files from server and create visualization files (default svg)
-				File dotFile;
-				File imgFile;
-				if (graphType.equals("sw")) {
-					dotFile = new File(realPath
-							+ fileName.replace(".alp", "_sw.dot"));
-					imgFile = new File(realPath
-							+ dotFile.getName().replace(".dot", type));
-				} else {
-					dotFile = new File(realPath
-							+ fileName.replace(".alp", "_hw.dot"));
-					imgFile = new File(realPath
-							+ dotFile.getName().replace(".dot", type));
-				}			
-								
-				//render visualization
-				Runtime rt = Runtime.getRuntime();
-				String[] dotArgs = { "dot", "-T" + type.replace(".", ""),
-						dotFile.getAbsolutePath(), "-o",
-						imgFile.getAbsolutePath() };
-				Process p = rt.exec(dotArgs);
-				p.waitFor();				
+			if (Parameters.debugOutputs) {
+				try {
+					design.generateDebugOutputs();
+				} catch (Exception e) {
+					e.printStackTrace();
+					System.exit(1);
+				}
+			}
 
-				result = imgFile.getAbsolutePath();
+			if (Parameters.vhdl) { // && schedResult == 0) {
+				VHDL vhd = new VHDL(realPath);
+				vhd.generateVHDL(design);
+				if (Parameters.vhdlMemory)
+					vhd.generateVHDLInitialization(design);
+				if (Parameters.vhdlTestbench)
+					vhd.generateVHDLTestbench(lp);
+			}
+
+			if (Parameters.alpg) {
+				ALPG alpg = new ALPG();
+				alpg.generateALPG(design);
+			}
+
+			if (Parameters.gui) {
+				LalpIDE gui;
+				if (args.length == 1) {
+					gui = new LalpIDE();
+					gui.setVisible(true);
+					while (!LalpIDE.inactive) {
+					}
+					System.out.println("GUI has terminated");
+				}
+				if (args.length == 2)
+					gui = new LalpIDE(args[1]);
 			}
 		} catch (Exception e) {
 			return result = error(e.toString());
 		}
-		return result;
+		// if result does not contain SVG file path it will receive VHD file
+		// content
+		if (result.isEmpty()) {
+			File vhdFile = new File(realPath + fileName.replace(".alp", ".vhd"));
+			result = readFile(vhdFile.getAbsolutePath());
+		}
+		return result.trim();
+	}
+
+	// working configuration
+	private void setParameters() {
+		Parameters.runScc = true;
+		Parameters.runDijkstra = true;
+		Parameters.runDominators = true;
+		Parameters.runAsapAlap = true;
+		Parameters.runTopological = true;
+		Parameters.runBalance = true;
+		Parameters.debugOutputs = true;
+		Parameters.graphviz = true;
+		Parameters.graphvizSubgraphs = true;
+		Parameters.vhdl = true;
+		Parameters.vhdlTestbench = true;
+		Parameters.vhdlMemory = true;
+		// requires .ALPG file
+		// Parameters.alpg = true;
+		Parameters.verbose = true;
+		// invokes LalpGUI
+		// Parameters.gui = true;
+	}
+
+	private void resetParameters() {
+		Parameters.runScc = false;
+		Parameters.runDijkstra = false;
+		Parameters.runDominators = false;
+		Parameters.runAsapAlap = false;
+		Parameters.runTopological = false;
+		Parameters.runBalance = false;
+		Parameters.debugOutputs = false;
+		Parameters.graphviz = false;
+		Parameters.graphvizSubgraphs = false;
+		Parameters.vhdl = false;
+		Parameters.vhdlTestbench = false;
+		Parameters.vhdlMemory = false;
+		Parameters.alpg = false;
+		Parameters.verbose = false;
+		Parameters.gui = false;
 	}
 
 	public String info(String s) {

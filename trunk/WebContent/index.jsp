@@ -10,10 +10,11 @@
 <link rel="stylesheet" type="text/css" href="css/lalpHome.css"></link>
 <script type="text/javascript" src="js/head.min.js"></script>
 <script>
-	head.js("js/jquery-1.6.4.min.js", "js/jquery.svg.js",
-	//"http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js",
-	//"http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.9/jquery-ui.min.js",	
-	"js/ajaxfileupload.js", "js/lalpArgs.js");
+	head.js("js/jquery-1.6.4.min.js",
+			"js/jquery.svg.package-1.4.4/jquery.svg.js",
+			//"http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js",
+			//"http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.9/jquery-ui.min.js",	
+			"js/ajaxfileupload.js", "js/lalpArgs.js");
 	/*"http://connect.facebook.net/en_US/all.js", head.ready(function() {
 				FB.init({
 					appId : '286442874716822',
@@ -27,24 +28,25 @@
 </head>
 <body>
 	<h1>LALP Web Compiler</h1>
-	<div id="menuArgs" class="menuArgs">
-		<form>
-			<fieldset>
-				<legend>
-					<b>Options</b>
-				</legend>
-				<input type="radio" id="r1" name="menu" value="-as">Run SCC
-				Algorithm<br /> <input type="radio" id="r2" name="menu" value="-ad">Run
-				Dijkstra Algorithm<br /> <input type="radio" id="r3" name="menu"
-					value="-gv">Generate Graphviz
-				<div id="graphMenu">
-					<input type="radio" id="r3sub1" name="subMenu" value="sw" checked>SW
-					File <br /> <input type="radio" id="r3sub2" name="subMenu"
-						value="hw">HW File
-				</div>
-			</fieldset>
-		</form>
-	</div>
+	<!-- user args not working yet -->
+	<!-- 	<div id="menuArgs" class="menuArgs"> -->
+	<!-- 		<form> -->
+	<!-- 			<fieldset> -->
+	<!-- 				<legend> -->
+	<!-- 					<b>Options</b> -->
+	<!-- 				</legend> -->
+	<!-- 				<input type="radio" id="r1" name="menu" value="-as">Run SCC -->
+	<!-- 				Algorithm<br /> <input type="radio" id="r2" name="menu" value="-ad">Run -->
+	<!-- 				Dijkstra Algorithm<br /> <input type="radio" id="r3" name="menu" -->
+	<!-- 					value="-gv">Generate Graphviz -->
+	<!-- 				<div id="graphMenu"> -->
+	<!-- 					<input type="radio" id="r3sub1" name="subMenu" value="sw" checked>SW -->
+	<!-- 					File <br /> <input type="radio" id="r3sub2" name="subMenu" -->
+	<!-- 						value="hw">HW File -->
+	<!-- 				</div> -->
+	<!-- 			</fieldset> -->
+	<!-- 		</form> -->
+	<!-- 	</div> -->
 	<br />
 	<div id="submitForm" class="submitForm">
 		<form id="file_upload">
@@ -74,17 +76,10 @@
 						type="button" id="compile" name="compile"
 						value="Begin Compilation" disabled="disabled">
 				</fieldset>
-			</form>
-			<form id="graphForm" action="LALPServlet" method="get" hidden="true">
-				<input type="text" id="args[]" name="args[]">
-				<textarea id="graphCode" name="graphCode" rows="20" cols="100"></textarea>
-				<input type="text" id="graphFileName" name="graphFileName">
-				<input type="text" id="graphType" name="graphType">
-			</form>
+			</form>			
 		</div>
 		<div id="targetCode" class="targetCode">
-			<form id="targetDownloadForm" action="DownloadServlet"
-				method="get">
+			<form id="targetDownloadForm" action="DownloadServlet" method="get">
 				<fieldset>
 					<legend>
 						<b>Target code</b>
@@ -96,8 +91,11 @@
 						value="Download">
 				</fieldset>
 			</form>
+			<fieldset>
+				<div id="swSVG"></div>
+				<div id="hwSVG"></div>
+			</fieldset>
 		</div>
-		<div id="svgArea"></div>
 	</div>
 </body>
 <footer> <!-- 		<iframe --> <!-- 			src="http://www.facebook.com/plugins/like.php?href=http://200.18.98.61:8080/lalp" -->
