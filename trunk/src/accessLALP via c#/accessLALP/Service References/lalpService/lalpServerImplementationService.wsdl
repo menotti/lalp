@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="utf-8"?>
+<definitions xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://webServices.lalp/" name="lalpServerImplementationService" targetNamespace="http://webServices.lalp/" xmlns="http://schemas.xmlsoap.org/wsdl/">
+  <types />
+  <message name="getTimeAsString" />
+  <message name="getTimeAsStringResponse">
+    <part name="return" type="xsd:string" />
+  </message>
+  <message name="debugopGeneration">
+    <part name="arg0" type="xsd:string" />
+  </message>
+  <message name="debugopGenerationResponse">
+    <part name="return" type="xsd:string" />
+  </message>
+  <message name="graphvizGeneration">
+    <part name="arg0" type="xsd:string" />
+  </message>
+  <message name="graphvizGenerationResponse">
+    <part name="return" type="xsd:string" />
+  </message>
+  <message name="graphvizSubGeneration">
+    <part name="arg0" type="xsd:string" />
+  </message>
+  <message name="graphvizSubGenerationResponse">
+    <part name="return" type="xsd:string" />
+  </message>
+  <message name="vhdlGeneration">
+    <part name="arg0" type="xsd:string" />
+  </message>
+  <message name="vhdlGenerationResponse">
+    <part name="return" type="xsd:string" />
+  </message>
+  <message name="vhdlMemGeneration">
+    <part name="arg0" type="xsd:string" />
+  </message>
+  <message name="vhdlMemGenerationResponse">
+    <part name="return" type="xsd:string" />
+  </message>
+  <message name="vhdlTbGeneration">
+    <part name="arg0" type="xsd:string" />
+  </message>
+  <message name="vhdlTbGenerationResponse">
+    <part name="return" type="xsd:string" />
+  </message>
+  <message name="alpgGeneration">
+    <part name="arg0" type="xsd:string" />
+  </message>
+  <message name="alpgGenerationResponse">
+    <part name="return" type="xsd:string" />
+  </message>
+  <portType name="lalpServer">
+    <operation name="getTimeAsString">
+      <input message="tns:getTimeAsString" />
+      <output message="tns:getTimeAsStringResponse" />
+    </operation>
+    <operation name="debugopGeneration">
+      <input message="tns:debugopGeneration" />
+      <output message="tns:debugopGenerationResponse" />
+    </operation>
+    <operation name="graphvizGeneration">
+      <input message="tns:graphvizGeneration" />
+      <output message="tns:graphvizGenerationResponse" />
+    </operation>
+    <operation name="graphvizSubGeneration">
+      <input message="tns:graphvizSubGeneration" />
+      <output message="tns:graphvizSubGenerationResponse" />
+    </operation>
+    <operation name="vhdlGeneration">
+      <input message="tns:vhdlGeneration" />
+      <output message="tns:vhdlGenerationResponse" />
+    </operation>
+    <operation name="vhdlMemGeneration">
+      <input message="tns:vhdlMemGeneration" />
+      <output message="tns:vhdlMemGenerationResponse" />
+    </operation>
+    <operation name="vhdlTbGeneration">
+      <input message="tns:vhdlTbGeneration" />
+      <output message="tns:vhdlTbGenerationResponse" />
+    </operation>
+    <operation name="alpgGeneration">
+      <input message="tns:alpgGeneration" />
+      <output message="tns:alpgGenerationResponse" />
+    </operation>
+  </portType>
+  <binding name="lalpServerImplementationPortBinding" type="tns:lalpServer">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="rpc" />
+    <operation name="getTimeAsString">
+      <soap:operation soapAction="" />
+      <input>
+        <soap:body use="literal" namespace="http://webServices.lalp/" />
+      </input>
+      <output>
+        <soap:body use="literal" namespace="http://webServices.lalp/" />
+      </output>
+    </operation>
+    <operation name="debugopGeneration">
+      <soap:operation soapAction="" />
+      <input>
+        <soap:body use="literal" namespace="http://webServices.lalp/" />
+      </input>
+      <output>
+        <soap:body use="literal" namespace="http://webServices.lalp/" />
+      </output>
+    </operation>
+    <operation name="graphvizGeneration">
+      <soap:operation soapAction="" />
+      <input>
+        <soap:body use="literal" namespace="http://webServices.lalp/" />
+      </input>
+      <output>
+        <soap:body use="literal" namespace="http://webServices.lalp/" />
+      </output>
+    </operation>
+    <operation name="graphvizSubGeneration">
+      <soap:operation soapAction="" />
+      <input>
+        <soap:body use="literal" namespace="http://webServices.lalp/" />
+      </input>
+      <output>
+        <soap:body use="literal" namespace="http://webServices.lalp/" />
+      </output>
+    </operation>
+    <operation name="vhdlGeneration">
+      <soap:operation soapAction="" />
+      <input>
+        <soap:body use="literal" namespace="http://webServices.lalp/" />
+      </input>
+      <output>
+        <soap:body use="literal" namespace="http://webServices.lalp/" />
+      </output>
+    </operation>
+    <operation name="vhdlMemGeneration">
+      <soap:operation soapAction="" />
+      <input>
+        <soap:body use="literal" namespace="http://webServices.lalp/" />
+      </input>
+      <output>
+        <soap:body use="literal" namespace="http://webServices.lalp/" />
+      </output>
+    </operation>
+    <operation name="vhdlTbGeneration">
+      <soap:operation soapAction="" />
+      <input>
+        <soap:body use="literal" namespace="http://webServices.lalp/" />
+      </input>
+      <output>
+        <soap:body use="literal" namespace="http://webServices.lalp/" />
+      </output>
+    </operation>
+    <operation name="alpgGeneration">
+      <soap:operation soapAction="" />
+      <input>
+        <soap:body use="literal" namespace="http://webServices.lalp/" />
+      </input>
+      <output>
+        <soap:body use="literal" namespace="http://webServices.lalp/" />
+      </output>
+    </operation>
+  </binding>
+  <service name="lalpServerImplementationService">
+    <port name="lalpServerImplementationPort" binding="tns:lalpServerImplementationPortBinding">
+      <soap:address location="http://127.0.0.1:9877/webServices" />
+    </port>
+  </service>
+</definitions>

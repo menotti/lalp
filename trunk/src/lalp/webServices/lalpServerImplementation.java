@@ -110,18 +110,25 @@ public class lalpServerImplementation {
 	
 	//private methods
 	private String packageGeneratedOutputIntoString(String fileName,String extension) {
-		String output2=""; 
+	String output2 =" "; 
+		StringBuffer sb=new StringBuffer();
 		try {
 			
-			Scanner scan = new Scanner(new FileReader("." + System.getProperty("file.separator") + fileName + extension));
+			Scanner scan = new Scanner(new FileReader(fileName + extension));
 			while (scan.hasNext()) 
-				output2.concat(scan.nextLine() + "\n");
+			{	
+				sb.append(scan.nextLine()+"\n");
+				//output2.concat(scan.nextLine());
+			}
+			
 			
 		} catch (Exception ex) { 
 			
 			System.out.println(ex.getMessage());
 		}
+		output2=sb.toString();
 		return output2;
+
 	}
 	
 	
