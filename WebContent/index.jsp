@@ -24,30 +24,20 @@
 				});
 			}));*/
 </script>
+<script language="JavaScript">
+function toggle(id) {
+   var state = document.getElementById(id).style.display;
+   if (state == 'block') {
+       document.getElementById(id).style.display = 'none';
+   } else {
+       document.getElementById(id).style.display = 'block';
+   }
+}
+</script>
 <title>A Web Interface for the LALP Compiler</title>
 </head>
 <body>
 	<h1>LALP Web Compiler</h1>
-	<!-- user args not working yet -->
-	<!-- 	<div id="menuArgs" class="menuArgs"> -->
-	<!-- 		<form> -->
-	<!-- 			<fieldset> -->
-	<!-- 				<legend> -->
-	<!-- 					<b>Options</b> -->
-	<!-- 				</legend> -->
-	<!-- 				<input type="radio" id="r1" name="menu" value="-as">Run SCC -->
-	<!-- 				Algorithm<br /> <input type="radio" id="r2" name="menu" value="-ad">Run -->
-	<!-- 				Dijkstra Algorithm<br /> <input type="radio" id="r3" name="menu" -->
-	<!-- 					value="-gv">Generate Graphviz -->
-	<!-- 				<div id="graphMenu"> -->
-	<!-- 					<input type="radio" id="r3sub1" name="subMenu" value="sw" checked>SW -->
-	<!-- 					File <br /> <input type="radio" id="r3sub2" name="subMenu" -->
-	<!-- 						value="hw">HW File -->
-	<!-- 				</div> -->
-	<!-- 			</fieldset> -->
-	<!-- 		</form> -->
-	<!-- 	</div> -->
-	<br />
 	<div id="submitForm" class="submitForm">
 		<form id="file_upload">
 			<fieldset>
@@ -57,13 +47,54 @@
 				<div id="drop_zone_1">
 					<input id="file_1" type="file" name="file_1" multiple>
 				</div>
-				<input type="button" id="upload" name="upload" value="Upload File" />
+				<input type="button" id="upload" name="upload" value="Upload File" onclick="toggle('compileArea');"/>
 			</fieldset>
 		</form>
 	</div>
 	<br />
-	<div id="codeArea">
-		<div id="sourceCode" class="sourceCode">
+	<div id="compileArea" class="compileArea" style="display: none">
+				<fieldset>
+					<legend>
+						<b>Compilation Options</b>
+					</legend>
+	
+	
+	<input name="check" type="checkbox" id="as" value="-as" checked disabled="disabled" /> Run SCC algorithm <br />
+	<input name="check" type="checkbox" id="ad" value="-ad" checked disabled="disabled" /> Run Dijkstra algorithm <br />
+	<input name="check" type="checkbox" id="ao" value="-ao" checked disabled="disabled" /> Run Dominators algorithm <br />
+	<input name="check" type="checkbox" id="aa" value="-aa" checked disabled="disabled" /> Run AsapAlap scheduling algorithm <br />
+	<input name="check" type="checkbox" id="at" value="-at" checked disabled="disabled" /> Run Topological algorithm <br />
+	<input name="check" type="checkbox" id="ab" value="-ab" checked disabled="disabled" /> Run Balance algorithm <br />
+	<input name="check" type="checkbox" id="do" value="-do" checked disabled="disabled" /> Generate debug output pins <br />
+	<input name="check" type="checkbox" id="gv" value="-gv" checked disabled="disabled" /> Generate Graphviz <br />
+	<input name="check" type="checkbox" id="gs" value="-gs" checked disabled="disabled" /> Generate Graphviz subgraphs <br />
+	<input name="check" type="checkbox" id="vh" value="-vh" checked disabled="disabled" /> Generate VHDL <br />
+	<input name="check" type="checkbox" id="vi" value="-vi" checked disabled="disabled" /> Generate VHDL memory initialization <br />
+	<input name="check" type="checkbox" id="vt" value="-vt" checked disabled="disabled" /> Generate VHDL testbench <br />
+	<input name="check" type="checkbox" id="apg" value="-apg" checked disabled="disabled" /> Generate ALPG source code <br />
+	<input name="check" type="checkbox" id="verbose" value="-verbose" checked disabled="disabled" /> Print verbose output <br />
+	<input name="check" type="checkbox" id="version" value="-version" checked disabled="disabled" /> Print product version and exit <br />
+	<input name="check" type="checkbox" id="gui" value="-gui" checked disabled="disabled" /> Commence the LALP GUI <br /><br />
+	
+	
+	
+	<!-- 				<input type="radio" id="r1" name="menu" value="-as">Run SCC -->
+	<!-- 				Algorithm<br /> <input type="radio" id="r2" name="menu" value="-ad">Run -->
+	<!-- 				Dijkstra Algorithm<br /> <input type="radio" id="r3" name="menu" -->
+	<!-- 					value="-gv">Generate Graphviz -->
+	<!-- 				<div id="graphMenu"> -->
+	<!-- 					<input type="radio" id="r3sub1" name="subMenu" value="sw" checked>SW -->
+	<!-- 					File <br /> <input type="radio" id="r3sub2" name="subMenu" -->
+	<!-- 						value="hw">HW File -->
+	<!-- 				</div> -->
+			<input	type="button" id="compile" name="compile" value="Begin Compilation" onclick="toggle('codeArea');">
+			</fieldset>
+			</div><br />
+	
+	<div id="codeArea" style="display: none">
+
+		<a href="#" onclick="toggle('sourceCode');">View Source File</a><br />
+		<div id="sourceCode" class="sourceCode" style="display: none">
 			<form id="downloadForm" action="DownloadServlet" method="post">
 				<fieldset>
 					<legend>
@@ -72,17 +103,18 @@
 					<textarea id="sourceCodeArea" name="sourceCode" rows="20"
 						cols="100"></textarea>
 					<br /> File name: <input type="text" id="fileName" name="fileName">
-					<input type="button" id="download" value="Download"> <input
-						type="button" id="compile" name="compile"
-						value="Begin Compilation" disabled="disabled">
+					<input type="button" id="download" value="Download">
 				</fieldset>
 			</form>			
 		</div>
-		<div id="targetCode" class="targetCode">
+		
+		
+		<a href="#" onclick="toggle('targetCode');">View dotprod.vhd</a><br />
+		<div id="targetCode" class="targetCode" style="display: none">
 			<form id="targetDownloadForm" action="DownloadServlet" method="get">
 				<fieldset>
 					<legend>
-						<b>Target code</b>
+						<b>dotprod.vhd</b>
 					</legend>
 					<textarea id="targetCodeArea" name="targetCode" rows="20"
 						cols="100"></textarea>
@@ -91,11 +123,30 @@
 						value="Download">
 				</fieldset>
 			</form>
-			<fieldset>
-				<div id="swSVG"></div>
-				<div id="hwSVG"></div>
-			</fieldset>
-		</div>
+			</div>
+			
+		<a href="#" onclick="toggle('_vhdCode');">View t_dotprod.vhd</a>
+		<div id="_vhdCode" class="_vhdcode" style="display: none">
+			<form id="_vhdDownloadForm" action="DownloadServlet" method="get">
+				<fieldset>
+					<legend>
+						<b>t_dotprod.vhd</b>
+					</legend>
+					<textarea id="_vhdCodeArea" name="_vhdCode" rows="20"
+						cols="100"></textarea>
+					<br /> File name: <input type="text" id="_vhdFileName"
+						name="fileName"> <input type="button" id="_vhdDownload"
+						value="Download">
+				</fieldset>
+			</form>
+			</div>
+		
+		<div id="SVG">
+		<a href="#" onclick="toggle('swSVG');">View SofwareSVG</a><br />
+		<div id="swSVG" style="display: none"></div>
+		<a href="#" onclick="toggle('hwSVG');">View HardwareSVG</a>
+		<div id="hwSVG" style="display: none"></div></div>	
+
 	</div>
 </body>
 <footer> <!-- 		<iframe --> <!-- 			src="http://www.facebook.com/plugins/like.php?href=http://200.18.98.61:8080/lalp" -->
