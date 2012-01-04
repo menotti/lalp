@@ -26,6 +26,10 @@ $('#targetDownload').click(function() {
 	$('#targetDownloadForm').submit();
 });
 
+$('#_vhdDownload').click(function() {
+	$('#_vhdDownloadForm').submit();
+});
+
 // upload .alp file
 $('#upload').click(function() {
 	$.ajaxFileUpload({
@@ -74,7 +78,10 @@ function requestVHD() {
 		},
 		success : function(data) {
 			$('#targetCodeArea').html(data);
+			$('#_vhdCodeArea').html(data);
 			$('#targetFileName').val(
+					$('#fileName').val().replace(".alp", ".vhd"));
+			$('#_vhdFileName').val('t_' +
 					$('#fileName').val().replace(".alp", ".vhd"));
 		}
 	});
