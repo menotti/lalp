@@ -16,28 +16,30 @@ public interface ALPParserTreeConstants
   public int JJTCOUNTER = 10;
   public int JJTASSIGNMENT = 11;
   public int JJTWHEN = 12;
-  public int JJTLHS = 13;
-  public int JJTRHS = 14;
-  public int JJTEXPRESSION = 15;
-  public int JJTDELAYEXPRESSION = 16;
-  public int JJTCONDITIONALEXPRESSION = 17;
-  public int JJTCONDITIONALOREXPRESSION = 18;
-  public int JJTCONDITIONALANDEXPRESSION = 19;
-  public int JJTINCLUSIVEOREXPRESSION = 20;
-  public int JJTEXCLUSIVEOREXPRESSION = 21;
-  public int JJTANDEXPRESSION = 22;
-  public int JJTEQUALITYEXPRESSION = 23;
-  public int JJTRELATIONALEXPRESSION = 24;
-  public int JJTSHIFTEXPRESSION = 25;
-  public int JJTADDITIVEEXPRESSION = 26;
-  public int JJTMULTIPLICATIVEEXPRESSION = 27;
-  public int JJTUNARYEXPRESSION = 28;
-  public int JJTPREINCREMENTEXPRESSION = 29;
-  public int JJTPREDECREMENTEXPRESSION = 30;
-  public int JJTUNARYEXPRESSIONNOTPLUSMINUS = 31;
-  public int JJTPOSTFIXEXPRESSION = 32;
-  public int JJTPRIMARYEXPRESSION = 33;
-  public int JJTLITERAL = 34;
+  public int JJTTESTBENCHWHEN = 13;
+  public int JJTFOREACH = 14;
+  public int JJTLHS = 15;
+  public int JJTRHS = 16;
+  public int JJTEXPRESSION = 17;
+  public int JJTDELAYEXPRESSION = 18;
+  public int JJTCONDITIONALEXPRESSION = 19;
+  public int JJTCONDITIONALOREXPRESSION = 20;
+  public int JJTCONDITIONALANDEXPRESSION = 21;
+  public int JJTINCLUSIVEOREXPRESSION = 22;
+  public int JJTEXCLUSIVEOREXPRESSION = 23;
+  public int JJTANDEXPRESSION = 24;
+  public int JJTEQUALITYEXPRESSION = 25;
+  public int JJTRELATIONALEXPRESSION = 26;
+  public int JJTSHIFTEXPRESSION = 27;
+  public int JJTADDITIVEEXPRESSION = 28;
+  public int JJTMULTIPLICATIVEEXPRESSION = 29;
+  public int JJTUNARYEXPRESSION = 30;
+  public int JJTPREINCREMENTEXPRESSION = 31;
+  public int JJTPREDECREMENTEXPRESSION = 32;
+  public int JJTUNARYEXPRESSIONNOTPLUSMINUS = 33;
+  public int JJTPOSTFIXEXPRESSION = 34;
+  public int JJTPRIMARYEXPRESSION = 35;
+  public int JJTLITERAL = 36;
 
 
   public String[] jjtNodeName = {
@@ -54,6 +56,8 @@ public interface ALPParserTreeConstants
     "Counter",
     "Assignment",
     "When",
+    "TestbenchWhen",
+    "Foreach",
     "LHS",
     "RHS",
     "Expression",
@@ -78,4 +82,4 @@ public interface ALPParserTreeConstants
     "Literal",
   };
 }
-/* JavaCC - OriginalChecksum=3bafcbe5a1c0b7936d0874aa7026470c (do not edit this line) */
+/* JavaCC - OriginalChecksum=df8531115039a2b5e7ff373637af9218 (do not edit this line) */
