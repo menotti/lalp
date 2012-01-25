@@ -141,6 +141,12 @@ TOKEN: {
 	| < CONST: "const">
 	| < COUNTER: "counter">
 	| < WHEN: "when">
+	| < ASSERT: "assert">
+	| < CHECK: "check">
+	| < FOREACH: "foreach">
+	| < CHANGES: "changes">
+	| < AS: "as">
+	| < CLOCK: "clock">	
  }
  
 
@@ -306,8 +312,9 @@ void Testbench() : {
 	{
 		Info("This file has a testbench!");
 	}	
-	<LBRACE> 
-	(Results())+ 
+	<ASSERT><LBRACE>
+	(Foreach())?
+	(TestbenchWhen())? 
 	<RBRACE>
 }
 
@@ -524,9 +531,9 @@ void Result(int varWidth) : {
 {
 	tName=<IDENTIFIER> (<LBRACKET> (size=ConstOrInt())? <RBRACKET>)? ("=" (init=ConstOrLong() | inits=MemoryInit(inits)))?
 	{
-		if (allResults.containsKey(tName.image)) {
+		/*if (allResults.containsKey(tName.image)) {
 			ErrorToken("Redefinition of Result " + tName.image, tName);
-		}
+		}*/
 		jjtThis.setIdentifier(tName.image);
 		if (size == null && inits != null && inits.size() != 0)
 			size = inits.size();
@@ -674,6 +681,35 @@ void Assignment() : {
 void When() : {}
 {
 	<WHEN> Expression()
+}
+
+void TestbenchWhen(): 
+{
+	Token tName;
+}
+{
+	{
+		Info("This file has a TestbenchWhen!");
+	}	
+	<WHEN> tName=<IDENTIFIER> <CHANGES>
+	{
+		if(!allPins.containsKey(tName.image))
+			ErrorToken("Variable " + tName.image + " NOT found!", tName);
+	}
+	<LBRACE>
+		(<CHECK> Results())+
+	<RBRACE>
+}
+
+void Foreach(): {}
+{
+	{
+		Info("This file has a foreach!");
+	}
+	<FOREACH> <CLOCK>
+	<LBRACE>
+		(<CHECK> Results())+
+	<RBRACE>
 }
 
 void LHS() : {

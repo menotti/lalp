@@ -46,115 +46,127 @@ public interface ALPParserConstants {
   /** RegularExpression Id. */
   int WHEN = 19;
   /** RegularExpression Id. */
-  int INTEGER_LITERAL = 20;
+  int ASSERT = 20;
   /** RegularExpression Id. */
-  int DECIMAL_LITERAL = 21;
+  int CHECK = 21;
   /** RegularExpression Id. */
-  int HEX_LITERAL = 22;
+  int FOREACH = 22;
   /** RegularExpression Id. */
-  int CHARACTER_LITERAL = 23;
+  int CHANGES = 23;
   /** RegularExpression Id. */
-  int STRING_LITERAL = 24;
+  int AS = 24;
   /** RegularExpression Id. */
-  int IDENTIFIER = 25;
+  int CLOCK = 25;
   /** RegularExpression Id. */
-  int LETTER = 26;
+  int INTEGER_LITERAL = 26;
   /** RegularExpression Id. */
-  int DIGIT = 27;
+  int DECIMAL_LITERAL = 27;
   /** RegularExpression Id. */
-  int LPAREN = 28;
+  int HEX_LITERAL = 28;
   /** RegularExpression Id. */
-  int RPAREN = 29;
+  int CHARACTER_LITERAL = 29;
   /** RegularExpression Id. */
-  int LBRACE = 30;
+  int STRING_LITERAL = 30;
   /** RegularExpression Id. */
-  int RBRACE = 31;
+  int IDENTIFIER = 31;
   /** RegularExpression Id. */
-  int LBRACKET = 32;
+  int LETTER = 32;
   /** RegularExpression Id. */
-  int RBRACKET = 33;
+  int DIGIT = 33;
   /** RegularExpression Id. */
-  int SEMICOLON = 34;
+  int LPAREN = 34;
   /** RegularExpression Id. */
-  int COMMA = 35;
+  int RPAREN = 35;
   /** RegularExpression Id. */
-  int DOT = 36;
+  int LBRACE = 36;
   /** RegularExpression Id. */
-  int ASSIGN = 37;
+  int RBRACE = 37;
   /** RegularExpression Id. */
-  int AT = 38;
+  int LBRACKET = 38;
   /** RegularExpression Id. */
-  int GT = 39;
+  int RBRACKET = 39;
   /** RegularExpression Id. */
-  int LT = 40;
+  int SEMICOLON = 40;
   /** RegularExpression Id. */
-  int BANG = 41;
+  int COMMA = 41;
   /** RegularExpression Id. */
-  int TILDE = 42;
+  int DOT = 42;
   /** RegularExpression Id. */
-  int HOOK = 43;
+  int ASSIGN = 43;
   /** RegularExpression Id. */
-  int COLON = 44;
+  int AT = 44;
   /** RegularExpression Id. */
-  int EQ = 45;
+  int GT = 45;
   /** RegularExpression Id. */
-  int LE = 46;
+  int LT = 46;
   /** RegularExpression Id. */
-  int GE = 47;
+  int BANG = 47;
   /** RegularExpression Id. */
-  int NE = 48;
+  int TILDE = 48;
   /** RegularExpression Id. */
-  int SC_OR = 49;
+  int HOOK = 49;
   /** RegularExpression Id. */
-  int SC_AND = 50;
+  int COLON = 50;
   /** RegularExpression Id. */
-  int INCR = 51;
+  int EQ = 51;
   /** RegularExpression Id. */
-  int DECR = 52;
+  int LE = 52;
   /** RegularExpression Id. */
-  int PLUS = 53;
+  int GE = 53;
   /** RegularExpression Id. */
-  int MINUS = 54;
+  int NE = 54;
   /** RegularExpression Id. */
-  int STAR = 55;
+  int SC_OR = 55;
   /** RegularExpression Id. */
-  int SLASH = 56;
+  int SC_AND = 56;
   /** RegularExpression Id. */
-  int BIT_AND = 57;
+  int INCR = 57;
   /** RegularExpression Id. */
-  int BIT_OR = 58;
+  int DECR = 58;
   /** RegularExpression Id. */
-  int XOR = 59;
+  int PLUS = 59;
   /** RegularExpression Id. */
-  int REM = 60;
+  int MINUS = 60;
   /** RegularExpression Id. */
-  int LSHIFT = 61;
+  int STAR = 61;
   /** RegularExpression Id. */
-  int RSIGNEDSHIFT = 62;
+  int SLASH = 62;
   /** RegularExpression Id. */
-  int RUNSIGNEDSHIFT = 63;
+  int BIT_AND = 63;
   /** RegularExpression Id. */
-  int PLUSASSIGN = 64;
+  int BIT_OR = 64;
   /** RegularExpression Id. */
-  int MINUSASSIGN = 65;
+  int XOR = 65;
   /** RegularExpression Id. */
-  int STARASSIGN = 66;
+  int REM = 66;
   /** RegularExpression Id. */
-  int SLASHASSIGN = 67;
+  int LSHIFT = 67;
   /** RegularExpression Id. */
-  int ANDASSIGN = 68;
+  int RSIGNEDSHIFT = 68;
   /** RegularExpression Id. */
-  int ORASSIGN = 69;
+  int RUNSIGNEDSHIFT = 69;
   /** RegularExpression Id. */
-  int XORASSIGN = 70;
+  int PLUSASSIGN = 70;
   /** RegularExpression Id. */
-  int REMASSIGN = 71;
+  int MINUSASSIGN = 71;
   /** RegularExpression Id. */
-  int LSHIFTASSIGN = 72;
+  int STARASSIGN = 72;
   /** RegularExpression Id. */
-  int RSIGNEDSHIFTASSIGN = 73;
+  int SLASHASSIGN = 73;
   /** RegularExpression Id. */
-  int RUNSIGNEDSHIFTASSIGN = 74;
+  int ANDASSIGN = 74;
+  /** RegularExpression Id. */
+  int ORASSIGN = 75;
+  /** RegularExpression Id. */
+  int XORASSIGN = 76;
+  /** RegularExpression Id. */
+  int REMASSIGN = 77;
+  /** RegularExpression Id. */
+  int LSHIFTASSIGN = 78;
+  /** RegularExpression Id. */
+  int RSIGNEDSHIFTASSIGN = 79;
+  /** RegularExpression Id. */
+  int RUNSIGNEDSHIFTASSIGN = 80;
 
   /** Lexical state. */
   int DEFAULT = 0;
@@ -187,6 +199,12 @@ public interface ALPParserConstants {
     "\"const\"",
     "\"counter\"",
     "\"when\"",
+    "\"assert\"",
+    "\"check\"",
+    "\"foreach\"",
+    "\"changes\"",
+    "\"as\"",
+    "\"clock\"",
     "<INTEGER_LITERAL>",
     "<DECIMAL_LITERAL>",
     "<HEX_LITERAL>",

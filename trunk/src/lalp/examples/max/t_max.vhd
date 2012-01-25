@@ -12,7 +12,7 @@
 -- SUFFERED BY LICENSEE AS A RESULT OF USING, MODIFYING OR DISTRIBUTING THIS
 -- SOFTWARE OR ITS DERIVATIVES.
 --
--- Generated at Mon Nov 21 11:19:39 BRST 2011
+-- Generated at Wed Dec 14 16:11:47 BRST 2011
 --
 
 -- IEEE Libraries --
@@ -70,48 +70,5 @@ begin
 	\init\  <= '1';
 	wait;
 end process stimulus;
-
-process
-
-begin
-
-	wait for 10 ns;
-
-	wait on \maxval\;
-	assert \maxval\ = conv_std_logic_vector(1,32)
-		report "value differente from the expected" severity error;
-
-	wait on \maxval\;
-	assert \maxval\ = conv_std_logic_vector(2,32)
-		report "value differente from the expected" severity error;
-
-	wait on \maxval\;
-	assert \maxval\ = conv_std_logic_vector(3,32)
-		report "value differente from the expected" severity error;
-
-	wait on \maxval\;
-	assert \maxval\ = conv_std_logic_vector(4,32)
-		report "value differente from the expected" severity error;
-
-	wait on \maxval\;
-	assert \maxval\ = conv_std_logic_vector(5,32)
-		report "value differente from the expected" severity error;
-
-	wait on \maxval\;
-	assert \maxval\ = conv_std_logic_vector(6,32)
-		report "value differente from the expected" severity error;
-
-	wait on \maxval\;
-	assert \maxval\ = conv_std_logic_vector(7,32)
-		report "value differente from the expected" severity error;
-
-	wait on \maxval\;
-	assert \maxval\ = conv_std_logic_vector(8,32)
-		report "value differente from the expected" severity error;
-
-	assert false report "end of test of \maxval\" severity note;
-
-wait;
-end process;
 
 end behavior;

@@ -145,6 +145,12 @@ TOKEN: {
 	| < CONST: "const">
 	| < COUNTER: "counter">
 	| < WHEN: "when">
+	| < ASSERT: "assert">
+	| < CHECK: "check">
+	| < FOREACH: "foreach">
+	| < CHANGES: "changes">
+	| < AS: "as">
+	| < CLOCK: "clock">	
  }
  
 
@@ -347,8 +353,9 @@ void Testbench() : {/*@bgen(jjtree) Testbench */
 	{
 		Info("This file has a testbench!");
 	}	
-	<LBRACE> 
-	(Results())+ 
+	<ASSERT><LBRACE>
+	(Foreach())?
+	(TestbenchWhen())? 
 	<RBRACE>/*@bgen(jjtree)*/
         } catch (Throwable jjte000) {
           if (jjtc000) {
@@ -749,9 +756,9 @@ void Result(int varWidth) : {/*@bgen(jjtree) Result */
         }
 /*@egen*/
 	{
-		if (allResults.containsKey(tName.image)) {
+		/*if (allResults.containsKey(tName.image)) {
 			ErrorToken("Redefinition of Result " + tName.image, tName);
-		}
+		}*/
 		jjtn000.setIdentifier(tName.image);
 		if (size == null && inits != null && inits.size() != 0)
 			size = inits.size();
@@ -987,6 +994,87 @@ void When() : {/*@bgen(jjtree) When */
         try {
 /*@egen*/
 	<WHEN> Expression()/*@bgen(jjtree)*/
+        } catch (Throwable jjte000) {
+          if (jjtc000) {
+            jjtree.clearNodeScope(jjtn000);
+            jjtc000 = false;
+          } else {
+            jjtree.popNode();
+          }
+          if (jjte000 instanceof RuntimeException) {
+            throw (RuntimeException)jjte000;
+          }
+          if (jjte000 instanceof ParseException) {
+            throw (ParseException)jjte000;
+          }
+          throw (Error)jjte000;
+        } finally {
+          if (jjtc000) {
+            jjtree.closeNodeScope(jjtn000, true);
+          }
+        }
+/*@egen*/
+}
+
+void TestbenchWhen(): 
+{/*@bgen(jjtree) TestbenchWhen */
+        SimpleNode jjtn000 = new SimpleNode(this, JJTTESTBENCHWHEN);
+        boolean jjtc000 = true;
+        jjtree.openNodeScope(jjtn000);
+/*@egen*/
+	Token tName;
+}
+{/*@bgen(jjtree) TestbenchWhen */
+        try {
+/*@egen*/
+	{
+		Info("This file has a TestbenchWhen!");
+	}	
+	<WHEN> tName=<IDENTIFIER> <CHANGES>
+	{
+		if(!allPins.containsKey(tName.image))
+			ErrorToken("Variable " + tName.image + " NOT found!", tName);
+	}
+	<LBRACE>
+		(<CHECK> Results())+
+	<RBRACE>/*@bgen(jjtree)*/
+        } catch (Throwable jjte000) {
+          if (jjtc000) {
+            jjtree.clearNodeScope(jjtn000);
+            jjtc000 = false;
+          } else {
+            jjtree.popNode();
+          }
+          if (jjte000 instanceof RuntimeException) {
+            throw (RuntimeException)jjte000;
+          }
+          if (jjte000 instanceof ParseException) {
+            throw (ParseException)jjte000;
+          }
+          throw (Error)jjte000;
+        } finally {
+          if (jjtc000) {
+            jjtree.closeNodeScope(jjtn000, true);
+          }
+        }
+/*@egen*/
+}
+
+void Foreach(): {/*@bgen(jjtree) Foreach */
+  SimpleNode jjtn000 = new SimpleNode(this, JJTFOREACH);
+  boolean jjtc000 = true;
+  jjtree.openNodeScope(jjtn000);
+/*@egen*/}
+{/*@bgen(jjtree) Foreach */
+        try {
+/*@egen*/
+	{
+		Info("This file has a foreach!");
+	}
+	<FOREACH> <CLOCK>
+	<LBRACE>
+		(<CHECK> Results())+
+	<RBRACE>/*@bgen(jjtree)*/
         } catch (Throwable jjte000) {
           if (jjtc000) {
             jjtree.clearNodeScope(jjtn000);
