@@ -44,6 +44,12 @@ import lalp.algorithms.*;
 @SuppressWarnings("serial")
 @WebServlet("/LALPServlet")
 public class LALPServlet extends HttpServlet {
+	
+	/* $ which dot
+	 * public static final String DOT_COMMAND = "/usr/bin/dot";
+	 * public static final String DOT_COMMAND = "C:\\Graphviz\\dot.exe";
+	 */
+	public static final String DOT_COMMAND = "/usr/local/bin/dot";
 
 	@Override
 	protected void doGet(HttpServletRequest request,
@@ -81,7 +87,7 @@ public class LALPServlet extends HttpServlet {
 		try {
 			// render visualization
 			Runtime rt = Runtime.getRuntime();
-			String[] dotArgs = { "dot", "-T" + type.replace(".", ""),
+			String[] dotArgs = { DOT_COMMAND, "-T" + type.replace(".", ""),
 					dotFile.getAbsolutePath(), "-o", imgFile.getAbsolutePath() };
 			Process p = rt.exec(dotArgs);
 			p.waitFor();
