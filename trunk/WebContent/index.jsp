@@ -3,40 +3,44 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
+
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <style type="text/css">
 @import "css/jquery.svg.css";
 </style>
 <link rel="stylesheet" type="text/css" href="css/lalpHome.css"></link>
 <script type="text/javascript" src="js/head.min.js"></script>
+
+<script type="text/javascript" src="js/jszip.js"></script>
 <script>
 	head.js("js/jquery-1.6.4.min.js",
 			"js/jquery.svg.package-1.4.4/jquery.svg.js",
 			//"http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js",
 			//"http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.9/jquery-ui.min.js",	
 			"js/ajaxfileupload.js", "js/lalpArgs.js");
-	/*"http://connect.facebook.net/en_US/all.js", head.ready(function() {
-				FB.init({
-					appId : '286442874716822',
-					cookie : true,
-					status : true,
-					xfbml : true
-				});
-			}));*/
 </script>
 <script language="JavaScript">
-function toggle(id) {
-   var state = document.getElementById(id).style.display;
-   if (state == 'block') {
-       document.getElementById(id).style.display = 'none';
-   } else {
-       document.getElementById(id).style.display = 'block';
-   }
+
+function newColor(color)
+{
+document.getElementById('sourceCodeArea').style.color=color;
 }
+
+function toggle(id) {
+	   var state = document.getElementById(id).style.display;
+	   if (state == 'block') {
+	       document.getElementById(id).style.display = 'none';
+	   } else {
+	       document.getElementById(id).style.display = 'block';
+	   }
+	}
+
 </script>
+
 <title>A Web Interface for the LALP Compiler</title>
 </head>
 <body>
+
 	<h1>LALP Web Compiler</h1>
 	<div id="submitForm" class="submitForm">
 		<form id="file_upload">
@@ -77,7 +81,6 @@ function toggle(id) {
 	<input name="check" type="checkbox" id="gui" value="-gui" checked disabled="disabled" /> Commence the LALP GUI <br /><br />
 	
 	
-	
 	<!-- 				<input type="radio" id="r1" name="menu" value="-as">Run SCC -->
 	<!-- 				Algorithm<br /> <input type="radio" id="r2" name="menu" value="-ad">Run -->
 	<!-- 				Dijkstra Algorithm<br /> <input type="radio" id="r3" name="menu" -->
@@ -87,12 +90,14 @@ function toggle(id) {
 	<!-- 					File <br /> <input type="radio" id="r3sub2" name="subMenu" -->
 	<!-- 						value="hw">HW File -->
 	<!-- 				</div> -->
-			<input	type="button" id="compile" name="compile" value="Begin Compilation" onclick="toggle('codeArea');">
+			<input	type="button" id="compile" name="compile" value="Begin Compilation" onclick="toggle('codeArea')">
 			</fieldset>
 			</div><br />
 	
-	<div id="codeArea" style="display: none">
-
+	<div id="codeArea" style="display: none"><fieldset>
+		<legend>
+			<b>Compilation Files</b>
+		</legend>
 		<a href="#" onclick="toggle('sourceCode');">View Source File</a><br />
 		<div id="sourceCode" class="sourceCode" style="display: none">
 			<form id="downloadForm" action="DownloadServlet" method="post">
@@ -101,9 +106,10 @@ function toggle(id) {
 						<b>Source code</b>
 					</legend>
 					<textarea id="sourceCodeArea" name="sourceCode" rows="20"
-						cols="100"></textarea>
+						cols="100" onkeyup="newColor('red')"></textarea>
 					<br /> File name: <input type="text" id="fileName" name="fileName">
-					<input type="button" id="download" value="Download">
+					<input type="button" id="download" value="Download" onClick="newColor('blue')">
+					
 				</fieldset>
 			</form>			
 		</div>
@@ -117,15 +123,14 @@ function toggle(id) {
 						<b>dotprod.vhd</b>
 					</legend>
 					<textarea id="targetCodeArea" name="targetCode" rows="20"
-						cols="100"></textarea>
+						cols="100" readonly></textarea>
 					<br /> File name: <input type="text" id="targetFileName"
-						name="fileName"> <input type="button" id="targetDownload"
-						value="Download">
+						name="fileName">
 				</fieldset>
 			</form>
 			</div>
 			
-		<a href="#" onclick="toggle('_vhdCode');">View t_dotprod.vhd</a>
+		<a href="#" onclick="toggle('_vhdCode');">View t_dotprod.vhd</a><br />
 		<div id="_vhdCode" class="_vhdcode" style="display: none">
 			<form id="_vhdDownloadForm" action="DownloadServlet" method="get">
 				<fieldset>
@@ -133,11 +138,24 @@ function toggle(id) {
 						<b>t_dotprod.vhd</b>
 					</legend>
 					<textarea id="_vhdCodeArea" name="_vhdCode" rows="20"
-						cols="100"></textarea>
+						cols="100" readonly></textarea>
 					<br /> File name: <input type="text" id="_vhdFileName"
-						name="fileName"> <input type="button" id="_vhdDownload"
-						value="Download">
+						name="fileName"> 
 				</fieldset>
+			</form>
+			</div>
+			
+		<a href="#" onclick="toggle('memoryCode');">View memory.vhd</a><br />
+		<div id="memoryCode" class="memorycode" style="display: none">
+			<form id="_memoryDownloadForm" action="DownloadServlet" method="get">
+				<fieldset>
+					<legend>
+						<b>Memory.vhd</b>
+					</legend>
+					<textarea id="memoryCodeArea" name="memoryCode" rows="20"
+						cols="100" readonly></textarea>
+					<br /> File name: <input type="text" id="memoryFileName"
+						name="fileName"> 		
 			</form>
 			</div>
 		
@@ -145,13 +163,14 @@ function toggle(id) {
 		<a href="#" onclick="toggle('swSVG');">View SofwareSVG</a><br />
 		<div id="swSVG" style="display: none"></div>
 		<a href="#" onclick="toggle('hwSVG');">View HardwareSVG</a>
-		<div id="hwSVG" style="display: none"></div></div>	
-
+		<div id="hwSVG" style="display: none"></div></div><br />	
+		
+		<input type="button" id="downloadZipFile" value="Download all .vhd files" >
+		<input type="button" id="refresh" value="New compilation"  onClick="history.go(0)">
+		
+		</fieldset>
 	</div>
 </body>
-<footer> <!-- 		<iframe --> <!-- 			src="http://www.facebook.com/plugins/like.php?href=http://200.18.98.61:8080/lalp" -->
-<!-- 			scrolling="no" frameborder="0" style="border: none; width: 450px;"></iframe> -->
-<!-- <div id="fb-root"> --> <!-- 	<fb:login-button>Login with Facebook</fb:login-button> -->
-<!-- </div> --> <br />
+<footer>
 LALP version 0.1, Copyright (c) 2011 Ricardo Menotti </footer>
 </html>
