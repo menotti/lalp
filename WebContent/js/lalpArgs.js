@@ -26,6 +26,16 @@ $('#targetDownload').click(function() {
 	$('#targetDownloadForm').submit();
 });
 
+$('#downloadZipFile').click(function() {
+	var zip = new JSZip();
+    zip.add("sourceCode.alp", $('#sourceCodeArea').val());
+    zip.add("dotprod.vhd", $('#targetCodeArea').val());
+    zip.add("t_dotprod.vhd", $('#_vhdCodeArea').val());
+    zip.add("memory.vhd", $('#memoryCodeArea').val());
+    content = zip.generate();
+    location.href="data:application/zip;base64," + content;
+});
+
 $('#_vhdDownload').click(function() {
 	$('#_vhdDownloadForm').submit();
 });
@@ -53,6 +63,8 @@ $('#upload').click(function() {
 	});
 });
 
+
+
 $('#compile').attr('disabled', false);
 // compiles once and generate all files; SVG files are created from dot files
 $('#compile').click(function() {
@@ -60,10 +72,25 @@ $('#compile').click(function() {
 	setTimeout(function() {
 		requestSVG('sw');
 		requestSVG('hw');
-	}, 5000); // waits 5sec after compilation to create SVG files (assures that .dot file was already created)	
+	}, 5000);
+	// waits 5sec after compilation to create SVG files (assures that .dot file was already created)
+	doLoad();
 });
 
-/* AJAX & SVG */
+function IO(U) {
+    var X = !window.XMLHttpRequest ? new ActiveXObject('Microsoft.XMLHTTP') : new XMLHttpRequest();
+    X.open('GET', U, false );
+    X.setRequestHeader('Content-Type', 'text/html');
+    X.send('');
+return X.responseText;
+}	
+
+function doLoad(){
+	document.getElementById("memoryCodeArea").value = IO("memory.vhd");
+	document.getElementById("_vhdCodeArea").value = IO($('#_vhdFileName').val()); 
+}
+
+/* AJAX & SVG */r
 function requestVHD() {
 	$.ajax({
 		url : 'LALPServlet',
@@ -78,11 +105,12 @@ function requestVHD() {
 		},
 		success : function(data) {
 			$('#targetCodeArea').html(data);
-			$('#_vhdCodeArea').html(data);
+			//$('#_vhdCodeArea').html(data);
 			$('#targetFileName').val(
 					$('#fileName').val().replace(".alp", ".vhd"));
 			$('#_vhdFileName').val('t_' +
 					$('#fileName').val().replace(".alp", ".vhd"));
+			$('#memoryFileName').val('memory.vhd');
 		}
 	});
 }
@@ -99,3 +127,5 @@ function requestSVG(graphType) {
 		$('#hwSVG').load('LALPServlet?&fileName=' + fileName + '&graphType=' + graphType);
 	}
 }
+
+
