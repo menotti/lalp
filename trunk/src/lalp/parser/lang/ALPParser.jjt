@@ -63,6 +63,10 @@ public class ALPParser {
 	public Hashtable<String, SimpleNode> allResults = new Hashtable<String, SimpleNode>();
 	public Hashtable<String, Integer> allAttribution = new Hashtable<String, Integer>();
 	public TreeMap<Integer, String> allAttributionLines = new TreeMap<Integer, String>();
+	//Auxiliary lists to the testbench generation
+	public List<TestbenchUnity> whenList = new ArrayList<TestbenchUnity>();
+	public List<TestbenchUnity> foreachList = new ArrayList<TestbenchUnity>();
+	TestbenchUnity testbenchUnity = new TestbenchUnity();
 
 /*	public static void main(String args[]) {
 		FileInputStream inStream;
@@ -319,7 +323,7 @@ void Testbench() : {
 }
 
 
-void Results() : {
+void Results(String resultType, String conditionalSignal) : {
 	Token varType=null;
 	int varWidth=0;
 }
@@ -335,7 +339,7 @@ void Results() : {
 			}
 		}
 	}
-	Result(varWidth) <SEMICOLON>
+	Result(varWidth, resultType, conditionalSignal) <SEMICOLON>
 }
 
 /*
@@ -522,7 +526,7 @@ void Variable(int varWidth) : {
 	}
 }
 
-void Result(int varWidth) : {
+void Result(int varWidth, String resultType, String conditionalSignal) : {
 	Token tName;
 	Integer size = null;
 	Long init = null;
@@ -548,6 +552,16 @@ void Result(int varWidth) : {
 		// allComponents.put(tName.image, comp);
 		//DEBUG 
 		//InfoToken("Variable " + tName.image + (size>0 ? "[" + size +"]" : "") + (init != null ? " with initial value " + init : "") +" found", tName);
+		
+		
+		testbenchUnity.setResultName(tName.image);
+		testbenchUnity.setConditionalSignal(conditionalSignal);
+		//Add the result to the list of its type
+		if(resultType.equals("When"))
+			whenList.add(testbenchUnity);
+		else
+			foreachList.add(testbenchUnity);					
+		
 	}
 }
 
@@ -695,9 +709,10 @@ void TestbenchWhen():
 	{
 		if(!allPins.containsKey(tName.image))
 			ErrorToken("Variable " + tName.image + " NOT found!", tName);
+		
 	}
 	<LBRACE>
-		(<CHECK> Results())+
+		(<CHECK> Results("When", tName.image))+
 	<RBRACE>
 }
 
@@ -708,7 +723,7 @@ void Foreach(): {}
 	}
 	<FOREACH> <CLOCK>
 	<LBRACE>
-		(<CHECK> Results())+
+		(<CHECK> Results("Foreach", "null"))+
 	<RBRACE>
 }
 

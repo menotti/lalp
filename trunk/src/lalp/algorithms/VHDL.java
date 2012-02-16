@@ -432,7 +432,7 @@ public class VHDL {
 		String signal;
 		Vector<Long> values;
 		
-		for(Map.Entry<String, SimpleNode> result : lp.getParser().allResults.entrySet())
+		/*for(Map.Entry<String, SimpleNode> result : lp.getParser().allResults.entrySet())
 		{
 			signal = "\\" + result.getKey() + "\\"; 
 			values = result.getValue().getInits();
@@ -461,7 +461,7 @@ public class VHDL {
 				}
 			}*/
 			
-			dos.writeBytes("\n\twait for 10 ns;\n");
+			/*dos.writeBytes("\n\twait for 10 ns;\n");
 			for(int i = 0; i < result.getValue().getArraySize(); i++)
 			{
 				dos.writeBytes("\n\twait on " + signal + ";\n");
@@ -473,8 +473,44 @@ public class VHDL {
 			dos.writeBytes("end process;\n");
 				
 		}
-		dos.writeBytes("\nend behavior;\n");
+		dos.writeBytes("\nend behavior;\n");*/
+		//Generate process attached to expressions with "When" condition
+		for(int i = 0; i < lp.getParser().whenList.size(); i++)
+		{
+			dos.writeBytes("\nprocess\n"); //Cria o processo que irá checar se os resultados são os esperados
+			dos.writeBytes("\nbegin\n");
+			String conditionalSignal = "\\" + lp.getParser().whenList.get(i).getConditinalSignal() + "\\";
+			SimpleNode result = lp.getParser().allResults.get(lp.getParser().whenList.get(i).getResultName());
+			values = result.getInits();
+			for(int j = 0; j < result.getArraySize(); j++)
+			{
+				dos.writeBytes("\n\twait on " + conditionalSignal + ";\n");
+				dos.writeBytes("\tassert \\" + result.getIdentifier() + "\\ = " + "conv_std_logic_vector(" + values.get(j) + "," + result.getWidth() +")");
+				dos.writeBytes("\n\t\treport \"value differente from the expected\" severity error;\n");
+			}
+			dos.writeBytes("\n\tassert false report \"end of test of \\"+result.getIdentifier()+"\\\" severity note;");
+			dos.writeBytes("\n\nwait;\n");
+			dos.writeBytes("end process;\n");
+		}
 		
+		for(int i = 0; i < lp.getParser().foreachList.size(); i++)
+		{
+			dos.writeBytes("\nprocess\n"); //Cria o processo que irá checar se os resultados são os esperados
+			dos.writeBytes("\nbegin\n");
+			dos.writeBytes("\n\twait until \\init\\ = '1';\n");
+			SimpleNode result = lp.getParser().allResults.get(lp.getParser().whenList.get(i).getResultName());
+			values = result.getInits();
+			for(int j = 0; j < result.getArraySize(); j++)
+			{
+				dos.writeBytes("\n\twait for 10 ns;\n");
+				dos.writeBytes("\tassert \\" + result.getIdentifier() + "\\ = " + "conv_std_logic_vector(" + values.get(j) + "," + result.getWidth() +")");
+				dos.writeBytes("\n\t\treport \"value differente from the expected\" severity error;\n");
+			}
+			dos.writeBytes("\n\tassert false report \"end of test of \\"+result.getIdentifier()+"\\\" severity note;");
+			dos.writeBytes("\n\nwait;\n");
+			dos.writeBytes("end process;\n");
+		}
+		dos.writeBytes("\nend behavior;\n");
 	}
 	
 

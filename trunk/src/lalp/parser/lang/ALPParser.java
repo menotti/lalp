@@ -39,6 +39,10 @@ public class ALPParser/*@bgen(jjtree)*/implements ALPParserTreeConstants, ALPPar
         public Hashtable<String, SimpleNode> allResults = new Hashtable<String, SimpleNode>();
         public Hashtable<String, Integer> allAttribution = new Hashtable<String, Integer>();
         public TreeMap<Integer, String> allAttributionLines = new TreeMap<Integer, String>();
+        //Auxiliary lists to the testbench generation
+        public List<TestbenchUnity> whenList = new ArrayList<TestbenchUnity>();
+        public List<TestbenchUnity> foreachList = new ArrayList<TestbenchUnity>();
+        TestbenchUnity testbenchUnity = new TestbenchUnity();
 
   final public SimpleNode Start() throws ParseException {
                       /*@bgen(jjtree) Start */
@@ -179,8 +183,8 @@ public class ALPParser/*@bgen(jjtree)*/implements ALPParserTreeConstants, ALPPar
     }
   }
 
-  final public void Results() throws ParseException {
-                  /*@bgen(jjtree) Results */
+  final public void Results(String resultType, String conditionalSignal) throws ParseException {
+                                                             /*@bgen(jjtree) Results */
         SimpleNode jjtn000 = new SimpleNode(this, JJTRESULTS);
         boolean jjtc000 = true;
         jjtree.openNodeScope(jjtn000);Token varType=null;
@@ -206,7 +210,7 @@ public class ALPParser/*@bgen(jjtree)*/implements ALPParserTreeConstants, ALPPar
                                 ErrorToken("Type " + varType.image + " NOT found!", varType);
                         }
                 }
-      Result(varWidth);
+      Result(varWidth, resultType, conditionalSignal);
       jj_consume_token(SEMICOLON);
     } catch (Throwable jjte000) {
           if (jjtc000) {
@@ -635,8 +639,8 @@ Vector<Long> TestResult(Vector<Long> inits) #void : {
     }
   }
 
-  final public void Result(int varWidth) throws ParseException {
-                             /*@bgen(jjtree) Result */
+  final public void Result(int varWidth, String resultType, String conditionalSignal) throws ParseException {
+                                                                          /*@bgen(jjtree) Result */
         SimpleNode jjtn000 = new SimpleNode(this, JJTRESULT);
         boolean jjtc000 = true;
         jjtree.openNodeScope(jjtn000);Token tName;
@@ -704,6 +708,14 @@ Vector<Long> TestResult(Vector<Long> inits) #void : {
                 //DEBUG 
                 //InfoToken("Variable " + tName.image + (size>0 ? "[" + size +"]" : "") + (init != null ? " with initial value " + init : "") +" found", tName);
 
+
+                testbenchUnity.setResultName(tName.image);
+                testbenchUnity.setConditionalSignal(conditionalSignal);
+                //Add the result to the list of its type
+                if(resultType.equals("When"))
+                        whenList.add(testbenchUnity);
+                else
+                        foreachList.add(testbenchUnity);
     } catch (Throwable jjte000) {
           if (jjtc000) {
             jjtree.clearNodeScope(jjtn000);
@@ -1027,7 +1039,7 @@ Vector<Long> TestResult(Vector<Long> inits) #void : {
       label_8:
       while (true) {
         jj_consume_token(CHECK);
-        Results();
+        Results("When", tName.image);
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case CHECK:
           ;
@@ -1072,7 +1084,7 @@ Vector<Long> TestResult(Vector<Long> inits) #void : {
       label_9:
       while (true) {
         jj_consume_token(CHECK);
-        Results();
+        Results("Foreach", "null");
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case CHECK:
           ;
