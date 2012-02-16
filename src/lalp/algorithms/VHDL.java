@@ -479,6 +479,7 @@ public class VHDL {
 		{
 			dos.writeBytes("\nprocess\n"); //Cria o processo que irá checar se os resultados são os esperados
 			dos.writeBytes("\nbegin\n");
+			dos.writeBytes("\n\twait for 10 ns;\n");
 			String conditionalSignal = "\\" + lp.getParser().whenList.get(i).getConditinalSignal() + "\\";
 			SimpleNode result = lp.getParser().allResults.get(lp.getParser().whenList.get(i).getResultName());
 			values = result.getInits();

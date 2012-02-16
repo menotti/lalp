@@ -12,7 +12,7 @@
 -- SUFFERED BY LICENSEE AS A RESULT OF USING, MODIFYING OR DISTRIBUTING THIS
 -- SOFTWARE OR ITS DERIVATIVES.
 --
--- Generated at Thu Feb 16 10:18:36 GMT-03:00 2012
+-- Generated at Thu Feb 16 10:40:16 GMT-03:00 2012
 --
 
 -- IEEE Libraries --
@@ -74,6 +74,8 @@ end process stimulus;
 process
 
 begin
+
+	wait for 10 ns;
 
 	wait on \sum\;
 	assert \sum\ = conv_std_logic_vector(4,32)
