@@ -42,13 +42,16 @@ dotprod(out int sum, out bit done, in bit init) {
 }
 assert{
 	
-	foreach clock
-	{
-		check int sum = {4, 14, 32};
-	}
 	when sum changes
 	{
-		check int sum = {4, 14, 32};
+		check int sum = {5, 6, 7};
 	}
+
+	foreach clock
+	{
+		check int sum = {1, 2, 3};
+	}
+	
+	
     
 }

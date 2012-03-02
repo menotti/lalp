@@ -1,4 +1,4 @@
-//@author = Brandão, João Vitor
+//@author = Brandï¿½o, Joï¿½o Vitor
 
 package lalp.parser.lang;
 
@@ -6,8 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TestbenchUnity {
-	private String conditinalSignal; //when this signal change, a check is made on the results
-	private String resultName; //list with the results names
+	private String conditinalSignal; //when this signal change, a checking is made on the results
+	private String resultName;
 	
 	public String getConditinalSignal() {
 		return conditinalSignal;

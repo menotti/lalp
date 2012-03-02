@@ -499,7 +499,7 @@ public class VHDL {
 			dos.writeBytes("\nprocess\n"); //Cria o processo que irá checar se os resultados são os esperados
 			dos.writeBytes("\nbegin\n");
 			dos.writeBytes("\n\twait until \\init\\ = '1';\n");
-			SimpleNode result = lp.getParser().allResults.get(lp.getParser().whenList.get(i).getResultName());
+			SimpleNode result = lp.getParser().allResults.get(lp.getParser().foreachList.get(i).getResultName());
 			values = result.getInits();
 			for(int j = 0; j < result.getArraySize(); j++)
 			{
