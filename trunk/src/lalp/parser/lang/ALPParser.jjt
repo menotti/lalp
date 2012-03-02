@@ -66,7 +66,8 @@ public class ALPParser {
 	//Auxiliary lists to the testbench generation
 	public List<TestbenchUnity> whenList = new ArrayList<TestbenchUnity>();
 	public List<TestbenchUnity> foreachList = new ArrayList<TestbenchUnity>();
-	TestbenchUnity testbenchUnity = new TestbenchUnity();
+	public List<TestbenchUnity> equalityList = new ArrayList<TestbenchUnity>();
+	TestbenchUnity testbenchUnity;
 
 /*	public static void main(String args[]) {
 		FileInputStream inStream;
@@ -151,6 +152,7 @@ TOKEN: {
 	| < CHANGES: "changes">
 	| < AS: "as">
 	| < CLOCK: "clock">	
+	| < WAIT: "wait">
  }
  
 
@@ -317,8 +319,26 @@ void Testbench() : {
 		Info("This file has a testbench!");
 	}	
 	<ASSERT><LBRACE>
-	(Foreach())?
-	(TestbenchWhen())? 
+	(Foreach() | TestbenchWhen() | EqualityChecking())+ 
+	<RBRACE>
+}
+
+void EqualityChecking(): 
+{
+	Token tName;
+	Long value;
+}
+{
+	{
+		Info("This file has a EqualityChecking!");
+	}
+	<WAIT> tName=<IDENTIFIER> "==" value=ConstOrLong()
+	{
+		if(!allPins.containsKey(tName.image))
+			ErrorToken("Variable " + tName.image + " NOT found!", tName);		
+	}
+	<LBRACE>
+		(<CHECK> Results("EqualityChecking", tName.image))+
 	<RBRACE>
 }
 
@@ -553,14 +573,16 @@ void Result(int varWidth, String resultType, String conditionalSignal) : {
 		//DEBUG 
 		//InfoToken("Variable " + tName.image + (size>0 ? "[" + size +"]" : "") + (init != null ? " with initial value " + init : "") +" found", tName);
 		
-		
+		testbenchUnity = new TestbenchUnity();
 		testbenchUnity.setResultName(tName.image);
 		testbenchUnity.setConditionalSignal(conditionalSignal);
 		//Add the result to the list of its type
 		if(resultType.equals("When"))
 			whenList.add(testbenchUnity);
+		else if(resultType.equals("Foreach"))
+			foreachList.add(testbenchUnity);
 		else
-			foreachList.add(testbenchUnity);					
+			equalityList.add(testbenchUnity);					
 		
 	}
 }
