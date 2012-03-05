@@ -19,6 +19,7 @@ package lalp.parser.lang;
 import java.util.*;
 
 import lalp.core.*;
+import lalp.core.Process;
 import lalp.components.*;
 
 /**
@@ -39,11 +40,12 @@ public class ALPParser/*@bgen(jjtree)*/implements ALPParserTreeConstants, ALPPar
         public Hashtable<String, SimpleNode> allResults = new Hashtable<String, SimpleNode>();
         public Hashtable<String, Integer> allAttribution = new Hashtable<String, Integer>();
         public TreeMap<Integer, String> allAttributionLines = new TreeMap<Integer, String>();
-        //Auxiliary lists to the testbench generation
-        public List<TestbenchUnity> whenList = new ArrayList<TestbenchUnity>();
-        public List<TestbenchUnity> foreachList = new ArrayList<TestbenchUnity>();
-        public List<TestbenchUnity> equalityList = new ArrayList<TestbenchUnity>();
-        TestbenchUnity testbenchUnity;
+        /*
+	public List<TestbenchUnity> whenList = new ArrayList<TestbenchUnity>();
+	public List<TestbenchUnity> foreachList = new ArrayList<TestbenchUnity>();
+	public List<TestbenchUnity> equalityList = new ArrayList<TestbenchUnity>();
+	TestbenchUnity testbenchUnity;*/
+        public Vector<Process> allProcesses = new Vector<Process>();
 
   final public SimpleNode Start() throws ParseException {
                       /*@bgen(jjtree) Start */
@@ -150,10 +152,10 @@ public class ALPParser/*@bgen(jjtree)*/implements ALPParserTreeConstants, ALPPar
       while (true) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case FOREACH:
-          Foreach();
+          ForeachChecking();
           break;
         case WHEN:
-          TestbenchWhen();
+          WhenChecking();
           break;
         case WAIT:
           EqualityChecking();
@@ -201,7 +203,8 @@ public class ALPParser/*@bgen(jjtree)*/implements ALPParserTreeConstants, ALPPar
         SimpleNode jjtn000 = new SimpleNode(this, JJTEQUALITYCHECKING);
         boolean jjtc000 = true;
         jjtree.openNodeScope(jjtn000);Token tName;
-        Long value;
+        long value;
+        Process process = null;
     try {
                 Info("This file has a EqualityChecking!");
       jj_consume_token(WAIT);
@@ -210,11 +213,13 @@ public class ALPParser/*@bgen(jjtree)*/implements ALPParserTreeConstants, ALPPar
       value = ConstOrLong();
                 if(!allPins.containsKey(tName.image))
                         ErrorToken("Variable " + tName.image + " NOT found!", tName);
+                else
+                        process = new Process(Process.CheckingType.WAIT, tName.image, (int)value);
       jj_consume_token(LBRACE);
       label_5:
       while (true) {
         jj_consume_token(CHECK);
-        Results("EqualityChecking", tName.image);
+        Results(process);
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case CHECK:
           ;
@@ -246,8 +251,8 @@ public class ALPParser/*@bgen(jjtree)*/implements ALPParserTreeConstants, ALPPar
     }
   }
 
-  final public void Results(String resultType, String conditionalSignal) throws ParseException {
-                                                             /*@bgen(jjtree) Results */
+  final public void Results(Process process) throws ParseException {
+                                 /*@bgen(jjtree) Results */
         SimpleNode jjtn000 = new SimpleNode(this, JJTRESULTS);
         boolean jjtc000 = true;
         jjtree.openNodeScope(jjtn000);Token varType=null;
@@ -273,7 +278,7 @@ public class ALPParser/*@bgen(jjtree)*/implements ALPParserTreeConstants, ALPPar
                                 ErrorToken("Type " + varType.image + " NOT found!", varType);
                         }
                 }
-      Result(varWidth, resultType, conditionalSignal);
+      Result(varWidth, process);
       jj_consume_token(SEMICOLON);
     } catch (Throwable jjte000) {
           if (jjtc000) {
@@ -702,8 +707,8 @@ Vector<Long> TestResult(Vector<Long> inits) #void : {
     }
   }
 
-  final public void Result(int varWidth, String resultType, String conditionalSignal) throws ParseException {
-                                                                          /*@bgen(jjtree) Result */
+  final public void Result(int varWidth, Process process) throws ParseException {
+                                              /*@bgen(jjtree) Result */
         SimpleNode jjtn000 = new SimpleNode(this, JJTRESULT);
         boolean jjtc000 = true;
         jjtree.openNodeScope(jjtn000);Token tName;
@@ -765,22 +770,25 @@ Vector<Long> TestResult(Vector<Long> inits) #void : {
                 jjtn000.setWidth(varWidth);
                 jjtn000.setToken(tName);
                 allResults.put(tName.image, jjtn000);
+                process.addResult(jjtn000);
+                allProcesses.add(process);
                 // comp = design.addComponent(comp);
                 // jjtThis.setComponent(comp);
                 // allComponents.put(tName.image, comp);
                 //DEBUG 
                 //InfoToken("Variable " + tName.image + (size>0 ? "[" + size +"]" : "") + (init != null ? " with initial value " + init : "") +" found", tName);
+                /*
+		testbenchUnity = new TestbenchUnity();
+		testbenchUnity.setResultName(tName.image);
+		testbenchUnity.setConditionalSignal(conditionalSignal);
+		//Add the result to the list of its type
+		if(resultType.equals("When"))
+			whenList.add(testbenchUnity);
+		else if(resultType.equals("Foreach"))
+			foreachList.add(testbenchUnity);
+		else
+			equalityList.add(testbenchUnity);*/
 
-                testbenchUnity = new TestbenchUnity();
-                testbenchUnity.setResultName(tName.image);
-                testbenchUnity.setConditionalSignal(conditionalSignal);
-                //Add the result to the list of its type
-                if(resultType.equals("When"))
-                        whenList.add(testbenchUnity);
-                else if(resultType.equals("Foreach"))
-                        foreachList.add(testbenchUnity);
-                else
-                        equalityList.add(testbenchUnity);
     } catch (Throwable jjte000) {
           if (jjtc000) {
             jjtree.clearNodeScope(jjtn000);
@@ -1088,23 +1096,25 @@ Vector<Long> TestResult(Vector<Long> inits) #void : {
     }
   }
 
-  final public void TestbenchWhen() throws ParseException {
- /*@bgen(jjtree) TestbenchWhen */
-        SimpleNode jjtn000 = new SimpleNode(this, JJTTESTBENCHWHEN);
+  final public void WhenChecking() throws ParseException {
+ /*@bgen(jjtree) WhenChecking */
+        SimpleNode jjtn000 = new SimpleNode(this, JJTWHENCHECKING);
         boolean jjtc000 = true;
         jjtree.openNodeScope(jjtn000);Token tName;
+        Process process = null;
     try {
-                Info("This file has a TestbenchWhen!");
       jj_consume_token(WHEN);
       tName = jj_consume_token(IDENTIFIER);
       jj_consume_token(CHANGES);
                 if(!allPins.containsKey(tName.image))
                         ErrorToken("Variable " + tName.image + " NOT found!", tName);
+                else
+                        process = new Process(Process.CheckingType.WHEN, tName.image);
       jj_consume_token(LBRACE);
       label_10:
       while (true) {
         jj_consume_token(CHECK);
-        Results("When", tName.image);
+        Results(process);
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case CHECK:
           ;
@@ -1136,20 +1146,19 @@ Vector<Long> TestResult(Vector<Long> inits) #void : {
     }
   }
 
-  final public void Foreach() throws ParseException {
-                 /*@bgen(jjtree) Foreach */
-  SimpleNode jjtn000 = new SimpleNode(this, JJTFOREACH);
-  boolean jjtc000 = true;
-  jjtree.openNodeScope(jjtn000);
+  final public void ForeachChecking() throws ParseException {
+ /*@bgen(jjtree) ForeachChecking */
+        SimpleNode jjtn000 = new SimpleNode(this, JJTFOREACHCHECKING);
+        boolean jjtc000 = true;
+        jjtree.openNodeScope(jjtn000);Process process = new Process(Process.CheckingType.FOREACH);
     try {
-                Info("This file has a foreach!");
       jj_consume_token(FOREACH);
       jj_consume_token(CLOCK);
       jj_consume_token(LBRACE);
       label_11:
       while (true) {
         jj_consume_token(CHECK);
-        Results("Foreach", "null");
+        Results(process);
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case CHECK:
           ;

@@ -44,6 +44,7 @@ package lalp.parser.lang;
 import java.util.*;
 
 import lalp.core.*;
+import lalp.core.Process;
 import lalp.components.*;
 
 /**
@@ -67,11 +68,13 @@ public class ALPParser/*@bgen(jjtree)*/implements ALPParserTreeConstants/*@egen*
 	public Hashtable<String, SimpleNode> allResults = new Hashtable<String, SimpleNode>();
 	public Hashtable<String, Integer> allAttribution = new Hashtable<String, Integer>();
 	public TreeMap<Integer, String> allAttributionLines = new TreeMap<Integer, String>();
-	//Auxiliary lists to the testbench generation
+	/*
 	public List<TestbenchUnity> whenList = new ArrayList<TestbenchUnity>();
 	public List<TestbenchUnity> foreachList = new ArrayList<TestbenchUnity>();
 	public List<TestbenchUnity> equalityList = new ArrayList<TestbenchUnity>();
-	TestbenchUnity testbenchUnity;
+	TestbenchUnity testbenchUnity;*/
+	public Vector<Process> allProcesses = new Vector<Process>();
+	
 
 /*	public static void main(String args[]) {
 		FileInputStream inStream;
@@ -360,7 +363,7 @@ void Testbench() : {/*@bgen(jjtree) Testbench */
 		Info("This file has a testbench!");
 	}	
 	<ASSERT><LBRACE>
-	(Foreach() | TestbenchWhen() | EqualityChecking())+ 
+	(ForeachChecking() | WhenChecking() | EqualityChecking())+ 
 	<RBRACE>/*@bgen(jjtree)*/
         } catch (Throwable jjte000) {
           if (jjtc000) {
@@ -391,7 +394,8 @@ void EqualityChecking():
         jjtree.openNodeScope(jjtn000);
 /*@egen*/
 	Token tName;
-	Long value;
+	long value;
+	Process process = null;
 }
 {/*@bgen(jjtree) EqualityChecking */
         try {
@@ -402,10 +406,12 @@ void EqualityChecking():
 	<WAIT> tName=<IDENTIFIER> "==" value=ConstOrLong()
 	{
 		if(!allPins.containsKey(tName.image))
-			ErrorToken("Variable " + tName.image + " NOT found!", tName);		
+			ErrorToken("Variable " + tName.image + " NOT found!", tName);
+		else
+			process = new Process(Process.CheckingType.WAIT, tName.image, (int)value);		
 	}
 	<LBRACE>
-		(<CHECK> Results("EqualityChecking", tName.image))+
+		(<CHECK> Results(process))+
 	<RBRACE>/*@bgen(jjtree)*/
         } catch (Throwable jjte000) {
           if (jjtc000) {
@@ -430,7 +436,7 @@ void EqualityChecking():
 }
 
 
-void Results(String resultType, String conditionalSignal) : {/*@bgen(jjtree) Results */
+void Results(Process process) : {/*@bgen(jjtree) Results */
         SimpleNode jjtn000 = new SimpleNode(this, JJTRESULTS);
         boolean jjtc000 = true;
         jjtree.openNodeScope(jjtn000);
@@ -452,7 +458,7 @@ void Results(String resultType, String conditionalSignal) : {/*@bgen(jjtree) Res
 			}
 		}
 	}
-	Result(varWidth, resultType, conditionalSignal) <SEMICOLON>/*@bgen(jjtree)*/
+	Result(varWidth, process) <SEMICOLON>/*@bgen(jjtree)*/
         } catch (Throwable jjte000) {
           if (jjtc000) {
             jjtree.clearNodeScope(jjtn000);
@@ -786,7 +792,7 @@ void Variable(int varWidth) : {/*@bgen(jjtree) Variable */
 /*@egen*/
 }
 
-void Result(int varWidth, String resultType, String conditionalSignal) : {/*@bgen(jjtree) Result */
+void Result(int varWidth, Process process) : {/*@bgen(jjtree) Result */
         SimpleNode jjtn000 = new SimpleNode(this, JJTRESULT);
         boolean jjtc000 = true;
         jjtree.openNodeScope(jjtn000);
@@ -818,12 +824,14 @@ void Result(int varWidth, String resultType, String conditionalSignal) : {/*@bge
 		jjtn000.setWidth(varWidth);
 		jjtn000.setToken(tName);
 		allResults.put(tName.image, jjtn000);
+		process.addResult(jjtn000);
+		allProcesses.add(process);
 		// comp = design.addComponent(comp);
 		// jjtThis.setComponent(comp);
 		// allComponents.put(tName.image, comp);
 		//DEBUG 
 		//InfoToken("Variable " + tName.image + (size>0 ? "[" + size +"]" : "") + (init != null ? " with initial value " + init : "") +" found", tName);
-		
+		/*
 		testbenchUnity = new TestbenchUnity();
 		testbenchUnity.setResultName(tName.image);
 		testbenchUnity.setConditionalSignal(conditionalSignal);
@@ -833,7 +841,7 @@ void Result(int varWidth, String resultType, String conditionalSignal) : {/*@bge
 		else if(resultType.equals("Foreach"))
 			foreachList.add(testbenchUnity);
 		else
-			equalityList.add(testbenchUnity);					
+			equalityList.add(testbenchUnity);*/					
 		
 	}/*@bgen(jjtree)*/
         } catch (Throwable jjte000) {
@@ -1078,28 +1086,28 @@ void When() : {/*@bgen(jjtree) When */
 /*@egen*/
 }
 
-void TestbenchWhen(): 
-{/*@bgen(jjtree) TestbenchWhen */
-        SimpleNode jjtn000 = new SimpleNode(this, JJTTESTBENCHWHEN);
+void WhenChecking(): 
+{/*@bgen(jjtree) WhenChecking */
+        SimpleNode jjtn000 = new SimpleNode(this, JJTWHENCHECKING);
         boolean jjtc000 = true;
         jjtree.openNodeScope(jjtn000);
 /*@egen*/
 	Token tName;
+	Process process = null;
 }
-{/*@bgen(jjtree) TestbenchWhen */
+{/*@bgen(jjtree) WhenChecking */
         try {
 /*@egen*/
-	{
-		Info("This file has a TestbenchWhen!");
-	}	
+
 	<WHEN> tName=<IDENTIFIER> <CHANGES>
 	{
 		if(!allPins.containsKey(tName.image))
 			ErrorToken("Variable " + tName.image + " NOT found!", tName);
-		
+		else
+			process = new Process(Process.CheckingType.WHEN, tName.image);
 	}
 	<LBRACE>
-		(<CHECK> Results("When", tName.image))+
+		(<CHECK> Results(process))+
 	<RBRACE>/*@bgen(jjtree)*/
         } catch (Throwable jjte000) {
           if (jjtc000) {
@@ -1123,20 +1131,20 @@ void TestbenchWhen():
 /*@egen*/
 }
 
-void Foreach(): {/*@bgen(jjtree) Foreach */
-  SimpleNode jjtn000 = new SimpleNode(this, JJTFOREACH);
-  boolean jjtc000 = true;
-  jjtree.openNodeScope(jjtn000);
-/*@egen*/}
-{/*@bgen(jjtree) Foreach */
+void ForeachChecking(): 
+{/*@bgen(jjtree) ForeachChecking */
+        SimpleNode jjtn000 = new SimpleNode(this, JJTFOREACHCHECKING);
+        boolean jjtc000 = true;
+        jjtree.openNodeScope(jjtn000);
+/*@egen*/
+	Process process = new Process(Process.CheckingType.FOREACH);
+}
+{/*@bgen(jjtree) ForeachChecking */
         try {
 /*@egen*/
-	{
-		Info("This file has a foreach!");
-	}
 	<FOREACH> <CLOCK>
 	<LBRACE>
-		(<CHECK> Results("Foreach", "null"))+
+		(<CHECK> Results(process))+
 	<RBRACE>/*@bgen(jjtree)*/
         } catch (Throwable jjte000) {
           if (jjtc000) {
