@@ -15,6 +15,7 @@
 package lalp.algorithms;
 
 import java.io.DataOutputStream;
+
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Calendar;
@@ -33,6 +34,7 @@ import lalp.core.Signal;
 import lalp.core.VHDLType;
 import lalp.parser.LangParser;
 import lalp.parser.lang.SimpleNode;
+import lalp.core.Process;
 
 
 
@@ -429,89 +431,31 @@ public class VHDL {
 	
 	private void GenerateVHDLAsserts(LangParser lp, DataOutputStream dos) throws IOException
 	{
-		String signal;
-		Vector<Long> values;
-		
-		/*for(Map.Entry<String, SimpleNode> result : lp.getParser().allResults.entrySet())
+		for(Process process : lp.getParser().allProcesses)
 		{
-			signal = "\\" + result.getKey() + "\\"; 
-			values = result.getValue().getInits();
-			dos.writeBytes("\nprocess\n"); //Cria o processo que irá checar se os resultados são os esperados
-			dos.writeBytes("\nbegin\n");
-			/*
-			for(int i = 0; i < result.getValue().getArraySize(); i++)
+			String conditionalSignal;
+			if(process.getCheckingType() == Process.CheckingType.WHEN)
 			{
-				if(i == 0)
-				{
-					dos.writeBytes("\n\twait until "+signal+" =  conv_std_logic_vector(" + values.get(i) + "," + result.getValue().getWidth() + ");\n");
-					dos.writeBytes("\tassert " + signal + " = " + "conv_std_logic_vector(" + values.get(i) + "," + result.getValue().getWidth() +")");
-					dos.writeBytes("\n\t\treport \"value different from the expected\" severity error;\n");
-				}
-				else if(i == 1)
-				{
-					dos.writeBytes("\n\twait for 12 ns;\n");
-					dos.writeBytes("\tassert " + signal + " = " + "conv_std_logic_vector(" + values.get(i) + "," + result.getValue().getWidth() +")");
-					dos.writeBytes("\n\t\treport \"value different from the expected\" severity error;\n");
-				}
-				else
-				{
-					dos.writeBytes("\n\twait for 10 ns;\n");
-					dos.writeBytes("\tassert " + signal + " = " + "conv_std_logic_vector(" + values.get(i) + "," + result.getValue().getWidth() +")");
-					dos.writeBytes("\n\t\treport \"value different from the expected\" severity error;\n");					
-				}
-			}*/
-			
-			/*dos.writeBytes("\n\twait for 10 ns;\n");
-			for(int i = 0; i < result.getValue().getArraySize(); i++)
-			{
-				dos.writeBytes("\n\twait on " + signal + ";\n");
-				dos.writeBytes("\tassert " + signal + " = " + "conv_std_logic_vector(" + values.get(i) + "," + result.getValue().getWidth() +")");
-				dos.writeBytes("\n\t\treport \"value differente from the expected\" severity error;\n");
-			}
-			dos.writeBytes("\n\tassert false report \"end of test of "+signal+"\" severity note;");
-			dos.writeBytes("\n\nwait;\n");
-			dos.writeBytes("end process;\n");
-				
-		}
-		dos.writeBytes("\nend behavior;\n");*/
-		//Generate process attached to expressions with "When" condition
-		for(int i = 0; i < lp.getParser().whenList.size(); i++)
-		{
-			dos.writeBytes("\nprocess\n"); //Cria o processo que irá checar se os resultados são os esperados
-			dos.writeBytes("\nbegin\n");
-			dos.writeBytes("\n\twait for 10 ns;\n");
-			String conditionalSignal = "\\" + lp.getParser().whenList.get(i).getConditinalSignal() + "\\";
-			SimpleNode result = lp.getParser().allResults.get(lp.getParser().whenList.get(i).getResultName());
-			values = result.getInits();
-			for(int j = 0; j < result.getArraySize(); j++)
-			{
-				dos.writeBytes("\n\twait on " + conditionalSignal + ";\n");
-				dos.writeBytes("\tassert \\" + result.getIdentifier() + "\\ = " + "conv_std_logic_vector(" + values.get(j) + "," + result.getWidth() +")");
-				dos.writeBytes("\n\t\treport \"value differente from the expected\" severity error;\n");
-			}
-			dos.writeBytes("\n\tassert false report \"end of test of \\"+result.getIdentifier()+"\\\" severity note;");
-			dos.writeBytes("\n\nwait;\n");
-			dos.writeBytes("end process;\n");
-		}
-		
-		for(int i = 0; i < lp.getParser().foreachList.size(); i++)
-		{
-			dos.writeBytes("\nprocess\n"); //Cria o processo que irá checar se os resultados são os esperados
-			dos.writeBytes("\nbegin\n");
-			dos.writeBytes("\n\twait until \\init\\ = '1';\n");
-			SimpleNode result = lp.getParser().allResults.get(lp.getParser().foreachList.get(i).getResultName());
-			values = result.getInits();
-			for(int j = 0; j < result.getArraySize(); j++)
-			{
+				conditionalSignal = process.getConditionalSignal();
+				dos.writeBytes("\nprocess\n"); 
+				dos.writeBytes("\nbegin\n");
 				dos.writeBytes("\n\twait for 10 ns;\n");
-				dos.writeBytes("\tassert \\" + result.getIdentifier() + "\\ = " + "conv_std_logic_vector(" + values.get(j) + "," + result.getWidth() +")");
-				dos.writeBytes("\n\t\treport \"value differente from the expected\" severity error;\n");
+				for(SimpleNode result : process.getResults())
+				{
+					for(int i =  0 ; i < result.getArraySize(); i++)
+					{
+						dos.writeBytes("\n\twait on \\" +conditionalSignal +"\\;\n");
+						dos.writeBytes("\tassert \\" +result.getIdentifier() + "\\ = " + "conv_std_logic_vector(" + result.getInits().get(i) + "," + result.getWidth() +")");
+						dos.writeBytes("\n\t\treport \"value differente from the expected\" severity error;\n");
+					}
+					dos.writeBytes("\n\tassert false report \"end of test of \\"+result.getIdentifier()+"\\\" severity note;");
+					dos.writeBytes("\n\nwait;\n");
+					dos.writeBytes("end process;\n");
+				}
+				dos.writeBytes("\nend behavior;\n");
+					
 			}
-			dos.writeBytes("\n\tassert false report \"end of test of \\"+result.getIdentifier()+"\\\" severity note;");
-			dos.writeBytes("\n\nwait;\n");
-			dos.writeBytes("end process;\n");
 		}
-		dos.writeBytes("\nend behavior;\n");
 	}
 	
 

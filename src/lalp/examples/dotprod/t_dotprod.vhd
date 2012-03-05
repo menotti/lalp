@@ -12,7 +12,7 @@
 -- SUFFERED BY LICENSEE AS A RESULT OF USING, MODIFYING OR DISTRIBUTING THIS
 -- SOFTWARE OR ITS DERIVATIVES.
 --
--- Generated at Fri Mar 02 11:34:50 BRT 2012
+-- Generated at Mon Mar 05 17:54:19 BRT 2012
 --
 
 -- IEEE Libraries --
@@ -78,38 +78,15 @@ begin
 	wait for 10 ns;
 
 	wait on \sum\;
-	assert \sum\ = conv_std_logic_vector(1,32)
+	assert \sum\ = conv_std_logic_vector(4,32)
 		report "value differente from the expected" severity error;
 
 	wait on \sum\;
-	assert \sum\ = conv_std_logic_vector(2,32)
+	assert \sum\ = conv_std_logic_vector(14,32)
 		report "value differente from the expected" severity error;
 
 	wait on \sum\;
-	assert \sum\ = conv_std_logic_vector(3,32)
-		report "value differente from the expected" severity error;
-
-	assert false report "end of test of \sum\" severity note;
-
-wait;
-end process;
-
-process
-
-begin
-
-	wait until \init\ = '1';
-
-	wait for 10 ns;
-	assert \sum\ = conv_std_logic_vector(1,32)
-		report "value differente from the expected" severity error;
-
-	wait for 10 ns;
-	assert \sum\ = conv_std_logic_vector(2,32)
-		report "value differente from the expected" severity error;
-
-	wait for 10 ns;
-	assert \sum\ = conv_std_logic_vector(3,32)
+	assert \sum\ = conv_std_logic_vector(32,32)
 		report "value differente from the expected" severity error;
 
 	assert false report "end of test of \sum\" severity note;

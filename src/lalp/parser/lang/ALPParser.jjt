@@ -43,6 +43,7 @@ package lalp.parser.lang;
 import java.util.*;
 
 import lalp.core.*;
+import lalp.core.Process;
 import lalp.components.*;
 
 /**
@@ -63,11 +64,13 @@ public class ALPParser {
 	public Hashtable<String, SimpleNode> allResults = new Hashtable<String, SimpleNode>();
 	public Hashtable<String, Integer> allAttribution = new Hashtable<String, Integer>();
 	public TreeMap<Integer, String> allAttributionLines = new TreeMap<Integer, String>();
-	//Auxiliary lists to the testbench generation
+	/*
 	public List<TestbenchUnity> whenList = new ArrayList<TestbenchUnity>();
 	public List<TestbenchUnity> foreachList = new ArrayList<TestbenchUnity>();
 	public List<TestbenchUnity> equalityList = new ArrayList<TestbenchUnity>();
-	TestbenchUnity testbenchUnity;
+	TestbenchUnity testbenchUnity;*/
+	public Vector<Process> allProcesses = new Vector<Process>();
+	
 
 /*	public static void main(String args[]) {
 		FileInputStream inStream;
@@ -319,14 +322,15 @@ void Testbench() : {
 		Info("This file has a testbench!");
 	}	
 	<ASSERT><LBRACE>
-	(Foreach() | TestbenchWhen() | EqualityChecking())+ 
+	(ForeachChecking() | WhenChecking() | EqualityChecking())+ 
 	<RBRACE>
 }
 
 void EqualityChecking(): 
 {
 	Token tName;
-	Long value;
+	long value;
+	Process process = null;
 }
 {
 	{
@@ -335,15 +339,17 @@ void EqualityChecking():
 	<WAIT> tName=<IDENTIFIER> "==" value=ConstOrLong()
 	{
 		if(!allPins.containsKey(tName.image))
-			ErrorToken("Variable " + tName.image + " NOT found!", tName);		
+			ErrorToken("Variable " + tName.image + " NOT found!", tName);
+		else
+			process = new Process(Process.CheckingType.WAIT, tName.image, (int)value);		
 	}
 	<LBRACE>
-		(<CHECK> Results("EqualityChecking", tName.image))+
+		(<CHECK> Results(process))+
 	<RBRACE>
 }
 
 
-void Results(String resultType, String conditionalSignal) : {
+void Results(Process process) : {
 	Token varType=null;
 	int varWidth=0;
 }
@@ -359,7 +365,7 @@ void Results(String resultType, String conditionalSignal) : {
 			}
 		}
 	}
-	Result(varWidth, resultType, conditionalSignal) <SEMICOLON>
+	Result(varWidth, process) <SEMICOLON>
 }
 
 /*
@@ -546,7 +552,7 @@ void Variable(int varWidth) : {
 	}
 }
 
-void Result(int varWidth, String resultType, String conditionalSignal) : {
+void Result(int varWidth, Process process) : {
 	Token tName;
 	Integer size = null;
 	Long init = null;
@@ -567,12 +573,14 @@ void Result(int varWidth, String resultType, String conditionalSignal) : {
 		jjtThis.setWidth(varWidth);
 		jjtThis.setToken(tName);
 		allResults.put(tName.image, jjtThis);
+		process.addResult(jjtThis);
+		allProcesses.add(process);
 		// comp = design.addComponent(comp);
 		// jjtThis.setComponent(comp);
 		// allComponents.put(tName.image, comp);
 		//DEBUG 
 		//InfoToken("Variable " + tName.image + (size>0 ? "[" + size +"]" : "") + (init != null ? " with initial value " + init : "") +" found", tName);
-		
+		/*
 		testbenchUnity = new TestbenchUnity();
 		testbenchUnity.setResultName(tName.image);
 		testbenchUnity.setConditionalSignal(conditionalSignal);
@@ -582,7 +590,7 @@ void Result(int varWidth, String resultType, String conditionalSignal) : {
 		else if(resultType.equals("Foreach"))
 			foreachList.add(testbenchUnity);
 		else
-			equalityList.add(testbenchUnity);					
+			equalityList.add(testbenchUnity);*/					
 		
 	}
 }
@@ -719,33 +727,33 @@ void When() : {}
 	<WHEN> Expression()
 }
 
-void TestbenchWhen(): 
+void WhenChecking(): 
 {
 	Token tName;
+	Process process = null;
 }
 {
-	{
-		Info("This file has a TestbenchWhen!");
-	}	
+
 	<WHEN> tName=<IDENTIFIER> <CHANGES>
 	{
 		if(!allPins.containsKey(tName.image))
 			ErrorToken("Variable " + tName.image + " NOT found!", tName);
-		
+		else
+			process = new Process(Process.CheckingType.WHEN, tName.image);
 	}
 	<LBRACE>
-		(<CHECK> Results("When", tName.image))+
+		(<CHECK> Results(process))+
 	<RBRACE>
 }
 
-void Foreach(): {}
+void ForeachChecking(): 
 {
-	{
-		Info("This file has a foreach!");
-	}
+	Process process = new Process(Process.CheckingType.FOREACH);
+}
+{
 	<FOREACH> <CLOCK>
 	<LBRACE>
-		(<CHECK> Results("Foreach", "null"))+
+		(<CHECK> Results(process))+
 	<RBRACE>
 }
 

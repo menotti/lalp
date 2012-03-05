@@ -17,8 +17,8 @@ public interface ALPParserTreeConstants
   public int JJTCOUNTER = 11;
   public int JJTASSIGNMENT = 12;
   public int JJTWHEN = 13;
-  public int JJTTESTBENCHWHEN = 14;
-  public int JJTFOREACH = 15;
+  public int JJTWHENCHECKING = 14;
+  public int JJTFOREACHCHECKING = 15;
   public int JJTLHS = 16;
   public int JJTRHS = 17;
   public int JJTEXPRESSION = 18;
@@ -58,8 +58,8 @@ public interface ALPParserTreeConstants
     "Counter",
     "Assignment",
     "When",
-    "TestbenchWhen",
-    "Foreach",
+    "WhenChecking",
+    "ForeachChecking",
     "LHS",
     "RHS",
     "Expression",
@@ -84,4 +84,4 @@ public interface ALPParserTreeConstants
     "Literal",
   };
 }
-/* JavaCC - OriginalChecksum=31d477ed0f35f5da1cf8c0827d2c50c9 (do not edit this line) */
+/* JavaCC - OriginalChecksum=a22d23be6a2e75e20ec8bceb9d91f668 (do not edit this line) */
