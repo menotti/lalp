@@ -4,37 +4,36 @@
  */
 package lalp.web;
 
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.StringTokenizer;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.apache.commons.io.IOUtils;
 
-/*import lalp.algorithms.Dijkstra;
- import lalp.algorithms.StrongConnectedComponents;
- import lalp.core.Design;
- import lalp.core.Parameters;
- import lalp.parser.GraphParser;
- import lalp.parser.LangParser;
- import lalp.parser.lang.SimpleNode;*/
-import lalp.core.*;
-import lalp.modGui.LalpIDE;
-import lalp.parser.*;
-import lalp.parser.lang.*;
-import lalp.algorithms.*;
+import lalp.algorithms.ALPG;
+import lalp.algorithms.Dijkstra;
+import lalp.algorithms.Graphviz;
+import lalp.algorithms.Scheduling;
+import lalp.algorithms.StrongConnectedComponents;
+import lalp.algorithms.VHDL;
+import lalp.core.Design;
+import lalp.core.Parameters;
+import lalp.parser.GraphParser;
+import lalp.parser.LangParser;
+import lalp.parser.lang.SimpleNode;
+
+import org.apache.commons.io.IOUtils;
 
 /**
  * 
@@ -308,18 +307,6 @@ public class LALPServlet extends HttpServlet {
 				alpg.generateALPG(design);
 			}
 
-			if (Parameters.gui) {
-				LalpIDE gui;
-				if (args.length == 1) {
-					gui = new LalpIDE();
-					gui.setVisible(true);
-					while (!LalpIDE.inactive) {
-					}
-					System.out.println("GUI has terminated");
-				}
-				if (args.length == 2)
-					gui = new LalpIDE(args[1]);
-			}
 		} catch (Exception e) {
 			return result = error(e.toString());
 		}
@@ -368,7 +355,6 @@ public class LALPServlet extends HttpServlet {
 		Parameters.vhdlMemory = false;
 		Parameters.alpg = false;
 		Parameters.verbose = false;
-		Parameters.gui = false;
 	}
 
 	public String info(String s) {

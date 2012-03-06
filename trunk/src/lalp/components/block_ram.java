@@ -28,9 +28,10 @@ import lalp.core.PortType;
 /**
  * A block ram.
  * 
- * @author <a href="mailto:ricardomenotti@acm.org">Ricardo Menotti</a>
- * @author <a href="http://menotti.pro.br/">Author Page</a>
- * @author <a href="http://www.dc.ufscar.br/">DC UFSCar</a>
+ * @author <a href="http://menotti.pro.br/">Ricardo Menotti</a>
+
+
+ * @author <a href="http://www.dc.ufscar.br/">DC/UFSCar</a>
  * @version September, 2007
  */
 public class block_ram extends IComponent {
