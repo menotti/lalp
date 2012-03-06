@@ -14,14 +14,10 @@
 
 package lalp;
 
-import java.awt.Frame;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.StringTokenizer;
 
-import lalp.modGui.LalpIDE;
 import lalp.algorithms.ALPG;
 import lalp.algorithms.Dijkstra;
 import lalp.algorithms.Dominators;
@@ -39,9 +35,8 @@ import lalp.parser.lang.SimpleNode;
 
 /**
  * The LALP compiler
- * @author <a href="mailto:ricardomenotti@acm.org">Ricardo Menotti</a>
- * @author <a href="http://menotti.pro.br/">Author Page</a>
- * @author <a href="http://www.dc.ufscar.br/">DC UFSCar</a>
+ * @author <a href="http://menotti.pro.br/">Ricardo Menotti</a>
+ * @author <a href="http://www.dc.ufscar.br/">DC/UFSCar</a>
  * @version January, 2010
  * @see "Aggressive Loop Pipelining"
  * @see "Language for Aggressive Loop Pipelining"
@@ -68,8 +63,7 @@ public class LALP {
 		"  -vt       generate VHDL testbench\n" + 
 		"  -alpg     generate ALPG source code\n" + 
 		"  -verbose  print verbose output\n" + 
-		"  -version  print product version and exit\n"+
-		"  -gui      commence the LALP GUI\n";//Line appended to commence the GUI
+		"  -version  print product version and exit\n";
 	
 	/**
 	 * @param args options and input file
@@ -146,23 +140,19 @@ public class LALP {
 			} else if (args[i].equals("-alpg")) {
 				Parameters.alpg = true;
 			} else if (args[i].equals("-verbose")) {
-				Parameters.verbose = true;}
-			else if(args[i].equals("-gui")){
-					Parameters.gui=true; 
+				Parameters.verbose = true;
 			} else if (i != args.length-1) {
 				error("Unrecognized option: " + args[i]);
 			}
 		}
 		
 		try {
-			String extension = "";//line added
-		if(!args[args.length-1].equals("-gui") && !(args.length==2)){//line added
 			StringTokenizer st = new StringTokenizer(args[args.length-1], ".");
 			st.nextToken();
 			if (!st.hasMoreTokens()) {
 				error(usage);
 			}
-			extension = st.nextToken().toUpperCase();
+			String extension = st.nextToken().toUpperCase();
 		
 			if (extension.equals("ALP")) {
 				System.out.print("Reading from file " + args[args.length-1] + "...");
@@ -190,7 +180,6 @@ public class LALP {
 			else {
 				error("Only .ALP or .ALPG files are accepted!");
 			}
-		}//line added
 		} catch (FileNotFoundException e) {
 			error("File " + args[args.length-1] + " not found.");
 		} catch (Exception e) {
@@ -264,18 +253,6 @@ public class LALP {
 		if (Parameters.alpg) {
 			ALPG alpg = new ALPG();
 			alpg.generateALPG(design);
-		}
-		if(Parameters.gui){
-			LalpIDE gui;
-			if(args.length==1) {
-				gui=new LalpIDE();
-				gui.setVisible(true);
-				while(!LalpIDE.inactive){}
-				System.out.println("GUI has terminated");
-				}
-			  if(args.length==2)
-				  gui=new LalpIDE(args[1]);
-			
 		}
 		System.exit(0);
 	}

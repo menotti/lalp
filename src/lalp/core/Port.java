@@ -23,9 +23,10 @@ import java.util.Set;
  * Specifies Input/Output parameters for <code>Component</code> and <code>Signal</code>.
  * The default constructors creates a single bit port with STD_LOGIC type 
  * 
- * @author <a href="mailto:ricardomenotti@acm.org">Ricardo Menotti</a>
- * @author <a href="http://menotti.pro.br/">Author Page</a>
- * @author <a href="http://www.dc.ufscar.br/">DC UFSCar</a>
+ * @author <a href="http://menotti.pro.br/">Ricardo Menotti</a>
+
+
+ * @author <a href="http://www.dc.ufscar.br/">DC/UFSCar</a>
  * @version September, 2007
  * 
  * @see Signal

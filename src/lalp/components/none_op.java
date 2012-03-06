@@ -23,9 +23,10 @@ import lalp.core.PortType;
 /**
  * The NONE operation.
  * 
- * @author <a href="mailto:ricardomenotti@acm.org">Ricardo Menotti</a>
- * @author <a href="http://menotti.pro.br/">Author Page</a>  
- * @author <a href="http://www.dc.ufscar.br/">DC UFSCar</a>
+ * @author <a href="http://menotti.pro.br/">Ricardo Menotti</a>
+
+  
+ * @author <a href="http://www.dc.ufscar.br/">DC/UFSCar</a>
  * @version December, 2009
  */
 public class none_op extends IComponent {

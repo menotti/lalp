@@ -36,9 +36,8 @@ import lalp.parser.LangParser;
 
 /**  
  * Scheduling algorithms
- * @author <a href="mailto:ricardomenotti@acm.org">Ricardo Menotti</a>
- * @author <a href="http://menotti.pro.br/">Author Page</a>
- * @author <a href="http://www.dc.ufscar.br/">DC UFSCar</a>
+ * @author <a href="http://menotti.pro.br/">Ricardo Menotti</a>
+ * @author <a href="http://www.dc.ufscar.br/">DC/UFSCar</a>
  * @version March, 2010
  */
 public class Scheduling {

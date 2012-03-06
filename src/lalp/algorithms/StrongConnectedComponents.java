@@ -29,9 +29,8 @@ import edu.uci.ics.jung.graph.Vertex;
 import edu.uci.ics.jung.utils.UserData;
 
 /**
- * @author <a href="mailto:ricardomenotti@acm.org">Ricardo Menotti</a>
- * @author <a href="http://menotti.pro.br/">Author Page</a>
- * @author <a href="http://www.dc.ufscar.br/">DC UFSCar</a>
+ * @author <a href="http://menotti.pro.br/">Ricardo Menotti</a>
+ * @author <a href="http://www.dc.ufscar.br/">DC/UFSCar</a>
  * @version October, 2008
  * @see http://www.personal.kent.edu/~rmuhamma/Algorithms/MyAlgorithms/GraphAlgor/strongComponent.htm
  * @see http://www.patentstorm.us/patents/7444628/description.html
