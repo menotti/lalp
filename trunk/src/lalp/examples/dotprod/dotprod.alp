@@ -45,6 +45,7 @@ assert{
 	when sum changes
 	{
 		check int sum = {4, 14, 32};
+		check int done = {7, 32, 45};
 	}
 	
     
