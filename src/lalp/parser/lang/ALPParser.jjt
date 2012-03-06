@@ -333,9 +333,6 @@ void EqualityChecking():
 	Process process = null;
 }
 {
-	{
-		Info("This file has a EqualityChecking!");
-	}
 	<WAIT> tName=<IDENTIFIER> "==" value=ConstOrLong()
 	{
 		if(!allPins.containsKey(tName.image))
@@ -346,6 +343,9 @@ void EqualityChecking():
 	<LBRACE>
 		(<CHECK> Results(process))+
 	<RBRACE>
+	{
+		allProcesses.add(process);
+	}
 }
 
 
@@ -574,7 +574,6 @@ void Result(int varWidth, Process process) : {
 		jjtThis.setToken(tName);
 		allResults.put(tName.image, jjtThis);
 		process.addResult(jjtThis);
-		allProcesses.add(process);
 		// comp = design.addComponent(comp);
 		// jjtThis.setComponent(comp);
 		// allComponents.put(tName.image, comp);
@@ -744,6 +743,9 @@ void WhenChecking():
 	<LBRACE>
 		(<CHECK> Results(process))+
 	<RBRACE>
+	{
+		allProcesses.add(process);
+	}
 }
 
 void ForeachChecking(): 
@@ -755,6 +757,9 @@ void ForeachChecking():
 	<LBRACE>
 		(<CHECK> Results(process))+
 	<RBRACE>
+	{
+		allProcesses.add(process);
+	}
 }
 
 void LHS() : {

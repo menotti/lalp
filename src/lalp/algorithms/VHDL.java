@@ -433,11 +433,9 @@ public class VHDL {
 	{
 		for(Process process : lp.getParser().allProcesses)
 		{
-			String conditionalSignal;
+			String conditionalSignal = process.getConditionalSignal();
 			if(process.getCheckingType() == Process.CheckingType.WHEN)
-			{
-				conditionalSignal = process.getConditionalSignal();
-				
+			{				
 				for(SimpleNode result : process.getResults())
 				{
 					dos.writeBytes("\nprocess\n"); 
@@ -457,34 +455,50 @@ public class VHDL {
 			}
 			else if(process.getCheckingType() == Process.CheckingType.FOREACH)
 			{
-				dos.writeBytes("\nprocess\n");
-				dos.writeBytes("\nbegin\n");
-				dos.writeBytes("\n\twait until \\init\\ = '1';\n");
+				
 				for(SimpleNode result : process.getResults())
 				{
+					dos.writeBytes("\nprocess\n");
+					dos.writeBytes("\nbegin\n");
+					dos.writeBytes("\n\twait until \\init\\ = '1';\n");
 					for(int i =  0 ; i < result.getArraySize(); i++)
 					{
-						dos.writeBytes("\n\twait for 10 ns;\n");
+						if(i == 0)
+							dos.writeBytes("\n\twait for 12 ns;\n");
+						else
+							dos.writeBytes("\n\twait for 10 ns;\n");
 						dos.writeBytes("\tassert \\" + result.getIdentifier() + "\\ = " + "conv_std_logic_vector(" + result.getInits().get(i) + "," + result.getWidth() +")");
 						dos.writeBytes("\n\t\treport \"value differente from the expected\" severity error;\n");
 					}
 					dos.writeBytes("\n\tassert false report \"end of test of \\"+result.getIdentifier()+"\\\" severity note;");
 					dos.writeBytes("\n\nwait;\n");
 					dos.writeBytes("end process;\n");
-				}
-				dos.writeBytes("\nend behavior;\n");
+				}				
 			}
 			else
 			{
-				dos.writeBytes("\nprocess\n");
-				dos.writeBytes("\nbegin\n");
 				for(SimpleNode result : process.getResults())
 				{
-														
+					dos.writeBytes("\nprocess\n");
+					dos.writeBytes("\nbegin\n");
+					dos.writeBytes("\n\twait until \\" +conditionalSignal+ "\\ = " +process.getValue()+ ";\n");
+					for(int i =  0 ; i < result.getArraySize(); i++)
+					{
+						dos.writeBytes("\tassert \\" + result.getIdentifier() + "\\ = " + "conv_std_logic_vector(" + result.getInits().get(i) + "," + result.getWidth() +")");
+						dos.writeBytes("\n\t\treport \"value differente from the expected\" severity error;\n");
+						if(i == 0)
+							dos.writeBytes("\n\twait for 12 ns;\n");
+						else
+							dos.writeBytes("\n\twait for 10 ns;\n");
+					}
+					dos.writeBytes("\n\tassert false report \"end of test of \\"+result.getIdentifier()+"\\\" severity note;");
+					dos.writeBytes("\n\nwait;\n");
+					dos.writeBytes("end process;\n");										
 				}
 			}
-			dos.writeBytes("\nend behavior;\n");
+			
 		}
+		dos.writeBytes("\nend behavior;\n");
 	}
 	
 
