@@ -437,11 +437,12 @@ public class VHDL {
 			if(process.getCheckingType() == Process.CheckingType.WHEN)
 			{
 				conditionalSignal = process.getConditionalSignal();
-				dos.writeBytes("\nprocess\n"); 
-				dos.writeBytes("\nbegin\n");
-				dos.writeBytes("\n\twait for 10 ns;\n");
+				
 				for(SimpleNode result : process.getResults())
 				{
+					dos.writeBytes("\nprocess\n"); 
+					dos.writeBytes("\nbegin\n");
+					dos.writeBytes("\n\twait for 10 ns;\n");
 					for(int i =  0 ; i < result.getArraySize(); i++)
 					{
 						dos.writeBytes("\n\twait on \\" +conditionalSignal +"\\;\n");
@@ -452,9 +453,37 @@ public class VHDL {
 					dos.writeBytes("\n\nwait;\n");
 					dos.writeBytes("end process;\n");
 				}
-				dos.writeBytes("\nend behavior;\n");
-					
+									
 			}
+			else if(process.getCheckingType() == Process.CheckingType.FOREACH)
+			{
+				dos.writeBytes("\nprocess\n");
+				dos.writeBytes("\nbegin\n");
+				dos.writeBytes("\n\twait until \\init\\ = '1';\n");
+				for(SimpleNode result : process.getResults())
+				{
+					for(int i =  0 ; i < result.getArraySize(); i++)
+					{
+						dos.writeBytes("\n\twait for 10 ns;\n");
+						dos.writeBytes("\tassert \\" + result.getIdentifier() + "\\ = " + "conv_std_logic_vector(" + result.getInits().get(i) + "," + result.getWidth() +")");
+						dos.writeBytes("\n\t\treport \"value differente from the expected\" severity error;\n");
+					}
+					dos.writeBytes("\n\tassert false report \"end of test of \\"+result.getIdentifier()+"\\\" severity note;");
+					dos.writeBytes("\n\nwait;\n");
+					dos.writeBytes("end process;\n");
+				}
+				dos.writeBytes("\nend behavior;\n");
+			}
+			else
+			{
+				dos.writeBytes("\nprocess\n");
+				dos.writeBytes("\nbegin\n");
+				for(SimpleNode result : process.getResults())
+				{
+														
+				}
+			}
+			dos.writeBytes("\nend behavior;\n");
 		}
 	}
 	
