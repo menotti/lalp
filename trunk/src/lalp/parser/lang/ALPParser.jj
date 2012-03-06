@@ -400,9 +400,6 @@ void EqualityChecking():
 {/*@bgen(jjtree) EqualityChecking */
         try {
 /*@egen*/
-	{
-		Info("This file has a EqualityChecking!");
-	}
 	<WAIT> tName=<IDENTIFIER> "==" value=ConstOrLong()
 	{
 		if(!allPins.containsKey(tName.image))
@@ -413,6 +410,14 @@ void EqualityChecking():
 	<LBRACE>
 		(<CHECK> Results(process))+
 	<RBRACE>/*@bgen(jjtree)*/
+        {
+          jjtree.closeNodeScope(jjtn000, true);
+          jjtc000 = false;
+        }
+/*@egen*/
+	{
+		allProcesses.add(process);
+	}/*@bgen(jjtree)*/
         } catch (Throwable jjte000) {
           if (jjtc000) {
             jjtree.clearNodeScope(jjtn000);
@@ -825,7 +830,6 @@ void Result(int varWidth, Process process) : {/*@bgen(jjtree) Result */
 		jjtn000.setToken(tName);
 		allResults.put(tName.image, jjtn000);
 		process.addResult(jjtn000);
-		allProcesses.add(process);
 		// comp = design.addComponent(comp);
 		// jjtThis.setComponent(comp);
 		// allComponents.put(tName.image, comp);
@@ -1109,6 +1113,14 @@ void WhenChecking():
 	<LBRACE>
 		(<CHECK> Results(process))+
 	<RBRACE>/*@bgen(jjtree)*/
+        {
+          jjtree.closeNodeScope(jjtn000, true);
+          jjtc000 = false;
+        }
+/*@egen*/
+	{
+		allProcesses.add(process);
+	}/*@bgen(jjtree)*/
         } catch (Throwable jjte000) {
           if (jjtc000) {
             jjtree.clearNodeScope(jjtn000);
@@ -1146,6 +1158,14 @@ void ForeachChecking():
 	<LBRACE>
 		(<CHECK> Results(process))+
 	<RBRACE>/*@bgen(jjtree)*/
+        {
+          jjtree.closeNodeScope(jjtn000, true);
+          jjtc000 = false;
+        }
+/*@egen*/
+	{
+		allProcesses.add(process);
+	}/*@bgen(jjtree)*/
         } catch (Throwable jjte000) {
           if (jjtc000) {
             jjtree.clearNodeScope(jjtn000);

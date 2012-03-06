@@ -206,7 +206,6 @@ public class ALPParser/*@bgen(jjtree)*/implements ALPParserTreeConstants, ALPPar
         long value;
         Process process = null;
     try {
-                Info("This file has a EqualityChecking!");
       jj_consume_token(WAIT);
       tName = jj_consume_token(IDENTIFIER);
       jj_consume_token(EQ);
@@ -230,6 +229,9 @@ public class ALPParser/*@bgen(jjtree)*/implements ALPParserTreeConstants, ALPPar
         }
       }
       jj_consume_token(RBRACE);
+          jjtree.closeNodeScope(jjtn000, true);
+          jjtc000 = false;
+                allProcesses.add(process);
     } catch (Throwable jjte000) {
           if (jjtc000) {
             jjtree.clearNodeScope(jjtn000);
@@ -771,7 +773,6 @@ Vector<Long> TestResult(Vector<Long> inits) #void : {
                 jjtn000.setToken(tName);
                 allResults.put(tName.image, jjtn000);
                 process.addResult(jjtn000);
-                allProcesses.add(process);
                 // comp = design.addComponent(comp);
                 // jjtThis.setComponent(comp);
                 // allComponents.put(tName.image, comp);
@@ -1125,6 +1126,9 @@ Vector<Long> TestResult(Vector<Long> inits) #void : {
         }
       }
       jj_consume_token(RBRACE);
+          jjtree.closeNodeScope(jjtn000, true);
+          jjtc000 = false;
+                allProcesses.add(process);
     } catch (Throwable jjte000) {
           if (jjtc000) {
             jjtree.clearNodeScope(jjtn000);
@@ -1169,6 +1173,9 @@ Vector<Long> TestResult(Vector<Long> inits) #void : {
         }
       }
       jj_consume_token(RBRACE);
+          jjtree.closeNodeScope(jjtn000, true);
+          jjtc000 = false;
+                allProcesses.add(process);
     } catch (Throwable jjte000) {
           if (jjtc000) {
             jjtree.clearNodeScope(jjtn000);
