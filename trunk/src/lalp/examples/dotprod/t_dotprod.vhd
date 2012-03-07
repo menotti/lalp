@@ -12,7 +12,7 @@
 -- SUFFERED BY LICENSEE AS A RESULT OF USING, MODIFYING OR DISTRIBUTING THIS
 -- SOFTWARE OR ITS DERIVATIVES.
 --
--- Generated at Tue Mar 06 16:03:49 BRT 2012
+-- Generated at Wed Mar 07 14:41:34 BRT 2012
 --
 
 -- IEEE Libraries --
@@ -98,41 +98,18 @@ process
 
 begin
 
-	wait for 10 ns;
-
-	wait on \sum\;
-	assert \done\ = conv_std_logic_vector(1,32)
-		report "value differente from the expected" severity error;
-
-	wait on \sum\;
-	assert \done\ = conv_std_logic_vector(2,32)
-		report "value differente from the expected" severity error;
-
-	wait on \sum\;
-	assert \done\ = conv_std_logic_vector(3,32)
-		report "value differente from the expected" severity error;
-
-	assert false report "end of test of \done\" severity note;
-
-wait;
-end process;
-
-process
-
-begin
-
 	wait until \init\ = '1';
 
 	wait for 12 ns;
-	assert \sum\ = conv_std_logic_vector(7,32)
+	assert \sum\ = conv_std_logic_vector(4,32)
 		report "value differente from the expected" severity error;
 
 	wait for 10 ns;
-	assert \sum\ = conv_std_logic_vector(85,32)
+	assert \sum\ = conv_std_logic_vector(14,32)
 		report "value differente from the expected" severity error;
 
 	wait for 10 ns;
-	assert \sum\ = conv_std_logic_vector(43,32)
+	assert \sum\ = conv_std_logic_vector(32,32)
 		report "value differente from the expected" severity error;
 
 	assert false report "end of test of \sum\" severity note;
@@ -144,67 +121,13 @@ process
 
 begin
 
-	wait until \init\ = '1';
-
-	wait for 12 ns;
-	assert \done\ = conv_std_logic_vector(4,32)
-		report "value differente from the expected" severity error;
-
-	wait for 10 ns;
-	assert \done\ = conv_std_logic_vector(5,32)
-		report "value differente from the expected" severity error;
-
-	wait for 10 ns;
-	assert \done\ = conv_std_logic_vector(6,32)
-		report "value differente from the expected" severity error;
-
-	assert false report "end of test of \done\" severity note;
-
-wait;
-end process;
-
-process
-
-begin
-
-	wait until \sum\ = 4;
-	assert \sum\ = conv_std_logic_vector(67,32)
+	wait until \done\ = '1';
+	assert \sum\ = conv_std_logic_vector(32,32)
 		report "value differente from the expected" severity error;
 
 	wait for 12 ns;
-	assert \sum\ = conv_std_logic_vector(25,32)
-		report "value differente from the expected" severity error;
-
-	wait for 10 ns;
-	assert \sum\ = conv_std_logic_vector(90,32)
-		report "value differente from the expected" severity error;
-
-	wait for 10 ns;
 
 	assert false report "end of test of \sum\" severity note;
-
-wait;
-end process;
-
-process
-
-begin
-
-	wait until \sum\ = 4;
-	assert \done\ = conv_std_logic_vector(7,32)
-		report "value differente from the expected" severity error;
-
-	wait for 12 ns;
-	assert \done\ = conv_std_logic_vector(8,32)
-		report "value differente from the expected" severity error;
-
-	wait for 10 ns;
-	assert \done\ = conv_std_logic_vector(9,32)
-		report "value differente from the expected" severity error;
-
-	wait for 10 ns;
-
-	assert false report "end of test of \done\" severity note;
 
 wait;
 end process;

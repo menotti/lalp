@@ -480,7 +480,7 @@ public class VHDL {
 				{
 					dos.writeBytes("\nprocess\n");
 					dos.writeBytes("\nbegin\n");
-					dos.writeBytes("\n\twait until \\" +conditionalSignal+ "\\ = " +process.getValue()+ ";\n");
+					dos.writeBytes("\n\twait until \\" +conditionalSignal+ "\\ = '" +process.getValue()+ "';\n");
 					for(int i =  0 ; i < result.getArraySize(); i++)
 					{
 						dos.writeBytes("\tassert \\" + result.getIdentifier() + "\\ = " + "conv_std_logic_vector(" + result.getInits().get(i) + "," + result.getWidth() +")");
