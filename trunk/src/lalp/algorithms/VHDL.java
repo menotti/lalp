@@ -442,9 +442,19 @@ public class VHDL {
 					dos.writeBytes("\n\twait for 10 ns;\n");
 					for(int i =  0 ; i < result.getArraySize(); i++)
 					{
-						dos.writeBytes("\n\twait on \\" +conditionalSignal +"\\;\n");
-						dos.writeBytes("\tassert \\" +result.getIdentifier() + "\\ = " + "conv_std_logic_vector(" + result.getInits().get(i) + "," + result.getWidth() +")");
-						dos.writeBytes("\n\t\treport \"value differente from the expected\" severity error;\n");
+						if(i ==0)
+						{
+							dos.writeBytes("\n\twait on \\" +conditionalSignal +"\\;\n");
+							dos.writeBytes("\tassert \\" +result.getIdentifier() + "\\ = " + "conv_std_logic_vector(" + result.getInits().get(i) + "," + result.getWidth() +")");
+							dos.writeBytes("\n\t\treport \"value different from the expected\" severity error;\n");
+						}
+						//In case of two or more equal results in sequence, just one assert will be generated to avoid errors
+						else if(result.getInits().get(i) != result.getInits().get(i-1))
+						{
+							dos.writeBytes("\n\twait on \\" +conditionalSignal +"\\;\n");
+							dos.writeBytes("\tassert \\" +result.getIdentifier() + "\\ = " + "conv_std_logic_vector(" + result.getInits().get(i) + "," + result.getWidth() +")");
+							dos.writeBytes("\n\t\treport \"value different from the expected\" severity error;\n");
+						}
 					}
 					dos.writeBytes("\n\tassert false report \"end of test of \\"+result.getIdentifier()+"\\\" severity note;");
 					dos.writeBytes("\n\nwait;\n");
@@ -467,7 +477,7 @@ public class VHDL {
 						else
 							dos.writeBytes("\n\twait for 10 ns;\n");
 						dos.writeBytes("\tassert \\" + result.getIdentifier() + "\\ = " + "conv_std_logic_vector(" + result.getInits().get(i) + "," + result.getWidth() +")");
-						dos.writeBytes("\n\t\treport \"value differente from the expected\" severity error;\n");
+						dos.writeBytes("\n\t\treport \"value different from the expected\" severity error;\n");
 					}
 					dos.writeBytes("\n\tassert false report \"end of test of \\"+result.getIdentifier()+"\\\" severity note;");
 					dos.writeBytes("\n\nwait;\n");
@@ -484,7 +494,7 @@ public class VHDL {
 					for(int i =  0 ; i < result.getArraySize(); i++)
 					{
 						dos.writeBytes("\tassert \\" + result.getIdentifier() + "\\ = " + "conv_std_logic_vector(" + result.getInits().get(i) + "," + result.getWidth() +")");
-						dos.writeBytes("\n\t\treport \"value differente from the expected\" severity error;\n");
+						dos.writeBytes("\n\t\treport \"value different from the expected\" severity error;\n");
 						if(i == 0)
 							dos.writeBytes("\n\twait for 12 ns;\n");
 						else

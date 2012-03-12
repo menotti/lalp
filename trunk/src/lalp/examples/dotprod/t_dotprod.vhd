@@ -12,7 +12,7 @@
 -- SUFFERED BY LICENSEE AS A RESULT OF USING, MODIFYING OR DISTRIBUTING THIS
 -- SOFTWARE OR ITS DERIVATIVES.
 --
--- Generated at Wed Mar 07 14:41:34 BRT 2012
+-- Generated at Mon Mar 12 17:35:38 BRT 2012
 --
 
 -- IEEE Libraries --
@@ -79,38 +79,15 @@ begin
 
 	wait on \sum\;
 	assert \sum\ = conv_std_logic_vector(4,32)
-		report "value differente from the expected" severity error;
+		report "value different from the expected" severity error;
 
 	wait on \sum\;
 	assert \sum\ = conv_std_logic_vector(14,32)
-		report "value differente from the expected" severity error;
+		report "value different from the expected" severity error;
 
 	wait on \sum\;
 	assert \sum\ = conv_std_logic_vector(32,32)
-		report "value differente from the expected" severity error;
-
-	assert false report "end of test of \sum\" severity note;
-
-wait;
-end process;
-
-process
-
-begin
-
-	wait until \init\ = '1';
-
-	wait for 12 ns;
-	assert \sum\ = conv_std_logic_vector(4,32)
-		report "value differente from the expected" severity error;
-
-	wait for 10 ns;
-	assert \sum\ = conv_std_logic_vector(14,32)
-		report "value differente from the expected" severity error;
-
-	wait for 10 ns;
-	assert \sum\ = conv_std_logic_vector(32,32)
-		report "value differente from the expected" severity error;
+		report "value different from the expected" severity error;
 
 	assert false report "end of test of \sum\" severity note;
 
@@ -123,7 +100,7 @@ begin
 
 	wait until \done\ = '1';
 	assert \sum\ = conv_std_logic_vector(32,32)
-		report "value differente from the expected" severity error;
+		report "value different from the expected" severity error;
 
 	wait for 12 ns;
 

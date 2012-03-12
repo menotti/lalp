@@ -12,7 +12,7 @@
 -- SUFFERED BY LICENSEE AS A RESULT OF USING, MODIFYING OR DISTRIBUTING THIS
 -- SOFTWARE OR ITS DERIVATIVES.
 --
--- Generated at Wed Dec 14 16:11:47 BRST 2011
+-- Generated at Mon Mar 12 16:33:57 BRT 2012
 --
 
 -- IEEE Libraries --
@@ -70,5 +70,20 @@ begin
 	\init\  <= '1';
 	wait;
 end process stimulus;
+
+process
+
+begin
+
+	wait until \done\ = '1';
+	assert \maxval\ = conv_std_logic_vector(800,32)
+		report "value different from the expected" severity error;
+
+	wait for 12 ns;
+
+	assert false report "end of test of \maxval\" severity note;
+
+wait;
+end process;
 
 end behavior;
