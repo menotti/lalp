@@ -402,14 +402,14 @@ public class fdct {
 			dct_o[6+i_1] = (short) F6r;                                          
 			dct_o[7+i_1] = (short) F7r;                                          
 
-			System.out.println("dct_o[" + (i_1+0) + "]=" + F0r);
-			System.out.println("dct_o[" + (i_1+1) + "]=" + F1r);
-			System.out.println("dct_o[" + (i_1+2) + "]=" + F2r);
-			System.out.println("dct_o[" + (i_1+3) + "]=" + F3r);
-			System.out.println("dct_o[" + (i_1+4) + "]=" + F4r);
-			System.out.println("dct_o[" + (i_1+5) + "]=" + F5r);
-			System.out.println("dct_o[" + (i_1+6) + "]=" + F6r);
-			System.out.println("dct_o[" + (i_1+7) + "]=" + F7r);
+			System.out.print("\t\t" + F0r);
+			System.out.print(", " + F1r);
+			System.out.print(", " + F2r);
+			System.out.print(", " + F3r);
+			System.out.print(", " + F4r);
+			System.out.print(", " + F5r);
+			System.out.print(", " + F6r);
+			System.out.println(", " + F7r + ", ");
 
 			// ---------------------------------------------------- /    
 			//  Update pointer to next FDCT row.                    /    

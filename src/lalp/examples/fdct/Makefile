@@ -5,12 +5,12 @@ LALP_CMD = lalp
 LALP_FLAGS = -gv -gs -vh -vi -vt -aa -at -ab -as -ad -ao -verbose
 
 GHDL_CMD = ghdl
-GHDL_FLAGS  = -fexplicit --std=02 --ieee=synopsys --warn-no-vital-generic
+GHDL_FLAGS  = -fexplicit --std=02 --ieee=synopsys --warn-no-vital-generic 
 
 #GHDL_SIM_OPT = --assert-level=error
 #GHDL_SIM_OPT = --stop-time=500ns
-GHDL_SIM_OPT = --disp-tree --stats --stop-time=20000ns
-
+#GHDL_SIM_OPT = --disp-tree --stats --stop-time=20000ns --ieee-asserts=disable
+GHDL_SIM_OPT = --stats --stop-time=20000ns --ieee-asserts=disable
 WAVEFORM_VIEWER = gtkwave
 
 # Unix

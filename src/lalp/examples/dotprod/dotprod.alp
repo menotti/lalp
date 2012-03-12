@@ -46,10 +46,6 @@ assert{
 	{
 		check int sum = {4, 14, 32};
 	}
-	foreach clock
-	{
-		check int sum = {4, 14, 32};
-	}
 	wait done == 1
 	{
 		check int sum = {32};
