@@ -1149,12 +1149,16 @@ void ForeachChecking():
         boolean jjtc000 = true;
         jjtree.openNodeScope(jjtn000);
 /*@egen*/
-	Process process = new Process(Process.CheckingType.FOREACH);
+	Process process = null;
+	long value = 0;
 }
 {/*@bgen(jjtree) ForeachChecking */
         try {
 /*@egen*/
-	<FOREACH> <CLOCK>
+	<FOREACH> (value = ConstOrLong())? <CLOCK>
+	{
+		process = new Process(Process.CheckingType.FOREACH, (int)value);
+	}
 	<LBRACE>
 		(<CHECK> Results(process))+
 	<RBRACE>/*@bgen(jjtree)*/

@@ -750,10 +750,14 @@ void WhenChecking():
 
 void ForeachChecking(): 
 {
-	Process process = new Process(Process.CheckingType.FOREACH);
+	Process process = null;
+	long value = 0;
 }
 {
-	<FOREACH> <CLOCK>
+	<FOREACH> (value = ConstOrLong())? <CLOCK>
+	{
+		process = new Process(Process.CheckingType.FOREACH, (int)value);
+	}
 	<LBRACE>
 		(<CHECK> Results(process))+
 	<RBRACE>
