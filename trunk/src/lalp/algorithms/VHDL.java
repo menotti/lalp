@@ -428,6 +428,13 @@ public class VHDL {
 		
 	}
 	
+	/**
+	 * Generate the processes that will check if the results are correct
+	 * @author João Vitor Brandão
+	 * @param lp
+	 * @param dos
+	 * @throws IOException
+	 */
 	private void GenerateVHDLAsserts(LangParser lp, DataOutputStream dos) throws IOException
 	{
 		for(Process process : lp.getParser().allProcesses)
@@ -469,13 +476,27 @@ public class VHDL {
 				{
 					dos.writeBytes("\nprocess\n");
 					dos.writeBytes("\nbegin\n");
-					dos.writeBytes("\n\twait until \\init\\ = '1';\n");
+					dos.writeBytes("\n\twait for 10 ns;\n");
+					dos.writeBytes("\n\twait on \\" + result.getIdentifier() + "\\;\n");
 					for(int i =  0 ; i < result.getArraySize(); i++)
 					{
-						if(i == 0)
-							dos.writeBytes("\n\twait for 12 ns;\n");
-						else
-							dos.writeBytes("\n\twait for 10 ns;\n");
+						if(i != 0)
+						{
+							if(i == 1)
+							{
+								if(process.getValue() == 0)
+									dos.writeBytes("\n\twait for 12 ns;\n");
+								else
+								{
+									int aux = process.getValue() + 2;
+									dos.writeBytes("\n\twait for "+ aux +" ns;\n");
+								}
+							}
+							else if(process.getValue() == 0)
+								dos.writeBytes("\n\twait for 10 ns;\n");
+							else
+								dos.writeBytes("\n\twait for "+ process.getValue() +" ns;\n");
+						}
 						dos.writeBytes("\tassert \\" + result.getIdentifier() + "\\ = " + "conv_std_logic_vector(" + result.getInits().get(i) + "," + result.getWidth() +")");
 						dos.writeBytes("\n\t\treport \"value different from the expected\" severity error;\n");
 					}

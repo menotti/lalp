@@ -1,3 +1,11 @@
+/**
+ * Represents a process in the generated VHDL
+ * @author João Vitor Brandão
+ * @version March, 2012
+ */
+
+
+
 package lalp.core;
 
 import java.util.Vector;
@@ -19,10 +27,11 @@ public class Process {
 		this.checkingType = checkingType;
 		this.conditionalSignal = conditionalSignal;
 	}
-	//Constructor for FOREACH checking
-	public Process(CheckingType checkingType)
+	//Constructor for FOREACH checking. If value equals to zero, a clock of 10 ns is used
+	public Process(CheckingType checkingType, int value)
 	{
 		this.checkingType = checkingType;
+		this.value = value*10;
 	}
 	//Constructor for WAIT checking
 	public Process(CheckingType checkingType, String conditionalSignal, int value)

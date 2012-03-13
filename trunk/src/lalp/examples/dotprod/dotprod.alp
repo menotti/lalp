@@ -50,5 +50,8 @@ assert{
 	{
 		check int sum = {32};
 	}
-    
+	foreach 2 clock
+	{
+		check int sum = {4, 32};
+    }
 }
