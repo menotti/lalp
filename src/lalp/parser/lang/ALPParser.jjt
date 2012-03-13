@@ -901,8 +901,8 @@ void MultiplicativeExpression() : {
   UnaryExpression() ( ( 
   "*" {jjtThis.setComponentClass(mult_op_s.class);} | 
   "*@" amount=ConstOrInt() {jjtThis.setStepDelay(amount);} {jjtThis.setComponentClass(mult_op_s_p.class);} | // pipelined multiply 
-  "/" {jjtThis.setComponentClass(div_op_s.class);}  
-//  "%" {jjtThis.setComponentClass(mod_op_s.class);}
+  "/" {jjtThis.setComponentClass(div_op_s.class);} |
+  "%" {jjtThis.setComponentClass(mod_op_s.class);}
   ) UnaryExpression() )*
 }
 

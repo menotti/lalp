@@ -450,10 +450,43 @@ begin
         process(I0, I1)
         variable aux: std_logic_vector(2*w_in1-1 downto 0); 
         begin
-          -- aux := I0 / I1;
+          aux := I0 / I1;
           O0 <= aux(w_out-1 downto 0);
         end process;
 end behav;
+
+
+--
+-- integer modulus with signed operands
+--
+library IEEE;
+use IEEE.std_logic_1164.all;
+use IEEE.std_logic_arith.all;
+use IEEE.std_logic_signed.all;
+
+entity mod_op_s is  
+  generic (w_in1  : integer := 16;
+  w_in2  : integer := 16;
+		 w_out : integer :=32);
+  port (
+    I0             : in    std_logic_vector(w_in1-1 downto 0);	
+    I1             : in    std_logic_vector(w_in2-1 downto 0);
+    O0                  : out   std_logic_vector(w_out-1 downto 0) 
+  );
+end mod_op_s;
+
+architecture behav of mod_op_s is
+
+begin
+        process(I0, I1)
+        variable aux: std_logic_vector(2*w_in1-1 downto 0); 
+        begin
+          aux := I0 mod I1;
+          O0 <= aux(w_out-1 downto 0);
+        end process;
+end behav;
+
+
 --
 -- integer divider with unsigned operands
 --
