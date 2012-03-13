@@ -1,0 +1,20 @@
+digraph div {
+	// Components (Nodes)
+	"x_div_op_s_y" [shape=record, fontcolor=blue, label="{{<I0>I0[32]|<I1>I1[32]}|div_op_s:x_div_op_s_y|{<O0>O0[32]}}"];
+	"x_mod_op_s_y" [shape=record, fontcolor=blue, label="{{<I0>I0[32]|<I1>I1[32]}|mod_op_s:x_mod_op_s_y|{<O0>O0[32]}}"];
+	"x" [shape=record, fontcolor=blue, style="filled", fillcolor="lightgray", label="{{<address>address[4]|<clk>clk|<data_in>data_in[32]|<oe>oe|<we>we}|block_ram:x|{<data_out>data_out[32]}}"];
+	"init" [shape=msquare fontcolor=blue label="init"];
+	"r" [shape=msquare fontcolor=blue label="r"];
+	"x" [shape=msquare fontcolor=blue label="x"];
+	"y" [shape=msquare fontcolor=blue label="y"];
+	"q" [shape=msquare fontcolor=blue label="q"];
+	"done" [shape=msquare fontcolor=blue label="done"];
+
+	// Signals (Edges)
+	"x":data_out -> "x_div_op_s_y":I0 [label="s0[32]" color=red fontcolor=red];
+	"x_mod_op_s_y":O0 -> "r" [label="s5[32]" color=red fontcolor=red];
+	"x":data_out -> "x_mod_op_s_y":I0 [label="s3[32]" color=red fontcolor=red];
+	"y" -> "x_div_op_s_y":I1 [label="s1[32]" color=red fontcolor=red];
+	"y" -> "x_mod_op_s_y":I1 [label="s4[32]" color=red fontcolor=red];
+	"x_div_op_s_y":O0 -> "q" [label="s2[32]" color=red fontcolor=red];
+}
