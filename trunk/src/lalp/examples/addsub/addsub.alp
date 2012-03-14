@@ -17,12 +17,19 @@ const DATA_WIDTH = 32;
 typedef fixed(DATA_WIDTH, 1) int;
 typedef fixed(1, 0) bit;
 
-div(in bit init, in int x, in int y, out int q, out int r, out bit done) {
-	{
-		int x[10];
-	}
+addsub(in int x, in int y, out int a, out int s) {
+	a = x + y;
+	s = x - y;
+}
 
-	q = x / y;
-	r = x % y;
+assert{
+	clock 20 ns;
+	int x = {1, 2, 3};
+	int y = {3, 2, 1};
 	
+	when s changes
+	{
+		check int s = {4, 4, 4};
+		check int a = {-2, 0, 2};
+	}
 }
