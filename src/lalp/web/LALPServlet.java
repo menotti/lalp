@@ -4,6 +4,8 @@
  */
 package lalp.web;
 
+import java.io.*;
+import java.util.zip.*;
 import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -49,6 +51,7 @@ public class LALPServlet extends HttpServlet {
 	 * public static final String DOT_COMMAND = "C:\\Graphviz\\dot.exe";
 	 */
 	public static final String DOT_COMMAND = "/usr/local/bin/dot";
+	public static final String zipPath = "C:/Users/Túlio/workspace/.metadata/.plugins/org.eclipse.wst.server.core/tmp1/wtpwebapps/lalp";
 
 	@Override
 	protected void doGet(HttpServletRequest request,
@@ -316,9 +319,50 @@ public class LALPServlet extends HttpServlet {
 			File vhdFile = new File(realPath + fileName.replace(".alp", ".vhd"));
 			result = readFile(vhdFile.getAbsolutePath());
 		}
+		
+		try {
+			//name of zip file to create
+			String outFilename = zipPath + "/LalpFiles.zip";
+			
+			//create ZipOutputStream object
+			ZipOutputStream out = new ZipOutputStream(new FileOutputStream(outFilename));
+			
+			//path to the folder to be zipped
+			File zipFolder = new File(zipPath);
+			
+			//get path prefix so that the zip file does not contain the whole path
+			// eg. if folder to be zipped is /home/lalit/test
+			// the zip file when opened will have test folder and not home/lalit/test folder
+			int len = zipFolder.getAbsolutePath().lastIndexOf(File.separator);
+			String baseName = zipFolder.getAbsolutePath().substring(0,len+1);
+			
+			addFolderToZip(zipFolder, out, baseName);
+			
+			out.close();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		
 		return result.trim();
 	}
 
+	private static void addFolderToZip(File folder, ZipOutputStream zip, String baseName) throws IOException {
+		File[] files = folder.listFiles();
+		for (File file : files) {
+			if (file.isDirectory()) {
+				
+			} else {
+				String name = file.getAbsolutePath().substring(baseName.length());
+				ZipEntry zipEntry = new ZipEntry(name);
+				zip.putNextEntry(zipEntry);
+				IOUtils.copy(new FileInputStream(file), zip);
+				zip.closeEntry();
+			}
+		}
+	}
 	// working configuration
 	private void setParameters() {
 		Parameters.runScc = true;
