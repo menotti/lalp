@@ -450,7 +450,7 @@ begin
         process(I0, I1)
         variable aux: std_logic_vector(2*w_in1-1 downto 0); 
         begin
-          aux := I0 / I1;
+          -- aux := I0 / I1;
           O0 <= aux(w_out-1 downto 0);
         end process;
 end behav;
@@ -481,7 +481,7 @@ begin
         process(I0, I1)
         variable aux: std_logic_vector(2*w_in1-1 downto 0); 
         begin
-          aux := I0 mod I1;
+          -- aux := I0 % I1;
           O0 <= aux(w_out-1 downto 0);
         end process;
 end behav;
