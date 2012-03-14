@@ -28,12 +28,17 @@ document.getElementById('sourceCodeArea').style.color=color;
 
 function toggle(id) {
 	   var state = document.getElementById(id).style.display;
+	   document.getElementById(id).style.display = 'block';
+}
+	
+function toggle1(id) {
+	   var state = document.getElementById(id).style.display;
 	   if (state == 'block') {
 	       document.getElementById(id).style.display = 'none';
 	   } else {
 	       document.getElementById(id).style.display = 'block';
 	   }
-	}
+}
 
 </script>
 
@@ -42,45 +47,58 @@ function toggle(id) {
 <body>
 
 	<h1>LALP Web Compiler</h1>
+	<fieldset>
+				<legend><b>Source Code</b></legend>
 	<div id="submitForm" class="submitForm">
 		<form id="file_upload">
-			<fieldset>
-				<legend>
-					<b>Choose .alp file</b>
-				</legend>
+			
+				Enter the ALP code in the box bellow or upload an .alp file from your computer: <br /><br />
+				
 				<div id="drop_zone_1">
-					<input id="file_1" type="file" name="file_1" multiple>
+					Source upload: <input id="file_1" type="file" name="file_1" multiple>
+					<input type="button" id="upload" name="upload" value="Upload File" >
+				</div></form></div>
+				
+				<div id="sourceCode" class="sourceCode">
+					<form id="downloadForm" action="DownloadServlet" method="post">
+					
+							<textarea id="sourceCodeArea" name="sourceCode" rows="20"
+								cols="100" onkeyup="newColor('red')"></textarea>
+								<input	type="button" id="compile" name="compile" value="Compile!" onclick="toggle('compilationFiles');" >
+							<br /> Source download: <input type="text" id="fileName" name="fileName">
+							<input type="button" id="download" value="Download" onClick="newColor('blue')">
+
+					</form>			
 				</div>
-				<input type="button" id="upload" name="upload" value="Upload File" onclick="toggle('compileArea');"/>
+				<br /><b>Compilation Options: </b><br /><br /> 
+				<input name="check" type="checkbox" id="as" value="-as" checked  /> Run SCC algorithm<br />  
+				<input name="check" type="checkbox" id="ad" value="-ad" checked  /> Run Dijkstra algorithm<br />
+				<input name="check" type="checkbox" id="ao" value="-ao" checked  /> Run Dominators algorithm <br />
+				<input name="check" type="checkbox" id="aa" value="-aa" checked  /> Run AsapAlap scheduling algorithm <br />
+				<input name="check" type="checkbox" id="at" value="-at" checked  /> Run Topological algorithm <br />
+				<input name="check" type="checkbox" id="ab" value="-ab" checked  /> Run Balance algorithm <br />
+				<input name="check" type="checkbox" id="gv" value="-gv" checked  /> Generate Graphviz <br />
+				<input name="check" type="checkbox" id="gs" value="-gs" checked  /> Generate Graphviz subgraphs <br />
+				<input name="check" type="checkbox" id="vh" value="-vh" checked  /> Generate VHDL <br />
+				<input name="check" type="checkbox" id="vi" value="-vi" checked  /> Generate VHDL memory initialization <br />
+				<input name="check" type="checkbox" id="vt" value="-vt" checked  /> Generate VHDL testbench <br />
+				<input name="check" type="checkbox" id="verbose" value="-verbose" checked  /> Print verbose output <br />
 			</fieldset>
-		</form>
-	</div>
 	<br />
-	<div id="compileArea" class="compileArea" style="display: none">
-				<fieldset>
-					<legend>
-						<b>Compilation Options</b>
-					</legend>
 	
-	
-	<input name="check" type="checkbox" id="as" value="-as" checked disabled="disabled" /> Run SCC algorithm <br />
-	<input name="check" type="checkbox" id="ad" value="-ad" checked disabled="disabled" /> Run Dijkstra algorithm <br />
-	<input name="check" type="checkbox" id="ao" value="-ao" checked disabled="disabled" /> Run Dominators algorithm <br />
-	<input name="check" type="checkbox" id="aa" value="-aa" checked disabled="disabled" /> Run AsapAlap scheduling algorithm <br />
-	<input name="check" type="checkbox" id="at" value="-at" checked disabled="disabled" /> Run Topological algorithm <br />
-	<input name="check" type="checkbox" id="ab" value="-ab" checked disabled="disabled" /> Run Balance algorithm <br />
-	<input name="check" type="checkbox" id="do" value="-do" checked disabled="disabled" /> Generate debug output pins <br />
-	<input name="check" type="checkbox" id="gv" value="-gv" checked disabled="disabled" /> Generate Graphviz <br />
-	<input name="check" type="checkbox" id="gs" value="-gs" checked disabled="disabled" /> Generate Graphviz subgraphs <br />
-	<input name="check" type="checkbox" id="vh" value="-vh" checked disabled="disabled" /> Generate VHDL <br />
-	<input name="check" type="checkbox" id="vi" value="-vi" checked disabled="disabled" /> Generate VHDL memory initialization <br />
-	<input name="check" type="checkbox" id="vt" value="-vt" checked disabled="disabled" /> Generate VHDL testbench <br />
-	<input name="check" type="checkbox" id="apg" value="-apg" checked disabled="disabled" /> Generate ALPG source code <br />
-	<input name="check" type="checkbox" id="verbose" value="-verbose" checked disabled="disabled" /> Print verbose output <br />
-	<input name="check" type="checkbox" id="version" value="-version" checked disabled="disabled" /> Print product version and exit <br />
-	<input name="check" type="checkbox" id="gui" value="-gui" checked disabled="disabled" /> Commence the LALP GUI <br /><br />
-	
-	
+	<div id="compilationFiles" class="targetCode" style="display: none">
+		<fieldset><legend><b>Compilation Files</b></legend>
+			<input	type="button" id="downloadVhd" name="downloadVhd" value="Download .vhd file                 " > <br />
+			<input	type="button" id="download_Vhd" name="download_Vhd" value="Download .vhd test file         " > <br />
+			<input	type="button" id="downloadMemo" name="downloadMemo" value="Download .vhd memory file" > <br />
+			<input	type="button" id="downloadZip" name="downloadZip" value="Download all files (.zip)        " > <br />
+			<input	type="button" id="ssvgview" name="ssvgview" onclick="toggle1('swSVG');" value="View SoftwareSVG                " > <br />
+			<div id="swSVG" style="display: none"></div>
+			<input	type="button" id="svgview" name="svgview" onclick="toggle1('hwSVG');" value="View HardwareSVG              " > <br />
+			<div id="hwSVG" style="display: none"></div>	
+		</fieldset>
+	</div>
+		
 	<!-- 				<input type="radio" id="r1" name="menu" value="-as">Run SCC -->
 	<!-- 				Algorithm<br /> <input type="radio" id="r2" name="menu" value="-ad">Run -->
 	<!-- 				Dijkstra Algorithm<br /> <input type="radio" id="r3" name="menu" -->
@@ -90,86 +108,61 @@ function toggle(id) {
 	<!-- 					File <br /> <input type="radio" id="r3sub2" name="subMenu" -->
 	<!-- 						value="hw">HW File -->
 	<!-- 				</div> -->
-			<input	type="button" id="compile" name="compile" value="Begin Compilation" onclick="toggle('codeArea')">
-			</fieldset>
-			</div><br />
+			
 	
-	<div id="codeArea" style="display: none"><fieldset>
-		<legend>
-			<b>Compilation Files</b>
-		</legend>
-		<a href="#" onclick="toggle('sourceCode');">View Source File</a><br />
-		<div id="sourceCode" class="sourceCode" style="display: none">
-			<form id="downloadForm" action="DownloadServlet" method="post">
-				<fieldset>
-					<legend>
-						<b>Source code</b>
-					</legend>
-					<textarea id="sourceCodeArea" name="sourceCode" rows="20"
-						cols="100" onkeyup="newColor('red')"></textarea>
-					<br /> File name: <input type="text" id="fileName" name="fileName">
-					<input type="button" id="download" value="Download" onClick="newColor('blue')">
-					
-				</fieldset>
-			</form>			
-		</div>
+
 		
-		
-		<a href="#" onclick="toggle('targetCode');">View dotprod.vhd</a><br />
-		<div id="targetCode" class="targetCode" style="display: none">
-			<form id="targetDownloadForm" action="DownloadServlet" method="get">
-				<fieldset>
-					<legend>
-						<b>dotprod.vhd</b>
-					</legend>
-					<textarea id="targetCodeArea" name="targetCode" rows="20"
-						cols="100" readonly></textarea>
-					<br /> File name: <input type="text" id="targetFileName"
-						name="fileName">
-				</fieldset>
-			</form>
-			</div>
+<!-- 		<a href="#" onclick="toggle('targetCode');">View dotprod.vhd</a><br /> -->
+<!-- 		<div id="targetCode" class="targetCode" style="display: none"> -->
+<!-- 			<form id="targetDownloadForm" action="DownloadServlet" method="get"> -->
+<!-- 				<fieldset> -->
+<!-- 					<legend> -->
+<!-- 						<b>dotprod.vhd</b> -->
+<!-- 					</legend> -->
+<!-- 					<textarea id="targetCodeArea" name="targetCode" rows="20" -->
+<!-- 						cols="100" readonly></textarea> -->
+<!-- 					<br /> File name: <input type="text" id="targetFileName" -->
+<!-- 						name="fileName"> -->
+<!-- 				</fieldset> -->
+<!-- 			</form> -->
+<!-- 			</div> -->
 			
-		<a href="#" onclick="toggle('_vhdCode');">View t_dotprod.vhd</a><br />
-		<div id="_vhdCode" class="_vhdcode" style="display: none">
-			<form id="_vhdDownloadForm" action="DownloadServlet" method="get">
-				<fieldset>
-					<legend>
-						<b>t_dotprod.vhd</b>
-					</legend>
-					<textarea id="_vhdCodeArea" name="_vhdCode" rows="20"
-						cols="100" readonly></textarea>
-					<br /> File name: <input type="text" id="_vhdFileName"
-						name="fileName"> 
-				</fieldset>
-			</form>
-			</div>
+<!-- 		<a href="#" onclick="toggle('_vhdCode');">View t_dotprod.vhd</a><br /> -->
+<!-- 		<div id="_vhdCode" class="_vhdcode" style="display: none"> -->
+<!-- 			<form id="_vhdDownloadForm" action="DownloadServlet" method="get"> -->
+<!-- 				<fieldset> -->
+<!-- 					<legend> -->
+<!-- 						<b>t_dotprod.vhd</b> -->
+<!-- 					</legend> -->
+<!-- 					<textarea id="_vhdCodeArea" name="_vhdCode" rows="20" -->
+<!-- 						cols="100" readonly></textarea> -->
+<!-- 					<br /> File name: <input type="text" id="_vhdFileName" -->
+<!-- 						name="fileName">  -->
+<!-- 				</fieldset> -->
+<!-- 			</form> -->
+<!-- 			</div> -->
 			
-		<a href="#" onclick="toggle('memoryCode');">View memory.vhd</a><br />
-		<div id="memoryCode" class="memorycode" style="display: none">
-			<form id="_memoryDownloadForm" action="DownloadServlet" method="get">
-				<fieldset>
-					<legend>
-						<b>Memory.vhd</b>
-					</legend>
-					<textarea id="memoryCodeArea" name="memoryCode" rows="20"
-						cols="100" readonly></textarea>
-					<br /> File name: <input type="text" id="memoryFileName"
-						name="fileName"> 		
-			</form>
-			</div>
+<!-- 		<a href="#" onclick="toggle('memoryCode');">View memory.vhd</a><br /> -->
+<!-- 		<div id="memoryCode" class="memorycode" style="display: none"> -->
+<!-- 			<form id="_memoryDownloadForm" action="DownloadServlet" method="get"> -->
+<!-- 				<fieldset> -->
+<!-- 					<legend> -->
+<!-- 						<b>Memory.vhd</b> -->
+<!-- 					</legend> -->
+<!-- 					<textarea id="memoryCodeArea" name="memoryCode" rows="20" -->
+<!-- 						cols="100" readonly></textarea> -->
+<!-- 					<br /> File name: <input type="text" id="memoryFileName" -->
+<!-- 						name="fileName"> 		 -->
+<!-- 			</form> -->
+<!-- 			</div> -->
 		
-		<div id="SVG">
-		<a href="#" onclick="toggle('swSVG');">View SofwareSVG</a><br />
-		<div id="swSVG" style="display: none"></div>
-		<a href="#" onclick="toggle('hwSVG');">View HardwareSVG</a>
-		<div id="hwSVG" style="display: none"></div></div><br />	
 		
-		<input type="button" id="downloadZipFile" value="Download all .vhd files" >
-		<input type="button" id="refresh" value="New compilation"  onClick="history.go(0)">
 		
-		</fieldset>
-	</div>
+
+		
+<!-- 		<input type="button" id="downloadZipFile" value="Download all .vhd files" > -->
+<!-- 		<input type="button" id="refresh" value="New compilation"  onClick="history.go(0)"> -->
+		
 </body>
 <footer>
 LALP version 0.1, Copyright (c) 2011 Ricardo Menotti </footer>

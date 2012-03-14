@@ -21,6 +21,26 @@ $('#download').click(function() {
 	$('#downloadForm').submit();
 });
 
+$('#downloadVhd').click(function(e) {
+    e.preventDefault(); 
+    window.location.href = $('#fileName').val().replace(".alp", ".vhd");
+});
+
+$('#download_Vhd').click(function(e) {
+    e.preventDefault();
+    window.location.href = 't_' + $('#fileName').val().replace(".alp", ".vhd");
+});
+
+$('#downloadMemo').click(function(e) {
+    e.preventDefault();
+    window.location.href = 'memory.vhd';
+});
+
+$('#downloadZip').click(function(e) {
+    e.preventDefault();
+    window.location.href = 'LalpFiles.zip';
+});
+
 // download target code
 $('#targetDownload').click(function() {
 	$('#targetDownloadForm').submit();
@@ -39,6 +59,7 @@ $('#downloadZipFile').click(function() {
 $('#_vhdDownload').click(function() {
 	$('#_vhdDownloadForm').submit();
 });
+
 
 // upload .alp file
 $('#upload').click(function() {
