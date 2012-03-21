@@ -25,7 +25,11 @@ import org.expressme.openid.OpenIdManager;
  */
 public class OpenIdServlet extends HttpServlet {
 
-    static final long ONE_HOUR = 3600000L;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 7040570810524738626L;
+	static final long ONE_HOUR = 3600000L;
     static final long TWO_HOUR = ONE_HOUR * 2L;
     static final String ATTR_MAC = "openid_mac";
     static final String ATTR_ALIAS = "openid_alias";
@@ -36,8 +40,8 @@ public class OpenIdServlet extends HttpServlet {
     public void init() throws ServletException {
         super.init();
         manager = new OpenIdManager();
-        manager.setRealm("http://localhost:8080");
-        manager.setReturnTo("http://localhost:8080/lalp/index.jsp");
+        manager.setRealm("http://lalp.dc.ufscar.br:8080");
+        manager.setReturnTo("http://lalp.dc.ufscar.br:8080/lalp/index.jsp");
     }
 
     @Override
