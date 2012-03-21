@@ -47,11 +47,15 @@ import org.apache.commons.io.IOUtils;
 public class LALPServlet extends HttpServlet {
 	
 	/* $ which dot
-	 * public static final String DOT_COMMAND = "/usr/bin/dot";
-	 * public static final String DOT_COMMAND = "C:\\Graphviz\\dot.exe";
+	 * public static final String DOT_COMMAND = "/usr/bin/dot"; //server
+	 * public static final String DOT_COMMAND = "/usr/local/bin/dot"; //menotti
+	 * public static final String DOT_COMMAND = "C:/Program Files/Graphviz/bin/dot.exe"; //tulio
+	 * public static final String ZIP_PATH = "/usr/share/apache-tomcat-7.0.14/webapps/lalp"; //server
+	 * public static final String ZIP_PATH = "/Users/menotti/Documents/workspace/.metadata/.plugins/org.eclipse.wst.server.core/tmp0/wtpwebapps/lalp"; //menotti
+	 * public static final String ZIP_PATH = "C:/Users/TÃºlio/Documents/workspace/.metadata/.plugins/org.eclipse.wst.server.core/tmp1/wtpwebapps/lalp"; //tulio
 	 */
-	public static final String DOT_COMMAND = "/usr/local/bin/dot";
-	public static final String zipPath = "C:/Users/Túlio/workspace/.metadata/.plugins/org.eclipse.wst.server.core/tmp1/wtpwebapps/lalp";
+	public static final String DOT_COMMAND = "/usr/bin/dot";
+	public static final String ZIP_PATH = "/usr/share/apache-tomcat-7.0.14/webapps/lalp";
 
 	@Override
 	protected void doGet(HttpServletRequest request,
@@ -322,13 +326,13 @@ public class LALPServlet extends HttpServlet {
 		
 		try {
 			//name of zip file to create
-			String outFilename = zipPath + "/LalpFiles.zip";
+			String outFilename = ZIP_PATH + "/LalpFiles.zip";
 			
 			//create ZipOutputStream object
 			ZipOutputStream out = new ZipOutputStream(new FileOutputStream(outFilename));
 			
 			//path to the folder to be zipped
-			File zipFolder = new File(zipPath);
+			File zipFolder = new File(ZIP_PATH);
 			
 			//get path prefix so that the zip file does not contain the whole path
 			// eg. if folder to be zipped is /home/lalit/test
