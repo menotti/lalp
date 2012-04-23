@@ -1,0 +1,33 @@
+digraph vecsum {
+	// Components (Nodes)
+	"result" [shape=msquare fontcolor=blue label="result"];
+	"c13" [shape=record, fontcolor=blue, style="filled", fillcolor="lightgray", label="{{<a>a[16]|<clk>clk|<reset>reset}|delay_op:c13\ndelay=2|{<a_delayed>a_delayed[16]}}"];
+	"c11" [fontcolor=red label="c11=0x0"];
+	"c15" [shape=record, fontcolor=blue, style="filled", fillcolor="lightgray", label="{{<a>a[1]|<clk>clk|<reset>reset}|delay_op:c15\ndelay=4|{<a_delayed>a_delayed[1]}}"];
+	"c14" [shape=record, fontcolor=blue, style="filled", fillcolor="lightgray", label="{{<a>a[1]|<clk>clk|<reset>reset}|delay_op:c14\ndelay=2|{<a_delayed>a_delayed[1]}}"];
+	"c12" [fontcolor=red label="c12=0x800"];
+	"x_add_op_s_y" [shape=record, fontcolor=blue, label="{{<I0>I0[32]|<I1>I1[32]}|add_op_s:x_add_op_s_y|{<O0>O0[32]}}"];
+	"z" [shape=record, fontcolor=blue, style="filled", fillcolor="lightgray", label="{{<address>address[11]|<clk>clk|<data_in>data_in[32]|<oe>oe|<we>we}|block_ram:z|{<data_out>data_out[32]}}"];
+	"x" [shape=record, fontcolor=blue, style="filled", fillcolor="lightgray", label="{{<address>address[11]|<clk>clk|<data_in>data_in[32]|<oe>oe|<we>we}|block_ram:x|{<data_out>data_out[32]}}"];
+	"done" [shape=msquare fontcolor=blue label="done"];
+	"y" [shape=record, fontcolor=blue, style="filled", fillcolor="lightgray", label="{{<address>address[11]|<clk>clk|<data_in>data_in[32]|<oe>oe|<we>we}|block_ram:y|{<data_out>data_out[32]}}"];
+	"i" [shape=record, fontcolor=blue, style="filled", fillcolor="lightgray", label="{{<clk>clk|<clk_en>clk_en|<input>input[16]|<load>load|<reset>reset|<termination>termination[16]}|counter:i\n\<\n+=1\nsteps=1|{<done>done|<output>output[16]|<step>step}}"];
+	"init" [shape=msquare fontcolor=blue label="init"];
+
+	// Signals (Edges)
+	"c11" -> "i":input [label="s0[16]" color=red fontcolor=red];
+	"c14":a_delayed -> "z":we [label="s13[1]" color=red fontcolor=red];
+	"c13":a_delayed -> "z":address [label="s11[16]" color=red fontcolor=red];
+	"c15":a_delayed -> "done" [label="s15[1]" color=red fontcolor=red];
+	"i":done -> "c15":a [label="s14" color=olivedrab];
+	"i":output -> "c13":a [label="s10[16]" color=red fontcolor=red];
+	"i":step -> "c14":a [label="s12" color=olivedrab];
+	"y":data_out -> "x_add_op_s_y":I1 [label="s7[32]" color=red fontcolor=red];
+	"z":data_out -> "result" [label="s9[32]" color=red fontcolor=red];
+	"i":output -> "x":address [label="s3[16]" color=red fontcolor=red];
+	"c12" -> "i":termination [label="s1[16]" color=red fontcolor=red];
+	"x":data_out -> "x_add_op_s_y":I0 [label="s6[32]" color=red fontcolor=red];
+	"x_add_op_s_y":O0 -> "z":data_in [label="s8[32]" color=red fontcolor=red];
+	"i":output -> "y":address [label="s4[16]" color=red fontcolor=red];
+	"init" -> "i":clk_en [label="s2" color=olivedrab];
+}

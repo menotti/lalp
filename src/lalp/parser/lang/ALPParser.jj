@@ -74,6 +74,7 @@ public class ALPParser/*@bgen(jjtree)*/implements ALPParserTreeConstants/*@egen*
 	public List<TestbenchUnity> equalityList = new ArrayList<TestbenchUnity>();
 	TestbenchUnity testbenchUnity;*/
 	public Vector<Process> allProcesses = new Vector<Process>();
+	public Hashtable<String, SimpleNode> allTestbenchEntries = new Hashtable<String, SimpleNode>();
 	
 
 /*	public static void main(String args[]) {
@@ -363,7 +364,8 @@ void Testbench() : {/*@bgen(jjtree) Testbench */
 		Info("This file has a testbench!");
 	}	
 	<ASSERT><LBRACE>
-	(ForeachChecking() | WhenChecking() | EqualityChecking())+ 
+	(TestbenchEntries())* 
+	(ForeachChecking() | WhenChecking() | EqualityChecking())+
 	<RBRACE>/*@bgen(jjtree)*/
         } catch (Throwable jjte000) {
           if (jjtc000) {
@@ -386,6 +388,8 @@ void Testbench() : {/*@bgen(jjtree) Testbench */
         }
 /*@egen*/
 }
+
+
 
 void EqualityChecking(): 
 {/*@bgen(jjtree) EqualityChecking */
@@ -464,6 +468,51 @@ void Results(Process process) : {/*@bgen(jjtree) Results */
 		}
 	}
 	Result(varWidth, process) <SEMICOLON>/*@bgen(jjtree)*/
+        } catch (Throwable jjte000) {
+          if (jjtc000) {
+            jjtree.clearNodeScope(jjtn000);
+            jjtc000 = false;
+          } else {
+            jjtree.popNode();
+          }
+          if (jjte000 instanceof RuntimeException) {
+            throw (RuntimeException)jjte000;
+          }
+          if (jjte000 instanceof ParseException) {
+            throw (ParseException)jjte000;
+          }
+          throw (Error)jjte000;
+        } finally {
+          if (jjtc000) {
+            jjtree.closeNodeScope(jjtn000, true);
+          }
+        }
+/*@egen*/
+}
+
+void TestbenchEntries() : {/*@bgen(jjtree) TestbenchEntries */
+        SimpleNode jjtn000 = new SimpleNode(this, JJTTESTBENCHENTRIES);
+        boolean jjtc000 = true;
+        jjtree.openNodeScope(jjtn000);
+/*@egen*/
+	Token varType=null;
+	int varWidth=0;
+}
+{/*@bgen(jjtree) TestbenchEntries */
+        try {
+/*@egen*/
+	(varType=<IDENTIFIER> | varWidth=Fixed()) 
+	{
+		if (varType != null) {
+			if (allTypedefs.containsKey(varType.image)) {
+				varWidth=(Integer)(allTypedefs.get(varType.image));
+			}
+			else {
+				ErrorToken("Type " + varType.image + " NOT found!", varType);
+			}
+		}
+	}
+	TestbenchEntry(varWidth) <SEMICOLON>/*@bgen(jjtree)*/
         } catch (Throwable jjte000) {
           if (jjtc000) {
             jjtree.clearNodeScope(jjtn000);
@@ -870,6 +919,65 @@ void Result(int varWidth, Process process) : {/*@bgen(jjtree) Result */
 /*@egen*/
 }
 
+void TestbenchEntry(int varWidth) : {/*@bgen(jjtree) TestbenchEntry */
+        SimpleNode jjtn000 = new SimpleNode(this, JJTTESTBENCHENTRY);
+        boolean jjtc000 = true;
+        jjtree.openNodeScope(jjtn000);
+/*@egen*/
+	Token tName;
+	Integer size = null;
+	Long init = null;
+	Vector<Long> inits = null;
+}
+{/*@bgen(jjtree) TestbenchEntry */
+        try {
+/*@egen*/
+	tName=<IDENTIFIER> (<LBRACKET> (size=ConstOrInt())? <RBRACKET>)? ("=" (init=ConstOrLong() | inits=MemoryInit(inits)))?/*@bgen(jjtree)*/
+        {
+          jjtree.closeNodeScope(jjtn000, true);
+          jjtc000 = false;
+        }
+/*@egen*/
+	{
+		if (!allPins.containsKey(tName.image)) {
+			ErrorToken("Output Variable " + tName.image + " NOT found!", tName);
+		}
+		jjtn000.setIdentifier(tName.image);
+		if (size == null && inits != null && inits.size() != 0)
+			size = inits.size();
+		jjtn000.setArraySize(size);
+		jjtn000.jjtSetValue(init);
+		jjtn000.setInits(inits);
+		jjtn000.setWidth(varWidth);
+		jjtn000.setToken(tName);
+		allTestbenchEntries.put(tName.image, jjtn000);
+		// comp = design.addComponent(comp);
+		// jjtThis.setComponent(comp);
+		// allComponents.put(tName.image, comp);
+		//DEBUG 
+		//InfoToken("Variable " + tName.image + (size>0 ? "[" + size +"]" : "") + (init != null ? " with initial value " + init : "") +" found", tName);
+	}/*@bgen(jjtree)*/
+        } catch (Throwable jjte000) {
+          if (jjtc000) {
+            jjtree.clearNodeScope(jjtn000);
+            jjtc000 = false;
+          } else {
+            jjtree.popNode();
+          }
+          if (jjte000 instanceof RuntimeException) {
+            throw (RuntimeException)jjte000;
+          }
+          if (jjte000 instanceof ParseException) {
+            throw (ParseException)jjte000;
+          }
+          throw (Error)jjte000;
+        } finally {
+          if (jjtc000) {
+            jjtree.closeNodeScope(jjtn000, true);
+          }
+        }
+/*@egen*/
+}
 
 Vector<Long> MemoryInit(Vector<Long> inits)       : {
 	Token t1, t2=null;
@@ -1692,8 +1800,8 @@ void MultiplicativeExpression() : {/*@bgen(jjtree) MultiplicativeExpression */
   UnaryExpression() ( ( 
   "*" {jjtn000.setComponentClass(mult_op_s.class);} | 
   "*@" amount=ConstOrInt() {jjtn000.setStepDelay(amount);} {jjtn000.setComponentClass(mult_op_s_p.class);} | // pipelined multiply 
-  "/" {jjtn000.setComponentClass(div_op_s.class);}  
-//  "%" {jjtThis.setComponentClass(mod_op_s.class);}
+  "/" {jjtn000.setComponentClass(div_op_s.class);} |
+  "%" {jjtn000.setComponentClass(mod_op_s.class);}
   ) UnaryExpression() )*/*@bgen(jjtree)*/
   } catch (Throwable jjte000) {
     if (jjtc000) {

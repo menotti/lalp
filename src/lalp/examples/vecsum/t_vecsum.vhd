@@ -12,7 +12,7 @@
 -- SUFFERED BY LICENSEE AS A RESULT OF USING, MODIFYING OR DISTRIBUTING THIS
 -- SOFTWARE OR ITS DERIVATIVES.
 --
--- Generated at Mon Apr 23 17:29:16 BRT 2012
+-- Generated at Mon Apr 23 17:14:37 BRT 2012
 --
 
 -- IEEE Libraries --
@@ -20,19 +20,19 @@ library IEEE;
 use IEEE.std_logic_1164.all;
 use IEEE.std_logic_arith.all;
 use IEEE.std_logic_unsigned.all;
-entity t_max is
-end t_max;
+entity t_vecsum is
+end t_vecsum;
 
-architecture behavior of t_max is
+architecture behavior of t_vecsum is
 
-component max
+component vecsum
 	port (
 		\clear\	: in	std_logic;
 		\clk\	: in	std_logic;
 		\done\	: out	std_logic;
 		\init\	: in	std_logic;
-		\maxval\	: out	std_logic_vector(31 downto 0);
-		\reset\	: in	std_logic
+		\reset\	: in	std_logic;
+		\result\	: out	std_logic_vector(31 downto 0)
 	);
 end component;
 
@@ -40,19 +40,19 @@ signal \clear\	: std_logic	:= '0';
 signal \clk\	: std_logic	:= '0';
 signal \done\	: std_logic	:= '0';
 signal \init\	: std_logic	:= '0';
-signal \maxval\	: std_logic_vector(31 downto 0)	:= (others => '0');
 signal \reset\	: std_logic	:= '0';
+signal \result\	: std_logic_vector(31 downto 0)	:= (others => '0');
 
 begin
 
-uut: max
+uut: vecsum
 port map (
 	\clear\ => \clear\,
 	\clk\ => \clk\,
 	\done\ => \done\,
 	\init\ => \init\,
-	\maxval\ => \maxval\,
-	\reset\ => \reset\
+	\reset\ => \reset\,
+	\result\ => \result\
 );
 
 clock: process
@@ -75,13 +75,17 @@ process
 
 begin
 
-	wait until \done\ = '1';
-	assert \maxval\ = conv_std_logic_vector(800,32)
+	wait for 5 ns;
+
+	wait on \result\;
+	assert \result\ = conv_std_logic_vector(7,32)
 		report "value different from the expected" severity error;
 
-	wait for 12 ns;
+	wait on \result\;
+	assert \result\ = conv_std_logic_vector(6,32)
+		report "value different from the expected" severity error;
 
-	assert false report "end of test of \maxval\" severity note;
+	assert false report "end of test of \result\" severity note;
 
 wait;
 end process;

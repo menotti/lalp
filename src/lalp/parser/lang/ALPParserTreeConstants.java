@@ -7,40 +7,42 @@ public interface ALPParserTreeConstants
   public int JJTTESTBENCH = 1;
   public int JJTEQUALITYCHECKING = 2;
   public int JJTRESULTS = 3;
-  public int JJTNAME = 4;
-  public int JJTCONST = 5;
-  public int JJTTYPEDEF = 6;
-  public int JJTVOID = 7;
-  public int JJTPIN = 8;
-  public int JJTVARIABLE = 9;
-  public int JJTRESULT = 10;
-  public int JJTCOUNTER = 11;
-  public int JJTASSIGNMENT = 12;
-  public int JJTWHEN = 13;
-  public int JJTWHENCHECKING = 14;
-  public int JJTFOREACHCHECKING = 15;
-  public int JJTLHS = 16;
-  public int JJTRHS = 17;
-  public int JJTEXPRESSION = 18;
-  public int JJTDELAYEXPRESSION = 19;
-  public int JJTCONDITIONALEXPRESSION = 20;
-  public int JJTCONDITIONALOREXPRESSION = 21;
-  public int JJTCONDITIONALANDEXPRESSION = 22;
-  public int JJTINCLUSIVEOREXPRESSION = 23;
-  public int JJTEXCLUSIVEOREXPRESSION = 24;
-  public int JJTANDEXPRESSION = 25;
-  public int JJTEQUALITYEXPRESSION = 26;
-  public int JJTRELATIONALEXPRESSION = 27;
-  public int JJTSHIFTEXPRESSION = 28;
-  public int JJTADDITIVEEXPRESSION = 29;
-  public int JJTMULTIPLICATIVEEXPRESSION = 30;
-  public int JJTUNARYEXPRESSION = 31;
-  public int JJTPREINCREMENTEXPRESSION = 32;
-  public int JJTPREDECREMENTEXPRESSION = 33;
-  public int JJTUNARYEXPRESSIONNOTPLUSMINUS = 34;
-  public int JJTPOSTFIXEXPRESSION = 35;
-  public int JJTPRIMARYEXPRESSION = 36;
-  public int JJTLITERAL = 37;
+  public int JJTTESTBENCHENTRIES = 4;
+  public int JJTNAME = 5;
+  public int JJTCONST = 6;
+  public int JJTTYPEDEF = 7;
+  public int JJTVOID = 8;
+  public int JJTPIN = 9;
+  public int JJTVARIABLE = 10;
+  public int JJTRESULT = 11;
+  public int JJTTESTBENCHENTRY = 12;
+  public int JJTCOUNTER = 13;
+  public int JJTASSIGNMENT = 14;
+  public int JJTWHEN = 15;
+  public int JJTWHENCHECKING = 16;
+  public int JJTFOREACHCHECKING = 17;
+  public int JJTLHS = 18;
+  public int JJTRHS = 19;
+  public int JJTEXPRESSION = 20;
+  public int JJTDELAYEXPRESSION = 21;
+  public int JJTCONDITIONALEXPRESSION = 22;
+  public int JJTCONDITIONALOREXPRESSION = 23;
+  public int JJTCONDITIONALANDEXPRESSION = 24;
+  public int JJTINCLUSIVEOREXPRESSION = 25;
+  public int JJTEXCLUSIVEOREXPRESSION = 26;
+  public int JJTANDEXPRESSION = 27;
+  public int JJTEQUALITYEXPRESSION = 28;
+  public int JJTRELATIONALEXPRESSION = 29;
+  public int JJTSHIFTEXPRESSION = 30;
+  public int JJTADDITIVEEXPRESSION = 31;
+  public int JJTMULTIPLICATIVEEXPRESSION = 32;
+  public int JJTUNARYEXPRESSION = 33;
+  public int JJTPREINCREMENTEXPRESSION = 34;
+  public int JJTPREDECREMENTEXPRESSION = 35;
+  public int JJTUNARYEXPRESSIONNOTPLUSMINUS = 36;
+  public int JJTPOSTFIXEXPRESSION = 37;
+  public int JJTPRIMARYEXPRESSION = 38;
+  public int JJTLITERAL = 39;
 
 
   public String[] jjtNodeName = {
@@ -48,6 +50,7 @@ public interface ALPParserTreeConstants
     "Testbench",
     "EqualityChecking",
     "Results",
+    "TestbenchEntries",
     "Name",
     "Const",
     "Typedef",
@@ -55,6 +58,7 @@ public interface ALPParserTreeConstants
     "Pin",
     "Variable",
     "Result",
+    "TestbenchEntry",
     "Counter",
     "Assignment",
     "When",
@@ -84,4 +88,4 @@ public interface ALPParserTreeConstants
     "Literal",
   };
 }
-/* JavaCC - OriginalChecksum=a22d23be6a2e75e20ec8bceb9d91f668 (do not edit this line) */
+/* JavaCC - OriginalChecksum=b1a18054b2fff4554abc88f3bd8c4d7d (do not edit this line) */

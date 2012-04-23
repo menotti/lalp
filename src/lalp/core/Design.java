@@ -43,6 +43,14 @@ public class Design extends SparseGraph {
 	protected int stages;
 	protected int maxSchedulingTime = 0;
 	protected Component initialComponent;
+	protected boolean sync = false;
+	
+	public boolean isSync() {
+		return sync;
+	}
+	public void setSync(boolean sync) {
+		this.sync = sync;
+	}
 	public Design() {
 		super();
 	}
@@ -65,8 +73,11 @@ public class Design extends SparseGraph {
 		Component c;
 		c = (Component) super.addVertex(comp);
 		components.put(comp.getName(), comp);
+		if(!isSync() && comp.getSync())
+			setSync(true);
     	return c;
     }
+	
 	
 	public Component getComponent(String name) {
 		return components.get(name);

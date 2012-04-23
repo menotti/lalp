@@ -49,9 +49,6 @@ public class LangParser {
 		try {
 			root = parser.Start();
 			parser.design = new Design(root.getIdentifier());
-			parser.design.addGlobalComponent(new input("clk"));
-			parser.design.addGlobalComponent(new input("reset"));
-			parser.design.addGlobalComponent(new input("clear"));
 			root.updateConnections();
 			root.accessComponents();
 		} catch (Exception e) {
@@ -82,6 +79,12 @@ public class LangParser {
 			createIOComponents();
 			createIComponents();
 			createOperations();
+			if(parser.design.isSync())
+			{
+				parser.design.addGlobalComponent(new input("clk"));
+				parser.design.addGlobalComponent(new input("reset"));
+				parser.design.addGlobalComponent(new input("clear"));
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			//System.exit(1);
