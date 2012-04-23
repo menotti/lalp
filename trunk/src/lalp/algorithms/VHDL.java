@@ -409,21 +409,44 @@ public class VHDL {
 			}
 			dos.writeBytes("\t\\" + p.getName() + "\\ => \\" + p.getName() + "\\");
 		}
-		dos.writeBytes("\n);\n");
-		dos.writeBytes("\nclock: process\n"); 
-		dos.writeBytes("begin\n");
-		dos.writeBytes("\twait for 5 ns;\n");
-		dos.writeBytes("\t\\clk\\  <= not \\clk\\;\n");
-		dos.writeBytes("end process clock;\n");
-		dos.writeBytes("\nstimulus: process\n"); 
-		dos.writeBytes("begin\n");
-		dos.writeBytes("\t\\reset\\  <= '1';\n");
-		dos.writeBytes("\twait for 50 ns;\n");
-		dos.writeBytes("\t\\reset\\  <= '0';\n");
-		dos.writeBytes("\twait for 50 ns;\n");
-		dos.writeBytes("\t\\init\\  <= '1';\n");
-		dos.writeBytes("\twait;\n");
-		dos.writeBytes("end process stimulus;\n");
+			dos.writeBytes("\n);\n");
+		if(design.isSync()){
+			dos.writeBytes("\nclock: process\n"); 
+			dos.writeBytes("begin\n");
+			dos.writeBytes("\twait for 5 ns;\n");
+			dos.writeBytes("\t\\clk\\  <= not \\clk\\;\n");
+			dos.writeBytes("end process clock;\n");
+			dos.writeBytes("\nstimulus: process\n"); 
+			dos.writeBytes("begin\n");
+			dos.writeBytes("\t\\reset\\  <= '1';\n");
+			dos.writeBytes("\twait for 50 ns;\n");
+			dos.writeBytes("\t\\reset\\  <= '0';\n");
+			dos.writeBytes("\twait for 50 ns;\n");
+			dos.writeBytes("\t\\init\\  <= '1';\n");
+			dos.writeBytes("\twait;\n");
+			dos.writeBytes("end process stimulus;\n");
+		}
+		
+		for(Map.Entry<String, SimpleNode> entry: lp.getParser().allTestbenchEntries.entrySet())
+			{
+				dos.writeBytes("\n" +entry.getKey()+ "_atribution: process\n");
+				dos.writeBytes("begin\n");
+				if(lp.getDesign().isSync())
+					dos.writeBytes("\n\twait until \\init\\ = '1';\n");
+				for(int i = 0; i <  entry.getValue().getArraySize(); i++)
+				{
+					dos.writeBytes("\t\\" +entry.getKey()+ "\\ <= conv_std_logic_vector(" + entry.getValue().getInits().get(i) + "," + entry.getValue().getWidth() +");");
+					dos.writeBytes("\n\twait for 10 ns;\n");
+				}
+				dos.writeBytes("\n\twait for 10 ns;\n");
+				dos.writeBytes("\t\\" +entry.getKey()+ "\\ <= conv_std_logic_vector('X', "+entry.getValue().getWidth()+");");
+				dos.writeBytes("\nwait;");
+				dos.writeBytes("\nend process "+entry.getKey()+ "_atribution;\n");
+			}
+						
+		
+			
+		
 		GenerateVHDLAsserts(lp, dos);
 		
 	}
