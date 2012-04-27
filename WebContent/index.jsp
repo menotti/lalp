@@ -40,9 +40,45 @@ function toggle1(id) {
 	   }
 }
 
+function getUrlVars() {
+    var vars = {};
+    var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
+        vars[key] = value;
+    });
+    return vars;
+}
+
+var email = getUrlVars()["openid.ext1.value.email"];
+
+if (email == null) {
+	window.location = "http://lalp.dc.ufscar.br:8080/lalp/index.html";
+}
+
+email = email.replace('%40','@');
+
+setTimeout(function() {checkUserRole();},200);
+
+function checkUserRole() {
+	$.ajax({
+		url : 'DATACheckServlet',
+		type : 'POST',
+		data : {
+			email : email,
+			index : "0"
+		},
+		error : function() {
+			var urlindex = window.location.href.replace('index.jsp','userData.jsp');
+			window.location = urlindex;
+		},
+		success: function() {
+		}
+	});
+}
+
+
 </script>
 
-<title>A Web Interface for the LALP Compiler</title>
+<title>Lalp Web Compiler</title>
 </head>
 <body>
 
@@ -91,7 +127,7 @@ function toggle1(id) {
 			<input	type="button" id="downloadVhd" name="downloadVhd" value="Download .vhd file                 " > <br />
 			<input	type="button" id="download_Vhd" name="download_Vhd" value="Download .vhd test file         " > <br />
 			<input	type="button" id="downloadMemo" name="downloadMemo" value="Download .vhd memory file" > <br />
-			<input	type="button" id="downloadZip" name="downloadZip" value="Download all files (.zip)        " > <br />
+			<!-- <input	type="button" id="downloadZip" name="downloadZip" value="Download all files (.zip)        " > <br /> -->
 			<input	type="button" id="ssvgview" name="ssvgview" onclick="toggle1('swSVG');" value="View SoftwareSVG                " > <br />
 			<div id="swSVG" style="display: none"></div>
 			<input	type="button" id="svgview" name="svgview" onclick="toggle1('hwSVG');" value="View HardwareSVG              " > <br />
@@ -112,58 +148,7 @@ function toggle1(id) {
 	
 
 		
-<!-- 		<a href="#" onclick="toggle('targetCode');">View dotprod.vhd</a><br /> -->
-<!-- 		<div id="targetCode" class="targetCode" style="display: none"> -->
-<!-- 			<form id="targetDownloadForm" action="DownloadServlet" method="get"> -->
-<!-- 				<fieldset> -->
-<!-- 					<legend> -->
-<!-- 						<b>dotprod.vhd</b> -->
-<!-- 					</legend> -->
-<!-- 					<textarea id="targetCodeArea" name="targetCode" rows="20" -->
-<!-- 						cols="100" readonly></textarea> -->
-<!-- 					<br /> File name: <input type="text" id="targetFileName" -->
-<!-- 						name="fileName"> -->
-<!-- 				</fieldset> -->
-<!-- 			</form> -->
-<!-- 			</div> -->
-			
-<!-- 		<a href="#" onclick="toggle('_vhdCode');">View t_dotprod.vhd</a><br /> -->
-<!-- 		<div id="_vhdCode" class="_vhdcode" style="display: none"> -->
-<!-- 			<form id="_vhdDownloadForm" action="DownloadServlet" method="get"> -->
-<!-- 				<fieldset> -->
-<!-- 					<legend> -->
-<!-- 						<b>t_dotprod.vhd</b> -->
-<!-- 					</legend> -->
-<!-- 					<textarea id="_vhdCodeArea" name="_vhdCode" rows="20" -->
-<!-- 						cols="100" readonly></textarea> -->
-<!-- 					<br /> File name: <input type="text" id="_vhdFileName" -->
-<!-- 						name="fileName">  -->
-<!-- 				</fieldset> -->
-<!-- 			</form> -->
-<!-- 			</div> -->
-			
-<!-- 		<a href="#" onclick="toggle('memoryCode');">View memory.vhd</a><br /> -->
-<!-- 		<div id="memoryCode" class="memorycode" style="display: none"> -->
-<!-- 			<form id="_memoryDownloadForm" action="DownloadServlet" method="get"> -->
-<!-- 				<fieldset> -->
-<!-- 					<legend> -->
-<!-- 						<b>Memory.vhd</b> -->
-<!-- 					</legend> -->
-<!-- 					<textarea id="memoryCodeArea" name="memoryCode" rows="20" -->
-<!-- 						cols="100" readonly></textarea> -->
-<!-- 					<br /> File name: <input type="text" id="memoryFileName" -->
-<!-- 						name="fileName"> 		 -->
-<!-- 			</form> -->
-<!-- 			</div> -->
-		
-		
-		
-
-		
-<!-- 		<input type="button" id="downloadZipFile" value="Download all .vhd files" > -->
-<!-- 		<input type="button" id="refresh" value="New compilation"  onClick="history.go(0)"> -->
-		
 </body>
 <footer>
-LALP version 0.1, Copyright (c) 2011 Ricardo Menotti </footer>
+LALP version 0.1, Copyright (c) 2012 Ricardo Menotti </footer>
 </html>

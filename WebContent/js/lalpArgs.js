@@ -1,6 +1,12 @@
 /* global vars */
 var selected = false;
 var args = new Array();
+var lastName = getUrlVars()["openid.ext1.value.lastname"];
+var fistName = getUrlVars()["openid.ext1.value.firstname"];
+var email = getUrlVars()["openid.ext1.value.email"];
+var urlindex = window.location.href.replace('userData.jsp','index.jsp');
+
+email = email.replace('%40','@');
 
 // user args not working yet
 /*
@@ -20,6 +26,39 @@ var args = new Array();
 $('#download').click(function() {
 	$('#downloadForm').submit();
 });
+
+$('#userData').click(function(e) {
+	sendUserData();
+});
+
+function sendUserData() {
+	$.ajax({
+		url : 'DATAServlet',
+		type : 'POST',
+		data : {
+			first : fistName,
+			last : lastName,
+			email : email,
+			org : $('#orgName').val(),
+			why : $('#why').val(),
+			url : urlindex,
+		},
+		error : function() {
+			window.location = ("http://lalp.dc.ufscar.br:8080/lalp/index.jsp");
+		},
+		success : function() {
+		    window.location = ("http://lalp.dc.ufscar.br:8080/lalp/registeredUser.html");
+		}
+	});
+}
+
+function getUrlVars() {
+  	 var vars = {};
+   	 var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
+   	    vars[key] = value;
+ 	 });
+	 return vars;
+	}
 
 $('#downloadVhd').click(function(e) {
     e.preventDefault(); 
@@ -111,7 +150,7 @@ function doLoad(){
 	document.getElementById("_vhdCodeArea").value = IO($('#_vhdFileName').val()); 
 }
 
-/* AJAX & SVG */r
+/* AJAX & SVG */
 function requestVHD() {
 	$.ajax({
 		url : 'LALPServlet',
