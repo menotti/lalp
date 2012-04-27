@@ -4,117 +4,124 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.HashSet;
-import java.util.Set;
-
+import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
+import javax.servlet.http.HttpSession;
 import org.expressme.openid.Association;
 import org.expressme.openid.Authentication;
 import org.expressme.openid.Endpoint;
 import org.expressme.openid.OpenIdException;
 import org.expressme.openid.OpenIdManager;
+ 
 
-/**
- * OpenID.
- * 
- * 
- */
 public class OpenIdServlet extends HttpServlet {
+ 
 
-    /**
-	 * 
-	 */
-	private static final long serialVersionUID = 7040570810524738626L;
-	static final long ONE_HOUR = 3600000L;
+    static final long ONE_HOUR = 3600000L;
     static final long TWO_HOUR = ONE_HOUR * 2L;
     static final String ATTR_MAC = "openid_mac";
     static final String ATTR_ALIAS = "openid_alias";
+ 
 
-    private OpenIdManager manager;
+    OpenIdManager manager;
+ 
 
     @Override
-    public void init() throws ServletException {
-        super.init();
+    public void init(ServletConfig config) throws ServletException {
+        super.init(config);
+ 
+
+        //IF proxy
+        java.util.Properties props = System.getProperties();
+        props.put("proxySet", "true");
+        props.put("proxyHost", "PROXY_IPADDRESS");
+        props.put("proxyPort", "PROXY_PORT");
+ 
+
         manager = new OpenIdManager();
-        manager.setRealm("http://lalp.dc.ufscar.br:8080");
-        manager.setReturnTo("http://lalp.dc.ufscar.br:8080/lalp/index.jsp");
     }
+ 
 
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        String op = request.getParameter("op");
-        if (op==null) {
-            // check sign on result from Google or Yahoo:
-            checkNonce(request.getParameter("openid.response_nonce"));
-            // get authentication:
-            byte[] mac_key = (byte[]) request.getSession().getAttribute(ATTR_MAC);
-            String alias = (String) request.getSession().getAttribute(ATTR_ALIAS);
-            Authentication authentication = manager.getAuthentication(request, mac_key, alias);
-            response.setContentType("text/html; charset=UTF-8");
-            showAuthentication(response.getWriter(), authentication);
-            return;
-        }
-        if (op.equals("Google") || op.equals("Yahoo")) {
-            // redirect to Google or Yahoo sign on page:
-            Endpoint endpoint = manager.lookupEndpoint(op);
-            Association association = manager.lookupAssociation(endpoint);
-            request.getSession().setAttribute(ATTR_MAC, association.getRawMacKey());
-            request.getSession().setAttribute(ATTR_ALIAS, endpoint.getAlias());
-            String url = manager.getAuthenticationUrl(endpoint, association);
-            response.sendRedirect(url);
-        }
-        else {
-            throw new ServletException("Unsupported OP: " + op);
-        }
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {   
+     String op = request.getParameter("op");   
+     if (op==null) {       
+      // check nonce:
+      System.out.println(">>>>>>>> openid.response_nonce==>"+request.getParameter("openid.response_nonce"));
+      checkNonce(request.getParameter("openid.response_nonce"));       
+      // get authentication:       
+      HttpSession session = request.getSession();       
+      byte[] mac_key = (byte[]) session.getAttribute(ATTR_MAC);       
+      String alias = (String) session.getAttribute(ATTR_ALIAS);       
+      Authentication authentication = manager.getAuthentication(request, mac_key, alias);       
+      String identity = authentication.getIdentity();       
+      String email = authentication.getEmail();       
+      // TODO: create user if not exist in database:       
+       showAuthentication(response.getWriter(), authentication);   
+     }   
+     else if ("Google".equals(op) || "Yahoo".equals(op)) {
+      manager.setReturnTo("http://lalp.dc.ufscar.br:8080/lalp/idCheck.jsp");
+      
+      // redirect to Google/Yahoo sign on page:       
+      //String alias = manager.lookupExtNsAlias(op);      
+      Endpoint endpoint = manager.lookupEndpoint(op);
+      System.out.println("logou com "+endpoint.getUrl());
+      Association association = manager.lookupAssociation(endpoint);       
+      HttpSession session = request.getSession();       
+      session.setAttribute(ATTR_MAC, association.getRawMacKey());       
+      //session.setAttribute(ATTR_ALIAS, alias);
+      String url = manager.getAuthenticationUrl(endpoint, association);       
+      response.sendRedirect(url);   
+     }   
+     else {       
+      throw new ServletException("Bad parameter op=" + op);   
+     } 
     }
+ 
 
-    void showAuthentication(PrintWriter pw, Authentication auth) {
-        
-    	// data base code
-    	
-    	/*pw.print("<html><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" /><title>Test JOpenID</title></head><body><h1>You have successfully signed on!</h1>");
-        pw.print("<p>Identity: " + auth.getIdentity() + "</p>");
-        pw.print("<p>Email: " + auth.getEmail() + "</p>");
-        pw.print("<p>Full name: " + auth.getFullname() + "</p>");
-        pw.print("<p>First name: " + auth.getFirstname() + "</p>");
-        pw.print("<p>Last name: " + auth.getLastname() + "</p>");
-        pw.print("<p>Gender: " + auth.getGender() + "</p>");
-        pw.print("<p>Language: " + auth.getLanguage() + "</p>");
-        pw.print("</body></html>");
-        pw.flush();*/
+    void showAuthentication(PrintWriter pw, Authentication user) {   
+     pw.print("<html><body>");   
+     pw.print(" <h2>Hi "+user.getFullname()+"!</h2><p>Congratulations, you have successfully logged-in!</p>");   
+     pw.print("<p><b>Indentity:</b> "+user.getIdentity()+"<br>");   
+     pw.print("<b>Email:</b> "+user.getEmail()+"<br>");   
+     pw.print("<b>Gender:</b> "+user.getGender()+"<br>");   
+     pw.print("<b>Firstname:</b> "+user.getFirstname()+"<br>");   
+     pw.print("<b>Lastname:</b> "+user.getLastname()+"<br>");   
+     pw.print("<b>Language:</b> "+user.getLanguage()+"</p>");   
+     pw.print("</body></html>");   
+     pw.flush();
     }
+ 
 
     void checkNonce(String nonce) {
         // check response_nonce to prevent replay-attack:
         if (nonce==null || nonce.length()<20)
             throw new OpenIdException("Verify failed.");
-        // make sure the time of server is correct:
         long nonceTime = getNonceTime(nonce);
-        long diff = Math.abs(System.currentTimeMillis() - nonceTime);
+        long diff = System.currentTimeMillis() - nonceTime;
+        if (diff < 0)
+            diff = (-diff);
         if (diff > ONE_HOUR)
             throw new OpenIdException("Bad nonce time.");
         if (isNonceExist(nonce))
             throw new OpenIdException("Verify nonce failed.");
         storeNonce(nonce, nonceTime + TWO_HOUR);
     }
+ 
 
-    // simulate a database that store all nonce:
-    private Set<String> nonceDb = new HashSet<String>();
-
-    // check if nonce is exist in database:
     boolean isNonceExist(String nonce) {
-        return nonceDb.contains(nonce);
+        // TODO: check if nonce is exist in database:
+        return false;
     }
+ 
 
-    // store nonce in database:
     void storeNonce(String nonce, long expires) {
-        nonceDb.add(nonce);
+        // TODO: store nonce in database:
     }
+ 
 
     long getNonceTime(String nonce) {
         try {
