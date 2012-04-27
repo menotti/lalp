@@ -50,12 +50,12 @@
 				index : "0",
 			},
 			error : function() {
-				alert("erro");
+				//alert("erro");
 				var urlindex = window.location.href.replace('idCheck.jsp','userData.jsp');
 				window.location = urlindex;
 			},
 			success: function() {
-				alert("sucesso");
+				//alert("sucesso");
 				var urlindex = window.location.href.replace('idCheck.jsp','index.jsp');
 				window.location = urlindex;
 			}
