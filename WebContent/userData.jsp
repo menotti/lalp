@@ -64,14 +64,14 @@
 	document.write('<b>E-mail: </b>' + email + '<br /></fieldset><br />');
 </script>
 
-<title>Lalp Web Compiler</title>
+<title>LALP Web Compiler</title>
 </head>
 <body>
 <fieldset>
 	<legend><b>User info</b></legend>
 
 	Organization: <input type="text" id="orgName" name="orgName"><br /><br />
-	Why do you wanna use Lalp?<br /> <textarea id="why" name="why" rows="5" cols="60"></textarea>
+	Tell us about your interest in using the LALP compiler.<br /> <textarea id="why" name="why" rows="5" cols="60"></textarea>
 
 </fieldset>
 
