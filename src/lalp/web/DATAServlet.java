@@ -52,7 +52,7 @@ public class DATAServlet extends HttpServlet {
 		
         String url = "jdbc:mysql://localhost:3306/lalp";  
         String usuario = "root";  
-        String senha = "123789";  
+        String senha = "******";  
         Connection con;  
         Statement stmt;
         
