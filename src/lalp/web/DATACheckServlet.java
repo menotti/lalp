@@ -46,7 +46,7 @@ public class DATACheckServlet extends HttpServlet {
 		
 		String url = "jdbc:mysql://localhost:3306/lalp";  
         String usuario = "root";  
-        String senha = "******";  
+        String senha = "secret";  
         Connection con;  
         Statement stmt;
         
@@ -59,11 +59,11 @@ public class DATACheckServlet extends HttpServlet {
             con= DriverManager.getConnection(url, usuario, senha);  
             stmt=con.createStatement();  
             
-            ResultSet rs = stmt.executeQuery("SELECT role FROM userrole WHERE email='" + email +"'"); 
+            ResultSet rs = stmt.executeQuery("SELECT enabled FROM userrole WHERE role='use' AND email='" + email +"'"); 
             
             rs.next();
             try {
-                String userRole = rs.getString("role"); 
+                String userRole = rs.getString("enabled"); 
                 System.out.println(userRole);
                 
                 if (userRole.equals("false")) {
