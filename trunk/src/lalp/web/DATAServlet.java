@@ -46,13 +46,14 @@ public class DATAServlet extends HttpServlet {
 		String org = request.getParameter("org");
 		String why = request.getParameter("why");
 		String urldest = request.getParameter("url");
-		String role = "false";
+		String role = "use";
+		String enabled = "false";
 		
 		System.out.println(fname + lname + email + org + why + urldest);
 		
         String url = "jdbc:mysql://localhost:3306/lalp";  
         String usuario = "root";  
-        String senha = "******";  
+        String senha = "secret";  
         Connection con;  
         Statement stmt;
         
@@ -66,7 +67,7 @@ public class DATAServlet extends HttpServlet {
             stmt=con.createStatement();  
 
             stmt.executeUpdate("INSERT INTO userdata (fname, lname, email, org, why) VALUES('"+fname+"', '"+lname+"','"+email+"','"+org+"','"+why+"')");
-            stmt.executeUpdate("INSERT INTO userrole (email, role) VALUES('"+email+"','"+role+"')");
+            stmt.executeUpdate("INSERT INTO userrole (email, role, enabled) VALUES('"+email+"','"+role+"','"+enabled+"')");
  
             stmt.close();  
             con.close();  
