@@ -31,4 +31,9 @@ assert{
 		check int a = {4, 4, 4};
 		check int s = {-2, 0, 2};
 	}
+	foreach clock
+	{
+		check int a = {4, 4, 4};
+		check int s = {-2, 0, 2};
+	}
 }

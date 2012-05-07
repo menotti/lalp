@@ -12,7 +12,7 @@
 -- SUFFERED BY LICENSEE AS A RESULT OF USING, MODIFYING OR DISTRIBUTING THIS
 -- SOFTWARE OR ITS DERIVATIVES.
 --
--- Generated at Mon Apr 23 17:16:25 BRT 2012
+-- Generated at Mon May 07 11:15:15 BRT 2012
 --
 
 -- IEEE Libraries --
@@ -51,6 +51,8 @@ port map (
 
 x_atribution: process
 begin
+
+	wait for 10 ns;
 	\x\ <= conv_std_logic_vector(1,32);
 	wait for 10 ns;
 	\x\ <= conv_std_logic_vector(2,32);
@@ -65,6 +67,8 @@ end process x_atribution;
 
 y_atribution: process
 begin
+
+	wait for 10 ns;
 	\y\ <= conv_std_logic_vector(3,32);
 	wait for 10 ns;
 	\y\ <= conv_std_logic_vector(2,32);
@@ -76,6 +80,44 @@ begin
 	\y\ <= conv_std_logic_vector('X', 32);
 wait;
 end process y_atribution;
+
+process
+
+begin
+
+	wait for 10 ns;
+
+	wait on \s\;
+	assert \a\ = conv_std_logic_vector(4,32)
+		report "value different from the expected" severity error;
+
+	assert false report "end of test of \a\" severity note;
+
+wait;
+end process;
+
+process
+
+begin
+
+	wait for 10 ns;
+
+	wait on \s\;
+	assert \s\ = conv_std_logic_vector(-2,32)
+		report "value different from the expected" severity error;
+
+	wait on \s\;
+	assert \s\ = conv_std_logic_vector(0,32)
+		report "value different from the expected" severity error;
+
+	wait on \s\;
+	assert \s\ = conv_std_logic_vector(2,32)
+		report "value different from the expected" severity error;
+
+	assert false report "end of test of \s\" severity note;
+
+wait;
+end process;
 
 process
 
