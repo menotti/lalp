@@ -433,6 +433,8 @@ public class VHDL {
 				dos.writeBytes("begin\n");
 				if(lp.getDesign().isSync())
 					dos.writeBytes("\n\twait until \\init\\ = '1';\n");
+				else
+					dos.writeBytes("\n\twait for 10 ns;\n");
 				for(int i = 0; i <  entry.getValue().getArraySize(); i++)
 				{
 					dos.writeBytes("\t\\" +entry.getKey()+ "\\ <= conv_std_logic_vector(" + entry.getValue().getInits().get(i) + "," + entry.getValue().getWidth() +");");

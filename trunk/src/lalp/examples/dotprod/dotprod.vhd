@@ -12,7 +12,7 @@
 -- SUFFERED BY LICENSEE AS A RESULT OF USING, MODIFYING OR DISTRIBUTING THIS
 -- SOFTWARE OR ITS DERIVATIVES.
 --
--- Generated at Tue Mar 13 16:39:28 BRT 2012
+-- Generated at Mon May 07 11:16:12 BRT 2012
 --
 
 -- IEEE Libraries --
@@ -179,6 +179,33 @@ begin
 		O0 => s7
 	);
 
+	\acc\: add_reg_op_s
+	generic map (
+		initial => 0,
+		w_in1 => 32,
+		w_in2 => 32,
+		w_out => 32
+	)
+	port map (
+		I0 => s9,
+		I1 => s7,
+		O0 => s9,
+		clk => \clk\,
+		reset => \reset\,
+		we => s14(0)
+	);
+
+	\x\: block_ram_x
+	generic map (
+		address_width => 11,
+		data_width => 32
+	)
+	port map (
+		address(10 downto 0) => s3(10 downto 0),
+		clk => \clk\,
+		data_out => s4
+	);
+
 	\y\: block_ram_y
 	generic map (
 		address_width => 11,
@@ -209,38 +236,11 @@ begin
 		termination => s1
 	);
 
-	\acc\: add_reg_op_s
-	generic map (
-		initial => 0,
-		w_in1 => 32,
-		w_in2 => 32,
-		w_out => 32
-	)
-	port map (
-		I0 => s9,
-		I1 => s7,
-		O0 => s9,
-		clk => \clk\,
-		reset => \reset\,
-		we => s14(0)
-	);
-
-	\x\: block_ram_x
-	generic map (
-		address_width => 11,
-		data_width => 32
-	)
-	port map (
-		address(10 downto 0) => s3(10 downto 0),
-		clk => \clk\,
-		data_out => s4
-	);
-
+	\done\ <= s12(0);
 	s1 <= conv_std_logic_vector(2048, 16);
 	s0 <= conv_std_logic_vector(0, 16);
-	s10 <= \init\;
-	\done\ <= s12(0);
 	\sum\ <= s9;
+	s10 <= \init\;
 
 end behavior;
 
