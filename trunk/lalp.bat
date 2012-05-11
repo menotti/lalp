@@ -35,5 +35,5 @@ set SEP=;
 
 set LALP_CP_TOOL=%LALP_JAR_JUNG%%SEP%%LALP_JAR_COLT%%SEP%%LALP_JAR_COMMONS_COLLECTIONS%%SEP%%LALP_HOME%\bin
 
-java -DLALP.home="%LALP_HOME%" -DCOMMAND_NAME="LALP" -Djava.library.path="%LALP_BIN%" -classpath "%LALP_CP_TOOL%" lalp.LALP  %*
+java -DLALP.home="%LALP_HOME%" -DCOMMAND_NAME="LALP" -Djava.library.path="%LALP_BIN%" -classpath "%LALP_CP_TOOL%" br.ufscar.dc.lalp.LALP  %*
 :eof
