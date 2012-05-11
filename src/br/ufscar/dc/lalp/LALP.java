@@ -45,7 +45,7 @@ import br.ufscar.dc.lalp.parser.lang.SimpleNode;
  */
 public class LALP {
 
-	private final static String version = "LALP version 0.1 release 93, Copyright (c) 2012 Ricardo Menotti, Joao V. B. Moreira";
+	private final static String version = "LALP version 0.1 release 95, Copyright (c) 2012 Ricardo Menotti, Joao V. B. Moreira";
 	
 	private static final String usage =  
 		"Usage: LALP [-options] file\n" +
