@@ -2,7 +2,7 @@
 <web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd" id="WebApp_ID" version="3.0">
   <filter>
     <filter-name>encodingFilter</filter-name>
-    <filter-class>lalp.web.EncodingFilter</filter-class>
+    <filter-class>br.ufscar.dc.lalp.web.EncodingFilter</filter-class>
   </filter>
   <filter-mapping>
     <filter-name>encodingFilter</filter-name>
@@ -10,19 +10,19 @@
   </filter-mapping>
   <servlet>
     <servlet-name>UploadServlet</servlet-name>
-    <servlet-class>lalp.web.UploadServlet</servlet-class>
+    <servlet-class>br.ufscar.dc.lalp.web.UploadServlet</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>DownloadServlet</servlet-name>
-    <servlet-class>lalp.web.DownloadServlet</servlet-class>
+    <servlet-class>br.ufscar.dc.lalp.web.DownloadServlet</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>LALPServlet</servlet-name>
-    <servlet-class>lalp.web.LALPServlet</servlet-class>
+    <servlet-class>br.ufscar.dc.lalp.web.LALPServlet</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>openid</servlet-name>
-    <servlet-class>lalp.web.OpenIdServlet</servlet-class>
+    <servlet-class>br.ufscar.dc.lalp.web.OpenIdServlet</servlet-class>
     <load-on-startup>0</load-on-startup>
   </servlet>
   <servlet-mapping>
