@@ -1,0 +1,10 @@
+br.ufscar.dc.lalp
+br.ufscar.dc.lalp.algorithms
+br.ufscar.dc.lalp.components
+br.ufscar.dc.lalp.core
+br.ufscar.dc.lalp.examples.fdct
+br.ufscar.dc.lalp.gui
+br.ufscar.dc.lalp.parser
+br.ufscar.dc.lalp.parser.graph
+br.ufscar.dc.lalp.parser.lang
+br.ufscar.dc.lalp.web
