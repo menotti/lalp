@@ -31,7 +31,7 @@ run :
 	$(GHDL_CMD) -r $(GHDL_FLAGS) $(TESTBENCH) $(GHDL_SIM_OPT) --vcd=$(TESTBENCH).vcd 
 
 view :
-	$(WAVEFORM_VIEWER) $(TESTBENCH).vcd &
+	$(WAVEFORM_VIEWER) $(TESTBENCH).vcd $(TESTBENCH).sav &
 
 clean :
 	$(GHDL_CMD) --clean
