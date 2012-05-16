@@ -41,7 +41,7 @@ function sendUserData() {
 			email : email,
 			org : $('#orgName').val(),
 			why : $('#why').val(),
-			url : urlindex,
+			url : urlindex
 		},
 		error : function() {
 			window.location = ("http://lalp.dc.ufscar.br:8080/lalp/index.jsp");
@@ -152,6 +152,8 @@ function doLoad(){
 
 /* AJAX & SVG */
 function requestVHD() {
+	var user = getUrlVars()["openid.ext1.value.email"];
+	user = user.replace('%40','@');
 	$.ajax({
 		url : 'LALPServlet',
 		type : 'POST',
@@ -159,6 +161,7 @@ function requestVHD() {
 			'args[]' : args,
 			fileName : $('#fileName').val(),
 			sourceCode : $('#sourceCodeArea').val(),
+			userEmail : email
 		},
 		error : function() {
 			alert('AJAX: Response from server failed!');

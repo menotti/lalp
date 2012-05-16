@@ -2,7 +2,13 @@ package br.ufscar.dc.lalp.web;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.*;
 
+import javax.mail.Message;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -14,6 +20,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;  
 
 import java.sql.*;  
+import java.util.Properties;
 
 
 /**
@@ -74,8 +81,52 @@ public class DATAServlet extends HttpServlet {
             }  
         
         catch(SQLException ex){  }  
-    }
-		
+        
+        
+        
+        
+        String host = "smtp.gmail.com";
+        String from = "lalp.ufscar";
+        String pass = "secret";
+        Properties props = System.getProperties();
+        props.put("mail.smtp.starttls.enable", "true"); // added this line
+        props.put("mail.smtp.host", host);
+        props.put("mail.smtp.user", from);
+        props.put("mail.smtp.password", pass);
+        props.put("mail.smtp.port", "587");
+        props.put("mail.smtp.auth", "true");
 
+        String[] to = {"lalp.ufscar@gmail.com"}; // added this line
+
+        try { Session session = Session.getDefaultInstance(props, null);
+        MimeMessage message = new MimeMessage(session);
+        message.setFrom(new InternetAddress(from));
+
+        InternetAddress[] toAddress = new InternetAddress[to.length];
+
+        // To get the array of addresses
+        for( int i=0; i < to.length; i++ ) { // changed from a while loop
+            toAddress[i] = new InternetAddress(to[i]);
+        }
+        System.out.println(Message.RecipientType.TO);
+
+        for( int i=0; i < toAddress.length; i++) { // changed from a while loop
+            message.addRecipient(Message.RecipientType.TO, toAddress[i]);
+        }
+        message.setSubject("Aceite o cadastro de " + fname);
+        message.setText(fname + " " + lname + " (" + email + ") " + "se cadastrou.\n\n\nOrganizacao: " + org + "\n\n\nMotivos: " + why);
+        Transport transport = session.getTransport("smtp");
+        transport.connect(host, from, pass);
+        transport.sendMessage(message, message.getAllRecipients());
+        transport.close(); } catch (Exception e) { }
+        
+               
+        // cria diretorios para armazenamento dos arquivos de compilacao
+        /*boolean success = (new File("D:/IC/compFiles/" + email)).mkdirs();
+        if (success) {
+            System.out.println("Sucesso");
+        }*/
+    }
+	
 
 }

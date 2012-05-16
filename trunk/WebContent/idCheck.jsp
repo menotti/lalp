@@ -47,7 +47,7 @@
 			type : 'POST',
 			data : {
 				email : email,
-				index : "0",
+				index : "0"
 			},
 			error : function() {
 				//alert("erro");
