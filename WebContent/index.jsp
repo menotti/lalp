@@ -67,10 +67,14 @@ function checkUserRole() {
 			index : "0"
 		},
 		error : function() {
+			//alert("erro");
 			var urlindex = window.location.href.replace('index.jsp','userData.jsp');
 			window.location = urlindex;
 		},
-		success: function() {
+		success: function(data) {
+			alert(data);
+			//document.write(data);
+			$('#version').val(data);
 		}
 	});
 }
@@ -150,5 +154,5 @@ function checkUserRole() {
 		
 </body>
 <footer>
-LALP version 0.1, Copyright (c) 2012 Ricardo Menotti </footer>
+<textarea id="version" name="version" rows="1" cols="150" disabled="true"></textarea> </footer>
 </html>

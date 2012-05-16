@@ -5,6 +5,10 @@
 package br.ufscar.dc.lalp.web;
 
 import java.io.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.zip.*;
 import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
@@ -22,6 +26,9 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import java.util.Date;  
+import java.text.SimpleDateFormat;
 
 
 import org.apache.commons.io.IOUtils;
@@ -57,6 +64,8 @@ public class LALPServlet extends HttpServlet {
 	 */
 	public static final String DOT_COMMAND = "/usr/bin/dot";
 	public static final String ZIP_PATH = "/usr/share/apache-tomcat-7.0.14/webapps/lalp";
+	
+	//public static final String COMP_FILES_PATH = "C:\\Users\\Túlio\\workspace\\.metadata\\.plugins\\org.eclipse.wst.server.core\\tmp1\\wtpwebapps\\lalp\\";
 
 	@Override
 	protected void doGet(HttpServletRequest request,
@@ -122,9 +131,10 @@ public class LALPServlet extends HttpServlet {
 		String[] args = request.getParameterValues("args[]");
 		String fileName = request.getParameter("fileName");
 		String sourceCode = request.getParameter("sourceCode");	
+		String userEmail = request.getParameter("userEmail");
 
 		try {
-			String result = compile(args, fileName, sourceCode);
+			String result = compile(args, fileName, sourceCode, userEmail);
 			out.print(result); // response
 		} catch (Exception e) {
 			out.print("Choose parameters");
@@ -137,8 +147,33 @@ public class LALPServlet extends HttpServlet {
 		}
 	}
 
-	public String compile(String[] args, String fileName, String sourceCode) throws IOException {
+	public String compile(String[] args, String fileName, String sourceCode, String userEmail) throws IOException {
 
+	
+		
+		String url = "jdbc:mysql://localhost:3306/lalp";  
+        String usuario = "root";  
+        String senha = "secret";  
+        Connection con;  
+        Statement stmt;
+        
+        try {  
+            Class.forName("com.mysql.jdbc.Driver").newInstance();  
+        }  
+        catch(Exception e){  }
+        
+        try{  
+            con= DriverManager.getConnection(url, usuario, senha);  
+            stmt=con.createStatement();  
+            
+            stmt.executeUpdate("INSERT INTO userlog (user, action, success) VALUES('"+userEmail+"', 'Compiled "+fileName+"','Failed')");
+            
+            stmt.close();  
+            con.close();  
+            }  
+        
+        catch(SQLException ex){  }  
+    
 		// reset previous args
 		// resetParameters();
 		// only working configuration at the moment (all args enabled)
@@ -349,7 +384,39 @@ public class LALPServlet extends HttpServlet {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	
 		
+		// update to success
+        try{  
+            con= DriverManager.getConnection(url, usuario, senha);  
+            stmt=con.createStatement();  
+            
+            stmt.executeUpdate("UPDATE userlog SET success='Success' WHERE user='"+userEmail+"'");
+            
+            stmt.close();  
+            con.close();  
+            }  
+        
+        catch(SQLException ex){  }
+        
+		
+        
+        // store .alp file
+        /*try{
+			 
+	    	   File alpFile =new File(COMP_FILES_PATH + fileName);
+	    	   //File afile =new File("D:\\IC\\compFiles\\" + userEmail + "\\" + fileName);
+	 
+	    	   if(alpFile.renameTo(new File("D:\\IC\\compFiles\\" + userEmail + "\\" + alpFile.getName()))){
+	    		System.out.println("File is moved successful!");
+	    	   }else{
+	    		System.out.println("File is failed to move!");
+	    	   }
+	 
+	    	}catch(Exception e){
+	    		e.printStackTrace();
+	    	}*/
+	    	
 		
 		return result.trim();
 	}

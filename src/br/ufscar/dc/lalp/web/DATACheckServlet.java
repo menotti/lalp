@@ -12,7 +12,9 @@ import java.sql.DriverManager;
 import java.sql.SQLException;  
 import java.sql.Statement;
 import java.io.PrintWriter;  
-import java.sql.*;  
+import java.sql.*; 
+
+import br.ufscar.dc.lalp.LALP;
 
 
 /**
@@ -79,8 +81,30 @@ public class DATACheckServlet extends HttpServlet {
             stmt.close();  
             con.close();  
             }  
-        catch(SQLException ex){  }  
+        catch(SQLException ex){  } 
+        
+        
+        PrintWriter out = response.getWriter();
+        String versao = getversion();
+        try {
+			out.print(versao); // response
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		} finally {
+			out.flush();
+			out.close();
+			response.getWriter().flush();
+			response.getWriter().close();
+		}
+        
+        
     }
+	
+	public String getversion() {
+		LALP lalp = new LALP();
+        return lalp.getVersion();
+	}
+	
 	
 	}
 

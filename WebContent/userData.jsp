@@ -47,7 +47,7 @@
 			type : 'POST',
 			data : {
 				email : email,
-				index : "1",
+				index : "1"
 			},
 			error : function() {
 				window.location = "http://lalp.dc.ufscar.br:8080/lalp/registeredUser.html";
