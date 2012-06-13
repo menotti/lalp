@@ -1,4 +1,7 @@
 /* global vars */
+
+var path = "http://lalp.dc.ufscar.br:8080/lalp/";
+
 var selected = false;
 var args = new Array();
 var lastName = getUrlVars()["openid.ext1.value.lastname"];
@@ -44,10 +47,10 @@ function sendUserData() {
 			url : urlindex
 		},
 		error : function() {
-			window.location = ("http://lalp.dc.ufscar.br:8080/lalp/index.jsp");
+			window.location = (path + "index.jsp");
 		},
 		success : function() {
-		    window.location = ("http://lalp.dc.ufscar.br:8080/lalp/registeredUser.html");
+		    window.location = (path + "registeredUser.html");
 		}
 	});
 }
@@ -62,22 +65,23 @@ function getUrlVars() {
 
 $('#downloadVhd').click(function(e) {
     e.preventDefault(); 
-    window.location.href = $('#fileName').val().replace(".alp", ".vhd");
+    location.href = './' + email + '/lalp/' + $('#fileName').val().replace(".alp", ".vhd");
+    
 });
 
 $('#download_Vhd').click(function(e) {
     e.preventDefault();
-    window.location.href = 't_' + $('#fileName').val().replace(".alp", ".vhd");
+    location.href = './' + email + '/lalp/' + 't_' + $('#fileName').val().replace(".alp", ".vhd");
 });
 
 $('#downloadMemo').click(function(e) {
     e.preventDefault();
-    window.location.href = 'memory.vhd';
+    location.href = './' + email + '/lalp/' + 'memory.vhd';
 });
 
 $('#downloadZip').click(function(e) {
     e.preventDefault();
-    window.location.href = 'LalpFiles.zip';
+    location.href = './' + email + '/' + 'LalpFiles.zip';
 });
 
 // download target code

@@ -21,6 +21,8 @@
 </script>
 <script>
 
+	var path = "http://lalp.dc.ufscar.br:8080/lalp/";
+	
 	function getUrlVars() {
    		var vars = {};
     	var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
@@ -34,7 +36,7 @@
 	var email = getUrlVars()["openid.ext1.value.email"];
 	
 	if (email == null) {
-		window.location = "http://lalp.dc.ufscar.br:8080/lalp/index.html";
+		window.location = path + "index.html";
 	}
 	
 	email = email.replace('%40','@');

@@ -25,6 +25,15 @@
     <servlet-class>br.ufscar.dc.lalp.web.OpenIdServlet</servlet-class>
     <load-on-startup>0</load-on-startup>
   </servlet>
+  <servlet>
+    <servlet-name>adm</servlet-name>
+    <servlet-class>br.ufscar.dc.lalp.web.admServlet</servlet-class>
+    <load-on-startup>0</load-on-startup>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>adm</servlet-name>
+    <url-pattern>/adm</url-pattern>
+  </servlet-mapping>
   <servlet-mapping>
     <servlet-name>openid</servlet-name>
     <url-pattern>/openid</url-pattern>

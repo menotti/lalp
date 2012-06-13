@@ -26,6 +26,10 @@ import br.ufscar.dc.lalp.LALP;
 public class DATACheckServlet extends HttpServlet {
 	
 	private static final long serialVersionUID = 1L;
+	
+	private static final String url = "jdbc:mysql://localhost:3306/lalp";  
+	private static final String usuario = "root";  
+	private static final String senha = "****";  
        
     @Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -46,9 +50,6 @@ public class DATACheckServlet extends HttpServlet {
 		
 		System.out.println(email);
 		
-		String url = "jdbc:mysql://localhost:3306/lalp";  
-        String usuario = "root";  
-        String senha = "secret";  
         Connection con;  
         Statement stmt;
         

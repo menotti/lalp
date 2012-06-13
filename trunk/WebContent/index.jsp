@@ -21,6 +21,8 @@
 </script>
 <script language="JavaScript">
 
+var path = "http://lalp.dc.ufscar.br:8080/lalp/";
+
 function newColor(color)
 {
 document.getElementById('sourceCodeArea').style.color=color;
@@ -51,7 +53,7 @@ function getUrlVars() {
 var email = getUrlVars()["openid.ext1.value.email"];
 
 if (email == null) {
-	window.location = "http://lalp.dc.ufscar.br:8080/lalp/index.html";
+	window.location = path + "index.html";
 }
 
 email = email.replace('%40','@');
@@ -72,9 +74,28 @@ function checkUserRole() {
 			window.location = urlindex;
 		},
 		success: function(data) {
-			alert(data);
+			//alert(data);
 			//document.write(data);
 			$('#version').val(data);
+		}
+	});
+}
+		
+function loadExample(exampleName) {
+	$.ajax({
+		url : 'ExamplesLoadServlet',
+		type : 'POST',
+		data : {
+			file : exampleName
+		},
+		success : function(data) {
+			alert("Loaded: " + exampleName);
+			$('#sourceCodeArea').html(data);
+			filename = exampleName;
+			$('#fileName').val(filename);
+		},
+		error : function(data) {
+			alert("Error!");
 		}
 	});
 }
@@ -92,13 +113,18 @@ function checkUserRole() {
 	<div id="submitForm" class="submitForm">
 		<form id="file_upload">
 			
-				Enter the ALP code in the box bellow or upload an .alp file from your computer: <br /><br />
+				Enter the ALP code in the box bellow, upload an .alp file from your computer or try one of our examples: <br /><br />
 				
 				<div id="drop_zone_1">
 					Source upload: <input id="file_1" type="file" name="file_1" multiple>
 					<input type="button" id="upload" name="upload" value="Upload File" >
 				</div></form></div>
-				
+				<br />Our examples: 
+				<input type="button" id="matmult" name="matmult" value="matmult.alp" onClick="loadExample('matmult.alp');" >
+				<input type="button" id="max" name="max" value="max.alp" onClick="loadExample('max.alp');">
+				<input type="button" id="addsub" name="addsub" value="addsub.alp" onClick="loadExample('addsub.alp');" >
+				<input type="button" id="dotprod" name="dotprod" value="dotprod.alp" onClick="loadExample('dotprod.alp');">
+				<br /><br />
 				<div id="sourceCode" class="sourceCode">
 					<form id="downloadForm" action="DownloadServlet" method="post">
 					
@@ -131,11 +157,15 @@ function checkUserRole() {
 			<input	type="button" id="downloadVhd" name="downloadVhd" value="Download .vhd file                 " > <br />
 			<input	type="button" id="download_Vhd" name="download_Vhd" value="Download .vhd test file         " > <br />
 			<input	type="button" id="downloadMemo" name="downloadMemo" value="Download .vhd memory file" > <br />
-			<!-- <input	type="button" id="downloadZip" name="downloadZip" value="Download all files (.zip)        " > <br /> -->
+			<input	type="button" id="downloadZip" name="downloadZip" value="Download all files (.zip)        " > <br />
 			<input	type="button" id="ssvgview" name="ssvgview" onclick="toggle1('swSVG');" value="View SoftwareSVG                " > <br />
 			<div id="swSVG" style="display: none"></div>
 			<input	type="button" id="svgview" name="svgview" onclick="toggle1('hwSVG');" value="View HardwareSVG              " > <br />
 			<div id="hwSVG" style="display: none"></div>	
+		</fieldset>
+		<br />
+		<fieldset><legend><b>Compilation log</b></legend>
+			<textarea id="logArea" name="log" rows="20" cols="100"></textarea>
 		</fieldset>
 	</div>
 		
