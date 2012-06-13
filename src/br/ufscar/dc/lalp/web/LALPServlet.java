@@ -19,7 +19,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.Enumeration;
 import java.util.StringTokenizer;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -60,17 +68,23 @@ public class LALPServlet extends HttpServlet {
 	 * public static final String DOT_COMMAND = "C:/Program Files/Graphviz/bin/dot.exe"; //tulio
 	 * public static final String ZIP_PATH = "/usr/share/apache-tomcat-7.0.14/webapps/lalp"; //server
 	 * public static final String ZIP_PATH = "/Users/menotti/Documents/workspace/.metadata/.plugins/org.eclipse.wst.server.core/tmp0/wtpwebapps/lalp"; //menotti
-	 * public static final String ZIP_PATH = "C:/Users/TÃºlio/Documents/workspace/.metadata/.plugins/org.eclipse.wst.server.core/tmp1/wtpwebapps/lalp"; //tulio
+	 * public static final String ZIP_PATH = ""C:/Users/Túlio/workspace/.metadata/.plugins/org.eclipse.wst.server.core/tmp1/wtpwebapps/lalp/"; //tulio
 	 */
-	public static final String DOT_COMMAND = "/usr/bin/dot";
-	public static final String ZIP_PATH = "/usr/share/apache-tomcat-7.0.14/webapps/lalp";
 	
-	//public static final String COMP_FILES_PATH = "C:\\Users\\Túlio\\workspace\\.metadata\\.plugins\\org.eclipse.wst.server.core\\tmp1\\wtpwebapps\\lalp\\";
-
+	private static final String url = "jdbc:mysql://localhost:3306/lalp";  
+	private static final String usuario = "root";  
+	private static final String senha = "****";  
+	
+	public static final String DOT_COMMAND = "/usr/bin/dot";
+	public static final String ZIP_PATH = "/usr/share/apache-tomcat-7.0.14/webapps/lalp/";
+	//public static final String ZIP_PATH = "C:/Users/Túlio/workspace/.metadata/.plugins/org.eclipse.wst.server.core/tmp1/wtpwebapps/lalp/"; //tulio
+	
 	@Override
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 		PrintWriter out = response.getWriter();
+		
+		
 
 		response.setContentType("text/xml");
 		// response.setContentType("text/plain");
@@ -132,6 +146,12 @@ public class LALPServlet extends HttpServlet {
 		String fileName = request.getParameter("fileName");
 		String sourceCode = request.getParameter("sourceCode");	
 		String userEmail = request.getParameter("userEmail");
+		
+        //cria diretorios para armazenamento dos arquivos de compilacao
+        boolean success = (new File(ZIP_PATH + userEmail)).mkdirs();
+        if (success) {
+            System.out.println("Sucesso");
+        }
 
 		try {
 			String result = compile(args, fileName, sourceCode, userEmail);
@@ -151,9 +171,6 @@ public class LALPServlet extends HttpServlet {
 
 	
 		
-		String url = "jdbc:mysql://localhost:3306/lalp";  
-        String usuario = "root";  
-        String senha = "secret";  
         Connection con;  
         Statement stmt;
         
@@ -362,7 +379,7 @@ public class LALPServlet extends HttpServlet {
 		
 		try {
 			//name of zip file to create
-			String outFilename = ZIP_PATH + "/LalpFiles.zip";
+			String outFilename = ZIP_PATH + userEmail + "/LalpFiles.zip";
 			
 			//create ZipOutputStream object
 			ZipOutputStream out = new ZipOutputStream(new FileOutputStream(outFilename));
@@ -416,13 +433,20 @@ public class LALPServlet extends HttpServlet {
 	    	}catch(Exception e){
 	    		e.printStackTrace();
 	    	}*/
-	    	
-		
+        
+        String INPUT_ZIP_FILE = ZIP_PATH + userEmail + "/LalpFiles.zip";
+        String OUTPUT_FOLDER = ZIP_PATH + userEmail;
+        
+    	unZipIt(INPUT_ZIP_FILE,OUTPUT_FOLDER);
+      
 		return result.trim();
 	}
 
-	private static void addFolderToZip(File folder, ZipOutputStream zip, String baseName) throws IOException {
+   
+private static void addFolderToZip(File folder, ZipOutputStream zip, String baseName) throws IOException {
+		
 		File[] files = folder.listFiles();
+		
 		for (File file : files) {
 			if (file.isDirectory()) {
 				
@@ -434,7 +458,61 @@ public class LALPServlet extends HttpServlet {
 				zip.closeEntry();
 			}
 		}
-	}
+}
+
+public void unZipIt(String zipFile, String outputFolder){
+	
+	List<String> fileList;
+	
+    byte[] buffer = new byte[1024];
+
+    try{
+
+   	//create output directory is not exists
+   	File folder = new File(outputFolder);
+   	if(!folder.exists()){
+   		folder.mkdir();
+   	}
+
+   	//get the zip file content
+   	ZipInputStream zis = 
+   		new ZipInputStream(new FileInputStream(zipFile));
+   	//get the zipped file list entry
+   	ZipEntry ze = zis.getNextEntry();
+
+   	while(ze!=null){
+
+   	   String fileName = ze.getName();
+          File newFile = new File(outputFolder + File.separator + fileName);
+
+          System.out.println("file unzip : "+ newFile.getAbsoluteFile());
+
+           //create all non exists folders
+           //else you will hit FileNotFoundException for compressed folder
+           new File(newFile.getParent()).mkdirs();
+
+           FileOutputStream fos = new FileOutputStream(newFile);             
+
+           int len;
+           while ((len = zis.read(buffer)) > 0) {
+      		fos.write(buffer, 0, len);
+           }
+
+           fos.close();   
+           ze = zis.getNextEntry();
+   	}
+
+       zis.closeEntry();
+   	zis.close();
+
+   	System.out.println("Done");
+
+   }catch(IOException ex){
+      ex.printStackTrace(); 
+   }
+  }    
+	
+	
 	// working configuration
 	private void setParameters() {
 		Parameters.runScc = true;

@@ -1,7 +1,5 @@
 package br.ufscar.dc.lalp.web;
 
-import java.io.IOException;
-import java.io.PrintWriter;
 import java.io.*;
 
 import javax.mail.Message;
@@ -33,7 +31,16 @@ import java.util.Properties;
 @WebServlet("/DATAServlet")
 public class DATAServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-       
+	
+    private static final String pass = "****";
+	
+	//
+	//public static final String COMP_FILES_PATH = "C:/Users/Túlio/workspace/.metadata/.plugins/org.eclipse.wst.server.core/tmp1/wtpwebapps/lalp/";
+	public static final String COMP_FILES_PATH = "/usr/share/apache-tomcat-7.0.14/webapps/lalp/";
+    //
+	//
+	
+	
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
@@ -60,7 +67,7 @@ public class DATAServlet extends HttpServlet {
 		
         String url = "jdbc:mysql://localhost:3306/lalp";  
         String usuario = "root";  
-        String senha = "secret";  
+        String senha = "root";  
         Connection con;  
         Statement stmt;
         
@@ -87,7 +94,7 @@ public class DATAServlet extends HttpServlet {
         
         String host = "smtp.gmail.com";
         String from = "lalp.ufscar";
-        String pass = "secret";
+
         Properties props = System.getProperties();
         props.put("mail.smtp.starttls.enable", "true"); // added this line
         props.put("mail.smtp.host", host);
@@ -121,11 +128,11 @@ public class DATAServlet extends HttpServlet {
         transport.close(); } catch (Exception e) { }
         
                
-        // cria diretorios para armazenamento dos arquivos de compilacao
-        /*boolean success = (new File("D:/IC/compFiles/" + email)).mkdirs();
+        //cria diretorios para armazenamento dos arquivos de compilacao
+        boolean success = (new File(COMP_FILES_PATH + email)).mkdirs();
         if (success) {
             System.out.println("Sucesso");
-        }*/
+        }
     }
 	
 

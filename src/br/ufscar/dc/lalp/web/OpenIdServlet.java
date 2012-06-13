@@ -24,6 +24,8 @@ public class OpenIdServlet extends HttpServlet {
     static final long TWO_HOUR = ONE_HOUR * 2L;
     static final String ATTR_MAC = "openid_mac";
     static final String ATTR_ALIAS = "openid_alias";
+    
+    private static final String SERVER_PATH= "http://lalp.dc.ufscar.br:8080/lalp/";
  
 
     OpenIdManager manager;
@@ -63,7 +65,7 @@ public class OpenIdServlet extends HttpServlet {
        showAuthentication(response.getWriter(), authentication);   
      }   
      else if ("Google".equals(op) || "Yahoo".equals(op)) {
-      manager.setReturnTo("http://lalp.dc.ufscar.br:8080/lalp/idCheck.jsp");
+      manager.setReturnTo(SERVER_PATH + "idCheck.jsp");
       
       // redirect to Google/Yahoo sign on page:       
       //String alias = manager.lookupExtNsAlias(op);      

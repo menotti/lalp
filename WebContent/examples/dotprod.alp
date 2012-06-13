@@ -1,0 +1,57 @@
+/* Copyright (c) 2011 Ricardo Menotti, All Rights Reserved.
+ *
+ * Permission to use, copy, modify, and distribute this software and its 
+ * documentation for NON-COMERCIAL purposes and without fee is hereby granted 
+ * provided that this copyright notice appears in all copies.
+ *
+ * RICARDO MENOTTI MAKES NO REPRESENTATIONS OR WARRANTIES ABOUT THE SUITABILITY
+ * OF THE SOFTWARE, EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE 
+ * IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, OR 
+ * NON-INFRINGEMENT. RICARDO MENOTTI SHALL NOT BE LIABLE FOR ANY DAMAGES 
+ * SUFFERED BY LICENSEE AS A RESULT OF USING, MODIFYING OR DISTRIBUTING THIS 
+ * SOFTWARE OR ITS DERIVATIVES. 
+ */
+
+const DATA_WIDTH = 32;
+const ITERATIONS = 2048;
+
+typedef fixed(DATA_WIDTH, 1) int;
+typedef fixed(1, 0) bit;
+
+dotprod(out int sum, out bit done, in bit init) {
+	{
+		int x[ITERATIONS] = {1, 2, 3};
+		int y[ITERATIONS] = {4, 5, 6};
+		int acc;
+		fixed(16, 0) i;
+	}
+
+	counter (i=0; i<ITERATIONS; i++);
+
+	x.address = i;
+	y.address = i;
+
+	acc += x * y when i.step;
+	//acc += (x@1) *@5 (y@1) when i.step;
+
+	sum = acc;
+	
+	/* sum 
+	4	14	32	...
+	*/
+}
+assert{
+	
+	when sum changes
+	{
+		check int sum = {4, 14, 32};
+	}
+	wait done == 1
+	{
+		check int sum = {32};
+	}
+	foreach 2 clock
+	{
+		check int sum = {4, 32};
+    }
+}
