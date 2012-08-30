@@ -29,7 +29,7 @@ public class DATACheckServlet extends HttpServlet {
 	
 	private static final String url = "jdbc:mysql://localhost:3306/lalp";  
 	private static final String usuario = "root";  
-	private static final String senha = "****";  
+	private static final String senha = "root";  
        
     @Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

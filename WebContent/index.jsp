@@ -58,6 +58,7 @@ if (email == null) {
 
 email = email.replace('%40','@');
 
+
 setTimeout(function() {checkUserRole();},200);
 
 function checkUserRole() {
@@ -82,6 +83,7 @@ function checkUserRole() {
 }
 		
 function loadExample(exampleName) {
+	setTimeout(function() {
 	$.ajax({
 		url : 'ExamplesLoadServlet',
 		type : 'POST',
@@ -89,7 +91,7 @@ function loadExample(exampleName) {
 			file : exampleName
 		},
 		success : function(data) {
-			alert("Loaded: " + exampleName);
+			//alert("Loaded: " + exampleName);
 			$('#sourceCodeArea').html(data);
 			filename = exampleName;
 			$('#fileName').val(filename);
@@ -98,8 +100,61 @@ function loadExample(exampleName) {
 			alert("Error!");
 		}
 	});
+	},200);
 }
 
+var examples;
+setTimeout(function() {dinamicButtons();},200);
+function dinamicButtons() {
+	$.ajax({
+		url : 'DinamicExamples',
+		type : 'POST',
+		success : function(data) {
+			//alert("Sucesso");
+			examples = data;
+			var ex1 = getExpVars()["ex1"];
+			var ex2 = getExpVars()["ex2"];
+			var ex3 = getExpVars()["ex3"];
+			var ex4 = getExpVars()["ex4"];
+			var ex5 = getExpVars()["ex5"];
+			var ex6 = getExpVars()["ex6"];
+			
+			if (ex1 != "null") add(ex1);
+			if (ex2 != "null") add(ex2);
+			if (ex3 != "null") add(ex3);
+			if (ex4 != "null") add(ex4);
+			if (ex5 != "null") add(ex5);
+			if (ex6 != "null") add(ex6);
+			
+		},
+		error : function(data) {
+			//alert("Error!");
+		}
+	});
+}
+
+function getExpVars() {
+    var vars = {};
+    var parts = examples.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
+        vars[key] = value;
+    });
+    return vars;
+}
+
+function add(type) {
+	 
+    var element = document.createElement("input");
+ 
+    element.setAttribute("type", "button");
+    element.setAttribute("value", type);
+    element.setAttribute("name", type);
+    element.setAttribute("onClick","loadExample('" + type + "');");
+ 
+ 
+    var foo = document.getElementById("fooBar");
+ 
+    foo.appendChild(element);
+}
 
 </script>
 
@@ -119,12 +174,11 @@ function loadExample(exampleName) {
 					Source upload: <input id="file_1" type="file" name="file_1" multiple>
 					<input type="button" id="upload" name="upload" value="Upload File" >
 				</div></form></div>
-				<br />Our examples: 
-				<input type="button" id="matmult" name="matmult" value="matmult.alp" onClick="loadExample('matmult.alp');" >
-				<input type="button" id="max" name="max" value="max.alp" onClick="loadExample('max.alp');">
-				<input type="button" id="addsub" name="addsub" value="addsub.alp" onClick="loadExample('addsub.alp');" >
-				<input type="button" id="dotprod" name="dotprod" value="dotprod.alp" onClick="loadExample('dotprod.alp');">
-				<br /><br />
+				Our examples:
+				<form>
+					<span id="fooBar">&nbsp;</span>
+				</form> 
+				<br />
 				<div id="sourceCode" class="sourceCode">
 					<form id="downloadForm" action="DownloadServlet" method="post">
 					
@@ -169,19 +223,7 @@ function loadExample(exampleName) {
 		</fieldset>
 	</div>
 		
-	<!-- 				<input type="radio" id="r1" name="menu" value="-as">Run SCC -->
-	<!-- 				Algorithm<br /> <input type="radio" id="r2" name="menu" value="-ad">Run -->
-	<!-- 				Dijkstra Algorithm<br /> <input type="radio" id="r3" name="menu" -->
-	<!-- 					value="-gv">Generate Graphviz -->
-	<!-- 				<div id="graphMenu"> -->
-	<!-- 					<input type="radio" id="r3sub1" name="subMenu" value="sw" checked>SW -->
-	<!-- 					File <br /> <input type="radio" id="r3sub2" name="subMenu" -->
-	<!-- 						value="hw">HW File -->
-	<!-- 				</div> -->
-			
 	
-
-		
 </body>
 <footer>
 <textarea id="version" name="version" rows="1" cols="150" disabled="true"></textarea> </footer>

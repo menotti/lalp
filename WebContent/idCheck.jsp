@@ -21,48 +21,48 @@
 </script>
 <script>
 
-	var path = "http://lalp.dc.ufscar.br:8080/lalp/";
+var path = "http://lalp.dc.ufscar.br:8080/lalp/";
 	
-	function getUrlVars() {
-   		var vars = {};
-    	var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
-    	    vars[key] = value;
-  	    });
- 	    return vars;
-	}
+function getUrlVars() {
+   	var vars = {};
+   	var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
+   	    vars[key] = value;
+      });
+     return vars;
+}
 	
-	var lastName = getUrlVars()["openid.ext1.value.lastname"];
-	var fistName = getUrlVars()["openid.ext1.value.firstname"];
-	var email = getUrlVars()["openid.ext1.value.email"];
+var lastName = getUrlVars()["openid.ext1.value.lastname"];
+var fistName = getUrlVars()["openid.ext1.value.firstname"];
+var email = getUrlVars()["openid.ext1.value.email"];
 	
-	if (email == null) {
-		window.location = path + "index.html";
-	}
+if (email == null) {
+	window.location = path + "index.html";
+}
 	
-	email = email.replace('%40','@');
+email = email.replace('%40','@');
 		
-	setTimeout(function() {checkUserRole();},1000);
+setTimeout(function() {checkUserRole();},1000);
 	
-	function checkUserRole() {
-		$.ajax({
-			url : 'DATACheckServlet',
-			type : 'POST',
-			data : {
-				email : email,
-				index : "0"
-			},
-			error : function() {
-				//alert("erro");
-				var urlindex = window.location.href.replace('idCheck.jsp','userData.jsp');
-				window.location = urlindex;
-			},
-			success: function() {
-				//alert("sucesso");
-				var urlindex = window.location.href.replace('idCheck.jsp','index.jsp');
-				window.location = urlindex;
-			}
-		});
-	}
+function checkUserRole() {
+	$.ajax({
+		url : 'DATACheckServlet',
+		type : 'POST',
+		data : {
+			email : email,
+			index : "0"
+		},
+		error : function() {
+			//alert("erro");
+			var urlindex = window.location.href.replace('idCheck.jsp','userData.jsp');
+			window.location = urlindex;
+		},
+		success: function() {
+			//alert("sucesso");
+			var urlindex = window.location.href.replace('idCheck.jsp','index.jsp');
+			window.location = urlindex;
+		}
+	});
+}
 </script>
 
 <title>Lalp Web Compiler</title>

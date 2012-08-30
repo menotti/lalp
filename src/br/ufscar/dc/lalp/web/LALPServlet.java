@@ -62,22 +62,16 @@ import br.ufscar.dc.lalp.parser.lang.SimpleNode;
 @WebServlet("/LALPServlet")
 public class LALPServlet extends HttpServlet {
 	
-	/* $ which dot
-	 * public static final String DOT_COMMAND = "/usr/bin/dot"; //server
-	 * public static final String DOT_COMMAND = "/usr/local/bin/dot"; //menotti
-	 * public static final String DOT_COMMAND = "C:/Program Files/Graphviz/bin/dot.exe"; //tulio
-	 * public static final String ZIP_PATH = "/usr/share/apache-tomcat-7.0.14/webapps/lalp"; //server
-	 * public static final String ZIP_PATH = "/Users/menotti/Documents/workspace/.metadata/.plugins/org.eclipse.wst.server.core/tmp0/wtpwebapps/lalp"; //menotti
-	 * public static final String ZIP_PATH = ""C:/Users/Túlio/workspace/.metadata/.plugins/org.eclipse.wst.server.core/tmp1/wtpwebapps/lalp/"; //tulio
-	 */
+
+	
+	Configs configs = new Configs();
 	
 	private static final String url = "jdbc:mysql://localhost:3306/lalp";  
 	private static final String usuario = "root";  
-	private static final String senha = "****";  
+	private static final String senha = "root";  
 	
-	public static final String DOT_COMMAND = "/usr/bin/dot";
-	public static final String ZIP_PATH = "/usr/share/apache-tomcat-7.0.14/webapps/lalp/";
-	//public static final String ZIP_PATH = "C:/Users/Túlio/workspace/.metadata/.plugins/org.eclipse.wst.server.core/tmp1/wtpwebapps/lalp/"; //tulio
+	public String DOT_COMMAND = configs.getDotCommand();
+	public String ZIP_PATH = configs.getZipPath();
 	
 	@Override
 	protected void doGet(HttpServletRequest request,
