@@ -32,13 +32,10 @@ import java.util.Properties;
 public class DATAServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	
-    private static final String pass = "****";
+	Configs configs = new Configs();
 	
-	//
-	//public static final String COMP_FILES_PATH = "C:/Users/Túlio/workspace/.metadata/.plugins/org.eclipse.wst.server.core/tmp1/wtpwebapps/lalp/";
-	public static final String COMP_FILES_PATH = "/usr/share/apache-tomcat-7.0.14/webapps/lalp/";
-    //
-	//
+    private String EMAIL_PASS = configs.getEmailPass();
+	private String COMP_FILES_PATH = configs.getCompFilesPath();
 	
 	
 	@Override
@@ -99,7 +96,7 @@ public class DATAServlet extends HttpServlet {
         props.put("mail.smtp.starttls.enable", "true"); // added this line
         props.put("mail.smtp.host", host);
         props.put("mail.smtp.user", from);
-        props.put("mail.smtp.password", pass);
+        props.put("mail.smtp.password", EMAIL_PASS);
         props.put("mail.smtp.port", "587");
         props.put("mail.smtp.auth", "true");
 
@@ -123,7 +120,7 @@ public class DATAServlet extends HttpServlet {
         message.setSubject("Aceite o cadastro de " + fname);
         message.setText(fname + " " + lname + " (" + email + ") " + "se cadastrou.\n\n\nOrganizacao: " + org + "\n\n\nMotivos: " + why);
         Transport transport = session.getTransport("smtp");
-        transport.connect(host, from, pass);
+        transport.connect(host, from, EMAIL_PASS);
         transport.sendMessage(message, message.getAllRecipients());
         transport.close(); } catch (Exception e) { }
         

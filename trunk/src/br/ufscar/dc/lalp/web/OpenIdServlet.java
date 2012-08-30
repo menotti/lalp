@@ -15,19 +15,22 @@ import org.expressme.openid.Authentication;
 import org.expressme.openid.Endpoint;
 import org.expressme.openid.OpenIdException;
 import org.expressme.openid.OpenIdManager;
+
+import br.ufscar.dc.lalp.web.Configs;
  
 
 public class OpenIdServlet extends HttpServlet {
  
-
+	Configs configs = new Configs();
+	
     static final long ONE_HOUR = 3600000L;
     static final long TWO_HOUR = ONE_HOUR * 2L;
     static final String ATTR_MAC = "openid_mac";
     static final String ATTR_ALIAS = "openid_alias";
     
-    private static final String SERVER_PATH= "http://lalp.dc.ufscar.br:8080/lalp/";
- 
-
+    private String SERVER_PATH= configs.getServerPath();
+    
+    
     OpenIdManager manager;
  
 

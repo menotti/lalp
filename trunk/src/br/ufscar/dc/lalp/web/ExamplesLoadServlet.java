@@ -20,12 +20,10 @@ import org.apache.commons.io.IOUtils;
 @WebServlet("/ExamplesLoadServlet")
 public class ExamplesLoadServlet extends HttpServlet {
 	
-	//
-	//private static final String EXAMPLES_PATH = "C:/Users/Túlio/workspace/.metadata/.plugins/org.eclipse.wst.server.core/tmp1/wtpwebapps/lalp/examples/";
-	private static final String EXAMPLES_PATH = "/usr/share/apache-tomcat-7.0.14/webapps/lalp/examples/";
-	//
-	//
 	
+	Configs configs = new Configs();
+	
+	private String EXAMPLES_PATH = configs.getExamplesPath();
 	private static final long serialVersionUID = 1L;
    
 	@Override
