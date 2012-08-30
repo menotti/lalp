@@ -1,0 +1,249 @@
+----------------------------------------addsub----------------------------------------
+ Logic utilization                  < 1 %                                         
+     Combinational ALUTs            64 / 36,100 ( < 1 % )                         
+     Memory ALUTs                   0 / 18,050 ( 0 % )                            
+     Dedicated logic registers      0 / 36,100 ( 0 % )                            
+ Total registers                    0                                             
+ Total pins                         128 / 404 ( 32 % )                            
+ Total virtual pins                 0                                             
+ Total block memory bits            0 / 2,939,904 ( 0 % )                         
+ DSP block 18-bit elements          0 / 232 ( 0 % )                               
+ Total GXB Receiver Channel PCS     0 / 8 ( 0 % )                                 
+ Total GXB Receiver Channel PMA     0 / 8 ( 0 % )                                 
+ Total GXB Transmitter Channel PCS  0 / 8 ( 0 % )                                 
+ Total GXB Transmitter Channel PMA  0 / 8 ( 0 % )                                 
+ Total PLLs                         0 / 4 ( 0 % )                                 
+ Total DLLs                         0 / 2 ( 0 % )                                 
+; Slow 900mV 100C Model Fmax Summary ;
+--------------------------------------
+No paths to report.
+
+
+---------------------------------------
+; Slow 900mV -40C Model Fmax Summary ;
+--------------------------------------
+No paths to report.
+
+
+---------------------------------------
+
+----------------------------------------dotprod----------------------------------------
+ Logic utilization                  < 1 %                                         
+     Combinational ALUTs            52 / 36,100 ( < 1 % )                         
+     Memory ALUTs                   0 / 18,050 ( 0 % )                            
+     Dedicated logic registers      65 / 36,100 ( < 1 % )                         
+ Total registers                    65                                            
+ Total pins                         37 / 404 ( 9 % )                              
+ Total virtual pins                 0                                             
+ Total block memory bits            131,072 / 2,939,904 ( 4 % )                   
+ DSP block 18-bit elements          4 / 232 ( 2 % )                               
+ Total GXB Receiver Channel PCS     0 / 8 ( 0 % )                                 
+ Total GXB Receiver Channel PMA     0 / 8 ( 0 % )                                 
+ Total GXB Transmitter Channel PCS  0 / 8 ( 0 % )                                 
+ Total GXB Transmitter Channel PMA  0 / 8 ( 0 % )                                 
+ Total PLLs                         0 / 4 ( 0 % )                                 
+ Total DLLs                         0 / 2 ( 0 % )                                 
+; Slow 900mV 100C Model Fmax Summary              ;
++-----------+-----------------+------------+------+
+; Fmax      ; Restricted Fmax ; Clock Name ; Note ;
++-----------+-----------------+------------+------+
+; 99.98 MHz ; 99.98 MHz       ; clk        ;      ;
++-----------+-----------------+------------+------+
+; Slow 900mV -40C Model Fmax Summary               ;
++------------+-----------------+------------+------+
+; Fmax       ; Restricted Fmax ; Clock Name ; Note ;
++------------+-----------------+------------+------+
+; 103.77 MHz ; 103.77 MHz      ; clk        ;      ;
++------------+-----------------+------------+------+
+
+----------------------------------------fdct----------------------------------------
+ Logic utilization                  N/A until Partition Merge                     
+     Combinational ALUTs            N/A until Partition Merge                     
+     Memory ALUTs                   N/A until Partition Merge                     
+     Dedicated logic registers      N/A until Partition Merge                     
+ Total registers                    N/A until Partition Merge                     
+ Total pins                         N/A until Partition Merge                     
+ Total virtual pins                 N/A until Partition Merge                     
+ Total block memory bits            N/A until Partition Merge                     
+ DSP block 18-bit elements          N/A until Partition Merge                     
+ Total GXB Receiver Channel PCS     N/A until Partition Merge                     
+ Total GXB Receiver Channel PMA     N/A until Partition Merge                     
+ Total GXB Transmitter Channel PCS  N/A until Partition Merge                     
+ Total GXB Transmitter Channel PMA  N/A until Partition Merge                     
+ Total PLLs                         N/A until Partition Merge                     
+ Total DLLs                         N/A until Partition Merge                     
+
+----------------------------------------fibonacci_data_reuse----------------------------------------
+ Logic utilization                  < 1 %                                         
+     Combinational ALUTs            43 / 36,100 ( < 1 % )                         
+     Memory ALUTs                   0 / 18,050 ( 0 % )                            
+     Dedicated logic registers      77 / 36,100 ( < 1 % )                         
+ Total registers                    77                                            
+ Total pins                         37 / 404 ( 9 % )                              
+ Total virtual pins                 0                                             
+ Total block memory bits            256 / 2,939,904 ( < 1 % )                     
+ DSP block 18-bit elements          0 / 232 ( 0 % )                               
+ Total GXB Receiver Channel PCS     0 / 8 ( 0 % )                                 
+ Total GXB Receiver Channel PMA     0 / 8 ( 0 % )                                 
+ Total GXB Transmitter Channel PCS  0 / 8 ( 0 % )                                 
+ Total GXB Transmitter Channel PMA  0 / 8 ( 0 % )                                 
+ Total PLLs                         0 / 4 ( 0 % )                                 
+ Total DLLs                         0 / 2 ( 0 % )                                 
+; Slow 900mV 100C Model Fmax Summary                                                         ;
++------------+-----------------+------------+------------------------------------------------+
+; Fmax       ; Restricted Fmax ; Clock Name ; Note                                           ;
++------------+-----------------+------------+------------------------------------------------+
+; 423.01 MHz ; 250.0 MHz       ; clk        ; limit due to minimum period restriction (tmin) ;
++------------+-----------------+------------+------------------------------------------------+
+; Slow 900mV -40C Model Fmax Summary                                                         ;
++------------+-----------------+------------+------------------------------------------------+
+; Fmax       ; Restricted Fmax ; Clock Name ; Note                                           ;
++------------+-----------------+------------+------------------------------------------------+
+; 421.59 MHz ; 250.0 MHz       ; clk        ; limit due to minimum period restriction (tmin) ;
++------------+-----------------+------------+------------------------------------------------+
+
+----------------------------------------fir----------------------------------------
+ Logic utilization                  < 1 %                                         
+     Combinational ALUTs            128 / 36,100 ( < 1 % )                        
+     Memory ALUTs                   0 / 18,050 ( 0 % )                            
+     Dedicated logic registers      33 / 36,100 ( < 1 % )                         
+ Total registers                    33                                            
+ Total pins                         196 / 404 ( 49 % )                            
+ Total virtual pins                 0                                             
+ Total block memory bits            0 / 2,939,904 ( 0 % )                         
+ DSP block 18-bit elements          20 / 232 ( 9 % )                              
+ Total GXB Receiver Channel PCS     0 / 8 ( 0 % )                                 
+ Total GXB Receiver Channel PMA     0 / 8 ( 0 % )                                 
+ Total GXB Transmitter Channel PCS  0 / 8 ( 0 % )                                 
+ Total GXB Transmitter Channel PMA  0 / 8 ( 0 % )                                 
+ Total PLLs                         0 / 4 ( 0 % )                                 
+ Total DLLs                         0 / 2 ( 0 % )                                 
+; Slow 900mV 100C Model Fmax Summary               ;
++------------+-----------------+------------+------+
+; Fmax       ; Restricted Fmax ; Clock Name ; Note ;
++------------+-----------------+------------+------+
+; 166.47 MHz ; 166.47 MHz      ; clk        ;      ;
++------------+-----------------+------------+------+
+; Slow 900mV -40C Model Fmax Summary               ;
++------------+-----------------+------------+------+
+; Fmax       ; Restricted Fmax ; Clock Name ; Note ;
++------------+-----------------+------------+------+
+; 168.38 MHz ; 168.38 MHz      ; clk        ;      ;
++------------+-----------------+------------+------+
+
+----------------------------------------matmult----------------------------------------
+ Logic utilization                  < 1 %                                         
+     Combinational ALUTs            219 / 36,100 ( < 1 % )                        
+     Memory ALUTs                   0 / 18,050 ( 0 % )                            
+     Dedicated logic registers      253 / 36,100 ( < 1 % )                        
+ Total registers                    253                                           
+ Total pins                         21 / 404 ( 5 % )                              
+ Total virtual pins                 0                                             
+ Total block memory bits            547 / 2,939,904 ( < 1 % )                     
+ DSP block 18-bit elements          0 / 232 ( 0 % )                               
+ Total GXB Receiver Channel PCS     0 / 8 ( 0 % )                                 
+ Total GXB Receiver Channel PMA     0 / 8 ( 0 % )                                 
+ Total GXB Transmitter Channel PCS  0 / 8 ( 0 % )                                 
+ Total GXB Transmitter Channel PMA  0 / 8 ( 0 % )                                 
+ Total PLLs                         0 / 4 ( 0 % )                                 
+ Total DLLs                         0 / 2 ( 0 % )                                 
+; Slow 900mV 100C Model Fmax Summary                                                         ;
++------------+-----------------+------------+------------------------------------------------+
+; Fmax       ; Restricted Fmax ; Clock Name ; Note                                           ;
++------------+-----------------+------------+------------------------------------------------+
+; 270.78 MHz ; 250.0 MHz       ; clk        ; limit due to minimum period restriction (tmin) ;
++------------+-----------------+------------+------------------------------------------------+
+; Slow 900mV -40C Model Fmax Summary                                                         ;
++------------+-----------------+------------+------------------------------------------------+
+; Fmax       ; Restricted Fmax ; Clock Name ; Note                                           ;
++------------+-----------------+------------+------------------------------------------------+
+; 271.89 MHz ; 250.0 MHz       ; clk        ; limit due to minimum period restriction (tmin) ;
++------------+-----------------+------------+------------------------------------------------+
+
+----------------------------------------max----------------------------------------
+ Logic utilization                  < 1 %                                         
+     Combinational ALUTs            53 / 36,100 ( < 1 % )                         
+     Memory ALUTs                   0 / 18,050 ( 0 % )                            
+     Dedicated logic registers      62 / 36,100 ( < 1 % )                         
+ Total registers                    62                                            
+ Total pins                         37 / 404 ( 9 % )                              
+ Total virtual pins                 0                                             
+ Total block memory bits            65,536 / 2,939,904 ( 2 % )                    
+ DSP block 18-bit elements          0 / 232 ( 0 % )                               
+ Total GXB Receiver Channel PCS     0 / 8 ( 0 % )                                 
+ Total GXB Receiver Channel PMA     0 / 8 ( 0 % )                                 
+ Total GXB Transmitter Channel PCS  0 / 8 ( 0 % )                                 
+ Total GXB Transmitter Channel PMA  0 / 8 ( 0 % )                                 
+ Total PLLs                         0 / 4 ( 0 % )                                 
+ Total DLLs                         0 / 2 ( 0 % )                                 
+; Slow 900mV 100C Model Fmax Summary               ;
++------------+-----------------+------------+------+
+; Fmax       ; Restricted Fmax ; Clock Name ; Note ;
++------------+-----------------+------------+------+
+; 259.81 MHz ; 259.81 MHz      ; clk        ;      ;
++------------+-----------------+------------+------+
+; Slow 900mV -40C Model Fmax Summary                                                                        ;
++------------+-----------------+------------+---------------------------------------------------------------+
+; Fmax       ; Restricted Fmax ; Clock Name ; Note                                                          ;
++------------+-----------------+------------+---------------------------------------------------------------+
+; 260.48 MHz ; 260.01 MHz      ; clk        ; limit due to minimum period restriction (max I/O toggle rate) ;
++------------+-----------------+------------+---------------------------------------------------------------+
+
+----------------------------------------sobel----------------------------------------
+ Logic utilization                  1 %                                           
+     Combinational ALUTs            319 / 36,100 ( < 1 % )                        
+     Memory ALUTs                   0 / 18,050 ( 0 % )                            
+     Dedicated logic registers      212 / 36,100 ( < 1 % )                        
+ Total registers                    212                                           
+ Total pins                         21 / 404 ( 5 % )                              
+ Total virtual pins                 0                                             
+ Total block memory bits            2,139 / 2,939,904 ( < 1 % )                   
+ DSP block 18-bit elements          0 / 232 ( 0 % )                               
+ Total GXB Receiver Channel PCS     0 / 8 ( 0 % )                                 
+ Total GXB Receiver Channel PMA     0 / 8 ( 0 % )                                 
+ Total GXB Transmitter Channel PCS  0 / 8 ( 0 % )                                 
+ Total GXB Transmitter Channel PMA  0 / 8 ( 0 % )                                 
+ Total PLLs                         0 / 4 ( 0 % )                                 
+ Total DLLs                         0 / 2 ( 0 % )                                 
+; Slow 900mV 100C Model Fmax Summary               ;
++------------+-----------------+------------+------+
+; Fmax       ; Restricted Fmax ; Clock Name ; Note ;
++------------+-----------------+------------+------+
+; 163.83 MHz ; 163.83 MHz      ; clk        ;      ;
++------------+-----------------+------------+------+
+; Slow 900mV -40C Model Fmax Summary               ;
++------------+-----------------+------------+------+
+; Fmax       ; Restricted Fmax ; Clock Name ; Note ;
++------------+-----------------+------------+------+
+; 163.53 MHz ; 163.53 MHz      ; clk        ;      ;
++------------+-----------------+------------+------+
+
+----------------------------------------sobel_alt----------------------------------------
+ Logic utilization                  2 %                                           
+     Combinational ALUTs            353 / 36,100 ( < 1 % )                        
+     Memory ALUTs                   0 / 18,050 ( 0 % )                            
+     Dedicated logic registers      636 / 36,100 ( 2 % )                          
+ Total registers                    636                                           
+ Total pins                         21 / 404 ( 5 % )                              
+ Total virtual pins                 0                                             
+ Total block memory bits            2,316 / 2,939,904 ( < 1 % )                   
+ DSP block 18-bit elements          0 / 232 ( 0 % )                               
+ Total GXB Receiver Channel PCS     0 / 8 ( 0 % )                                 
+ Total GXB Receiver Channel PMA     0 / 8 ( 0 % )                                 
+ Total GXB Transmitter Channel PCS  0 / 8 ( 0 % )                                 
+ Total GXB Transmitter Channel PMA  0 / 8 ( 0 % )                                 
+ Total PLLs                         0 / 4 ( 0 % )                                 
+ Total DLLs                         0 / 2 ( 0 % )                                 
+; Slow 900mV 100C Model Fmax Summary                                                         ;
++------------+-----------------+------------+------------------------------------------------+
+; Fmax       ; Restricted Fmax ; Clock Name ; Note                                           ;
++------------+-----------------+------------+------------------------------------------------+
+; 387.45 MHz ; 250.0 MHz       ; clk        ; limit due to minimum period restriction (tmin) ;
++------------+-----------------+------------+------------------------------------------------+
+; Slow 900mV -40C Model Fmax Summary                                                         ;
++------------+-----------------+------------+------------------------------------------------+
+; Fmax       ; Restricted Fmax ; Clock Name ; Note                                           ;
++------------+-----------------+------------+------------------------------------------------+
+; 391.85 MHz ; 250.0 MHz       ; clk        ; limit due to minimum period restriction (tmin) ;
++------------+-----------------+------------+------------------------------------------------+
+
