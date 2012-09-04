@@ -1,31 +1,19 @@
 ----------------------------------------addsub----------------------------------------
- Logic utilization                  < 1 %                                         
-     Combinational ALUTs            64 / 36,100 ( < 1 % )                         
-     Memory ALUTs                   0 / 18,050 ( 0 % )                            
-     Dedicated logic registers      0 / 36,100 ( 0 % )                            
- Total registers                    0                                             
- Total pins                         128 / 404 ( 32 % )                            
- Total virtual pins                 0                                             
- Total block memory bits            0 / 2,939,904 ( 0 % )                         
- DSP block 18-bit elements          0 / 232 ( 0 % )                               
- Total GXB Receiver Channel PCS     0 / 8 ( 0 % )                                 
- Total GXB Receiver Channel PMA     0 / 8 ( 0 % )                                 
- Total GXB Transmitter Channel PCS  0 / 8 ( 0 % )                                 
- Total GXB Transmitter Channel PMA  0 / 8 ( 0 % )                                 
- Total PLLs                         0 / 4 ( 0 % )                                 
- Total DLLs                         0 / 2 ( 0 % )                                 
-; Slow 900mV 100C Model Fmax Summary ;
---------------------------------------
-No paths to report.
-
-
----------------------------------------
-; Slow 900mV -40C Model Fmax Summary ;
---------------------------------------
-No paths to report.
-
-
----------------------------------------
+ Logic utilization                  N/A until Partition Merge                     
+     Combinational ALUTs            N/A until Partition Merge                     
+     Memory ALUTs                   N/A until Partition Merge                     
+     Dedicated logic registers      N/A until Partition Merge                     
+ Total registers                    N/A until Partition Merge                     
+ Total pins                         N/A until Partition Merge                     
+ Total virtual pins                 N/A until Partition Merge                     
+ Total block memory bits            N/A until Partition Merge                     
+ DSP block 18-bit elements          N/A until Partition Merge                     
+ Total GXB Receiver Channel PCS     N/A until Partition Merge                     
+ Total GXB Receiver Channel PMA     N/A until Partition Merge                     
+ Total GXB Transmitter Channel PCS  N/A until Partition Merge                     
+ Total GXB Transmitter Channel PMA  N/A until Partition Merge                     
+ Total PLLs                         N/A until Partition Merge                     
+ Total DLLs                         N/A until Partition Merge                     
 
 ----------------------------------------dotprod----------------------------------------
  Logic utilization                  < 1 %                                         
@@ -74,33 +62,21 @@ No paths to report.
  Total DLLs                         N/A until Partition Merge                     
 
 ----------------------------------------fibonacci_data_reuse----------------------------------------
- Logic utilization                  < 1 %                                         
-     Combinational ALUTs            43 / 36,100 ( < 1 % )                         
-     Memory ALUTs                   0 / 18,050 ( 0 % )                            
-     Dedicated logic registers      77 / 36,100 ( < 1 % )                         
- Total registers                    77                                            
- Total pins                         37 / 404 ( 9 % )                              
- Total virtual pins                 0                                             
- Total block memory bits            256 / 2,939,904 ( < 1 % )                     
- DSP block 18-bit elements          0 / 232 ( 0 % )                               
- Total GXB Receiver Channel PCS     0 / 8 ( 0 % )                                 
- Total GXB Receiver Channel PMA     0 / 8 ( 0 % )                                 
- Total GXB Transmitter Channel PCS  0 / 8 ( 0 % )                                 
- Total GXB Transmitter Channel PMA  0 / 8 ( 0 % )                                 
- Total PLLs                         0 / 4 ( 0 % )                                 
- Total DLLs                         0 / 2 ( 0 % )                                 
-; Slow 900mV 100C Model Fmax Summary                                                         ;
-+------------+-----------------+------------+------------------------------------------------+
-; Fmax       ; Restricted Fmax ; Clock Name ; Note                                           ;
-+------------+-----------------+------------+------------------------------------------------+
-; 423.01 MHz ; 250.0 MHz       ; clk        ; limit due to minimum period restriction (tmin) ;
-+------------+-----------------+------------+------------------------------------------------+
-; Slow 900mV -40C Model Fmax Summary                                                         ;
-+------------+-----------------+------------+------------------------------------------------+
-; Fmax       ; Restricted Fmax ; Clock Name ; Note                                           ;
-+------------+-----------------+------------+------------------------------------------------+
-; 421.59 MHz ; 250.0 MHz       ; clk        ; limit due to minimum period restriction (tmin) ;
-+------------+-----------------+------------+------------------------------------------------+
+ Logic utilization                  N/A until Partition Merge                     
+     Combinational ALUTs            N/A until Partition Merge                     
+     Memory ALUTs                   N/A until Partition Merge                     
+     Dedicated logic registers      N/A until Partition Merge                     
+ Total registers                    N/A until Partition Merge                     
+ Total pins                         N/A until Partition Merge                     
+ Total virtual pins                 N/A until Partition Merge                     
+ Total block memory bits            N/A until Partition Merge                     
+ DSP block 18-bit elements          N/A until Partition Merge                     
+ Total GXB Receiver Channel PCS     N/A until Partition Merge                     
+ Total GXB Receiver Channel PMA     N/A until Partition Merge                     
+ Total GXB Transmitter Channel PCS  N/A until Partition Merge                     
+ Total GXB Transmitter Channel PMA  N/A until Partition Merge                     
+ Total PLLs                         N/A until Partition Merge                     
+ Total DLLs                         N/A until Partition Merge                     
 
 ----------------------------------------fir----------------------------------------
  Logic utilization                  < 1 %                                         
@@ -246,4 +222,62 @@ No paths to report.
 +------------+-----------------+------------+------------------------------------------------+
 ; 391.85 MHz ; 250.0 MHz       ; clk        ; limit due to minimum period restriction (tmin) ;
 +------------+-----------------+------------+------------------------------------------------+
+
+----------------------------------------vecsum----------------------------------------
+ Logic utilization                  < 1 %                                         
+     Combinational ALUTs            52 / 36,100 ( < 1 % )                         
+     Memory ALUTs                   0 / 18,050 ( 0 % )                            
+     Dedicated logic registers      67 / 36,100 ( < 1 % )                         
+ Total registers                    67                                            
+ Total pins                         37 / 404 ( 9 % )                              
+ Total virtual pins                 0                                             
+ Total block memory bits            196,608 / 2,939,904 ( 7 % )                   
+ DSP block 18-bit elements          0 / 232 ( 0 % )                               
+ Total GXB Receiver Channel PCS     0 / 8 ( 0 % )                                 
+ Total GXB Receiver Channel PMA     0 / 8 ( 0 % )                                 
+ Total GXB Transmitter Channel PCS  0 / 8 ( 0 % )                                 
+ Total GXB Transmitter Channel PMA  0 / 8 ( 0 % )                                 
+ Total PLLs                         0 / 4 ( 0 % )                                 
+ Total DLLs                         0 / 2 ( 0 % )                                 
+; Slow 900mV 100C Model Fmax Summary               ;
++------------+-----------------+------------+------+
+; Fmax       ; Restricted Fmax ; Clock Name ; Note ;
++------------+-----------------+------------+------+
+; 224.67 MHz ; 224.67 MHz      ; clk        ;      ;
++------------+-----------------+------------+------+
+; Slow 900mV -40C Model Fmax Summary               ;
++------------+-----------------+------------+------+
+; Fmax       ; Restricted Fmax ; Clock Name ; Note ;
++------------+-----------------+------------+------+
+; 226.14 MHz ; 226.14 MHz      ; clk        ;      ;
++------------+-----------------+------------+------+
+
+----------------------------------------vecsum_asynchronous----------------------------------------
+ Logic utilization                  < 1 %                                         
+     Combinational ALUTs            32 / 36,100 ( < 1 % )                         
+     Memory ALUTs                   0 / 18,050 ( 0 % )                            
+     Dedicated logic registers      0 / 36,100 ( 0 % )                            
+ Total registers                    0                                             
+ Total pins                         96 / 404 ( 24 % )                             
+ Total virtual pins                 0                                             
+ Total block memory bits            0 / 2,939,904 ( 0 % )                         
+ DSP block 18-bit elements          0 / 232 ( 0 % )                               
+ Total GXB Receiver Channel PCS     0 / 8 ( 0 % )                                 
+ Total GXB Receiver Channel PMA     0 / 8 ( 0 % )                                 
+ Total GXB Transmitter Channel PCS  0 / 8 ( 0 % )                                 
+ Total GXB Transmitter Channel PMA  0 / 8 ( 0 % )                                 
+ Total PLLs                         0 / 4 ( 0 % )                                 
+ Total DLLs                         0 / 2 ( 0 % )                                 
+; Slow 900mV 100C Model Fmax Summary ;
+--------------------------------------
+No paths to report.
+
+
+---------------------------------------
+; Slow 900mV -40C Model Fmax Summary ;
+--------------------------------------
+No paths to report.
+
+
+---------------------------------------
 
