@@ -12,7 +12,7 @@
 -- SUFFERED BY LICENSEE AS A RESULT OF USING, MODIFYING OR DISTRIBUTING THIS
 -- SOFTWARE OR ITS DERIVATIVES.
 --
--- Generated at Mon Apr 23 17:10:42 BRT 2012
+-- Generated at Wed Sep 19 10:32:11 BRT 2012
 --
 
 -- IEEE Libraries --
@@ -20,7 +20,7 @@ library IEEE;
 use IEEE.std_logic_1164.all;
 use IEEE.std_logic_arith.all;
 use IEEE.std_logic_unsigned.all;
-entity fibonacci is
+entity fibonacci_data_reuse is
 	port (
 		\clear\	: in	std_logic;
 		\clk\	: in	std_logic;
@@ -29,9 +29,9 @@ entity fibonacci is
 		\output\	: out	std_logic_vector(31 downto 0);
 		\reset\	: in	std_logic
 	);
-end fibonacci;
+end fibonacci_data_reuse;
 
-architecture behavior of fibonacci is
+architecture behavior of fibonacci_data_reuse is
 
 component add_reg_op_s
 generic (
