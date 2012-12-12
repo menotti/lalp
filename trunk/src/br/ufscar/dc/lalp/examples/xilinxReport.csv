@@ -1,0 +1,9 @@
+Benchmark;Slice Flip Flops;occupied Slices;Total Number of 4 input LUTs;bonded IOBs;RAMB16s;BUFGMUXs;Fmax
+dotprod;66;52;83;36;4;1;88.113;
+fibonacci_data_reuse;108;73;104;36;1;280.820;
+fir;193;199;255;195;1;143.968;
+matmult;286;247;352;20;1;158.932;
+max;96;68;49;36;4;1;239.464;
+sobel;284;338;484;20;2;1;97.116;
+sobel_alt;889;496;388;20;2;1;214.592;
+vecsum;69;47;33;36;8;1;203.417;
