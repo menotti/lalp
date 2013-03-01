@@ -68,7 +68,7 @@ public class LALPServlet extends HttpServlet {
 	
 	private static final String url = "jdbc:mysql://localhost:3306/lalp";  
 	private static final String usuario = "root";  
-	private static final String senha = "root";  
+	private static final String MYSQL_PASS = Configs.getMYSQL_PASS();
 	
 	public String DOT_COMMAND = configs.getDotCommand();
 	public String ZIP_PATH = configs.getZipPath();
@@ -174,7 +174,7 @@ public class LALPServlet extends HttpServlet {
         catch(Exception e){  }
         
         try{  
-            con= DriverManager.getConnection(url, usuario, senha);  
+            con= DriverManager.getConnection(url, usuario, MYSQL_PASS);  
             stmt=con.createStatement();  
             
             stmt.executeUpdate("INSERT INTO userlog (user, action, success) VALUES('"+userEmail+"', 'Compiled "+fileName+"','Failed')");
@@ -399,7 +399,7 @@ public class LALPServlet extends HttpServlet {
 		
 		// update to success
         try{  
-            con= DriverManager.getConnection(url, usuario, senha);  
+            con= DriverManager.getConnection(url, usuario, MYSQL_PASS);  
             stmt=con.createStatement();  
             
             stmt.executeUpdate("UPDATE userlog SET success='Success' WHERE user='"+userEmail+"'");

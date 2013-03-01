@@ -31,11 +31,9 @@ import java.util.Properties;
 @WebServlet("/DATAServlet")
 public class DATAServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	
-	Configs configs = new Configs();
-	
-    private String EMAIL_PASS = configs.getEmailPass();
-	private String COMP_FILES_PATH = configs.getCompFilesPath();
+		
+    private static final String EMAIL_PASS = Configs.getEMAIL_PASS();
+	private static final String COMP_FILES_PATH = Configs.getCompFilesPath();
 	
 	
 	@Override
@@ -46,7 +44,7 @@ public class DATAServlet extends HttpServlet {
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
-		
+
 		PrintWriter out = response.getWriter();
 		
 		response.setContentType("text/plain");
@@ -64,8 +62,9 @@ public class DATAServlet extends HttpServlet {
 		
         String url = "jdbc:mysql://localhost:3306/lalp";  
         String usuario = "root";  
-        String senha = "root";  
-        Connection con;  
+    	final String MYSQL_PASS = Configs.getMYSQL_PASS();
+
+    	Connection con;  
         Statement stmt;
         
         try {  
@@ -74,11 +73,11 @@ public class DATAServlet extends HttpServlet {
         catch(Exception e){  }
         
         try{  
-            con= DriverManager.getConnection(url, usuario, senha);  
+            con= DriverManager.getConnection(url, usuario, MYSQL_PASS);  
             stmt=con.createStatement();  
 
-            stmt.executeUpdate("INSERT INTO userdata (fname, lname, email, org, why) VALUES('"+fname+"', '"+lname+"','"+email+"','"+org+"','"+why+"')");
-            stmt.executeUpdate("INSERT INTO userrole (email, role, enabled) VALUES('"+email+"','"+role+"','"+enabled+"')");
+            stmt.executeUpdate("INSERT INTO userdata (fname, lname, email, org, why) VALUES ('"+fname+"', '"+lname+"','"+email+"','"+org+"','"+why+"')");
+            stmt.executeUpdate("INSERT INTO userrole (email, role, enabled) VALUES ('"+email+"','"+role+"','"+enabled+"')");
  
             stmt.close();  
             con.close();  

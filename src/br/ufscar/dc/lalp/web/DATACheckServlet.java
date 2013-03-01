@@ -29,7 +29,8 @@ public class DATACheckServlet extends HttpServlet {
 	
 	private static final String url = "jdbc:mysql://localhost:3306/lalp";  
 	private static final String usuario = "root";  
-	private static final String senha = "root";  
+	private static final String MYSQL_PASS = Configs.getMYSQL_PASS();
+
        
     @Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -59,7 +60,7 @@ public class DATACheckServlet extends HttpServlet {
         catch(Exception e){  }
         
         try{  
-            con= DriverManager.getConnection(url, usuario, senha);  
+            con= DriverManager.getConnection(url, usuario, MYSQL_PASS);  
             stmt=con.createStatement();  
             
             ResultSet rs = stmt.executeQuery("SELECT enabled FROM userrole WHERE role='use' AND email='" + email +"'"); 

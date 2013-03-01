@@ -56,6 +56,7 @@ public class DinamicExamples extends HttpServlet {
 	
 	public String listFilesForFolder(final File folder) {
 		
+        //FIXME: what if we have more than 6 examples?
 		String ex[] = new String[6];
 		
 		ex[0] = "&ex1=";
@@ -75,6 +76,9 @@ public class DinamicExamples extends HttpServlet {
 	            String temp = fileEntry.getName();
 	            ex[i] = ex[i] + temp;
 	            i++;
+	            //FIXME
+		        if (i > 5)
+		        	break;
 	        }
 	    }
 	    

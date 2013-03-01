@@ -29,15 +29,13 @@ import javax.servlet.http.HttpServletResponse;
 @WebServlet("/admServlet")
 public class admServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	
-	Configs configs = new Configs();
-	
+		
 	private static final String url = "jdbc:mysql://localhost:3306/lalp";  
 	private static final String usuario = "root";  
-	private static final String senha = "root"; 
 	
-	private String SERVER_PATH= configs.getServerPath();
-	private String EMAIL_PASS = configs.getEmailPass();
+	private static final String SERVER_PATH = Configs.getServerPath();
+	private static final String EMAIL_PASS = Configs.getEMAIL_PASS();
+	private static final String MYSQL_PASS = Configs.getMYSQL_PASS();
 	
        
 	@Override
@@ -80,7 +78,7 @@ public class admServlet extends HttpServlet {
         catch(Exception e){  }
         
         try{  
-            con= DriverManager.getConnection(url, usuario, senha);  
+            con= DriverManager.getConnection(url, usuario, MYSQL_PASS);  
             stmt=con.createStatement();  
             
             //ResultSet nm = stmt.executeQuery("SELECT * FROM userdata;");
@@ -135,7 +133,7 @@ public class admServlet extends HttpServlet {
             catch(Exception e){  }
             
             try{  
-                con1= DriverManager.getConnection(url, usuario, senha);  
+                con1= DriverManager.getConnection(url, usuario, MYSQL_PASS);  
                 stmt1=con1.createStatement();  
                 
                 
@@ -210,7 +208,7 @@ public class admServlet extends HttpServlet {
 	        catch(Exception e){  }
 	        
 	        try{  
-	            con= DriverManager.getConnection(url, usuario, senha);  
+	            con= DriverManager.getConnection(url, usuario, MYSQL_PASS);  
 	            stmt=con.createStatement();  
 	            
 	            try {
