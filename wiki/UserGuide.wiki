@@ -1,9 +1,9 @@
-#summary The LALP Compiper User Guide
+#summary The LALP Compiler User Guide
 #labels Featured,Phase-Support
 
 =Installation=
 
-Before using LALP compiler you need to install the following libraries:
+The following libraries are included in LALP distribution:
 
   * [http://jung.sourceforge.net/ JUNG]
   * [http://acs.lbl.gov/software/colt/ Colt]
@@ -23,4 +23,6 @@ set LALP_HOME=c:\path\to\lalp
 set PATH=%LALP_HOME%;%PATH%
 }}}
 
-= Examples =
+= Web Version =
+
+You can also try the web version of the compiler at [http://lalp.dc.ufscar.br/]
