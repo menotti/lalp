@@ -67,6 +67,7 @@ public class UploadServlet extends HttpServlet {
 		} catch (FileUploadException e) {
 			throw new RuntimeException(e);
 		} catch (Exception e) {
+			e.printStackTrace();
 			throw new RuntimeException(e);
 		} finally {
 			writer.close();
