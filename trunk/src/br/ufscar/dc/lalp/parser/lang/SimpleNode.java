@@ -25,6 +25,7 @@ public class SimpleNode implements Node {
 	protected Integer arraySize = null; //Variable
 	protected Integer width = null; //Typedef/Pin/Variable
 	protected Integer stepDelay = null; //Counter/Delay
+	protected Integer endStepDelay = null;
 	protected Class componentClass = null; //Pin/Expression(s)/LHS
 	protected PortType portType = null; //Pin
 	protected Token token = null; //Variable
@@ -706,6 +707,14 @@ public class SimpleNode implements Node {
 			e.printStackTrace();
 			//System.exit(1);
 		}
+	}
+
+	public Integer getEndStepDelay() {
+		return endStepDelay;
+	}
+
+	public void setEndStepDelay(Integer endStepDelay) {
+		this.endStepDelay = endStepDelay;
 	}
 }
 
