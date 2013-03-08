@@ -16,9 +16,9 @@
 
 package br.ufscar.dc.lalp.parser.lang;
 import java.util.*;
-
-import br.ufscar.dc.lalp.components.*;
 import br.ufscar.dc.lalp.core.*;
+import br.ufscar.dc.lalp.core.Process;
+import br.ufscar.dc.lalp.components.*;
 
 /** Token Manager. */
 public class ALPParserTokenManager implements ALPParserConstants
@@ -122,6 +122,8 @@ private int jjMoveStringLiteralDfa0_0()
       case 33:
          jjmatchedKind = 48;
          return jjMoveStringLiteralDfa1_0(0x80000000000000L, 0x0L);
+      case 35:
+         return jjStopAtPos(0, 82);
       case 37:
          jjmatchedKind = 67;
          return jjMoveStringLiteralDfa1_0(0x0L, 0x4000L);
@@ -134,7 +136,7 @@ private int jjMoveStringLiteralDfa0_0()
          return jjStopAtPos(0, 36);
       case 42:
          jjmatchedKind = 62;
-         return jjMoveStringLiteralDfa1_0(0x0L, 0x40200L);
+         return jjMoveStringLiteralDfa1_0(0x0L, 0x80200L);
       case 43:
          jjmatchedKind = 60;
          return jjMoveStringLiteralDfa1_0(0x400000000000000L, 0x80L);
@@ -276,8 +278,8 @@ private int jjMoveStringLiteralDfa1_0(long active0, long active1)
          }
          return jjMoveStringLiteralDfa2_0(active0, 0L, active1, 0x30040L);
       case 64:
-         if ((active1 & 0x40000L) != 0L)
-            return jjStopAtPos(1, 82);
+         if ((active1 & 0x80000L) != 0L)
+            return jjStopAtPos(1, 83);
          break;
       case 65:
       case 97:
@@ -1016,7 +1018,7 @@ null, null, null, null, null, null, null, null, "\50", "\51", "\173", "\175",
 "\77", "\72", "\75\75", "\74\75", "\76\75", "\41\75", "\174\174", "\46\46", "\53\53", 
 "\55\55", "\53", "\55", "\52", "\57", "\46", "\174", "\136", "\45", "\74\74", "\76\76", 
 "\76\76\76", "\53\75", "\55\75", "\52\75", "\57\75", "\46\75", "\174\75", "\136\75", 
-"\45\75", "\74\74\75", "\76\76\75", "\76\76\76\75", "\52\100", };
+"\45\75", "\74\74\75", "\76\76\75", "\76\76\76\75", "\43", "\52\100", };
 
 /** Lexer state names. */
 public static final String[] lexStateNames = {
@@ -1031,10 +1033,10 @@ public static final int[] jjnewLexState = {
    -1, -1, -1, -1, -1, -1, 1, 2, 3, 0, 0, 0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 
    -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 
    -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 
-   -1, -1, -1, -1, -1, -1, -1, -1, 
+   -1, -1, -1, -1, -1, -1, -1, -1, -1, 
 };
 static final long[] jjtoToken = {
-   0xfffffff9cfffe001L, 0x7ffffL, 
+   0xfffffff9cfffe001L, 0xfffffL, 
 };
 static final long[] jjtoSkip = {
    0xe3eL, 0x0L, 

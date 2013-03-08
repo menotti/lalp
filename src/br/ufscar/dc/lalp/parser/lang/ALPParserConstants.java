@@ -169,6 +169,8 @@ public interface ALPParserConstants {
   int RSIGNEDSHIFTASSIGN = 80;
   /** RegularExpression Id. */
   int RUNSIGNEDSHIFTASSIGN = 81;
+  /** RegularExpression Id. */
+  int HASH = 82;
 
   /** Lexical state. */
   int DEFAULT = 0;
@@ -263,6 +265,7 @@ public interface ALPParserConstants {
     "\"<<=\"",
     "\">>=\"",
     "\">>>=\"",
+    "\"#\"",
     "\"*@\"",
   };
 

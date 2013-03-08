@@ -39,13 +39,13 @@ PARSER_BEGIN(ALPParser)
  * SOFTWARE OR ITS DERIVATIVES. 
  */
 
-package lalp.parser.lang;
+package br.ufscar.dc.lalp.parser.lang;
 
 import java.util.*;
 
-import lalp.core.*;
-import lalp.core.Process;
-import lalp.components.*;
+import br.ufscar.dc.lalp.core.*;
+import br.ufscar.dc.lalp.core.Process;
+import br.ufscar.dc.lalp.components.*;
 
 /**
  * @author <a href="mailto:ricardomenotti@acm.org">Ricardo Menotti</a>
@@ -298,6 +298,7 @@ TOKEN : /* OPERATORS */
 | < LSHIFTASSIGN: "<<=" >
 | < RSIGNEDSHIFTASSIGN: ">>=" >
 | < RUNSIGNEDSHIFTASSIGN: ">>>=" >
+| <HASH : "#">
 }
 
 
@@ -1427,13 +1428,14 @@ void DelayExpression() : {/*@bgen(jjtree) DelayExpression */
         jjtree.openNodeScope(jjtn000);
 /*@egen*/
 	Integer amount = null;
+	Integer endAmount = null;
 }
 {/*@bgen(jjtree) DelayExpression */
         try {
 /*@egen*/
 	ConditionalExpression() (
 	LOOKAHEAD(1) {jjtn000.setComponentClass(delay_op.class);} 
-	"@" amount=ConstOrInt() {jjtn000.setStepDelay(amount);} 
+	"@" amount=ConstOrInt()(<HASH> endAmount=ConstOrInt(){jjtn000.setEndStepDelay(endAmount);})? {jjtn000.setStepDelay(amount);} 
 	)?/*@bgen(jjtree)*/
         } catch (Throwable jjte000) {
           if (jjtc000) {
@@ -1456,6 +1458,7 @@ void DelayExpression() : {/*@bgen(jjtree) DelayExpression */
         }
 /*@egen*/
 }
+
 
 void ConditionalExpression() : {/*@bgen(jjtree) ConditionalExpression */
   SimpleNode jjtn000 = new SimpleNode(this, JJTCONDITIONALEXPRESSION);
@@ -1793,13 +1796,14 @@ void MultiplicativeExpression() : {/*@bgen(jjtree) MultiplicativeExpression */
         jjtree.openNodeScope(jjtn000);
 /*@egen*/
 	Integer amount = null;
+	Integer endAmount = null;
 }
 {/*@bgen(jjtree) MultiplicativeExpression */
   try {
 /*@egen*/
   UnaryExpression() ( ( 
   "*" {jjtn000.setComponentClass(mult_op_s.class);} | 
-  "*@" amount=ConstOrInt() {jjtn000.setStepDelay(amount);} {jjtn000.setComponentClass(mult_op_s_p.class);} | // pipelined multiply 
+  "*@" amount=ConstOrInt()(<HASH> endAmount=ConstOrInt())? {jjtn000.setStepDelay(amount);} {jjtn000.setComponentClass(mult_op_s_p.class);} | // pipelined multiply 
   "/" {jjtn000.setComponentClass(div_op_s.class);} |
   "%" {jjtn000.setComponentClass(mod_op_s.class);}
   ) UnaryExpression() )*/*@bgen(jjtree)*/
