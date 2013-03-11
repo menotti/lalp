@@ -33,8 +33,8 @@ import edu.uci.ics.jung.utils.UserData;
  * @author <a href="http://menotti.pro.br/">Ricardo Menotti</a>
  * @author <a href="http://www.dc.ufscar.br/">DC/UFSCar</a>
  * @version October, 2008
- * @see http://www.personal.kent.edu/~rmuhamma/Algorithms/MyAlgorithms/GraphAlgor/strongComponent.htm
- * @see http://www.patentstorm.us/patents/7444628/description.html
+ * @see <a href="http://www.personal.kent.edu/~rmuhamma/Algorithms/MyAlgorithms/GraphAlgor/strongComponent.htm">Reference</a>
+ * @see <a href="http://www.patentstorm.us/patents/7444628/description.html">Reference</a>
  */
 public class StrongConnectedComponents {
 	// SCC algorithm variables

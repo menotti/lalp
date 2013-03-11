@@ -28,7 +28,7 @@ public class DATACheckServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	
 	private static final String url = "jdbc:mysql://localhost:3306/lalp";  
-	private static final String usuario = "root";  
+	private static final String usuario = Configs.getMysqlUser();
 	private static final String MYSQL_PASS = Configs.getMYSQL_PASS();
 
        

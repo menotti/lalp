@@ -38,9 +38,10 @@ public class ALPG {
 	private Map<String, Component> consts = new Hashtable<String, Component>();
 	private Map<String, Component> iComps = new Hashtable<String, Component>();
 	
+	private static String DEFAULT_DIRECTORY = ".";
 
 	public void generateALPG(Design design) {
-		generateALPG(design, "../designs/alpg");
+		generateALPG(design, DEFAULT_DIRECTORY);
 	}
 	public void generateALPG(Design design, String path) {
 		System.out.print("Generating ALPG...");

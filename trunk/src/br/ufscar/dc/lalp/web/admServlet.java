@@ -31,7 +31,7 @@ public class admServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 		
 	private static final String url = "jdbc:mysql://localhost:3306/lalp";  
-	private static final String usuario = "root";  
+	private static final String usuario = Configs.getMysqlUser();
 	
 	private static final String SERVER_PATH = Configs.getServerPath();
 	private static final String EMAIL_PASS = Configs.getEMAIL_PASS();

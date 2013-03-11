@@ -24,7 +24,7 @@ import java.util.Properties;
 /**
  * Servlet implementation class DATAServlet
  * 
- * @Author Tulio
+ * @author Tulio
  */
 
 @SuppressWarnings("serial")
@@ -61,7 +61,7 @@ public class DATAServlet extends HttpServlet {
 		System.out.println(fname + lname + email + org + why + urldest);
 		
         String url = "jdbc:mysql://localhost:3306/lalp";  
-        String usuario = "root";  
+        String usuario = Configs.getMysqlUser();
     	final String MYSQL_PASS = Configs.getMYSQL_PASS();
 
     	Connection con;  

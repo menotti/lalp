@@ -72,7 +72,6 @@ public class LALP {
 	
 	/**
 	 * @param args options and input file
-	 * @return 
 	 */
 	public static void main(String[] args) {
 		
@@ -251,7 +250,8 @@ public class LALP {
 			if (Parameters.vhdlMemory)
 				vhd.generateVHDLInitialization(design);
 			if (Parameters.vhdlTestbench)
-				vhd.generateVHDLTestbench(lp);
+				if (lp!=null)
+					vhd.generateVHDLTestbench(lp);
        
 		}
 		

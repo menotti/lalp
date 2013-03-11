@@ -58,16 +58,15 @@ import br.ufscar.dc.lalp.parser.lang.SimpleNode;
  * @author Gabriel, Túlio
  */
 
-@SuppressWarnings("serial")
 @WebServlet("/LALPServlet")
 public class LALPServlet extends HttpServlet {
 	
+	private static final long serialVersionUID = 6333253440133142659L;
 
-	
 	Configs configs = new Configs();
 	
 	private static final String url = "jdbc:mysql://localhost:3306/lalp";  
-	private static final String usuario = "root";  
+	private static final String usuario = Configs.getMysqlUser();
 	private static final String MYSQL_PASS = Configs.getMYSQL_PASS();
 	
 	public String DOT_COMMAND = configs.getDotCommand();

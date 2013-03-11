@@ -6,6 +6,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -19,6 +20,7 @@ import org.expressme.openid.OpenIdManager;
 import br.ufscar.dc.lalp.web.Configs;
  
 
+@WebServlet("/openid")
 public class OpenIdServlet extends HttpServlet {
  
 	Configs configs = new Configs();
