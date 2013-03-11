@@ -36,7 +36,7 @@ import br.ufscar.dc.lalp.core.Signal;
  * @author <a href="http://www.dc.ufscar.br/">DC/UFSCar</a>
  * @version March, 2008
  * @deprecated
- * @see http://compilers.iecc.com/comparch/article/94-01-053
+ * @see <a href="http://compilers.iecc.com/comparch/article/94-01-053">Reference</a>
  */
 public class Dominators {
 	

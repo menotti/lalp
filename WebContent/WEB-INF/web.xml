@@ -8,6 +8,9 @@
     <filter-name>encodingFilter</filter-name>
     <url-pattern>/*</url-pattern>
   </filter-mapping>
+  
+   <!--
+  
   <servlet>
     <servlet-name>UploadServlet</servlet-name>
     <servlet-class>br.ufscar.dc.lalp.web.UploadServlet</servlet-class>
@@ -30,6 +33,7 @@
     <servlet-class>br.ufscar.dc.lalp.web.admServlet</servlet-class>
     <load-on-startup>0</load-on-startup>
   </servlet>
+  
   <servlet-mapping>
     <servlet-name>adm</servlet-name>
     <url-pattern>/adm</url-pattern>
@@ -50,6 +54,8 @@
     <servlet-name>LALPServlet</servlet-name>
     <url-pattern>/LALPServlet</url-pattern>
   </servlet-mapping>
+  -->
+  
   <session-config>
     <session-timeout>30</session-timeout>
   </session-config>

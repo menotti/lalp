@@ -35,13 +35,13 @@ PARSER_BEGIN(ALPGParser)
  * SOFTWARE OR ITS DERIVATIVES. 
  */
 
-package loop.parser.graph;
+package br.ufscar.dc.lalp.parser.graph;
 
 import java.util.*;
 import java.io.*;
 
-import loop.core.*;
-import loop.components.*;
+import br.ufscar.dc.lalp.core.*;
+import br.ufscar.dc.lalp.components.*;
 
 @SuppressWarnings("unchecked")
 public class ALPGParser {
@@ -273,22 +273,22 @@ void Declaration() : {
 			try {
 				switch (args.size()) {
 				case 1:
-					o = Class.forName("loop.components." + t3.image).getConstructor(String.class, int.class).newInstance(c, args.get(0));					
+					o = Class.forName("br.ufscar.dc.lalp.components." + t3.image).getConstructor(String.class, int.class).newInstance(c, args.get(0));					
 					break;
 				case 2:
-					o = Class.forName("loop.components." + t3.image).getConstructor(String.class, int.class, int.class).newInstance(c, args.get(0), args.get(1));					
+					o = Class.forName("br.ufscar.dc.lalp.components." + t3.image).getConstructor(String.class, int.class, int.class).newInstance(c, args.get(0), args.get(1));					
 					break;
 				case 3:
-					o = Class.forName("loop.components." + t3.image).getConstructor(String.class, int.class, int.class, int.class).newInstance(c, args.get(0), args.get(1), args.get(2));					
+					o = Class.forName("br.ufscar.dc.lalp.components." + t3.image).getConstructor(String.class, int.class, int.class, int.class).newInstance(c, args.get(0), args.get(1), args.get(2));					
 					break;
 				case 4:
-					o = Class.forName("loop.components." + t3.image).getConstructor(String.class, int.class, int.class, int.class, int.class).newInstance(c, args.get(0), args.get(1), args.get(2), args.get(3));					
+					o = Class.forName("br.ufscar.dc.lalp.components." + t3.image).getConstructor(String.class, int.class, int.class, int.class, int.class).newInstance(c, args.get(0), args.get(1), args.get(2), args.get(3));					
 					break;
 				case 5:
-					o = Class.forName("loop.components." + t3.image).getConstructor(String.class, int.class, int.class, int.class, int.class, int.class).newInstance(c, args.get(0), args.get(1), args.get(2), args.get(3), args.get(4));					
+					o = Class.forName("br.ufscar.dc.lalp.components." + t3.image).getConstructor(String.class, int.class, int.class, int.class, int.class, int.class).newInstance(c, args.get(0), args.get(1), args.get(2), args.get(3), args.get(4));					
 					break;
 				case 6:
-					o = Class.forName("loop.components." + t3.image).getConstructor(String.class, int.class, int.class, int.class, int.class, int.class, int.class).newInstance(c, args.get(0), args.get(1), args.get(2), args.get(3), args.get(4), args.get(5));					
+					o = Class.forName("br.ufscar.dc.lalp.components." + t3.image).getConstructor(String.class, int.class, int.class, int.class, int.class, int.class, int.class).newInstance(c, args.get(0), args.get(1), args.get(2), args.get(3), args.get(4), args.get(5));					
 					break;
 				default:
 					Error("wrong number or arguments for component " + c); 
