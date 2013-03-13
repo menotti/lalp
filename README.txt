@@ -1,4 +1,5 @@
 The following libraries are included in the LALP distribution:
+>>>>>>> .r112
 
 - JUNG (http://jung.sourceforge.net/)
 - Colt (http://acs.lbl.gov/software/colt/)
