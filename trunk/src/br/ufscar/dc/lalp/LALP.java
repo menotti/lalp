@@ -68,7 +68,8 @@ public class LALP {
 		"  -vt       generate VHDL testbench\n" + 
 		"  -alpg     generate ALPG source code\n" + 
 		"  -verbose  print verbose output\n" + 
-		"  -version  print product version and exit\n";
+		"  -version  print product version and exit\n" +
+		"  -help     print this guide\n" ;
 	
 	/**
 	 * @param args options and input file
@@ -87,6 +88,10 @@ public class LALP {
 		for (int i = 0; i < args.length; i++) {
 			if (args[i].equals("-version")) {
 				info(version);
+				System.exit(0);
+			}
+			else if (args[i].equals("-help")) {
+				info(usage);
 				System.exit(0);
 			}
 			else if (args[i].equals("-as")) {
@@ -118,37 +123,44 @@ public class LALP {
 			}
 			else if (args[i].equals("-gv")) {
 				Parameters.graphviz = true;
-			} else if (args[i].equals("-gs")) {
+			} 
+			else if (args[i].equals("-gs")) {
 				if (Parameters.graphviz) {
 					Parameters.graphvizSubgraphs = true;
 				}
 				else {
 					error("Option -gs requires option -gv before");
 				}
-			} else if (args[i].equals("-vh")) {
+			} 
+			else if (args[i].equals("-vh")) {
 				Parameters.vhdl = true;
-			} else if (args[i].equals("-vt")) {
+			} 
+			else if (args[i].equals("-vt")) {
 				if (Parameters.vhdl) {
 					Parameters.vhdlTestbench = true;
 				}
 				else {
 					error("Option -vt requires option -vh before");
 				}
-			} else if (args[i].equals("-vi")) {
+			} 
+			else if (args[i].equals("-vi")) {
 				if (Parameters.vhdl) {
 					Parameters.vhdlMemory = true;
 				}
 				else {
 					error("Option -vi requires option -vh before");
 				}
-			} else if (args[i].equals("-alpg")) {
+			} 
+			else if (args[i].equals("-alpg")) {
 				Parameters.alpg = true;
-			} else if (args[i].equals("-verbose")) {
+			} 
+			else if (args[i].equals("-verbose")) {
 				Parameters.verbose = true;
-			} else if (i != args.length-1) {
+			}  
+			else if (i != args.length-1) {
 				error("Unrecognized option: " + args[i]);
 			}
-		}
+		}//for (int i = 0; i < args.length; i++)
 		
 		try {
 			StringTokenizer st = new StringTokenizer(args[args.length-1], ".");
@@ -157,7 +169,8 @@ public class LALP {
 				error(usage);
 			}
 			String extension = st.nextToken().toUpperCase();
-		
+		    
+			// LALP Files
 			if (extension.equals("ALP")) {
 				System.out.print("Reading from file " + args[args.length-1] + "...");
 				inStream = new FileInputStream(args[args.length-1]);
@@ -174,6 +187,7 @@ public class LALP {
 				}
 				System.out.println("Ok!");
 			}
+			//LALP-S Files
 			else if (extension.equals("ALPG")) {
 				System.out.print("Reading from file " + args[args.length-1] + "...");
 				inStream = new FileInputStream(args[args.length-1]);
@@ -211,7 +225,7 @@ public class LALP {
 			Dijkstra dijkstra = new Dijkstra();
 			dijkstra.detectBigestCycle(design);
 		}
-		
+		//FIXME: ???? 
 		if (Parameters.runDominators) {
 //			Dominators dom = new Dominators();
 //			dom.detectBackwardEdges(design);

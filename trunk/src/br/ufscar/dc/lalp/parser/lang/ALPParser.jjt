@@ -904,7 +904,7 @@ void InclusiveOrExpression() : {}
 
 void ExclusiveOrExpression() : {}
 {
-  AndExpression() ( {jjtThis.setComponentClass(and_op.class);} "^" AndExpression() )*
+  AndExpression() ( {jjtThis.setComponentClass(xor_op.class);} "^" AndExpression() )*
 }
 
 void AndExpression() : {}

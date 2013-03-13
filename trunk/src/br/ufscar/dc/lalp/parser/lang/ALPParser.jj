@@ -1592,7 +1592,7 @@ void ExclusiveOrExpression() : {/*@bgen(jjtree) ExclusiveOrExpression */
 {/*@bgen(jjtree) ExclusiveOrExpression */
   try {
 /*@egen*/
-  AndExpression() ( {jjtn000.setComponentClass(and_op.class);} "^" AndExpression() )*/*@bgen(jjtree)*/
+  AndExpression() ( {jjtn000.setComponentClass(xor_op.class);} "^" AndExpression() )*/*@bgen(jjtree)*/
   } catch (Throwable jjte000) {
     if (jjtc000) {
       jjtree.clearNodeScope(jjtn000);

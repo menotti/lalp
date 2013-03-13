@@ -1736,7 +1736,7 @@ Vector<Long> TestResult(Vector<Long> inits) #void : {
           jj_la1[51] = jj_gen;
           break label_16;
         }
-                     jjtn000.setComponentClass(and_op.class);
+                     jjtn000.setComponentClass(xor_op.class);
         jj_consume_token(XOR);
         AndExpression();
       }
