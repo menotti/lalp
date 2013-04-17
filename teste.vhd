@@ -12,7 +12,7 @@
 -- SUFFERED BY LICENSEE AS A RESULT OF USING, MODIFYING OR DISTRIBUTING THIS
 -- SOFTWARE OR ITS DERIVATIVES.
 --
--- Generated at Fri Apr 05 14:29:18 WEST 2013
+-- Generated at Thu Apr 11 17:04:38 WEST 2013
 --
 
 -- IEEE Libraries --
@@ -20,16 +20,16 @@ library IEEE;
 use IEEE.std_logic_1164.all;
 use IEEE.std_logic_arith.all;
 use IEEE.std_logic_unsigned.all;
-entity addsub is
+entity teste is
 	port (
-		\a\	: out	std_logic_vector(31 downto 0);
-		\s\	: out	std_logic_vector(31 downto 0);
-		\x\	: in	std_logic_vector(31 downto 0);
-		\y\	: in	std_logic_vector(31 downto 0)
+		\clear\	: in	std_logic;
+		\clk\	: in	std_logic;
+		\reset\	: in	std_logic;
+		\sum\	: out	std_logic_vector(31 downto 0)
 	);
-end addsub;
+end teste;
 
-architecture behavior of addsub is
+architecture behavior of teste is
 
 component add_op_s
 generic (
@@ -44,54 +44,61 @@ port (
 );
 end component;
 
-component sub_op_s
+component reg_op
 generic (
-	w_in1	: integer := 16;
-	w_in2	: integer := 16;
-	w_out	: integer := 32
+	w_in	: integer := 16;
+	initial	: integer := 0
 );
 port (
-	I0	: in	std_logic_vector(w_in1-1 downto 0);
-	I1	: in	std_logic_vector(w_in2-1 downto 0);
-	O0	: out	std_logic_vector(w_out-1 downto 0)
+	clk	: in	std_logic;
+	reset	: in	std_logic;
+	we	: in	std_logic := '1';
+	I0	: in	std_logic_vector(w_in-1 downto 0);
+	O0	: out	std_logic_vector(w_in-1 downto 0)
 );
 end component;
 
-signal s5	: std_logic_vector(31 downto 0);
-signal s3	: std_logic_vector(31 downto 0);
-signal s4	: std_logic_vector(31 downto 0);
+signal s0	: std_logic_vector(31 downto 0);
+signal s1	: std_logic_vector(31 downto 0);
 signal s2	: std_logic_vector(31 downto 0);
 
 begin
 
-	\x_sub_op_s_y\: sub_op_s
+	\a_add_op_s_b\: add_op_s
 	generic map (
 		w_in1 => 32,
 		w_in2 => 32,
 		w_out => 32
 	)
 	port map (
-		I0 => s3,
-		I1 => s4,
-		O0 => s5
-	);
-
-	\x_add_op_s_y\: add_op_s
-	generic map (
-		w_in1 => 32,
-		w_in2 => 32,
-		w_out => 32
-	)
-	port map (
-		I0 => s3,
-		I1 => s4,
+		I0 => s0,
+		I1 => s1,
 		O0 => s2
 	);
 
-	s3 <= \x\;
-	s4 <= \y\;
-	\a\ <= s2;
-	\s\ <= s5;
+	\b\: reg_op
+	generic map (
+		initial => 8,
+		w_in => 32
+	)
+	port map (
+		O0 => s1,
+		clk => \clk\,
+		reset => \reset\
+	);
+
+	\a\: reg_op
+	generic map (
+		initial => 3,
+		w_in => 32
+	)
+	port map (
+		O0 => s0,
+		clk => \clk\,
+		reset => \reset\
+	);
+
+	\sum\ <= s2;
 
 end behavior;
 

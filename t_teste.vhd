@@ -12,7 +12,7 @@
 -- SUFFERED BY LICENSEE AS A RESULT OF USING, MODIFYING OR DISTRIBUTING THIS
 -- SOFTWARE OR ITS DERIVATIVES.
 --
--- Generated at Wed Apr 10 17:33:08 WEST 2013
+-- Generated at Thu Apr 11 17:04:38 WEST 2013
 --
 
 -- IEEE Libraries --
@@ -20,17 +20,15 @@ library IEEE;
 use IEEE.std_logic_1164.all;
 use IEEE.std_logic_arith.all;
 use IEEE.std_logic_unsigned.all;
-entity t_dotprod is
-end t_dotprod;
+entity t_teste is
+end t_teste;
 
-architecture behavior of t_dotprod is
+architecture behavior of t_teste is
 
-component dotprod
+component teste
 	port (
 		\clear\	: in	std_logic;
 		\clk\	: in	std_logic;
-		\done\	: out	std_logic;
-		\init\	: in	std_logic;
 		\reset\	: in	std_logic;
 		\sum\	: out	std_logic_vector(31 downto 0)
 	);
@@ -38,19 +36,15 @@ end component;
 
 signal \clear\	: std_logic	:= '0';
 signal \clk\	: std_logic	:= '0';
-signal \done\	: std_logic	:= '0';
-signal \init\	: std_logic	:= '0';
 signal \reset\	: std_logic	:= '0';
 signal \sum\	: std_logic_vector(31 downto 0)	:= (others => '0');
 
 begin
 
-uut: dotprod
+uut: teste
 port map (
 	\clear\ => \clear\,
 	\clk\ => \clk\,
-	\done\ => \done\,
-	\init\ => \init\,
 	\reset\ => \reset\,
 	\sum\ => \sum\
 );
@@ -70,62 +64,5 @@ begin
 	\init\  <= '1';
 	wait;
 end process stimulus;
-
-process
-
-begin
-
-	wait for 10 ns;
-
-	wait on \sum\;
-	assert \sum\ = conv_std_logic_vector(4,32)
-		report "value different from the expected" severity error;
-
-	wait on \sum\;
-	assert \sum\ = conv_std_logic_vector(14,32)
-		report "value different from the expected" severity error;
-
-	wait on \sum\;
-	assert \sum\ = conv_std_logic_vector(32,32)
-		report "value different from the expected" severity error;
-
-	assert false report "end of test of \sum\" severity note;
-
-wait;
-end process;
-
-process
-
-begin
-
-	wait until \done\ = '1';
-	assert \sum\ = conv_std_logic_vector(32,32)
-		report "value different from the expected" severity error;
-
-	wait for 12 ns;
-
-	assert false report "end of test of \sum\" severity note;
-
-wait;
-end process;
-
-process
-
-begin
-
-	wait for 10 ns;
-
-	wait on \sum\;
-	assert \sum\ = conv_std_logic_vector(4,32)
-		report "value different from the expected" severity error;
-
-	wait for 22 ns;
-	assert \sum\ = conv_std_logic_vector(32,32)
-		report "value different from the expected" severity error;
-
-	assert false report "end of test of \sum\" severity note;
-
-wait;
-end process;
 
 end behavior;

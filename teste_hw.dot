@@ -1,0 +1,12 @@
+digraph teste {
+	// Components (Nodes)
+	"sum" [shape=msquare fontcolor=blue label="sum"];
+	"a_add_op_s_b" [shape=record, fontcolor=blue, label="{{<I0>I0[32]|<I1>I1[32]}|add_op_s:a_add_op_s_b|{<O0>O0[32]}}"];
+	"b" [shape=record, fontcolor=blue, style="filled", fillcolor="lightgray", label="{{<I0>I0[32]|<clk>clk|<reset>reset|<we>we}|reg_op:b|{<O0>O0[32]}}"];
+	"a" [shape=record, fontcolor=blue, style="filled", fillcolor="lightgray", label="{{<I0>I0[32]|<clk>clk|<reset>reset|<we>we}|reg_op:a|{<O0>O0[32]}}"];
+
+	// Signals (Edges)
+	"a":O0 -> "a_add_op_s_b":I0 [label="s0[32]" color=red fontcolor=red];
+	"b":O0 -> "a_add_op_s_b":I1 [label="s1[32]" color=red fontcolor=red];
+	"a_add_op_s_b":O0 -> "sum" [label="s2[32]" color=red fontcolor=red];
+}

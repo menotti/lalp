@@ -12,7 +12,7 @@
 -- SUFFERED BY LICENSEE AS A RESULT OF USING, MODIFYING OR DISTRIBUTING THIS
 -- SOFTWARE OR ITS DERIVATIVES.
 --
--- Generated at Wed Apr 10 17:33:08 WEST 2013
+-- Generated at Wed Apr 17 15:02:16 WEST 2013
 --
 
 -- IEEE Libraries --
@@ -70,62 +70,5 @@ begin
 	\init\  <= '1';
 	wait;
 end process stimulus;
-
-process
-
-begin
-
-	wait for 10 ns;
-
-	wait on \sum\;
-	assert \sum\ = conv_std_logic_vector(4,32)
-		report "value different from the expected" severity error;
-
-	wait on \sum\;
-	assert \sum\ = conv_std_logic_vector(14,32)
-		report "value different from the expected" severity error;
-
-	wait on \sum\;
-	assert \sum\ = conv_std_logic_vector(32,32)
-		report "value different from the expected" severity error;
-
-	assert false report "end of test of \sum\" severity note;
-
-wait;
-end process;
-
-process
-
-begin
-
-	wait until \done\ = '1';
-	assert \sum\ = conv_std_logic_vector(32,32)
-		report "value different from the expected" severity error;
-
-	wait for 12 ns;
-
-	assert false report "end of test of \sum\" severity note;
-
-wait;
-end process;
-
-process
-
-begin
-
-	wait for 10 ns;
-
-	wait on \sum\;
-	assert \sum\ = conv_std_logic_vector(4,32)
-		report "value different from the expected" severity error;
-
-	wait for 22 ns;
-	assert \sum\ = conv_std_logic_vector(32,32)
-		report "value different from the expected" severity error;
-
-	assert false report "end of test of \sum\" severity note;
-
-wait;
-end process;
 
 end behavior;
