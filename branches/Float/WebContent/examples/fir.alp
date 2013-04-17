@@ -1,0 +1,46 @@
+/* Copyright (c) 2009 Ricardo Menotti, All Rights Reserved.
+ *
+ * Permission to use, copy, modify, and distribute this software and its 
+ * documentation for NON-COMERCIAL purposes and without fee is hereby granted 
+ * provided that this copyright notice appears in all copies.
+ *
+ * RICARDO MENOTTI MAKES NO REPRESENTATIONS OR WARRANTIES ABOUT THE SUITABILITY
+ * OF THE SOFTWARE, EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE 
+ * IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, OR 
+ * NON-INFRINGEMENT. RICARDO MENOTTI SHALL NOT BE LIABLE FOR ANY DAMAGES 
+ * SUFFERED BY LICENSEE AS A RESULT OF USING, MODIFYING OR DISTRIBUTING THIS 
+ * SOFTWARE OR ITS DERIVATIVES. 
+ */
+
+const DATA_WIDTH = 32;
+
+typedef fixed(DATA_WIDTH, 1) int;
+typedef fixed(1, 0) bit;
+
+fir(in bit init, in int a, in int b, in int c, in int d, in int e, out int result) {
+	{
+		int a1, b1, c1, d1, e1, sum;
+	}
+	
+	
+	a1 = a * 3;
+	b1 = b * 5;
+	c1 = c * 7;
+	d1 = d * 9;
+	e1 = e * 11;
+	sum = ((a1+b1)+c1)+(d1+e1) when init@1;
+	//aux = sum when init;
+	result = sum;
+}
+assert
+{
+	int a = {1, 2, 3, 4};
+	int b = {1, 2, 3, 4};
+	int c = {1, 2, 3, 4};
+	int d = {1, 2, 3, 4};
+    int e = {1, 2, 3, 4};
+	when result changes
+	{
+		check int result = {35, 70, 105, 140};
+	}
+}

@@ -1,0 +1,29 @@
+digraph dotprod {
+	// Components (Nodes)
+	node [shape=ellipse, style=filled, color=dodgerblue2];
+	"done" [color=bisque4 shape=invtriangle label="done"];
+	"c13" [label="{||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"c12" [color=bisque4 shape=invtriangle label="0x5"];
+	"c11" [color=bisque4 shape=invtriangle label="0x0"];
+	"x_div_op_fl_y" [label="x_div_op_fl_y:/"  color=dodgerblue2 ];
+	"acc" [label="acc" shape=doubleoctagon  color=dodgerblue2 ];
+	"x" [label="x" shape=doubleoctagon  color=dodgerblue2 ];
+	"sum" [color=bisque4 shape=invtriangle label="sum"];
+	"y" [label="y" shape=doubleoctagon  color=dodgerblue2 ];
+	"i" [label="i" shape=doubleoctagon  color=dodgerblue2 ];
+	"init" [color=bisque4 shape=invtriangle label="init"];
+
+	// Signals (Edges)
+	"c11" -> "i"
+	"i" -> "c13":input
+	"c13" -> "done"
+	"init" -> "i"
+	"i" -> "acc"
+	"y" -> "x_div_op_fl_y"
+	"i" -> "y"
+	"c12" -> "i"
+	"acc" -> "sum"
+	"x_div_op_fl_y" -> "acc"
+	"x" -> "x_div_op_fl_y"
+	"i" -> "x"
+}

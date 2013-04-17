@@ -1,0 +1,29 @@
+digraph fibonacci_data_reuse {
+	// Components (Nodes)
+	node [shape=ellipse, style=filled, color=dodgerblue2];
+	"done" [color=bisque4 shape=invtriangle label="done"];
+	"c13" [label="{|}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"c10" [color=bisque4 shape=invtriangle label="0x0"];
+	"c12" [color=bisque4 shape=invtriangle label="0x1"];
+	"c11" [color=bisque4 shape=invtriangle label="0x20"];
+	"v" [label="v" shape=doubleoctagon  color=dodgerblue2 ];
+	"b" [label="b" shape=doubleoctagon  color=dodgerblue2 ];
+	"output" [color=bisque4 shape=invtriangle label="output"];
+	"i" [label="i" shape=doubleoctagon  color=dodgerblue2 ];
+	"a" [label="a" shape=doubleoctagon  color=dodgerblue2 ];
+	"init" [color=bisque4 shape=invtriangle label="init"];
+
+	// Signals (Edges)
+	"c10" -> "i"
+	"i" -> "c13":input
+	"c13" -> "done"
+	"v" -> "output"
+	"a" -> "b" [style=dashed];
+	"a" -> "v" [style=dashed];
+	"c12" -> "v"
+	"c11" -> "i"
+	"b" -> "a" [style=dashed];
+	"b" -> "b" [style=dashed];
+	"i" -> "v"
+	"init" -> "i"
+}

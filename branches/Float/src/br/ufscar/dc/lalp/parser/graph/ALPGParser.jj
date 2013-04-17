@@ -1,0 +1,442 @@
+/* Copyright (c) 2009 João M. P. Cardoso <jmpc@acm.org>, All Rights Reserved.
+ * Copyright (c) 2009 Ricardo Menotti <ricardomenotti@acm.org>, All Rights Reserved.
+ *
+ * Permission to use, copy, modify, and distribute this software and its 
+ * documentation for NON-COMERCIAL purposes and without fee is hereby granted 
+ * provided that this copyright notice appears in all copies.
+ *
+ * RICARDO MENOTTI MAKES NO REPRESENTATIONS OR WARRANTIES ABOUT THE SUITABILITY
+ * OF THE SOFTWARE, EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE 
+ * IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, OR 
+ * NON-INFRINGEMENT. RICARDO MENOTTI SHALL NOT BE LIABLE FOR ANY DAMAGES 
+ * SUFFERED BY LICENSEE AS A RESULT OF USING, MODIFYING OR DISTRIBUTING THIS 
+ * SOFTWARE OR ITS DERIVATIVES. 
+ */
+
+options {
+    LOOKAHEAD=1;
+    IGNORE_CASE=true;
+    STATIC = false;
+}
+
+PARSER_BEGIN(ALPGParser)
+/* Copyright (c) 2009 João M. P. Cardoso <jmpc@acm.org>, All Rights Reserved.
+ * Copyright (c) 2009 Ricardo Menotti <ricardomenotti@acm.org>, All Rights Reserved.
+ *
+ * Permission to use, copy, modify, and distribute this software and its 
+ * documentation for NON-COMERCIAL purposes and without fee is hereby granted 
+ * provided that this copyright notice appears in all copies.
+ *
+ * RICARDO MENOTTI MAKES NO REPRESENTATIONS OR WARRANTIES ABOUT THE SUITABILITY
+ * OF THE SOFTWARE, EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE 
+ * IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, OR 
+ * NON-INFRINGEMENT. RICARDO MENOTTI SHALL NOT BE LIABLE FOR ANY DAMAGES 
+ * SUFFERED BY LICENSEE AS A RESULT OF USING, MODIFYING OR DISTRIBUTING THIS 
+ * SOFTWARE OR ITS DERIVATIVES. 
+ */
+
+package br.ufscar.dc.lalp.parser.graph;
+
+import java.util.*;
+import java.io.*;
+
+import br.ufscar.dc.lalp.core.*;
+import br.ufscar.dc.lalp.components.*;
+
+@SuppressWarnings("unchecked")
+public class ALPGParser {
+
+	Design design = new Design();
+	Hashtable<String, Integer> allConsts = new Hashtable<String, Integer>();
+	Hashtable<String, Object> allTypedefs = new Hashtable<String, Object>();
+	Hashtable<String, Component> allComponents = new Hashtable<String, Component>();
+	Component cFrom, cTo;
+	String cFromPort, cToPort;
+	String componentName;
+	Boolean backward;
+	String signalName;
+
+	public static void main(String args[]) {
+		FileInputStream inStream;
+		if (args.length == 0) {
+			System.out.println("usage: java RunFile <input_file>");
+			System.exit(1);
+		} else if (args.length != 1) {
+			System.out.println("usage: java RunFile <input_file>");
+			System.exit(1);
+		}
+		try {
+			System.out.println("parsing: Reading from file " + args[0] + "...");
+			inStream = new FileInputStream(args[0]);
+			ALPGParser parser = new ALPGParser(inStream);
+			parser.Start();
+		} catch (FileNotFoundException e) {
+			System.out.println("parsing:  File " + args[0] + " not found.");
+			System.exit(1);
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.exit(1);
+		}
+	}
+
+	public Design getDesign() {
+		return this.design;
+	}	
+}
+
+PARSER_END(ALPGParser)
+
+/* WHITE SPACE */
+SKIP :
+{
+  " "
+| "\t"
+| "\n"
+| "\r"
+| "\f"
+}
+
+/* COMMENTS */
+MORE :
+{
+  "//" : IN_SINGLE_LINE_COMMENT
+|  <"/**" ~["/"]> { input_stream.backup(1); } : IN_FORMAL_COMMENT
+|  "/*" : IN_MULTI_LINE_COMMENT
+}
+
+<IN_SINGLE_LINE_COMMENT>
+SPECIAL_TOKEN :
+{
+  <SINGLE_LINE_COMMENT: "\n" | "\r" | "\r\n" > : DEFAULT
+}
+
+<IN_FORMAL_COMMENT>
+SPECIAL_TOKEN :
+{
+  <FORMAL_COMMENT: "*/" > : DEFAULT
+}
+
+<IN_MULTI_LINE_COMMENT>
+SPECIAL_TOKEN :
+{
+  <MULTI_LINE_COMMENT: "*/" > : DEFAULT
+}
+
+<IN_SINGLE_LINE_COMMENT,IN_FORMAL_COMMENT,IN_MULTI_LINE_COMMENT>
+MORE :
+{
+  < ~[] >
+}
+
+/* reserved words */
+TOKEN: {
+	< TYPEDEF: "typedef" >
+	| < FIXED: "fixed" >
+	| < IN: "in" >
+	| < OUT: "out" >
+	| < BACK: "backward" >
+	| < CONST: "const">
+ }
+
+TOKEN :
+{
+  < LPAREN: "(" >
+| < RPAREN: ")" >
+| < LBRACE: "{" >
+| < RBRACE: "}" >
+| < LBRACKET: "[" >
+| < RBRACKET: "]" >
+| < ASSIGN: "<-" >
+| < SEMICOLON: ";" >
+| < COMMA: "," >
+| < DOT: "." >
+| < AT: "@" >
+}
+
+TOKEN: {
+	< CONST_INTEGER: ("-")?(["0"-"9"])+ >
+	| < IDENTIFIER: (["A"-"Z"])+(["0"-"9","A"-"Z","_","-"])*>
+}
+
+void Start() : {
+	Token t;
+}
+{
+ 	(Consts())* (Typedefs())* t=<IDENTIFIER> <LPAREN> (Pin() (<COMMA> Pin())*)? <RPAREN> <LBRACE> Statements() <RBRACE>
+	{
+		design.setName(t.image);	
+		//DEBUG
+		//Info("Design " + t.image + " parsed!");
+	}
+}
+
+void Consts() : {
+	Token constName, constVal;
+}
+{
+	<CONST> constName=<IDENTIFIER> "=" constVal=<CONST_INTEGER> ";"
+	{
+		allConsts.put(constName.image, Integer.parseInt(constVal.image));
+		//DEBUG
+		//Info("Const " + constName.image + " with value " + constVal.image + " found");
+	}
+}
+
+void Typedefs() : {
+	Token typedefName;
+	int typedefVal;
+}
+{
+	<TYPEDEF> typedefVal=Fixed() typedefName=<IDENTIFIER> ";"
+ 	{
+ 		allTypedefs.put(typedefName.image, typedefVal);
+		//DEBUG
+		//Info("Type " + typedefName.image + " found with " + typedefVal + " bit(s)");
+ 	}
+}
+
+int Fixed() : {
+	Token bitwidth;
+}
+{
+	<FIXED> <LPAREN> bitwidth=<CONST_INTEGER> <COMMA> <CONST_INTEGER> (<COMMA> <CONST_INTEGER>)? <RPAREN>
+	{
+		return Integer.parseInt(bitwidth.image);
+	}
+}
+
+void Pin() : {
+	Token pinDir, pinName, pinType=null;
+	int pinWidth=0;
+	Component c;
+}
+{
+	(pinDir=<IN> | pinDir=<OUT>) (pinType=<IDENTIFIER> | pinWidth=Fixed()) pinName=<IDENTIFIER>
+	{
+		if (pinType != null) {
+			if (allTypedefs.containsKey(pinType.image)) {
+				pinWidth=(Integer)(allTypedefs.get(pinType.image));
+				Info(pinDir.image + "put pin " + pinName.image + " of type " + pinType.image + " found");
+			}
+			else {
+				Error("Type " + pinType.image + " NOT found!");
+			}
+		}
+		if (pinDir.kind == IN) {
+			if (pinWidth == 1) {
+				c = new input(pinName.image);
+			}
+			else {
+				c = new input(pinName.image, pinWidth);
+			}
+		}
+		else {
+			if (pinWidth == 1) {
+				c = new output(pinName.image);
+			}
+			else {
+				c = new output(pinName.image, pinWidth);
+			}
+		}  
+		allComponents.put(pinName.image, c);
+		design.addComponent(c);
+	}
+}
+
+void Statements() : {}
+{
+ 	 Declarations()
+ 	 (Connection())+
+}
+
+void Declarations() : {}
+{
+ 	 <LBRACE> (Declaration())+ <RBRACE>
+}
+
+void Declaration() : {
+	Token t1=null, t2=null, t3;
+	Vector<String> comps = new Vector<String>();
+	Vector<Integer> args = new Vector<Integer>();
+}
+{
+	t1=<IDENTIFIER> (<COMMA> t2=<IDENTIFIER>)* ":" t3=<IDENTIFIER> <LPAREN> (Arg(args) (<COMMA> Arg(args))*)? <RPAREN> ";"
+	{
+		if (t1 != null) {
+			comps.add(t1.image);
+		}
+		if (t2 != null) {
+			comps.add(t2.image);
+		}
+  		for (String c : comps) {
+  			Object o=null;
+			try {
+				switch (args.size()) {
+				case 1:
+					o = Class.forName("br.ufscar.dc.lalp.components." + t3.image).getConstructor(String.class, int.class).newInstance(c, args.get(0));					
+					break;
+				case 2:
+					o = Class.forName("br.ufscar.dc.lalp.components." + t3.image).getConstructor(String.class, int.class, int.class).newInstance(c, args.get(0), args.get(1));					
+					break;
+				case 3:
+					o = Class.forName("br.ufscar.dc.lalp.components." + t3.image).getConstructor(String.class, int.class, int.class, int.class).newInstance(c, args.get(0), args.get(1), args.get(2));					
+					break;
+				case 4:
+					o = Class.forName("br.ufscar.dc.lalp.components." + t3.image).getConstructor(String.class, int.class, int.class, int.class, int.class).newInstance(c, args.get(0), args.get(1), args.get(2), args.get(3));					
+					break;
+				case 5:
+					o = Class.forName("br.ufscar.dc.lalp.components." + t3.image).getConstructor(String.class, int.class, int.class, int.class, int.class, int.class).newInstance(c, args.get(0), args.get(1), args.get(2), args.get(3), args.get(4));					
+					break;
+				case 6:
+					o = Class.forName("br.ufscar.dc.lalp.components." + t3.image).getConstructor(String.class, int.class, int.class, int.class, int.class, int.class, int.class).newInstance(c, args.get(0), args.get(1), args.get(2), args.get(3), args.get(4), args.get(5));					
+					break;
+				default:
+					Error("wrong number or arguments for component " + c); 
+				}
+				allComponents.put(c, (Component)o);
+				design.addComponent((Component)o);
+			} catch (InstantiationException e) {
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				e.printStackTrace();
+			} catch (ClassNotFoundException e) {
+				e.printStackTrace();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+        }	
+ 	}
+}
+
+void Arg(Vector<Integer> args) : {
+	Token t;
+	int val;
+}
+{
+	(t=<CONST_INTEGER> | t=<IDENTIFIER>)
+	{
+		if (t.kind == IDENTIFIER) {
+			if (allConsts.containsKey(t.image)) {
+				val = allConsts.get(t.image);
+				args.add(val);
+			}
+			else {
+				Error("Const " + t.image + " NOT found!");
+			}
+		}
+		else {
+			val = Integer.parseInt(t.image);
+			args.add(val);
+		}
+	}
+}
+
+void Connection() : {
+	cFromPort = null;
+	cToPort = null;
+	backward = false;
+	Signal s;
+	signalName = null;
+}
+{
+	Lhs() <ASSIGN> ConnectionName() Rhs()
+	{
+		//DEBUG
+		//Info("Trying to connect component " + cFrom + " port " + cFromPort + " on component " + cTo + " port " + cToPort);
+		try {
+	    	if (cFromPort != null) {
+	    		if (cToPort != null) {
+	                s = cFrom.connectComponent(cFromPort, cTo, cToPort);                		
+	      		}
+	    		else {
+	                s = cFrom.connectComponent(cFromPort, cTo);                		
+	    		}
+	    	}
+	    	else {
+	    		if (cToPort != null) {
+	                s = cFrom.connectComponent(cTo, cToPort);                		
+	      		}
+	    		else {
+	                s = cFrom.connectComponent(cTo);                		
+	    		}
+	    	}
+	    	if (signalName != null) {
+	    		s.setName(signalName);
+	    	}
+	    	s.setBackEdge(backward);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+}
+
+void Lhs() : {
+	Token tc, tp = null;
+}
+{
+	tc=<IDENTIFIER> (<DOT> tp=<IDENTIFIER>)?
+	{
+		cTo = allComponents.get(tc.image);
+		if (cTo == null) {
+			Error("Component " + tc.image + " NOT found!");
+		}
+		if (tp != null) {
+			cToPort = tp.image;
+		}
+	}
+}
+
+void ConnectionName() : {
+	Token t = null;
+}
+{
+	[<LPAREN> t=<IDENTIFIER> <RPAREN>]
+	{
+		if (t != null) {
+			signalName = t.image;
+		}
+	}
+}
+
+void Rhs() : {
+	Token tc, tp = null, tb = null;
+	int width;
+}
+{
+	tc=<IDENTIFIER> [<DOT> tp=<IDENTIFIER>] [<LPAREN> tb=<BACK> <RPAREN>] ";"
+	{
+		cFrom = allComponents.get(tc.image);
+		if (cFrom == null) {
+			if (allConsts.containsKey(tc.image)) {
+				//TODO gerando tamanhos diferentes ainda...
+				width = cTo.getWidth();
+				if (cToPort != null)
+					width = ((IComponent)cTo).getPort(cToPort).getWidth(); 
+				cFrom = design.addComponent(new const_op(tc.image, allConsts.get(tc.image), width));
+			}
+			else
+				Error("Component or constant " + tc.image + " NOT found!");
+		}
+		if (tp != null) {
+			cFromPort = tp.image;
+		}
+		if (tb != null) {
+			backward = true;
+		}
+	}
+}
+
+void Error(String s) : {} 
+{
+	{
+		System.out.println(s);
+		System.exit(1);
+	}
+}
+
+void Info(String s) : {} 
+{
+	{
+		System.out.println("parsing: " + s);
+	}
+}

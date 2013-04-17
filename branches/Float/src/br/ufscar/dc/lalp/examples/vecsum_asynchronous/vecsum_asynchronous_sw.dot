@@ -1,0 +1,13 @@
+digraph vecsum_asynchronous {
+	// Components (Nodes)
+	node [shape=ellipse, style=filled, color=dodgerblue2];
+	"result" [color=bisque4 shape=invtriangle label="result"];
+	"x_add_op_s_y" [label="x_add_op_s_y:+"  color=dodgerblue2 ];
+	"x" [color=bisque4 shape=invtriangle label="x"];
+	"y" [color=bisque4 shape=invtriangle label="y"];
+
+	// Signals (Edges)
+	"x" -> "x_add_op_s_y"
+	"y" -> "x_add_op_s_y"
+	"x_add_op_s_y" -> "result"
+}

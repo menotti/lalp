@@ -1,0 +1,26 @@
+[*]
+[*] GTKWave Analyzer v3.3.34 (w)1999-2012 BSI
+[*] Tue Apr 16 12:48:59 2013
+[*]
+[dumpfile] "/home/cristiano/lalp/src/br/ufscar/dc/lalp/examples/teste_lalp/gnu/t_dotprod.vcd"
+[dumpfile_mtime] "Tue Apr 16 12:47:49 2013"
+[dumpfile_size] 146396
+[savefile] "/home/cristiano/lalp/src/br/ufscar/dc/lalp/examples/teste_lalp/gnu/t_dotprod.sav"
+[timestart] 95400000
+[size] 1000 600
+[pos] 507 211
+*-26.000000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] uut.
+[sst_width] 223
+[signals_width] 310
+[sst_expanded] 1
+[sst_vpaned_height] 160
+@22
+uut.\x\.data_out[31:0]
+uut.\y\.data_out[31:0]
+\sum\[31:0][31:0]
+uut.\acc\.o0[31:0]
+@28
+\clk\
+[pattern_trace] 1
+[pattern_trace] 0

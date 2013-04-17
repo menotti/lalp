@@ -1,0 +1,61 @@
+digraph fir {
+	// Components (Nodes)
+	node [shape=ellipse, style=filled, color=dodgerblue2];
+	"result" [color=bisque4 shape=invtriangle label="result"];
+	"init_delay_op_1" [label="{}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"c26" [color=bisque4 shape=invtriangle label="0x3"];
+	"d1" [label="d1" shape=doubleoctagon  color=dodgerblue2 ];
+	"c_mult_op_s_7" [label="*"  color=dodgerblue2 ];
+	"c30" [color=bisque4 shape=invtriangle label="0xb"];
+	"c29" [color=bisque4 shape=invtriangle label="0x9"];
+	"c27" [color=bisque4 shape=invtriangle label="0x5"];
+	"a1_add_op_s_b1_add_op_s_c1" [label="a1_add_op_s_b1_add_op_s_c1:+"  color=dodgerblue2 ];
+	"a1_add_op_s_b1_add_op_s_c1_add_op_s_d1_add_op_s_e1" [label="a1_add_op_s_b1_add_op_s_c1_add_op_s_d1_add_op_s_e1:+"  color=dodgerblue2 ];
+	"sum" [label="sum" shape=doubleoctagon  color=dodgerblue2 ];
+	"a1" [label="a1" shape=doubleoctagon  color=dodgerblue2 ];
+	"init" [color=bisque4 shape=invtriangle label="init"];
+	"e" [color=bisque4 shape=invtriangle label="e"];
+	"b" [color=bisque4 shape=invtriangle label="b"];
+	"a_mult_op_s_3" [label="*"  color=dodgerblue2 ];
+	"e_mult_op_s_11" [label="*"  color=dodgerblue2 ];
+	"d1_add_op_s_e1" [label="d1_add_op_s_e1:+"  color=dodgerblue2 ];
+	"c28" [color=bisque4 shape=invtriangle label="0x7"];
+	"b_mult_op_s_5" [label="*"  color=dodgerblue2 ];
+	"c1" [label="c1" shape=doubleoctagon  color=dodgerblue2 ];
+	"d_mult_op_s_9" [label="*"  color=dodgerblue2 ];
+	"e1" [label="e1" shape=doubleoctagon  color=dodgerblue2 ];
+	"a1_add_op_s_b1" [label="a1_add_op_s_b1:+"  color=dodgerblue2 ];
+	"b1" [label="b1" shape=doubleoctagon  color=dodgerblue2 ];
+	"c" [color=bisque4 shape=invtriangle label="c"];
+	"d" [color=bisque4 shape=invtriangle label="d"];
+	"a" [color=bisque4 shape=invtriangle label="a"];
+
+	// Signals (Edges)
+	"a" -> "a_mult_op_s_3"
+	"d1_add_op_s_e1" -> "a1_add_op_s_b1_add_op_s_c1_add_op_s_d1_add_op_s_e1"
+	"sum" -> "result"
+	"d_mult_op_s_9" -> "d1"
+	"a1" -> "a1_add_op_s_b1"
+	"init_delay_op_1" -> "sum"
+	"d1" -> "d1_add_op_s_e1"
+	"a1_add_op_s_b1_add_op_s_c1" -> "a1_add_op_s_b1_add_op_s_c1_add_op_s_d1_add_op_s_e1"
+	"init" -> "init_delay_op_1":input
+	"d" -> "d_mult_op_s_9"
+	"c28" -> "c_mult_op_s_7"
+	"b_mult_op_s_5" -> "b1"
+	"b" -> "b_mult_op_s_5"
+	"c26" -> "a_mult_op_s_3"
+	"c30" -> "e_mult_op_s_11"
+	"a1_add_op_s_b1" -> "a1_add_op_s_b1_add_op_s_c1"
+	"e1" -> "d1_add_op_s_e1"
+	"a1_add_op_s_b1_add_op_s_c1_add_op_s_d1_add_op_s_e1" -> "sum"
+	"e_mult_op_s_11" -> "e1"
+	"c29" -> "d_mult_op_s_9"
+	"b1" -> "a1_add_op_s_b1"
+	"e" -> "e_mult_op_s_11"
+	"c1" -> "a1_add_op_s_b1_add_op_s_c1"
+	"c_mult_op_s_7" -> "c1"
+	"c" -> "c_mult_op_s_7"
+	"c27" -> "b_mult_op_s_5"
+	"a_mult_op_s_3" -> "a1"
+}

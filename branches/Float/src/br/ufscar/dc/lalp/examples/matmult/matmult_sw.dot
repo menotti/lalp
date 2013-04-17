@@ -1,0 +1,105 @@
+digraph matmult {
+	// Components (Nodes)
+	node [shape=ellipse, style=filled, color=dodgerblue2];
+	"result" [color=bisque4 shape=invtriangle label="result"];
+	"addrs_delay_op_4" [label="{|||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"a_mult_op_s_b" [label="*"  color=dodgerblue2 ];
+	"i" [label="i" shape=doubleoctagon  color=dodgerblue2 ];
+	"a" [label="a" shape=doubleoctagon  color=dodgerblue2 ];
+	"c40" [color=bisque4 shape=invtriangle label="0x14"];
+	"c37" [color=bisque4 shape=invtriangle label="0x3"];
+	"c44" [label="{|}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"c41" [color=bisque4 shape=invtriangle label="0x5"];
+	"c34" [color=bisque4 shape=invtriangle label="0x19"];
+	"i_step_not_op_delay_op_5" [label="{||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"c33" [color=bisque4 shape=invtriangle label="0x0"];
+	"i_step_delay_op_4" [label="{|||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"sum1" [label="sum1" shape=doubleoctagon  color=dodgerblue2 ];
+	"reg" [label="reg" shape=doubleoctagon  color=dodgerblue2 ];
+	"m_add_op_s_5" [label="m_add_op_s_5:+"  color=dodgerblue2 ];
+	"i_step_delay_op_5" [label="{||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"j" [label="j" shape=doubleoctagon  color=dodgerblue2 ];
+	"addra" [label="addra" shape=doubleoctagon  color=dodgerblue2 ];
+	"addrb" [label="addrb" shape=doubleoctagon  color=dodgerblue2 ];
+	"m_plus_5" [label="m_plus_5" shape=doubleoctagon  color=dodgerblue2 ];
+	"done" [color=bisque4 shape=invtriangle label="done"];
+	"sum" [label="sum" shape=doubleoctagon  color=dodgerblue2 ];
+	"l_if_gt_op_s_3" [label="l_if_gt_op_s_3:>"  color=dodgerblue2 ];
+	"l_add_op_s_20" [label="l_add_op_s_20:+"  color=dodgerblue2 ];
+	"sum1_add_op_s_sum" [label="sum1_add_op_s_sum:+"  color=dodgerblue2 ];
+	"i_step_not_op" [label="i_step_not_op:!"  color=dodgerblue2 ];
+	"c35" [color=bisque4 shape=invtriangle label="0x0"];
+	"c38" [color=bisque4 shape=invtriangle label="0x1"];
+	"c43" [label="{|||||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"c42" [color=bisque4 shape=invtriangle label="0x0"];
+	"c39" [color=bisque4 shape=invtriangle label="0x0"];
+	"b" [label="b" shape=doubleoctagon  color=dodgerblue2 ];
+	"c36" [color=bisque4 shape=invtriangle label="0x19"];
+	"l_plus_20" [label="l_plus_20" shape=doubleoctagon  color=dodgerblue2 ];
+	"s" [label="s" shape=doubleoctagon  color=dodgerblue2 ];
+	"addrs" [label="addrs" shape=doubleoctagon  color=dodgerblue2 ];
+	"l_add_op_s_1" [label="l_add_op_s_1:+"  color=dodgerblue2 ];
+	"k" [label="k" shape=doubleoctagon  color=dodgerblue2 ];
+	"l" [label="l" shape=doubleoctagon  color=dodgerblue2 ];
+	"m" [label="m" shape=doubleoctagon  color=dodgerblue2 ];
+	"init" [color=bisque4 shape=invtriangle label="init"];
+
+	// Signals (Edges)
+	"c33" -> "m"
+	"i_step_not_op_delay_op_5" -> "s"
+	"k" -> "l"
+	"c38" -> "l_add_op_s_1"
+	"i_step_delay_op_4" -> "sum"
+	"b" -> "a_mult_op_s_b"
+	"i" -> "addra"
+	"m" -> "m_plus_5"
+	"addrb" -> "b"
+	"addra" -> "a"
+	"c41" -> "m_add_op_s_5"
+	"k" -> "j"
+	"c37" -> "l_if_gt_op_s_3"
+	"c39" -> "reg"
+	"i_step_not_op" -> "i_step_not_op_delay_op_5":input
+	"m_add_op_s_5" -> "m_plus_5"
+	"j" -> "addrb"
+	"addrs" -> "addrs_delay_op_4":input
+	"i" -> "i_step_delay_op_4":input
+	"l" -> "l_add_op_s_1"
+	"sum1" -> "s"
+	"i" -> "i_step_not_op"
+	"l_if_gt_op_s_3" -> "reg"
+	"reg" -> "l" [style=dashed];
+	"s" -> "result"
+	"l" -> "l_if_gt_op_s_3"
+	"a_mult_op_s_b" -> "sum"
+	"m" -> "i"
+	"m" -> "m_add_op_s_5"
+	"i" -> "i_step_delay_op_5":input
+	"i_step_delay_op_5" -> "sum1"
+	"a" -> "a_mult_op_s_b"
+	"sum1_add_op_s_sum" -> "sum1" [style=dashed];
+	"c43" -> "done"
+	"l" -> "l_add_op_s_20"
+	"k" -> "i"
+	"k" -> "c44":input
+	"l_add_op_s_20" -> "l_plus_20"
+	"m_plus_5" -> "i" [style=dashed];
+	"l_plus_20" -> "j" [style=dashed];
+	"init" -> "k"
+	"c35" -> "k"
+	"c34" -> "m"
+	"c40" -> "l_add_op_s_20"
+	"c44" -> "addrs"
+	"init" -> "i"
+	"i" -> "c43":input
+	"sum1" -> "sum1_add_op_s_sum" [style=dashed];
+	"init" -> "sum1"
+	"c42" -> "sum1"
+	"sum" -> "sum1_add_op_s_sum" [style=dashed];
+	"addrs_delay_op_4" -> "s"
+	"l_add_op_s_1" -> "reg"
+	"l" -> "j" [style=dashed];
+	"init" -> "j"
+	"c36" -> "k"
+	"init" -> "m"
+}
