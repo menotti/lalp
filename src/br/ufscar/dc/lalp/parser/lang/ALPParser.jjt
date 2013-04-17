@@ -158,10 +158,20 @@ TOKEN: {
 	| < CLOCK: "clock">	
 	| < WAIT: "wait">
  }
- 
+
+ /* Tipos de variaveis */
+TOKEN: {
+  <FLOAT: "float">
+  //| <INT: "int">
+  //| <BYTE: "byte">
+  //| <BOOLEAN: "bool">}
 
 TOKEN : /* LITERALS */
 {
+  < FLOAT_LITERAL:
+   ("-")? (["0"-"9"])* "." (["0"-"9"])+ //float //FIXME: Ver melhor local para definir o float
+  >
+| 
   < INTEGER_LITERAL:
         ("-")? <DECIMAL_LITERAL> (["l","L"])?
       | ("-")? <HEX_LITERAL> (["l","L"])?
@@ -276,6 +286,13 @@ TOKEN : /* OPERATORS */
 | < MINUS: "-" >
 | < STAR: "*" >
 | < SLASH: "/" >
+
+| < FP_PLUS: ".+" > //FIXME:Operadores criados temporariamente
+| < FP_MINUS: ".-" >
+| < FP_STAR: ".*" >
+| < FP_SLASH: "./" >
+
+
 | < BIT_AND: "&" >
 | < BIT_OR: "|" >
 | < XOR: "^" >
@@ -440,7 +457,7 @@ void Const() : {
 	Token constName, constVal;
 }
 {
-	<CONST> constName=<IDENTIFIER> "=" constVal=<INTEGER_LITERAL> <SEMICOLON>
+	<CONST> constName=<IDENTIFIER> "=" constVal=<INTEGER_LITERAL>  <SEMICOLON>
 	{
 		if (allConsts.containsKey(constName.image)) {
 			ErrorToken("Redefinition of Const " + constName.image, constName);
@@ -472,6 +489,7 @@ void Typedef() : {
  	}
 }
 
+
 int Fixed() #void : {
 	int bitwidth;
 }
@@ -480,6 +498,38 @@ int Fixed() #void : {
 	{
 		return bitwidth;
 	}
+}
+
+long FloatLong() :{
+    Token t;
+}
+{
+   t=<FLOAT_LITERAL>
+   {
+     jjtThis.setFloatNumber(true);
+     return FloatStringToLong(t.image);
+   }  
+        
+}
+
+int Int() #void :{
+    Token t;
+}
+{
+   t=<INTEGER_LITERAL>
+   {
+     return StringToInteger(t.image);
+   }
+}
+
+long Long() #void :{
+    Token t;
+}
+{
+   t=<INTEGER_LITERAL>
+   {
+     return StringToLong(t.image);
+   }
 }
 
 void Pin() : {
@@ -526,6 +576,7 @@ void Statements() #void : {}
 void Declarations() #void : {}
 {
  	 <LBRACE> (Declaration())+ <RBRACE>
+ 	
 }
 
 void Declaration() #void : {
@@ -554,6 +605,7 @@ void Variable(int varWidth) : {
 	Vector<Long> inits = null;
 }
 {
+	
 	tName=<IDENTIFIER> (<LBRACKET> (size=ConstOrInt())? <RBRACKET>)? ("=" (init=ConstOrLong() | inits=MemoryInit(inits)))?
 	{
 		if (allVariables.containsKey(tName.image)) {
@@ -563,7 +615,7 @@ void Variable(int varWidth) : {
 		if (size == null && inits != null && inits.size() != 0)
 			size = inits.size();
 		jjtThis.setArraySize(size);
-		jjtThis.jjtSetValue(init);
+        jjtThis.jjtSetValue(init);
 		jjtThis.setInits(inits);
 		jjtThis.setWidth(varWidth);
 		jjtThis.setToken(tName);
@@ -648,27 +700,73 @@ void TestbenchEntry(int varWidth) : {
 }
 
 Vector<Long> MemoryInit(Vector<Long> inits) #void : {
+    Token t=null;
+    Long l;
+}
+{
+    <LBRACE> (l=Long() | l=FloatLong())
+    {
+        if (inits == null) {
+            inits = new Vector<Long>();
+        }
+        inits.add(l);
+    }
+    ( <COMMA> (t=<INTEGER_LITERAL>|t=<FLOAT_LITERAL>)
+    {
+        if (t != null) {
+          if(t.kind == INTEGER_LITERAL)
+          {
+            inits.add(StringToLong(t.image));
+          }
+          else
+          {
+            inits.add(FloatStringToLong(t.image));
+          }
+        }
+    }
+    )* <RBRACE>
+    {
+        return inits;
+    }
+}
+
+/*
+Vector<Long> MemoryInit(Vector<Long> inits) #void : {
 	Token t1, t2=null;
 }
 {
-	"{" t1=<INTEGER_LITERAL>
+	<LBRACE> (t1=<INTEGER_LITERAL> | t1=<FLOAT_LITERAL>)
 	{
 		if (inits == null) {
 			inits = new Vector<Long>();
 		}
-		inits.add(StringToLong(t1.image));
+
+		if(t1.kind == INTEGER_LITERAL)		{		  inits.add(StringToLong(t1.image));
+		}
+		else		{
+		  inits.add(FloatStringToLong(t1.image));
+		}
+		 
 	}
-	( "," t2=<INTEGER_LITERAL>
+	( <COMMA> (t2=<INTEGER_LITERAL>|t2=<FLOAT_LITERAL>)
 	{
 		if (t2 != null) {
-			inits.add(StringToLong(t2.image));
+		  if(t2.kind == INTEGER_LITERAL)
+          {
+            inits.add(StringToLong(t2.image));
+          }
+          else
+          {
+            inits.add(FloatStringToLong(t2.image));
+          }
 		}
 	}
-	)* "}"
+	)* <RBRACE>
 	{
 		return inits;
 	}
 }
+*/
 
 void Counter() : {
 	
@@ -877,7 +975,7 @@ void DelayExpression() : {
 {
 	ConditionalExpression() (
 	LOOKAHEAD(1) {jjtThis.setComponentClass(delay_op.class);} 
-	"@" amount=ConstOrInt()(<HASH> endAmount=ConstOrInt(){jjtThis.setEndStepDelay(endAmount);})? {jjtThis.setStepDelay(amount);} 
+	<AT> amount=ConstOrInt()(<HASH> endAmount=ConstOrInt(){jjtThis.setEndStepDelay(endAmount);})? {jjtThis.setStepDelay(amount);} 
 	)?
 }
 
@@ -947,8 +1045,14 @@ void ShiftExpression() : {
 void AdditiveExpression() : {}
 {
   MultiplicativeExpression() ( ( 
-  "+" {jjtThis.setComponentClass(add_op_s.class);} | 
-  "-" {jjtThis.setComponentClass(sub_op_s.class);}
+  <PLUS> {jjtThis.setComponentClass(add_op_s.class);}
+  | 
+  <MINUS> {jjtThis.setComponentClass(sub_op_s.class);}
+  | 
+  <FP_PLUS> {jjtThis.setComponentClass(add_op_fl.class);}
+  | 
+  <FP_MINUS> {jjtThis.setComponentClass(sub_op_fl.class);}
+ 
   ) MultiplicativeExpression() )*
 }
 
@@ -958,18 +1062,20 @@ void MultiplicativeExpression() : {
 }
 {
   UnaryExpression() ( ( 
-  "*" {jjtThis.setComponentClass(mult_op_s.class);} | 
+  <STAR> {jjtThis.setComponentClass(mult_op_s.class);} |
+  <FP_STAR> {jjtThis.setComponentClass(mult_op_fl.class);} | 
   "*@" amount=ConstOrInt()(<HASH> endAmount=ConstOrInt())? {jjtThis.setStepDelay(amount);} {jjtThis.setComponentClass(mult_op_s_p.class);} | // pipelined multiply 
-  "/" {jjtThis.setComponentClass(div_op_s.class);} |
-  "%" {jjtThis.setComponentClass(mod_op_s.class);}
+  <SLASH> {jjtThis.setComponentClass(div_op_s.class);} |
+  <FP_SLASH> {jjtThis.setComponentClass(div_op_fl.class);} |
+  <REM> {jjtThis.setComponentClass(mod_op_s.class);}
   ) UnaryExpression() )*
 }
 
 void UnaryExpression() : {}
 {
   ( 
-  "+" | 
-  "-" {jjtThis.setComponentClass(neg_op_s.class);}  
+  <PLUS> | 
+  <MINUS> {jjtThis.setComponentClass(neg_op_s.class);}  
   ) UnaryExpression()
 |
   PreIncrementExpression()
@@ -983,12 +1089,12 @@ void UnaryExpression() : {}
 
 void PreIncrementExpression() : {}
 {
-  "++" PrimaryExpression()
+  <INCR> PrimaryExpression()
 }
 
 void PreDecrementExpression() : {}
 {
-  "--" PrimaryExpression()
+  <DECR> PrimaryExpression()
 }
 
 void UnaryExpressionNotPlusMinus() : {}
@@ -1005,7 +1111,7 @@ void UnaryExpressionNotPlusMinus() : {}
 
 void PostfixExpression() : {}
 {
-  PrimaryExpression() [ "++" | "--" ]
+  PrimaryExpression() [ <INCR> | <DECR> ]
 }
 
 void PrimaryExpression() : {}
@@ -1017,17 +1123,40 @@ void Literal() : {
 	Token t;
 }
 {
-	(t=<INTEGER_LITERAL> | t=<CHARACTER_LITERAL> | t=<STRING_LITERAL>)
+	(t=<INTEGER_LITERAL> | t=<FLOAT_LITERAL> | t=<CHARACTER_LITERAL> | t=<STRING_LITERAL> )
 	{
-		jjtThis.jjtSetValue(StringToLong(t.image));
+	  if(t.kind== FLOAT_LITERAL)	  {
+	    jjtThis.jjtSetValue(FloatStringToLong(t.image));
+	    jjtThis.setFloatNumber(true);
+	  }else	  {
+	    jjtThis.jjtSetValue(StringToLong(t.image));
+	  }
 	}
 }
 
+int Constant() #void :{
+  Token t;}
+{
+  t=<IDENTIFIER>
+  {    if (allConsts.containsKey(t.image)) {
+          return allConsts.get(t.image);
+    }
+    else {
+       ErrorToken("Const " + t.image + " NOT found!", t);
+    }
+        
+   }}
+
+
 int ConstOrInt() #void : {
-	Token t;
+	//Token t;
 	int size = 0;
 }
 {
+   (size=Int()|size=Constant())
+   {
+     return size;   } 
+/*
 	(t=<INTEGER_LITERAL> | t=<IDENTIFIER>)
 	{
 		if (t.kind == IDENTIFIER) {
@@ -1041,15 +1170,23 @@ int ConstOrInt() #void : {
 		else {
 			size = StringToInteger(t.image);
 		}
+	
 		return size;
-	}
+	}*/
+
 }
 
+
 long ConstOrLong() #void : {
-	Token t;
+	//Token t;
 	long size = 0;
 }
 {
+   (size=Long()|size=Constant())
+   {
+     return size;
+   } 
+/*
 	(t=<INTEGER_LITERAL> | t=<IDENTIFIER>)
 	{
 		if (t.kind == IDENTIFIER) {
@@ -1064,7 +1201,7 @@ long ConstOrLong() #void : {
 			size = StringToLong(t.image);
 		}
 		return size;
-	}
+	}*/
 }
 
 void Error(String s) #void : {} 
@@ -1099,19 +1236,31 @@ void InfoToken(String s, Token t) #void : {}
 Integer StringToInteger(String s) #void : {}
 {
 	{
-		if (s.length() > 1 && s.charAt(1) == 'x')
-			return Integer.parseInt(s.substring(2), 16);
-		else
-			return Integer.parseInt(s);
+        if (s.length() > 1 && s.charAt(1) == 'x'){			return Integer.parseInt(s.substring(2), 16);
+     	}
+		else{		  return Integer.parseInt(s);
+        }
 	}
 }
 
 Long StringToLong(String s) #void : {}
 {
 	{
-		if (s.length() > 1 && s.charAt(1) == 'x')
-			return Long.parseLong(s.substring(2), 16);
-		else
-			return Long.parseLong(s);
+	  if (s.length() > 1 && s.charAt(1) == 'x')      {    	return Long.parseLong(s.substring(2), 16);
+	  }
+	  else	  {		return Long.parseLong(s);	  }	
 	}
+}
+
+Float StringToFloat(String s) #void : {}
+{  {    return Float.parseFloat(s);
+  }
+}
+
+Long FloatStringToLong(String s) #void : {}
+{
+  {
+     int raw = Float.floatToIntBits((Float.parseFloat(s)));
+     return new Long(raw);
+  }
 }

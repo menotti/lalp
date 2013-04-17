@@ -15,10 +15,10 @@
  */
 
 package br.ufscar.dc.lalp.parser.graph;
-import java.util.*;
-import java.io.*;
-import br.ufscar.dc.lalp.core.*;
-import br.ufscar.dc.lalp.components.*;
+//import java.util.*;
+//import java.io.*;
+//import br.ufscar.dc.lalp.core.*;
+//import br.ufscar.dc.lalp.components.*;
 
 /** Token Manager. */
 public class ALPGParserTokenManager implements ALPGParserConstants
