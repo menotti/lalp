@@ -50,6 +50,8 @@ public class LangParser {
 		try {
 			root = parser.Start();
 			parser.design = new Design(root.getIdentifier());
+			//root.updateFloat();
+			//root.updateOperators();
 			root.updateConnections();
 			root.accessComponents();
 		} catch (Exception e) {
@@ -125,7 +127,7 @@ public class LangParser {
 			n.setComponent(comp);
 			SimpleNode.allComponents.put(name, comp);
 			//DEBUG 
-//			System.out.println(comp);
+			//System.out.println(comp);
 		}
 	}
 	

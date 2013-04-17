@@ -20,7 +20,7 @@ import java.util.StringTokenizer;
 
 import br.ufscar.dc.lalp.algorithms.ALPG;
 import br.ufscar.dc.lalp.algorithms.Dijkstra;
-import br.ufscar.dc.lalp.algorithms.Dominators;
+//import br.ufscar.dc.lalp.algorithms.Dominators;
 import br.ufscar.dc.lalp.algorithms.Graphviz;
 import br.ufscar.dc.lalp.algorithms.Scheduling;
 import br.ufscar.dc.lalp.algorithms.StrongConnectedComponents;
@@ -84,7 +84,8 @@ public class LALP {
 			info(usage);
 			System.exit(0);
 		}
-
+		
+		
 		for (int i = 0; i < args.length; i++) {
 			if (args[i].equals("-version")) {
 				info(version);
