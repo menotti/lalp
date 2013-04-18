@@ -138,51 +138,43 @@ public interface ALPParserConstants {
   /** RegularExpression Id. */
   int SLASH = 65;
   /** RegularExpression Id. */
-  int FP_PLUS = 66;
+  int BIT_AND = 66;
   /** RegularExpression Id. */
-  int FP_MINUS = 67;
+  int BIT_OR = 67;
   /** RegularExpression Id. */
-  int FP_STAR = 68;
+  int XOR = 68;
   /** RegularExpression Id. */
-  int FP_SLASH = 69;
+  int REM = 69;
   /** RegularExpression Id. */
-  int BIT_AND = 70;
+  int LSHIFT = 70;
   /** RegularExpression Id. */
-  int BIT_OR = 71;
+  int RSIGNEDSHIFT = 71;
   /** RegularExpression Id. */
-  int XOR = 72;
+  int RUNSIGNEDSHIFT = 72;
   /** RegularExpression Id. */
-  int REM = 73;
+  int PLUSASSIGN = 73;
   /** RegularExpression Id. */
-  int LSHIFT = 74;
+  int MINUSASSIGN = 74;
   /** RegularExpression Id. */
-  int RSIGNEDSHIFT = 75;
+  int STARASSIGN = 75;
   /** RegularExpression Id. */
-  int RUNSIGNEDSHIFT = 76;
+  int SLASHASSIGN = 76;
   /** RegularExpression Id. */
-  int PLUSASSIGN = 77;
+  int ANDASSIGN = 77;
   /** RegularExpression Id. */
-  int MINUSASSIGN = 78;
+  int ORASSIGN = 78;
   /** RegularExpression Id. */
-  int STARASSIGN = 79;
+  int XORASSIGN = 79;
   /** RegularExpression Id. */
-  int SLASHASSIGN = 80;
+  int REMASSIGN = 80;
   /** RegularExpression Id. */
-  int ANDASSIGN = 81;
+  int LSHIFTASSIGN = 81;
   /** RegularExpression Id. */
-  int ORASSIGN = 82;
+  int RSIGNEDSHIFTASSIGN = 82;
   /** RegularExpression Id. */
-  int XORASSIGN = 83;
+  int RUNSIGNEDSHIFTASSIGN = 83;
   /** RegularExpression Id. */
-  int REMASSIGN = 84;
-  /** RegularExpression Id. */
-  int LSHIFTASSIGN = 85;
-  /** RegularExpression Id. */
-  int RSIGNEDSHIFTASSIGN = 86;
-  /** RegularExpression Id. */
-  int RUNSIGNEDSHIFTASSIGN = 87;
-  /** RegularExpression Id. */
-  int HASH = 88;
+  int HASH = 84;
 
   /** Lexical state. */
   int DEFAULT = 0;
@@ -261,10 +253,6 @@ public interface ALPParserConstants {
     "\"-\"",
     "\"*\"",
     "\"/\"",
-    "\".+\"",
-    "\".-\"",
-    "\".*\"",
-    "\"./\"",
     "\"&\"",
     "\"|\"",
     "\"^\"",
