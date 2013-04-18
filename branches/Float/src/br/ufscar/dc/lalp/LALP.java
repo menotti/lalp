@@ -33,7 +33,6 @@ import br.ufscar.dc.lalp.parser.lang.SimpleNode;
 
 
 
-
 /**
  * The LALP compiler
  * @author <a href="http://menotti.pro.br/">Ricardo Menotti</a>
