@@ -26,6 +26,7 @@ public class SimpleNode implements Node {
 	protected Integer width = null; //Typedef/Pin/Variable
 	protected Integer stepDelay = null; //Counter/Delay
 	protected Integer endStepDelay = null;
+	@SuppressWarnings("rawtypes")
 	protected Class componentClass = null; //Pin/Expression(s)/LHS
 	protected PortType portType = null; //Pin
 	protected Token token = null; //Variable
@@ -141,6 +142,8 @@ public class SimpleNode implements Node {
 		if (getStepDelay() != null) {
 			sb.append("@"+getStepDelay());
 		}
+		
+		sb.append ((isFloat()?"(float)":""));//FIXME: Debug
 		
 		return sb.toString(); 
 	}
@@ -287,10 +290,12 @@ public class SimpleNode implements Node {
 		this.stepDelay = delay;
 	}
 
+	@SuppressWarnings("rawtypes")
 	public Class getComponentClass() {
 		return componentClass;
 	}
 
+	@SuppressWarnings("rawtypes")
 	public void setComponentClass(Class cc) {
 		this.componentClass = cc;
 	}
@@ -354,7 +359,7 @@ public class SimpleNode implements Node {
 		this.inits = inits;
 	}
 	
-	/*
+	
     public boolean hasChildFloat()
     {
       Integer n_children = jjtGetNumChildren();
@@ -371,22 +376,14 @@ public class SimpleNode implements Node {
 		      }
 		  }
 	  }
-      // Se é o último nó então verifica se é uma variável float
-      else {
-    	  
-    	  if(this.id==ALPParserTreeConstants.JJTNAME){
-    		System.out.println("\nAchou JJTNAME " + getIdentifier());  
-    	  }
-    		  
-      }
 	  return floatNumber;
 	}
-    */
+    
 	/**
 	 * This method is used to set floatNumber for all nodes that have a floating-point number
 	 * This method is recursive!
 	 * */
-	/*
+	
 	public void updateFloat(){
 		Integer n_children = jjtGetNumChildren();
 		
@@ -399,28 +396,41 @@ public class SimpleNode implements Node {
 		  }
 		}		
 	}
-*/
+
 	/**
 	 * This method is used to replace default Integer operators by Floating-point operators.
 	 * This method is recursive!
 	 * */
-	/*
+	
 	public void updateOperators(){
 		Integer n_children = jjtGetNumChildren();
 		
-		if(this.id==ALPParserTreeConstants.JJTADDITIVEEXPRESSION){
+		if(getComponentClass()!=null){
 			
-			if(floatNumber){
+			if(this.floatNumber){
+				System.out.println("\nFound a floating-point operation.");
+				System.out.println("Replacing " + getComponentClass());
 				
 				if(getComponentClass() == add_op_s.class)
 				{
-					System.out.println("\nFound a floating-point operation.");
-					System.out.println("Replacing " + getComponentClass());
 					this.setComponentClass(add_op_fl.class);	
+				}
+				else if(getComponentClass() == sub_op_s.class)
+				{
+					this.setComponentClass(sub_op_fl.class);	
+				}
+				else if(getComponentClass() == mult_op_s.class)
+				{
+					this.setComponentClass(mult_op_fl.class);	
+				}
+				else if(getComponentClass() == div_op_s.class)
+				{
+					this.setComponentClass(div_op_fl.class);	
 				}
 			}				
 		}
-		else if(n_children>0){
+		
+		if(n_children>0){
 			
 		  for(int i=0;i<n_children;i++){
 		      SimpleNode child = (SimpleNode)jjtGetChild(i);
@@ -428,7 +438,7 @@ public class SimpleNode implements Node {
 		  }
 		}		
 	}
-	*/
+	
 	/**
 	 * Update connections between nodes, eliminating nodes without operations and naming others.
 	 * This method is recursive!
