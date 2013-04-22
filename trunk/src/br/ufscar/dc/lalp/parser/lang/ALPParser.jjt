@@ -707,38 +707,7 @@ void TestbenchEntry(int varWidth) : {
 		//InfoToken("Variable " + tName.image + (size>0 ? "[" + size +"]" : "") + (init != null ? " with initial value " + init : "") +" found", tName);
 	}
 }
-/*
-Vector<Long> MemoryInit(Vector<Long> inits) #void : {
-    Token t=null;
-    Long l;
-}
-{
-    <LBRACE> (l=Long() | l=FloatLong())
-    {
-        if (inits == null) {
-            inits = new Vector<Long>();
-        }
-        inits.add(l);
-    }
-    ( <COMMA> (t=<INTEGER_LITERAL>|t=<FLOAT_LITERAL>)
-    {
-        if (t != null) {
-          if(t.kind == INTEGER_LITERAL)
-          {
-            inits.add(StringToLong(t.image));
-          }
-          else
-          {
-            inits.add(FloatStringToLong(t.image));
-          }
-        }
-    }
-    )* <RBRACE>
-    {
-        return inits;
-    }
-}
-*/
+
 
 Vector<Long> MemoryInit(Vector<Long> inits) #void : {
 	Token t1, t2=null;

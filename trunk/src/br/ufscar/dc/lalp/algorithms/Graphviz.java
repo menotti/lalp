@@ -210,11 +210,46 @@ public class Graphviz {
 			}
 		}
 	}
+	
+	////////////////
+	public void generateHardwareVisualization(Design design) {
+		generateHardwareVisualization(design, DEFAULT_DIRECTORY);
+	}
+	
+	public void generateHardwareVisualization(Design design, String path) {
+		System.out.print("\nGenerating Graphviz Hardware Representation...");
+		generateHardwareVisualization(design, path, null);
+		System.out.println("Ok!");
+	}
+	
+	   
+		/**
+		 * Generate the Graphviz file
+		 * @param design The design to be represented
+		 */
+	public void generateHardwareVisualization(Design design, String path, Integer subgraph) {
+		System.out.print("\nGenerating Graphviz Hardware Representation...");
+		fileName = design.getName() + "_hw.dot";
+		try {
+			FileOutputStream outputFile = new FileOutputStream(path + System.getProperty("file.separator") + fileName);
+			DataOutputStream dataOut = new DataOutputStream(outputFile);
+			generateHardwareVertices(design, dataOut);
+			//generateGraphvizSimpleVertices(design, dataOut, horizontal);
+			generateHardwareEdges(design, dataOut);
+			dataOut.close();
+		}
+		catch(IOException e) {
+			System.out.println("Problem creating file!");
+			e.printStackTrace();
+		}		
+		System.out.println("Ok!");		
+	}
+	////////////////
     
 	/**
 	 * Generate the Graphviz file
 	 * @param design The design to be represented
-	 */
+	 *//*
 	public void generateHardwareVisualization(Design design) {
 		System.out.print("\nGenerating Graphviz Hardware Representation...");
 		fileName = design.getName() + "_hw.dot";
@@ -231,7 +266,7 @@ public class Graphviz {
 			e.printStackTrace();
 		}		
 		System.out.println("Ok!");
-	}
+	}*/
     
 	/**
 	 * Generate the Graphviz edges

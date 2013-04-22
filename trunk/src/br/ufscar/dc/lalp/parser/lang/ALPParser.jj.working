@@ -75,7 +75,7 @@ public class ALPParser/*@bgen(jjtree)*/implements ALPParserTreeConstants/*@egen*
 	TestbenchUnity testbenchUnity;*/
 	public Vector<Process> allProcesses = new Vector<Process>();
 	public Hashtable<String, SimpleNode> allTestbenchEntries = new Hashtable<String, SimpleNode>();
-	protected boolean floatValue = false;
+	
 
 /*	public static void main(String args[]) {
 		FileInputStream inStream;
@@ -162,20 +162,10 @@ TOKEN: {
 	| < CLOCK: "clock">	
 	| < WAIT: "wait">
  }
-
- /* Tipos de variaveis */
-TOKEN: {
-  <FLOAT: "float">
-  //| <INT: "int">
-  //| <BYTE: "byte">
-  //| <BOOLEAN: "bool">}
+ 
 
 TOKEN : /* LITERALS */
 {
-  < FLOAT_LITERAL:
-   ("-")? (["0"-"9"])* "." (["0"-"9"])+ 
-  >
-| 
   < INTEGER_LITERAL:
         ("-")? <DECIMAL_LITERAL> (["l","L"])?
       | ("-")? <HEX_LITERAL> (["l","L"])?
@@ -577,7 +567,6 @@ void Name() : {/*@bgen(jjtree) Name */
         jjtree.openNodeScope(jjtn000);
 /*@egen*/
 	Token tName, tPort = null;
-	SimpleNode node = null;
 }
 {/*@bgen(jjtree) Name */
         try {
@@ -595,17 +584,10 @@ void Name() : {/*@bgen(jjtree) Name */
 			if (tPort != null) {
 				jjtn000.setPort(tPort.image);
 			}
-            //Verifica se o nome corresponde a uma vari\u00e1vel float
-            node = allVariables.get(tName.image);
-            if(node!= null)
-            {
-              jjtn000.setFloatNumber(node.isFloat());
-            }
 		}
 		else {
 			ErrorToken("Variable/Pin " + tName.image + " NOT found!", tName);
 		}
-		
 	}/*@bgen(jjtree)*/
         } finally {
           if (jjtc000) {
@@ -625,7 +607,7 @@ void Const() : {/*@bgen(jjtree) Const */
 {/*@bgen(jjtree) Const */
         try {
 /*@egen*/
-	<CONST> constName=<IDENTIFIER> "=" constVal=<INTEGER_LITERAL>  <SEMICOLON>/*@bgen(jjtree)*/
+	<CONST> constName=<IDENTIFIER> "=" constVal=<INTEGER_LITERAL> <SEMICOLON>/*@bgen(jjtree)*/
         {
           jjtree.closeNodeScope(jjtn000, true);
           jjtc000 = false;
@@ -699,7 +681,6 @@ void Typedef() : {/*@bgen(jjtree) Typedef */
 /*@egen*/
 }
 
-
 int Fixed()       : {
 	int bitwidth;
 }
@@ -708,38 +689,6 @@ int Fixed()       : {
 	{
 		return bitwidth;
 	}
-}
-
-long FloatLong()       :{
-    Token t;
-}
-{
-   t=<FLOAT_LITERAL>
-   {
-     //jjtThis.setFloatNumber(true);
-     return FloatStringToLong(t.image);
-   }  
-        
-}
-
-int Int()       :{
-    Token t;
-}
-{
-   t=<INTEGER_LITERAL>
-   {
-     return StringToInteger(t.image);
-   }
-}
-
-long Long()       :{
-    Token t;
-}
-{
-   t=<INTEGER_LITERAL>
-   {
-     return StringToLong(t.image);
-   }
 }
 
 void Pin() : {/*@bgen(jjtree) Pin */
@@ -817,7 +766,6 @@ void Statements()       : {}
 void Declarations()       : {}
 {
  	 <LBRACE> (Declaration())+ <RBRACE>
- 	
 }
 
 void Declaration()       : {
@@ -852,7 +800,6 @@ void Variable(int varWidth) : {/*@bgen(jjtree) Variable */
 {/*@bgen(jjtree) Variable */
         try {
 /*@egen*/
-	
 	tName=<IDENTIFIER> (<LBRACKET> (size=ConstOrInt())? <RBRACKET>)? ("=" (init=ConstOrLong() | inits=MemoryInit(inits)))?/*@bgen(jjtree)*/
         {
           jjtree.closeNodeScope(jjtn000, true);
@@ -867,18 +814,10 @@ void Variable(int varWidth) : {/*@bgen(jjtree) Variable */
 		if (size == null && inits != null && inits.size() != 0)
 			size = inits.size();
 		jjtn000.setArraySize(size);
-        jjtn000.jjtSetValue(init);
+		jjtn000.jjtSetValue(init);
 		jjtn000.setInits(inits);
 		jjtn000.setWidth(varWidth);
 		jjtn000.setToken(tName);
-        
-        //Verifica se houve  
-		if(floatValue)
-        {
-          floatValue = false;
-          jjtn000.setFloatNumber(true);
-        }
-        
 		allVariables.put(tName.image, jjtn000);
 		// comp = design.addComponent(comp);
 		// jjtThis.setComponent(comp);
@@ -1041,43 +980,28 @@ void TestbenchEntry(int varWidth) : {/*@bgen(jjtree) TestbenchEntry */
 /*@egen*/
 }
 
-
 Vector<Long> MemoryInit(Vector<Long> inits)       : {
 	Token t1, t2=null;
 }
 {
-	<LBRACE> (t1=<INTEGER_LITERAL> | t1=<FLOAT_LITERAL>)
+	"{" t1=<INTEGER_LITERAL>
 	{
 		if (inits == null) {
 			inits = new Vector<Long>();
 		}
-
-		if(t1.kind == INTEGER_LITERAL)		{		  inits.add(StringToLong(t1.image));
-		}
-		else		{
-		  inits.add(FloatStringToLong(t1.image));
-		}
-		 
+		inits.add(StringToLong(t1.image));
 	}
-	( <COMMA> (t2=<INTEGER_LITERAL>|t2=<FLOAT_LITERAL>)
+	( "," t2=<INTEGER_LITERAL>
 	{
 		if (t2 != null) {
-		  if(t2.kind == INTEGER_LITERAL)
-          {
-            inits.add(StringToLong(t2.image));
-          }
-          else
-          {
-            inits.add(FloatStringToLong(t2.image));
-          }
+			inits.add(StringToLong(t2.image));
 		}
 	}
-	)* <RBRACE>
+	)* "}"
 	{
 		return inits;
 	}
 }
-
 
 void Counter() : {/*@bgen(jjtree) Counter */
         SimpleNode jjtn000 = new SimpleNode(this, JJTCOUNTER);
@@ -1511,7 +1435,7 @@ void DelayExpression() : {/*@bgen(jjtree) DelayExpression */
 /*@egen*/
 	ConditionalExpression() (
 	LOOKAHEAD(1) {jjtn000.setComponentClass(delay_op.class);} 
-	<AT> amount=ConstOrInt()(<HASH> endAmount=ConstOrInt(){jjtn000.setEndStepDelay(endAmount);})? {jjtn000.setStepDelay(amount);} 
+	"@" amount=ConstOrInt()(<HASH> endAmount=ConstOrInt(){jjtn000.setEndStepDelay(endAmount);})? {jjtn000.setStepDelay(amount);} 
 	)?/*@bgen(jjtree)*/
         } catch (Throwable jjte000) {
           if (jjtc000) {
@@ -1841,9 +1765,8 @@ void AdditiveExpression() : {/*@bgen(jjtree) AdditiveExpression */
   try {
 /*@egen*/
   MultiplicativeExpression() ( ( 
-  <PLUS> {jjtn000.setComponentClass(add_op_s.class);}
-  | 
-  <MINUS> {jjtn000.setComponentClass(sub_op_s.class);}
+  "+" {jjtn000.setComponentClass(add_op_s.class);} | 
+  "-" {jjtn000.setComponentClass(sub_op_s.class);}
   ) MultiplicativeExpression() )*/*@bgen(jjtree)*/
   } catch (Throwable jjte000) {
     if (jjtc000) {
@@ -1879,10 +1802,10 @@ void MultiplicativeExpression() : {/*@bgen(jjtree) MultiplicativeExpression */
   try {
 /*@egen*/
   UnaryExpression() ( ( 
-  <STAR>     {jjtn000.setComponentClass(mult_op_s.class);} |
+  "*" {jjtn000.setComponentClass(mult_op_s.class);} | 
   "*@" amount=ConstOrInt()(<HASH> endAmount=ConstOrInt())? {jjtn000.setStepDelay(amount);} {jjtn000.setComponentClass(mult_op_s_p.class);} | // pipelined multiply 
-  <SLASH>    {jjtn000.setComponentClass(div_op_s.class);} |
-  <REM>      {jjtn000.setComponentClass(mod_op_s.class);}
+  "/" {jjtn000.setComponentClass(div_op_s.class);} |
+  "%" {jjtn000.setComponentClass(mod_op_s.class);}
   ) UnaryExpression() )*/*@bgen(jjtree)*/
   } catch (Throwable jjte000) {
     if (jjtc000) {
@@ -1915,8 +1838,8 @@ void UnaryExpression() : {/*@bgen(jjtree) UnaryExpression */
   try {
 /*@egen*/
   ( 
-  <PLUS> | 
-  <MINUS> {jjtn000.setComponentClass(neg_op_s.class);}  
+  "+" | 
+  "-" {jjtn000.setComponentClass(neg_op_s.class);}  
   ) UnaryExpression()
 |
   PreIncrementExpression()
@@ -1946,7 +1869,7 @@ void UnaryExpression() : {/*@bgen(jjtree) UnaryExpression */
 /*@egen*/
 }
 
-//TODO: talvez convenha remover estas duas opera\u00e7\u00f5es 
+//TODO talvez convenha remover estas duas opera\u00e7\u00f5es 
 
 void PreIncrementExpression() : {/*@bgen(jjtree) PreIncrementExpression */
   SimpleNode jjtn000 = new SimpleNode(this, JJTPREINCREMENTEXPRESSION);
@@ -1956,7 +1879,7 @@ void PreIncrementExpression() : {/*@bgen(jjtree) PreIncrementExpression */
 {/*@bgen(jjtree) PreIncrementExpression */
   try {
 /*@egen*/
-  <INCR> PrimaryExpression()/*@bgen(jjtree)*/
+  "++" PrimaryExpression()/*@bgen(jjtree)*/
   } catch (Throwable jjte000) {
     if (jjtc000) {
       jjtree.clearNodeScope(jjtn000);
@@ -1987,7 +1910,7 @@ void PreDecrementExpression() : {/*@bgen(jjtree) PreDecrementExpression */
 {/*@bgen(jjtree) PreDecrementExpression */
   try {
 /*@egen*/
-  <DECR> PrimaryExpression()/*@bgen(jjtree)*/
+  "--" PrimaryExpression()/*@bgen(jjtree)*/
   } catch (Throwable jjte000) {
     if (jjtc000) {
       jjtree.clearNodeScope(jjtn000);
@@ -2056,7 +1979,7 @@ void PostfixExpression() : {/*@bgen(jjtree) PostfixExpression */
 {/*@bgen(jjtree) PostfixExpression */
   try {
 /*@egen*/
-  PrimaryExpression() [ <INCR> | <DECR> ]/*@bgen(jjtree)*/
+  PrimaryExpression() [ "++" | "--" ]/*@bgen(jjtree)*/
   } catch (Throwable jjte000) {
     if (jjtc000) {
       jjtree.clearNodeScope(jjtn000);
@@ -2079,7 +2002,7 @@ void PostfixExpression() : {/*@bgen(jjtree) PostfixExpression */
 /*@egen*/
 }
 
-void PrimaryExpression() :{/*@bgen(jjtree) PrimaryExpression */
+void PrimaryExpression() : {/*@bgen(jjtree) PrimaryExpression */
   SimpleNode jjtn000 = new SimpleNode(this, JJTPRIMARYEXPRESSION);
   boolean jjtc000 = true;
   jjtree.openNodeScope(jjtn000);
@@ -2107,7 +2030,7 @@ void PrimaryExpression() :{/*@bgen(jjtree) PrimaryExpression */
             jjtree.closeNodeScope(jjtn000, true);
           }
         }
-/*@egen*/
+/*@egen*/ 
 }
 
 void Literal() : {/*@bgen(jjtree) Literal */
@@ -2120,19 +2043,14 @@ void Literal() : {/*@bgen(jjtree) Literal */
 {/*@bgen(jjtree) Literal */
         try {
 /*@egen*/
-	(t=<INTEGER_LITERAL> | t=<FLOAT_LITERAL> | t=<CHARACTER_LITERAL> | t=<STRING_LITERAL> )/*@bgen(jjtree)*/
+	(t=<INTEGER_LITERAL> | t=<CHARACTER_LITERAL> | t=<STRING_LITERAL>)/*@bgen(jjtree)*/
         {
           jjtree.closeNodeScope(jjtn000, true);
           jjtc000 = false;
         }
 /*@egen*/
 	{
-	  if(t.kind== FLOAT_LITERAL)	  {
-	    jjtn000.jjtSetValue(FloatStringToLong(t.image));
-	    jjtn000.setFloatNumber(true);
-	  }else	  {
-	    jjtn000.jjtSetValue(StringToLong(t.image));
-	  }
+		jjtn000.jjtSetValue(StringToLong(t.image));
 	}/*@bgen(jjtree)*/
         } finally {
           if (jjtc000) {
@@ -2142,38 +2060,48 @@ void Literal() : {/*@bgen(jjtree) Literal */
 /*@egen*/
 }
 
-int Constant()       :{
-  Token t;}
-{
-  t=<IDENTIFIER>
-  {    if (allConsts.containsKey(t.image)) {
-          return allConsts.get(t.image);
-    }
-    else {
-       ErrorToken("Const " + t.image + " NOT found!", t);
-    }
-        
-   }}
-
-
 int ConstOrInt()       : {
+	Token t;
 	int size = 0;
 }
 {
-   (size=Int()|size=Constant())
-   {
-     return size;   } 
+	(t=<INTEGER_LITERAL> | t=<IDENTIFIER>)
+	{
+		if (t.kind == IDENTIFIER) {
+			if (allConsts.containsKey(t.image)) {
+				size = allConsts.get(t.image);
+			}
+			else {
+				ErrorToken("Const " + t.image + " NOT found!", t);
+			}
+		}
+		else {
+			size = StringToInteger(t.image);
+		}
+		return size;
+	}
 }
 
-
 long ConstOrLong()       : {
+	Token t;
 	long size = 0;
 }
 {
-   (size=Long()|size=Constant())
-   {
-     return size;
-   } 
+	(t=<INTEGER_LITERAL> | t=<IDENTIFIER>)
+	{
+		if (t.kind == IDENTIFIER) {
+			if (allConsts.containsKey(t.image)) {
+				size = allConsts.get(t.image);
+			}
+			else {
+				ErrorToken("Const " + t.image + " NOT found!", t);
+			}
+		}
+		else {
+			size = StringToLong(t.image);
+		}
+		return size;
+	}
 }
 
 void Error(String s)       : {} 
@@ -2208,26 +2136,19 @@ void InfoToken(String s, Token t)       : {}
 Integer StringToInteger(String s)       : {}
 {
 	{
-        if (s.length() > 1 && s.charAt(1) == 'x'){			return Integer.parseInt(s.substring(2), 16);
-     	}
-		else{		  return Integer.parseInt(s);
-        }
+		if (s.length() > 1 && s.charAt(1) == 'x')
+			return Integer.parseInt(s.substring(2), 16);
+		else
+			return Integer.parseInt(s);
 	}
 }
 
 Long StringToLong(String s)       : {}
 {
 	{
-	  if (s.length() > 1 && s.charAt(1) == 'x')      {    	return Long.parseLong(s.substring(2), 16);
-	  }
-	  else	  {		return Long.parseLong(s);	  }	}
-}
-
-Long FloatStringToLong(String s)       : {}
-{
-  {
-     int raw = Float.floatToIntBits((Float.parseFloat(s)));
-     floatValue = true;
-     return new Long(raw);
-  }
+		if (s.length() > 1 && s.charAt(1) == 'x')
+			return Long.parseLong(s.substring(2), 16);
+		else
+			return Long.parseLong(s);
+	}
 }
