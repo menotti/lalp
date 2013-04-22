@@ -14,7 +14,7 @@
 
 package br.ufscar.dc.lalp.parser;
 
-import java.io.FileInputStream;
+//import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.Map;
 import java.util.Vector;
@@ -50,8 +50,8 @@ public class LangParser {
 		try {
 			root = parser.Start();
 			parser.design = new Design(root.getIdentifier());
-			//root.updateFloat();
-			//root.updateOperators();
+			root.updateFloat();
+			root.updateOperators();
 			root.updateConnections();
 			root.accessComponents();
 		} catch (Exception e) {
@@ -98,7 +98,7 @@ public class LangParser {
 	/**
 	 * Create input/output pins
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void createIOComponents()  {
 		// create IOComponents
 		for (Map.Entry<String, SimpleNode> e : parser.allPins.entrySet()) {
@@ -135,13 +135,13 @@ public class LangParser {
 	/**
 	 * Create registered variables and multiplexers
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void createIComponents()  {
 		// create IComponents
 		for (Map.Entry<String, SimpleNode> e : parser.allVariables.entrySet()) {
 			String name = e.getKey();
 			SimpleNode n = e.getValue();
-			Token t = n.getToken();
+			//Token t = n.getToken();
 			Integer width = n.getWidth();
 			Class compClass = n.getComponentClass();
 			Component comp = null;
@@ -168,21 +168,23 @@ public class LangParser {
 					else if (a.id == ALPParserTreeConstants.JJTLHS) {
 						if (((SimpleNode)a.jjtGetParent()).getIdentifier().equals("+=")) {
 							if (isMemory | isCounter | isAssign | isRegMux) {
-								ErrorToken("Duplicate use of variable "+name, a.getToken());
+								ErrorToken("Duplicate use of variable "+name, a.getToken()); //FIXME: Esta msg de erro está correta??
 							}
-							compClass = add_reg_op_s.class;
+							
+							compClass = add_reg_op_s.class; //FIXME: Incluir operador de Float
+							
 							isAssign = true;
 						}
 						else if (((SimpleNode)a.jjtGetParent()).getIdentifier().equals("-=")) {
 							if (isMemory | isCounter | isAssign | isRegMux) {
-								ErrorToken("Duplicate use of variable "+name, a.getToken());
+								ErrorToken("Duplicate use of variable "+name, a.getToken());//FIXME: Esta msg de erro está correta??
 							}
-							compClass = sub_reg_op_s.class;
+							compClass = sub_reg_op_s.class; //FIXME: Incluir operador de Float
 							isAssign = true;
 						}
 						else if (((SimpleNode)a.jjtGetParent()).getConnections().getSecond().id == ALPParserTreeConstants.JJTCONDITIONALEXPRESSION) {
 							if (isMemory | isCounter | isAssign | isRegMux) {
-								ErrorToken("Duplicate use of variable "+name, a.getToken());
+								ErrorToken("Duplicate use of variable "+name, a.getToken());//FIXME: Esta msg de erro está correta??
 							}
 							compClass = null; //reg_mux_op created with operations
 							isRegMux = true;
@@ -205,9 +207,10 @@ public class LangParser {
 						comp = new block_ram(name, log2(n.getArraySize()), n.getWidth());
 						if (n.getInits() != null) {
 							long[] inits = new long[n.getInits().size()];
-							for (int i=0; i<n.getInits().size(); i++)
+							for (int i=0; i<n.getInits().size(); i++){								
 								inits[i] = n.getInits().get(i);
-							((block_ram)comp).setInitialValue(inits);
+							}
+							((block_ram)comp).setInitialValue(inits); //TODO: Talvez seja melhor converter os valores aqui.
 						}
 					}
 					else if (assignments.size() > 1) {
@@ -235,7 +238,7 @@ public class LangParser {
 				}
 			}
 			else {
-				Info("variable " + name + " is never used");
+				Info("Variable " + name + " is never used!");
 			}
 		} //for allVariables
 	}
@@ -243,7 +246,7 @@ public class LangParser {
 	/**
 	 * Create operations
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void createOperations() {
 		for (SimpleNode n : SimpleNode.allOperations) {
 			String name = n.getIdentifier();
