@@ -1,0 +1,50 @@
+/* Copyright (c) 2009 Ricardo Menotti, All Rights Reserved.
+ *
+ * Permission to use, copy, modify, and distribute this software and its 
+ * documentation for NON-COMERCIAL purposes and without fee is hereby granted 
+ * provided that this copyright notice appears in all copies.
+ *
+ * RICARDO MENOTTI MAKES NO REPRESENTATIONS OR WARRANTIES ABOUT THE SUITABILITY
+ * OF THE SOFTWARE, EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE 
+ * IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, OR 
+ * NON-INFRINGEMENT. RICARDO MENOTTI SHALL NOT BE LIABLE FOR ANY DAMAGES 
+ * SUFFERED BY LICENSEE AS A RESULT OF USING, MODIFYING OR DISTRIBUTING THIS 
+ * SOFTWARE OR ITS DERIVATIVES. 
+ */
+
+const DATA_WIDTH = 32;
+const ITERATIONS = 32;
+
+typedef fixed(DATA_WIDTH, 1) int;
+typedef fixed(1, 0) bit;
+
+fibonacci_data_reuse(in bit init, out int output, out bit done) {
+
+	{
+		fixed(6, 1) i;
+		int v[5];
+		int a=0, b=1;
+	}
+	
+	counter (i=0; i<ITERATIONS; i++);
+	i.clk_en = init;
+	
+	v.we = 1;
+	v.address = i;
+	v.data_in = a;
+	
+	b += a;
+	
+	a = b;
+	
+	output = v;
+}
+assert
+{
+	when output changes
+	{
+		check int output = {0, 1 ,2 ,3 ,5 ,8 ,13 ,21 ,34 ,55 ,89 ,144 ,233 ,377 ,610 ,987 
+		,1597 ,2584 ,4181 ,6765 ,10946 ,17711 ,28657 ,46368 ,75025 ,121393 ,196418 ,317811 ,514229 ,832040};
+
+	}
+}

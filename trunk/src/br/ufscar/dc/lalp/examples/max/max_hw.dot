@@ -1,0 +1,31 @@
+digraph max {
+	// Components (Nodes)
+	"c14" [shape=record, fontcolor=blue, style="filled", fillcolor="lightgray", label="{{<a>a[1]|<clk>clk|<reset>reset}|delay_op:c14\ndelay=4|{<a_delayed>a_delayed[1]}}"];
+	"done" [shape=msquare fontcolor=blue label="done"];
+	"c13" [shape=record, fontcolor=blue, style="filled", fillcolor="lightgray", label="{{<a>a[1]|<clk>clk|<reset>reset}|delay_op:c13\ndelay=2|{<a_delayed>a_delayed[1]}}"];
+	"c12" [fontcolor=red label="c12=0x800"];
+	"c11" [fontcolor=red label="c11=0x0"];
+	"a_if_gt_op_s_b" [shape=record, fontcolor=blue, label="{{<I0>I0[32]|<I1>I1[32]}|if_gt_op_s:a_if_gt_op_s_b|{<O0>O0[1]}}"];
+	"v" [shape=record, fontcolor=blue, style="filled", fillcolor="lightgray", label="{{<address>address[11]|<clk>clk|<data_in>data_in[32]|<oe>oe|<we>we}|block_ram:v|{<data_out>data_out[32]}}"];
+	"b" [shape=record, fontcolor=blue, style="filled", fillcolor="lightgray", label="{{<I0>I0[32]|<clk>clk|<reset>reset|<we>we}|reg_op:b|{<O0>O0[32]}}"];
+	"maxval" [shape=msquare fontcolor=blue label="maxval"];
+	"i" [shape=record, fontcolor=blue, style="filled", fillcolor="lightgray", label="{{<clk>clk|<clk_en>clk_en|<input>input[12]|<load>load|<reset>reset|<termination>termination[12]}|counter:i\n\<\n+=1\nsteps=1|{<done>done|<output>output[12]|<step>step}}"];
+	"a" [shape=record, fontcolor=blue, style="filled", fillcolor="lightgray", label="{{<I0>I0[32]|<clk>clk|<reset>reset|<we>we}|reg_op:a|{<O0>O0[32]}}"];
+	"init" [shape=msquare fontcolor=blue label="init"];
+
+	// Signals (Edges)
+	"c11" -> "i":input [label="s0[12]" color=red fontcolor=red];
+	"c14":a_delayed -> "done" [label="s13[1]" color=red fontcolor=red];
+	"init" -> "i":clk_en [label="s11" color=olivedrab];
+	"c13":a_delayed -> "a":we [label="s10[1]" color=red fontcolor=red];
+	"i":done -> "c14":a [label="s12" color=olivedrab];
+	"a_if_gt_op_s_b":O0 -> "b":we [label="s7[1]" color=red fontcolor=red style=dashed];
+	"i":step -> "c13":a [label="s9" color=olivedrab];
+	"b":O0 -> "a_if_gt_op_s_b":I1 [label="s5[32]" color=red fontcolor=red style=dashed];
+	"v":data_out -> "a":I0 [label="s3[32]" color=red fontcolor=red];
+	"c12" -> "i":termination [label="s1[12]" color=red fontcolor=red];
+	"a":O0 -> "b":I0 [label="s6[32]" color=red fontcolor=red];
+	"b":O0 -> "maxval" [label="s8[32]" color=red fontcolor=red];
+	"a":O0 -> "a_if_gt_op_s_b":I0 [label="s4[32]" color=red fontcolor=red style=dashed];
+	"i":output -> "v":address [label="s2[12]" color=red fontcolor=red];
+}

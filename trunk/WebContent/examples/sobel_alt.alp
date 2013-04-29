@@ -1,0 +1,130 @@
+/* Copyright (c) 2009 Ricardo Menotti, All Rights Reserved.
+ *
+ * Permission to use, copy, modify, and distribute this software and its 
+ * documentation for NON-COMERCIAL purposes and without fee is hereby granted 
+ * provided that this copyright notice appears in all copies.
+ *
+ * RICARDO MENOTTI MAKES NO REPRESENTATIONS OR WARRANTIES ABOUT THE SUITABILITY
+ * OF THE SOFTWARE, EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE 
+ * IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, OR 
+ * NON-INFRINGEMENT. RICARDO MENOTTI SHALL NOT BE LIABLE FOR ANY DAMAGES 
+ * SUFFERED BY LICENSEE AS A RESULT OF USING, MODIFYING OR DISTRIBUTING THIS 
+ * SOFTWARE OR ITS DERIVATIVES. 
+ */
+
+const DATA_WIDTH = 16;
+const ROWS = 10;
+const COLS = 10;
+const SIZE = 100; // ROWS*COLS
+
+typedef fixed(DATA_WIDTH, 1) int;
+typedef fixed(1, 0) bit;
+typedef fixed(8, 0) byte;
+
+sobel_alt(in bit init, out bit done, out int result) {
+	{
+		int H, O, V, Hpos, Vpos, Otrunk; 
+		int i;
+		int i00, i01, i02, i03, i04, i05, i06, i07, i08, i09;
+		int i10, i11, i12, i13, i14, i15, i16, i17, i18, i19;
+		int i20, i21, i22;
+		int	i00h, i01h, i02h, i20h, i21h, i22h;
+		int i00v, i10v, i20v, i02v, i12v, i22v;
+		int i00hi01h, i00vi10v, i20hi21h, i02vi12v;
+		int i00hi01hi02h, i20hi21hi22h, i00vi10vi20v, i02vi12vi22v;		
+			
+		int input[SIZE] = {
+			50, 65, 62, 83, 34, 45, 96, 67, 18, 29, 
+			14, 14, 72, 13, 14, 15, 16, 17, 18, 39, 
+			20, 23, 82, 23, 20, 25, 26, 27, 28, 29, 
+			54, 12, 72, 83, 34, 45, 96, 97, 18, 29, 
+			40, 41, 42, 73, 44, 45, 46, 47, 48, 89, 
+			52, 60, 82, 83, 34, 45, 96, 37, 18, 29, 
+			60, 69, 62, 66, 64, 65, 64, 67, 68, 69, 
+			53, 68, 72, 83, 34, 55, 96, 37, 18, 29, 
+			84, 87, 82, 83, 84, 85, 86, 87, 28, 89, 
+			95, 96, 92, 93, 94, 95, 96, 97, 38, 99
+		};
+		int output[SIZE];
+	}
+	
+	counter (i=0; i<78; i++);
+	
+	input = i;	i22 = input;	i21 = i22;
+	i20 = i21;	i19 = i20;	i18 = i19;
+	i17 = i18;	i16 = i17;	i15 = i16;
+	i14 = i15;	i13 = i14;	i12 = i13;
+	i11 = i12;	i10 = i11;	i09 = i10;
+	i08 = i09;	i07 = i08;	i06 = i07;
+	i05 = i06;	i04 = i05;	i03 = i04;
+	i02 = i03;	i01 = i02;	i00 = i01;
+
+	// Synchronization Barrier
+	i00h = -i00 when i.step@25;
+	i01h = -(i01 + i01) when i.step@25;
+	i02h = -i02 when i.step@25;
+
+	i20h = i20 when i.step@25;
+	i21h = i21 + i21 when i.step@25;
+	i22h = i22 when i.step@25;
+
+	i00v = -i00 when i.step@25;
+	i10v = -(i10 + i10) when i.step@25;
+	i20v = -i20 when i.step@25;
+
+	i02v = i02 when i.step@25;
+	i12v = i12 + i12 when i.step@25;
+	i22v = i22 when i.step@25;
+	
+	i00hi01h = i00h + i01h;
+	i00vi10v = i00v + i10v;
+	i20hi21h = i20h + i21h;
+	i02vi12v = i02v + i12v;
+	
+	i00hi01hi02h = i00hi01h + (i02h@1);
+	i20hi21hi22h = i20hi21h + (i22h@1);
+	i00vi10vi20v = i00vi10v + (i20v@1);
+	i02vi12vi22v = i02vi12v + (i22v@1);
+	
+	H = i00hi01hi02h + i20hi21hi22h;
+	V = i00vi10vi20v + i02vi12vi22v;
+								
+	Hpos = H < 0 ? -H : H;
+	Vpos = V < 0 ? -V : V;
+	
+	O = Hpos + Vpos;
+	
+	Otrunk = O;
+	Otrunk = 255 when O > 255;
+	
+	output.data_in = Otrunk;
+	output.address = i;
+	result = output;
+	
+	/* result
+	255	78	255	140	196	228	212	28	76	142	
+	236	138	255	172	236	255	255	112	76	86	
+	116	186	220	220	216	188	232	212	212	126	
+	156	226	92	132	128	108	255	68	92	74	
+	160	136	118	158	204	88	228	68	92	60	
+	60	44	92	78	144	32	148	12	102	162	
+	118	98	146	132	208	116	232	52	226	254	
+	130	82	132	192	208	112	255	172
+	*/	
+}
+assert
+{
+	when result changes
+	{
+		check int result = {
+		255, 78, 255, 140, 196,	228, 212, 28, 76, 142,	
+		236, 138, 255,	172, 236, 255, 112, 76, 86,	
+		116, 186, 220, 216, 188, 232, 212, 126,	
+		156, 226, 92, 132, 128, 108, 255, 68, 92, 74,	
+		160, 136, 118, 158, 204, 88, 228, 68, 92, 60,	
+		44,	92,	78,	144, 32, 148, 12, 102, 162,	
+		118, 98, 146, 132, 208, 116, 232, 52, 226, 254,	
+		130, 82, 132, 192, 208, 112, 255, 172
+		};
+	}
+}

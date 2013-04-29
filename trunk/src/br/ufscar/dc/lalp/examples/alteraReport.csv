@@ -1,0 +1,11 @@
+Benchmark;Combinational ALUTs;Memory ALUTs;Dedicated logic registers;Total registers;Total pins;Total virtual pins;Total block memory bits;DSP block 18-bit elements;Total GXB Receiver Channel PCS;Total GXB Receiver Channel PMA;Total GXB Transmitter Channel PCS;Total GXB Transmitter Channel PMA;Total PLLs;Total DLLs;900mV -40C Fmax;900mV -40C Restricted Fmax;900mV 100C Fmax;900mV 100C Restricted Fmax
+addsub;64;0;0;0;128;0;0;0;0;0;0;0;0;0;
+dotprod;52;0;65;65;37;0;131,072;4;0;0;0;0;0;0;103.77;103.77;99.98;99.98
+fibonacci_data_reuse;43;0;77;77;37;0;256;0;0;0;0;0;0;0;421.59;250.0;423.01;250.0
+fir;128;0;33;33;196;0;0;20;0;0;0;0;0;0;168.38;168.38;166.47;166.47
+matmult;219;0;253;253;21;0;547;0;0;0;0;0;0;0;271.89;250.0;270.78;250.0
+max;53;0;62;62;37;0;65,536;0;0;0;0;0;0;0;260.48;260.01;259.81;259.81
+sobel;319;0;212;212;21;0;2,139;0;0;0;0;0;0;0;163.53;163.53;163.83;163.83
+sobel_alt;353;0;636;636;21;0;2,316;0;0;0;0;0;0;0;391.85;250.0;387.45;250.0
+vecsum;52;0;67;67;37;0;196,608;0;0;0;0;0;0;0;226.14;226.14;224.67;224.67
+vecsum_asynchronous;32;0;0;0;96;0;0;0;0;0;0;0;0;0;
