@@ -1,0 +1,258 @@
+digraph sobel {
+	// Components (Nodes)
+	node [shape=ellipse, style=filled, color=dodgerblue2];
+	"result" [color=bisque4 shape=invtriangle label="result"];
+	"c100" [label="{|||||||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"output" [label="output" shape=doubleoctagon  color=dodgerblue2 ];
+	"c89" [color=bisque4 shape=invtriangle label="0x1"];
+	"i12" [label="i12" shape=doubleoctagon  color=dodgerblue2 ];
+	"COLS" [color=bisque4 shape=invtriangle label="0xa"];
+	"c104" [label="{||||||||||||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"i_step_delay_op_8" [label="{|||||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"i_step_delay_op_5" [label="{||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"i_step_delay_op_6" [label="{|||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"i20_neg_op_s_add_op_s_i22" [label="i20_neg_op_s_add_op_s_i22:+"  color=dodgerblue2 ];
+	"i01" [label="i01" shape=doubleoctagon  color=dodgerblue2 ];
+	"H_neg_op_s" [label="!"  color=dodgerblue2 ];
+	"i00_neg_op_s_add_op_s_i02_add_op_s_i10_neg_op_s_sub_op_s_i10_add_op_s_i12_add_op_s_i12_add_op_s_i20_neg_op_s_add_op_s_i22" [label="i00_neg_op_s_add_op_s_i02_add_op_s_i10_neg_op_s_sub_op_s_i10_add_op_s_i12_add_op_s_i12_add_op_s_i20_neg_op_s_add_op_s_i22:+"  color=dodgerblue2 ];
+	"V_if_lt_op_s_0" [label="V_if_lt_op_s_0:<"  color=dodgerblue2 ];
+	"H" [label="H" shape=doubleoctagon  color=dodgerblue2 ];
+	"i" [label="i" shape=doubleoctagon  color=dodgerblue2 ];
+	"COLS" [color=bisque4 shape=invtriangle label="0xa"];
+	"i_add_op_s_COLS__" [label="i_add_op_s_COLS__:+"  color=dodgerblue2 ];
+	"c102" [label="{||||||||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"i_add_op_s_COLS_add_op_s_COLS_" [label="i_add_op_s_COLS_add_op_s_COLS_:+"  color=dodgerblue2 ];
+	"i02_neg_op_s" [label="!"  color=dodgerblue2 ];
+	"i01_neg_op_s_sub_op_s_i01" [label="i01_neg_op_s_sub_op_s_i01:-"  color=dodgerblue2 ];
+	"i00_neg_op_s" [label="!"  color=dodgerblue2 ];
+	"i21_add_op_s_i21" [label="i21_add_op_s_i21:+"  color=dodgerblue2 ];
+	"c81" [color=bisque4 shape=invtriangle label="0x2"];
+	"COLS" [color=bisque4 shape=invtriangle label="0xa"];
+	"i_step_delay_op_2" [label="{|}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"i_add_op_s_COLS_add_op_s_2" [label="i_add_op_s_COLS_add_op_s_2:+"  color=dodgerblue2 ];
+	"c96" [color=bisque4 shape=invtriangle label="0xff"];
+	"i_add_op_s_COLS_add_op_s_COLS_add_op_s_2" [label="i_add_op_s_COLS_add_op_s_COLS_add_op_s_2:+"  color=dodgerblue2 ];
+	"i_step_delay_op_4_" [label="{|||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"i10_neg_op_s_sub_op_s_i10" [label="i10_neg_op_s_sub_op_s_i10:-"  color=dodgerblue2 ];
+	"i00_neg_op_s_add_op_s_i02" [label="i00_neg_op_s_add_op_s_i02:+"  color=dodgerblue2 ];
+	"i00_neg_op_s_add_op_s_i01_neg_op_s_sub_op_s_i01_add_op_s_i02_neg_op_s_add_op_s_i20_add_op_s_i21_add_op_s_i21_add_op_s_i22" [label="i00_neg_op_s_add_op_s_i01_neg_op_s_sub_op_s_i01_add_op_s_i02_neg_op_s_add_op_s_i20_add_op_s_i21_add_op_s_i21_add_op_s_i22:+"  color=dodgerblue2 ];
+	"i10_neg_op_s_sub_op_s_i10_add_op_s_i12_add_op_s_i12" [label="i10_neg_op_s_sub_op_s_i10_add_op_s_i12_add_op_s_i12:+"  color=dodgerblue2 ];
+	"O" [label="O" shape=doubleoctagon  color=dodgerblue2 ];
+	"i20" [label="i20" shape=doubleoctagon  color=dodgerblue2 ];
+	"i22" [label="i22" shape=doubleoctagon  color=dodgerblue2 ];
+	"done" [color=bisque4 shape=invtriangle label="done"];
+	"COLS" [color=bisque4 shape=invtriangle label="0xa"];
+	"c92" [color=bisque4 shape=invtriangle label="0x2"];
+	"i_step_delay_op_1" [label="{}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"c98" [label="{||||||||||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"i_step_delay_op_3" [label="{||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"c94" [color=bisque4 shape=invtriangle label="0x0"];
+	"i21_add_op_s_i21_add_op_s_i22" [label="i21_add_op_s_i21_add_op_s_i22:+"  color=dodgerblue2 ];
+	"i_step_delay_op_6_" [label="{|||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"i_step_delay_op_2_" [label="{|}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"Hpos_add_op_s_Vpos" [label="Hpos_add_op_s_Vpos:+"  color=dodgerblue2 ];
+	"Otrunk" [label="Otrunk"  color=dodgerblue2 ];
+	"c79" [color=bisque4 shape=invtriangle label="0x4e"];
+	"i20_neg_op_s" [label="!"  color=dodgerblue2 ];
+	"i02_neg_op_s_add_op_s_i20" [label="i02_neg_op_s_add_op_s_i20:+"  color=dodgerblue2 ];
+	"i01_neg_op_s" [label="!"  color=dodgerblue2 ];
+	"i_add_op_s_COLS_add_op_s_COLS" [label="i_add_op_s_COLS_add_op_s_COLS:+"  color=dodgerblue2 ];
+	"c103" [label="{|||||||||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"i_add_op_s_COLS_add_op_s_COLS_add_op_s_1" [label="i_add_op_s_COLS_add_op_s_COLS_add_op_s_1:+"  color=dodgerblue2 ];
+	"i_step_delay_op_4" [label="{|||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"COLS" [color=bisque4 shape=invtriangle label="0xa"];
+	"c84" [color=bisque4 shape=invtriangle label="0x2"];
+	"COLS" [color=bisque4 shape=invtriangle label="0xa"];
+	"COLS" [color=bisque4 shape=invtriangle label="0xa"];
+	"i00_neg_op_s_add_op_s_i01_neg_op_s_sub_op_s_i01" [label="i00_neg_op_s_add_op_s_i01_neg_op_s_sub_op_s_i01:+"  color=dodgerblue2 ];
+	"i_add_op_s_COLS___" [label="i_add_op_s_COLS___:+"  color=dodgerblue2 ];
+	"i_add_op_s_COLS____" [label="i_add_op_s_COLS____:+"  color=dodgerblue2 ];
+	"i_step_delay_op_9" [label="{||||||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"input" [label="input" shape=doubleoctagon  color=dodgerblue2 ];
+	"addr" [label="addr"  color=dodgerblue2 ];
+	"i10" [label="i10" shape=doubleoctagon  color=dodgerblue2 ];
+	"i00" [label="i00" shape=doubleoctagon  color=dodgerblue2 ];
+	"c101" [label="{||||||||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"c99" [label="{|||||||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"i10_neg_op_s_sub_op_s_i10_add_op_s_i12_add_op_s_i12_add_op_s_i20_neg_op_s_add_op_s_i22" [label="i10_neg_op_s_sub_op_s_i10_add_op_s_i12_add_op_s_i12_add_op_s_i20_neg_op_s_add_op_s_i22:+"  color=dodgerblue2 ];
+	"V_neg_op_s" [label="!"  color=dodgerblue2 ];
+	"H_if_lt_op_s_0" [label="H_if_lt_op_s_0:<"  color=dodgerblue2 ];
+	"Hpos" [label="Hpos" shape=doubleoctagon  color=dodgerblue2 ];
+	"i10_neg_op_s" [label="!"  color=dodgerblue2 ];
+	"i_step_delay_op_3_" [label="{||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"i_step_delay_op_7_" [label="{||||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"i02_neg_op_s_add_op_s_i20_add_op_s_i21_add_op_s_i21_add_op_s_i22" [label="i02_neg_op_s_add_op_s_i20_add_op_s_i21_add_op_s_i21_add_op_s_i22:+"  color=dodgerblue2 ];
+	"i_add_op_s_COLS_" [label="i_add_op_s_COLS_:+"  color=dodgerblue2 ];
+	"i_add_op_s_1" [label="i_add_op_s_1:+"  color=dodgerblue2 ];
+	"i_add_op_s_2" [label="i_add_op_s_2:+"  color=dodgerblue2 ];
+	"i_add_op_s_COLS" [label="i_add_op_s_COLS:+"  color=dodgerblue2 ];
+	"O_if_gt_op_s_255" [label="O_if_gt_op_s_255:>"  color=dodgerblue2 ];
+	"c80" [color=bisque4 shape=invtriangle label="0x1"];
+	"c78" [color=bisque4 shape=invtriangle label="0x0"];
+	"Vpos" [label="Vpos" shape=doubleoctagon  color=dodgerblue2 ];
+	"i12_add_op_s_i12" [label="i12_add_op_s_i12:+"  color=dodgerblue2 ];
+	"i00_neg_op_s_" [label="!"  color=dodgerblue2 ];
+	"i_step_delay_op_7" [label="{||||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"i_step_delay_op_5_" [label="{||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"i_add_op_s_COLS_add_op_s_COLS__" [label="i_add_op_s_COLS_add_op_s_COLS__:+"  color=dodgerblue2 ];
+	"c95" [color=bisque4 shape=invtriangle label="0xff"];
+	"c93" [color=bisque4 shape=invtriangle label="0x0"];
+	"c97" [label="{||||||||||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"COLS" [color=bisque4 shape=invtriangle label="0xa"];
+	"i02" [label="i02" shape=doubleoctagon  color=dodgerblue2 ];
+	"V" [label="V" shape=doubleoctagon  color=dodgerblue2 ];
+	"i21" [label="i21" shape=doubleoctagon  color=dodgerblue2 ];
+	"init" [color=bisque4 shape=invtriangle label="init"];
+
+	// Signals (Edges)
+	"init" -> "i"
+	"i12" -> "i12_add_op_s_i12"
+	"i" -> "i_step_delay_op_2":input
+	"i02_neg_op_s_add_op_s_i20" -> "i02_neg_op_s_add_op_s_i20_add_op_s_i21_add_op_s_i21_add_op_s_i22"
+	"COLS" -> "i_add_op_s_COLS"
+	"i21" -> "i21_add_op_s_i21"
+	"c94" -> "V_if_lt_op_s_0"
+	"i20" -> "i20_neg_op_s"
+	"COLS" -> "i_add_op_s_COLS_add_op_s_COLS__"
+	"i" -> "i_step_delay_op_5":input
+	"COLS" -> "i_add_op_s_COLS___"
+	"i" -> "i_step_delay_op_6_":input
+	"V" -> "Vpos"
+	"V_if_lt_op_s_0" -> "Vpos"
+	"Vpos" -> "Hpos_add_op_s_Vpos"
+	"i" -> "i_add_op_s_2"
+	"input" -> "i20"
+	"i_step_delay_op_6_" -> "i12"
+	"i" -> "i_step_delay_op_8":input
+	"i_step_delay_op_2" -> "addr"
+	"i_add_op_s_COLS" -> "addr"
+	"i21_add_op_s_i21" -> "i21_add_op_s_i21_add_op_s_i22"
+	"i_add_op_s_COLS__" -> "i_add_op_s_COLS_add_op_s_COLS"
+	"i10_neg_op_s_sub_op_s_i10" -> "i10_neg_op_s_sub_op_s_i10_add_op_s_i12_add_op_s_i12"
+	"H" -> "Hpos"
+	"i_step_delay_op_5" -> "addr"
+	"i22" -> "i20_neg_op_s_add_op_s_i22"
+	"addr" -> "input"
+	"i_add_op_s_COLS_add_op_s_COLS_add_op_s_2" -> "addr"
+	"c92" -> "i_add_op_s_COLS_add_op_s_COLS_add_op_s_2"
+	"input" -> "i00"
+	"c97" -> "output"
+	"c98" -> "output"
+	"c99" -> "H"
+	"c100" -> "V"
+	"i01_neg_op_s_sub_op_s_i01" -> "i00_neg_op_s_add_op_s_i01_neg_op_s_sub_op_s_i01"
+	"i02_neg_op_s" -> "i02_neg_op_s_add_op_s_i20"
+	"c84" -> "i_add_op_s_COLS_add_op_s_2"
+	"i" -> "i_add_op_s_COLS__"
+	"i02" -> "i00_neg_op_s_add_op_s_i02"
+	"i_add_op_s_COLS_add_op_s_COLS_" -> "i_add_op_s_COLS_add_op_s_COLS_add_op_s_1"
+	"i00_neg_op_s_add_op_s_i02_add_op_s_i10_neg_op_s_sub_op_s_i10_add_op_s_i12_add_op_s_i12_add_op_s_i20_neg_op_s_add_op_s_i22" -> "V"
+	"Hpos_add_op_s_Vpos" -> "O"
+	"i_step_delay_op_6" -> "addr"
+	"H_if_lt_op_s_0" -> "Hpos"
+	"i_step_delay_op_4_" -> "i02"
+	"i" -> "i_step_delay_op_4_":input
+	"input" -> "i01"
+	"input" -> "i10"
+	"i" -> "c102":input
+	"i" -> "c103":input
+	"i_add_op_s_1" -> "addr"
+	"c80" -> "i_add_op_s_1"
+	"i" -> "addr"
+	"c78" -> "i"
+	"i" -> "c104":input
+	"i21_add_op_s_i21_add_op_s_i22" -> "i02_neg_op_s_add_op_s_i20_add_op_s_i21_add_op_s_i21_add_op_s_i22"
+	"i02_neg_op_s_add_op_s_i20_add_op_s_i21_add_op_s_i21_add_op_s_i22" -> "i00_neg_op_s_add_op_s_i01_neg_op_s_sub_op_s_i01_add_op_s_i02_neg_op_s_add_op_s_i20_add_op_s_i21_add_op_s_i21_add_op_s_i22"
+	"i00_neg_op_s_add_op_s_i02" -> "i00_neg_op_s_add_op_s_i02_add_op_s_i10_neg_op_s_sub_op_s_i10_add_op_s_i12_add_op_s_i12_add_op_s_i20_neg_op_s_add_op_s_i22"
+	"i10_neg_op_s" -> "i10_neg_op_s_sub_op_s_i10"
+	"COLS" -> "i_add_op_s_COLS_"
+	"i_add_op_s_COLS_add_op_s_2" -> "addr"
+	"i00" -> "i00_neg_op_s_"
+	"O" -> "O_if_gt_op_s_255"
+	"c93" -> "H_if_lt_op_s_0"
+	"i_step_delay_op_2_" -> "i00"
+	"COLS" -> "i_add_op_s_COLS____"
+	"i" -> "i_step_delay_op_6":input
+	"i" -> "i_step_delay_op_9":input
+	"Otrunk" -> "output"
+	"c96" -> "Otrunk"
+	"output" -> "result"
+	"i_step_delay_op_3" -> "addr"
+	"i01" -> "i01_neg_op_s"
+	"i_step_delay_op_9" -> "i22"
+	"i01" -> "i01_neg_op_s_sub_op_s_i01"
+	"i" -> "c98":input
+	"i_step_delay_op_5_" -> "i10"
+	"V_neg_op_s" -> "Vpos"
+	"i" -> "i_step_delay_op_2_":input
+	"i" -> "i_step_delay_op_7":input
+	"V" -> "V_if_lt_op_s_0"
+	"i10_neg_op_s_sub_op_s_i10_add_op_s_i12_add_op_s_i12" -> "i10_neg_op_s_sub_op_s_i10_add_op_s_i12_add_op_s_i12_add_op_s_i20_neg_op_s_add_op_s_i22"
+	"COLS" -> "i_add_op_s_COLS_add_op_s_COLS"
+	"i12_add_op_s_i12" -> "i10_neg_op_s_sub_op_s_i10_add_op_s_i12_add_op_s_i12"
+	"i" -> "i_add_op_s_COLS___"
+	"COLS" -> "i_add_op_s_COLS__"
+	"i21" -> "i21_add_op_s_i21"
+	"i20" -> "i02_neg_op_s_add_op_s_i20"
+	"i22" -> "i21_add_op_s_i21_add_op_s_i22"
+	"i" -> "c101":input
+	"i02" -> "i02_neg_op_s"
+	"i" -> "c100":input
+	"i" -> "c99":input
+	"V" -> "V_neg_op_s"
+	"i" -> "c97":input
+	"i_step_delay_op_7" -> "addr"
+	"Hpos" -> "Hpos_add_op_s_Vpos"
+	"i_add_op_s_COLS_add_op_s_COLS" -> "addr"
+	"i_add_op_s_COLS___" -> "i_add_op_s_COLS_add_op_s_COLS_"
+	"i20_neg_op_s" -> "i20_neg_op_s_add_op_s_i22"
+	"i_add_op_s_COLS_add_op_s_COLS__" -> "i_add_op_s_COLS_add_op_s_COLS_add_op_s_2"
+	"i" -> "i_add_op_s_COLS"
+	"c81" -> "i_add_op_s_2"
+	"i" -> "i_step_delay_op_3":input
+	"i_add_op_s_2" -> "addr"
+	"i12" -> "i12_add_op_s_i12"
+	"i10" -> "i10_neg_op_s_sub_op_s_i10"
+	"input" -> "i12"
+	"input" -> "i21"
+	"i" -> "i_step_delay_op_7_":input
+	"i_step_delay_op_7_" -> "i20"
+	"c101" -> "Hpos"
+	"input" -> "i02"
+	"i_add_op_s_COLS_add_op_s_COLS_add_op_s_1" -> "addr"
+	"i_add_op_s_COLS____" -> "i_add_op_s_COLS_add_op_s_COLS__"
+	"c95" -> "O_if_gt_op_s_255"
+	"H" -> "H_neg_op_s"
+	"i" -> "i_step_delay_op_3_":input
+	"i_step_delay_op_4" -> "addr"
+	"i" -> "i_add_op_s_COLS_"
+	"i_add_op_s_COLS_" -> "i_add_op_s_COLS_add_op_s_2"
+	"i10_neg_op_s_sub_op_s_i10_add_op_s_i12_add_op_s_i12_add_op_s_i20_neg_op_s_add_op_s_i22" -> "i00_neg_op_s_add_op_s_i02_add_op_s_i10_neg_op_s_sub_op_s_i10_add_op_s_i12_add_op_s_i12_add_op_s_i20_neg_op_s_add_op_s_i22"
+	"i20_neg_op_s_add_op_s_i22" -> "i10_neg_op_s_sub_op_s_i10_add_op_s_i12_add_op_s_i12_add_op_s_i20_neg_op_s_add_op_s_i22"
+	"i" -> "i_step_delay_op_4":input
+	"i00" -> "i00_neg_op_s"
+	"input" -> "i22"
+	"i00_neg_op_s" -> "i00_neg_op_s_add_op_s_i01_neg_op_s_sub_op_s_i01"
+	"i01_neg_op_s" -> "i01_neg_op_s_sub_op_s_i01"
+	"c102" -> "Vpos"
+	"i_step_delay_op_8" -> "i21"
+	"O_if_gt_op_s_255" -> "Otrunk"
+	"i" -> "i_step_delay_op_5_":input
+	"i_step_delay_op_3_" -> "i01"
+	"O" -> "Otrunk"
+	"c89" -> "i_add_op_s_COLS_add_op_s_COLS_add_op_s_1"
+	"H_neg_op_s" -> "Hpos"
+	"H" -> "H_if_lt_op_s_0"
+	"i" -> "i_add_op_s_COLS____"
+	"COLS" -> "i_add_op_s_COLS_add_op_s_COLS_"
+	"i00_neg_op_s_" -> "i00_neg_op_s_add_op_s_i02"
+	"i00_neg_op_s_add_op_s_i01_neg_op_s_sub_op_s_i01_add_op_s_i02_neg_op_s_add_op_s_i20_add_op_s_i21_add_op_s_i21_add_op_s_i22" -> "H"
+	"i10" -> "i10_neg_op_s"
+	"i00_neg_op_s_add_op_s_i01_neg_op_s_sub_op_s_i01" -> "i00_neg_op_s_add_op_s_i01_neg_op_s_sub_op_s_i01_add_op_s_i02_neg_op_s_add_op_s_i20_add_op_s_i21_add_op_s_i21_add_op_s_i22"
+	"c104" -> "done"
+	"c103" -> "O"
+	"i_step_delay_op_1" -> "addr"
+	"i" -> "i_step_delay_op_1":input
+	"i" -> "i_add_op_s_1"
+	"c79" -> "i"
+}
