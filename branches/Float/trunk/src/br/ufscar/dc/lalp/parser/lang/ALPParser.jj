@@ -63,7 +63,7 @@ public class ALPParser/*@bgen(jjtree)*/implements ALPParserTreeConstants/*@egen*
 	public Design design;
 	public Hashtable<String, Integer> allConsts = new Hashtable<String, Integer>();
 	//public Hashtable<String, Integer> allTypedefs = new Hashtable<String, Integer>();
-	public Hashtable<String, LanguageType> allTypedefs = new Hashtable<String, LanguageType>();
+	public Hashtable<String, VarType> allTypedefs = new Hashtable<String, VarType>();
 	public Hashtable<String, SimpleNode> allPins = new Hashtable<String, SimpleNode>();
 	public Hashtable<String, SimpleNode> allVariables = new Hashtable<String, SimpleNode>();
 	public Hashtable<String, SimpleNode> allResults = new Hashtable<String, SimpleNode>();
@@ -464,7 +464,7 @@ void Results(Process process) : {/*@bgen(jjtree) Results */
 /*@egen*/
 	Token varType=null;
 //	int varWidth=0;
-	LanguageType type= null;
+	VarType type= null;
 }
 {/*@bgen(jjtree) Results */
         try {
@@ -473,7 +473,7 @@ void Results(Process process) : {/*@bgen(jjtree) Results */
 	{
 		if (varType != null) {
 			if (allTypedefs.containsKey(varType.image)) {
-				type=(LanguageType)(allTypedefs.get(varType.image));
+				type=(VarType)(allTypedefs.get(varType.image));
 			}
 			else {
 				ErrorToken("Type " + varType.image + " NOT found!", varType);
@@ -510,7 +510,7 @@ void TestbenchEntries() : {/*@bgen(jjtree) TestbenchEntries */
 /*@egen*/
 	Token varType=null;
 	//int varWidth=0;
-	LanguageType type= null;
+	VarType type= null;
 }
 {/*@bgen(jjtree) TestbenchEntries */
         try {
@@ -519,7 +519,7 @@ void TestbenchEntries() : {/*@bgen(jjtree) TestbenchEntries */
 	{
 		if (varType != null) {
 			if (allTypedefs.containsKey(varType.image)) {
-				type=(LanguageType)(allTypedefs.get(varType.image));
+				type=(VarType)(allTypedefs.get(varType.image));
 			}
 			else {
 				ErrorToken("Type " + varType.image + " NOT found!", varType);
@@ -603,6 +603,7 @@ void Name() : {/*@bgen(jjtree) Name */
             if(node!= null)
             {
               jjtn000.setFloatNumber(node.isFloat());
+              jjtn000.setVarType(node.getVarType());
             }
 		}
 		else {
@@ -661,7 +662,7 @@ void Typedef() : {/*@bgen(jjtree) Typedef */
 	Token typedefName;
 	//int typedefVal;
 	//desfazer ateh aqui
-	LanguageType type= new LanguageType();
+	VarType type= new VarType();
 }
 {/*@bgen(jjtree) Typedef */
         try {
@@ -705,112 +706,112 @@ void Typedef() : {/*@bgen(jjtree) Typedef */
 /*@egen*/
 }
 
-LanguageType TypeFloat()      :{
-  int a=32,b=32;
-  LanguageType t = new LanguageType();}
+VarType TypeFloat()      :{
+  int a=8,b=24;
+  VarType t = new VarType();}
 {
-  (<FLOAT> <LPAREN> a=ConstOrInt() <COMMA> b=ConstOrInt() <RPAREN>)
+  (<FLOAT> (<LPAREN> a=ConstOrInt() <COMMA> b=ConstOrInt() <RPAREN>)?)
   {
     if((a<0)||(b<0))
     {
       Error("Invalid value for typedef!!\n");    }
-    t.setType(LanguageType.Type.FLOAT);
+    t.setType(VarType.Type.FLOAT);
     t.bitwidth = a+b;
     return t;  }}
 
-LanguageType TypeFixed()      :
+VarType TypeFixed()      :
 {
-  int a=32,b=32;
-  LanguageType t = new LanguageType();
+  int a=16,b=16;
+  VarType t = new VarType();
 }
 {
-  (<FIXED> <LPAREN> a=ConstOrInt() <COMMA> b=ConstOrInt() <RPAREN>)
+  (<FIXED> (<LPAREN> a=ConstOrInt() <COMMA> b=ConstOrInt() <RPAREN>)?)
   {    if((a<0)||(b<0))
     {
       Error("Invalid value for typedef!!\n");
-    }    t.setType(LanguageType.Type.UFIXED);    t.bitwidth = a+b;
+    }    t.setType(VarType.Type.UFIXED);    t.bitwidth = a+b;
     return t;
   }
 }
 
-LanguageType TypeSFixed()      :
+VarType TypeSFixed()      :
 {
-  int a=32,b=32;
-  LanguageType t = new LanguageType();
+  int a=16,b=16;
+  VarType t = new VarType();
 }
 {
   
-  (<SFIXED> <LPAREN> a=ConstOrInt() <COMMA> b=ConstOrInt() <RPAREN>)
+  (<SFIXED> (<LPAREN> a=ConstOrInt() <COMMA> b=ConstOrInt() <RPAREN>)?)
   {
     if((a<0)||(b<0))
     {
       Error("Invalid value for typedef!!\n");
     }
-    t.setType(LanguageType.Type.SFIXED);
+    t.setType(VarType.Type.SFIXED);
     t.bitwidth = a+b;
     return t;
   }
 }
 
-LanguageType TypeUFixed()      :
+VarType TypeUFixed()      :
 {
   int a=32,b=32;
-  LanguageType t = new LanguageType();
+  VarType t = new VarType();
 }
 {
   
-  (<UFIXED> <LPAREN> a=ConstOrInt() <COMMA> b=ConstOrInt() <RPAREN>)
+  (<UFIXED> (<LPAREN> a=ConstOrInt() <COMMA> b=ConstOrInt() <RPAREN>)?)
   {
     if((a<0)||(b<0))
     {
       Error("Invalid value for typedef!!\n");
     }
-    t.setType(LanguageType.Type.UFIXED);
+    t.setType(VarType.Type.UFIXED);
     t.bitwidth = a+b;
     return t;
   }
 }
 
 
-LanguageType TypeBit()     :
+VarType TypeBit()     :
 {
-  LanguageType t = new LanguageType();
+  VarType t = new VarType();
 }
 {
   <BIT>
   {
-    t.setType(LanguageType.Type.BIT);
+    t.setType(VarType.Type.BIT);
     t.bitwidth = 1;
     return t;  }}
 
-LanguageType TypeUnsigned()      :
+VarType TypeUnsigned()      :
 {
   int bitwidth=32;
-  LanguageType t = new LanguageType();
+  VarType t = new VarType();
 }
 {
-    (<UNSIGNED> <LPAREN> bitwidth=ConstOrInt() <RPAREN>)
+    (<UNSIGNED> (<LPAREN> bitwidth=ConstOrInt() <RPAREN>)?)
     {
-      t.setType(LanguageType.Type.UNSIGNED);
+      t.setType(VarType.Type.UNSIGNED);
       t.bitwidth = bitwidth;
       return t;
     }
 }
 
-LanguageType TypeSigned()      :
+VarType TypeSigned()      :
 {
   int bitwidth=32;
-  LanguageType t = new LanguageType();}
+  VarType t = new VarType();}
 {
-    (<SIGNED> <LPAREN> bitwidth=ConstOrInt() <RPAREN>)
+    (<SIGNED> (<LPAREN> bitwidth=ConstOrInt() <RPAREN>)?) 
     {
-      t.setType(LanguageType.Type.SIGNED);
+      t.setType(VarType.Type.SIGNED);
       t.bitwidth = bitwidth;
       return t;
     }}
 
-LanguageType Type()       : {
-	LanguageType t = new LanguageType();
+VarType Type()       : {
+	VarType t = new VarType();
 }
 {
 	( t=TypeFixed() |
@@ -822,7 +823,7 @@ LanguageType Type()       : {
 	  t=TypeSigned() )
     {
       Info(t.toString());
-      return t;//.bitwidth;    }	
+      return t;    }	
 }
 
 long FloatLong()       :{
@@ -831,7 +832,6 @@ long FloatLong()       :{
 {
    t=<FLOAT_LITERAL>
    {
-     //jjtThis.setFloatNumber(true);
      return FloatStringToLong(t.image);
    }  
         
@@ -864,7 +864,7 @@ void Pin() : {/*@bgen(jjtree) Pin */
 /*@egen*/
 	Token pinDir, pinName, pinType=null;
 	//int pinWidth=0;
-	LanguageType type= new LanguageType();
+	VarType type= new VarType();
 }
 {/*@bgen(jjtree) Pin */
         try {
@@ -878,7 +878,7 @@ void Pin() : {/*@bgen(jjtree) Pin */
 	{
 		if (pinType != null) {
 		    if (allTypedefs.containsKey(pinType.image)) {
-				type=(LanguageType)(allTypedefs.get(pinType.image));
+				type=(VarType)(allTypedefs.get(pinType.image));
 				
 				//DEBUG
 				//InfoToken(pinDir.image + "put pin " + pinName.image + " of type " + pinType.image + " found", pinName);
@@ -939,24 +939,24 @@ void Declarations()       : {}
 
 void Declaration()       : {
 	Token varType=null;
-	LanguageType type= null;
+	VarType type= null;
 }
 {
 	(varType=<IDENTIFIER> | type=Type()) 
 	{
 		if (varType != null) {
 			if (allTypedefs.containsKey(varType.image)) {
-				type=(LanguageType)(allTypedefs.get(varType.image));
+				type=(VarType)(allTypedefs.get(varType.image));
 			}
 			else {
 				ErrorToken("Type " + varType.image + " NOT found!", varType);
 			}
 		}
 	}
-	(Variable(type.bitwidth)) ("," (Variable(type.bitwidth)))* <SEMICOLON>
+	(Variable(type)) ("," (Variable(type)))* <SEMICOLON>
 }
 
-void Variable(int varWidth) : {/*@bgen(jjtree) Variable */
+void Variable(VarType type) : {/*@bgen(jjtree) Variable */
         SimpleNode jjtn000 = new SimpleNode(this, JJTVARIABLE);
         boolean jjtc000 = true;
         jjtree.openNodeScope(jjtn000);
@@ -964,7 +964,7 @@ void Variable(int varWidth) : {/*@bgen(jjtree) Variable */
 	Token tName;
 	Integer size = null;
 	Long init = null;
-	Vector<Long> inits = null;
+	Vector<String> inits = null;
 }
 {/*@bgen(jjtree) Variable */
         try {
@@ -987,11 +987,13 @@ void Variable(int varWidth) : {/*@bgen(jjtree) Variable */
 		jjtn000.setArraySize(size);
         jjtn000.jjtSetValue(init);
 		jjtn000.setInits(inits);
-		jjtn000.setWidth(varWidth);
+		jjtn000.setWidth(type.bitwidth);
 		jjtn000.setToken(tName);
+		jjtn000.setVarType(type);
         
         // 
-		if(floatValue)
+		//if(floatValue || type.getType()== VarType.Type.FLOAT)
+		if(type.getType()== VarType.Type.FLOAT)
         {
           floatValue = false;
           jjtn000.setFloatNumber(true);
@@ -1034,7 +1036,7 @@ void Result(int varWidth, Process process) : {/*@bgen(jjtree) Result */
 	Token tName;
 	Integer size = null;
 	Long init = null;
-	Vector<Long> inits = null;
+	Vector<String> inits = null;
 }
 {/*@bgen(jjtree) Result */
         try {
@@ -1107,7 +1109,7 @@ void TestbenchEntry(int varWidth) : {/*@bgen(jjtree) TestbenchEntry */
 	Token tName;
 	Integer size = null;
 	Long init = null;
-	Vector<Long> inits = null;
+	Vector<String> inits = null;
 }
 {/*@bgen(jjtree) TestbenchEntry */
         try {
@@ -1160,7 +1162,31 @@ void TestbenchEntry(int varWidth) : {/*@bgen(jjtree) TestbenchEntry */
 }
 
 
-Vector<Long> MemoryInit(Vector<Long> inits)       : {
+Vector<String> MemoryInit(Vector<String> inits)       : {
+    Token t1, t2=null;
+}
+{
+    <LBRACE> (t1=<INTEGER_LITERAL> | t1=<FLOAT_LITERAL>)
+    {
+        if (inits == null) {
+            inits = new Vector<String>();
+        }
+          inits.add(t1.image);
+    }
+    ( <COMMA> (t2=<INTEGER_LITERAL>|t2=<FLOAT_LITERAL>)
+    {
+        if (t2 != null) {
+            inits.add(t2.image);
+        }
+    }
+    )* <RBRACE>
+    {
+        return inits;
+    }
+}
+/*
+
+Vector<Long> MemoryInit(Vector<Long> inits) #void : {
 	Token t1, t2=null;
 }
 {
@@ -1175,6 +1201,8 @@ Vector<Long> MemoryInit(Vector<Long> inits)       : {
 		else		{
 		  inits.add(FloatStringToLong(t1.image));
 		}
+        
+       
 		 
 	}
 	( <COMMA> (t2=<INTEGER_LITERAL>|t2=<FLOAT_LITERAL>)
@@ -1188,6 +1216,7 @@ Vector<Long> MemoryInit(Vector<Long> inits)       : {
           {
             inits.add(FloatStringToLong(t2.image));
           }
+          
 		}
 	}
 	)* <RBRACE>
@@ -1195,7 +1224,7 @@ Vector<Long> MemoryInit(Vector<Long> inits)       : {
 		return inits;
 	}
 }
-
+*/
 
 void Counter() : {/*@bgen(jjtree) Counter */
         SimpleNode jjtn000 = new SimpleNode(this, JJTCOUNTER);
@@ -2275,22 +2304,22 @@ int Constant()       :{
 
 
 int ConstOrInt()       : {
-	int size = 0;
+	int value = 0;
 }
 {
-   (size=Int()|size=Constant())
+   (value=Int()|value=Constant())
    {
-     return size;   } 
+     return value;   } 
 }
 
 
 long ConstOrLong()       : {
-	long size = 0;
+	long value = 0;
 }
 {
-   (size=Long()|size=Constant())
+   (value=Long() | value=Constant() | value=FloatLong())
    {
-     return size;
+     return value;
    } 
 }
 

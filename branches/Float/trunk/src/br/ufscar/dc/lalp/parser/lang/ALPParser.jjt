@@ -59,7 +59,7 @@ public class ALPParser {
 	public Design design;
 	public Hashtable<String, Integer> allConsts = new Hashtable<String, Integer>();
 	//public Hashtable<String, Integer> allTypedefs = new Hashtable<String, Integer>();
-	public Hashtable<String, LanguageType> allTypedefs = new Hashtable<String, LanguageType>();
+	public Hashtable<String, VarType> allTypedefs = new Hashtable<String, VarType>();
 	public Hashtable<String, SimpleNode> allPins = new Hashtable<String, SimpleNode>();
 	public Hashtable<String, SimpleNode> allVariables = new Hashtable<String, SimpleNode>();
 	public Hashtable<String, SimpleNode> allResults = new Hashtable<String, SimpleNode>();
@@ -367,15 +367,14 @@ void EqualityChecking():
 
 void Results(Process process) : {
 	Token varType=null;
-//	int varWidth=0;
-	LanguageType type= null;
+	VarType type= null;
 }
 {
 	(varType=<IDENTIFIER> | type=Type()) 
 	{
 		if (varType != null) {
 			if (allTypedefs.containsKey(varType.image)) {
-				type=(LanguageType)(allTypedefs.get(varType.image));
+				type=(VarType)(allTypedefs.get(varType.image));
 			}
 			else {
 				ErrorToken("Type " + varType.image + " NOT found!", varType);
@@ -387,15 +386,14 @@ void Results(Process process) : {
 
 void TestbenchEntries() : {
 	Token varType=null;
-	//int varWidth=0;
-	LanguageType type= null;
+	VarType type= null;
 }
 {
 	(varType=<IDENTIFIER> | type=Type()) 
 	{
 		if (varType != null) {
 			if (allTypedefs.containsKey(varType.image)) {
-				type=(LanguageType)(allTypedefs.get(varType.image));
+				type=(VarType)(allTypedefs.get(varType.image));
 			}
 			else {
 				ErrorToken("Type " + varType.image + " NOT found!", varType);
@@ -405,30 +403,6 @@ void TestbenchEntries() : {
 	TestbenchEntry(type.bitwidth) <SEMICOLON>
 }
 
-/*
-Vector<Long> TestResult(Vector<Long> inits) #void : {
-	Token t1, t2=null;
-}
-{
-	"{" t1=<INTEGER_LITERAL>
-	{
-		if (inits == null) {
-			inits = new Vector<Long>();
-		}
-		inits.add(StringToLong(t1.image));
-	}
-	( "," t2=<INTEGER_LITERAL>
-	{
-		if (t2 != null) {
-			inits.add(StringToLong(t2.image));
-		}
-	}
-	)* "}"
-	{
-		return inits;
-	}
-}
-*/
 
 void Name() : {
 	Token tName, tPort = null;
@@ -448,6 +422,7 @@ void Name() : {
             if(node!= null)
             {
               jjtThis.setFloatNumber(node.isFloat());
+              jjtThis.setVarType(node.getVarType());
             }
 		}
 		else {
@@ -477,9 +452,7 @@ void Const() : {
 
 void Typedef() : {
 	Token typedefName;
-	//int typedefVal;
-	//desfazer ateh aqui
-	LanguageType type= new LanguageType();
+	VarType type= new VarType();
 }
 {
 	<TYPEDEF> type=Type() typedefName=<IDENTIFIER> <SEMICOLON>
@@ -496,112 +469,112 @@ void Typedef() : {
  	}
 }
 
-LanguageType TypeFloat()#void :{
-  int a=32,b=32;
-  LanguageType t = new LanguageType();}
+VarType TypeFloat()#void :{
+  int a=8,b=24;
+  VarType t = new VarType();}
 {
-  (<FLOAT> <LPAREN> a=ConstOrInt() <COMMA> b=ConstOrInt() <RPAREN>)
+  (<FLOAT> (<LPAREN> a=ConstOrInt() <COMMA> b=ConstOrInt() <RPAREN>)?)
   {
     if((a<0)||(b<0))
     {
       Error("Invalid value for typedef!!\n");    }
-    t.setType(LanguageType.Type.FLOAT);
+    t.setType(VarType.Type.FLOAT);
     t.bitwidth = a+b;
     return t;  }}
 
-LanguageType TypeFixed()#void :
+VarType TypeFixed()#void :
 {
-  int a=32,b=32;
-  LanguageType t = new LanguageType();
+  int a=16,b=16;
+  VarType t = new VarType();
 }
 {
-  (<FIXED> <LPAREN> a=ConstOrInt() <COMMA> b=ConstOrInt() <RPAREN>)
+  (<FIXED> (<LPAREN> a=ConstOrInt() <COMMA> b=ConstOrInt() <RPAREN>)?)
   {    if((a<0)||(b<0))
     {
       Error("Invalid value for typedef!!\n");
-    }    t.setType(LanguageType.Type.UFIXED);    t.bitwidth = a+b;
+    }    t.setType(VarType.Type.UFIXED);    t.bitwidth = a+b;
     return t;
   }
 }
 
-LanguageType TypeSFixed()#void :
+VarType TypeSFixed()#void :
 {
-  int a=32,b=32;
-  LanguageType t = new LanguageType();
+  int a=16,b=16;
+  VarType t = new VarType();
 }
 {
   
-  (<SFIXED> <LPAREN> a=ConstOrInt() <COMMA> b=ConstOrInt() <RPAREN>)
+  (<SFIXED> (<LPAREN> a=ConstOrInt() <COMMA> b=ConstOrInt() <RPAREN>)?)
   {
     if((a<0)||(b<0))
     {
       Error("Invalid value for typedef!!\n");
     }
-    t.setType(LanguageType.Type.SFIXED);
+    t.setType(VarType.Type.SFIXED);
     t.bitwidth = a+b;
     return t;
   }
 }
 
-LanguageType TypeUFixed()#void :
+VarType TypeUFixed()#void :
 {
   int a=32,b=32;
-  LanguageType t = new LanguageType();
+  VarType t = new VarType();
 }
 {
   
-  (<UFIXED> <LPAREN> a=ConstOrInt() <COMMA> b=ConstOrInt() <RPAREN>)
+  (<UFIXED> (<LPAREN> a=ConstOrInt() <COMMA> b=ConstOrInt() <RPAREN>)?)
   {
     if((a<0)||(b<0))
     {
       Error("Invalid value for typedef!!\n");
     }
-    t.setType(LanguageType.Type.UFIXED);
+    t.setType(VarType.Type.UFIXED);
     t.bitwidth = a+b;
     return t;
   }
 }
 
 
-LanguageType TypeBit()#void:
+VarType TypeBit()#void:
 {
-  LanguageType t = new LanguageType();
+  VarType t = new VarType();
 }
 {
   <BIT>
   {
-    t.setType(LanguageType.Type.BIT);
+    t.setType(VarType.Type.BIT);
     t.bitwidth = 1;
     return t;  }}
 
-LanguageType TypeUnsigned()#void :
+VarType TypeUnsigned()#void :
 {
   int bitwidth=32;
-  LanguageType t = new LanguageType();
+  VarType t = new VarType();
 }
 {
-    (<UNSIGNED> <LPAREN> bitwidth=ConstOrInt() <RPAREN>)
+    (<UNSIGNED> (<LPAREN> bitwidth=ConstOrInt() <RPAREN>)?)
     {
-      t.setType(LanguageType.Type.UNSIGNED);
+      t.setType(VarType.Type.UNSIGNED);
       t.bitwidth = bitwidth;
       return t;
     }
 }
 
-LanguageType TypeSigned()#void :
+VarType TypeSigned()#void :
 {
   int bitwidth=32;
-  LanguageType t = new LanguageType();}
+  VarType t = new VarType();}
 {
-    (<SIGNED> <LPAREN> bitwidth=ConstOrInt() <RPAREN>)
+    (<SIGNED> (<LPAREN> bitwidth=ConstOrInt() <RPAREN>)?) 
     {
-      t.setType(LanguageType.Type.SIGNED);
+      t.setType(VarType.Type.SIGNED);
       t.bitwidth = bitwidth;
       return t;
     }}
 
-LanguageType Type() #void : {
-	LanguageType t = new LanguageType();
+VarType Type() #void : {
+	VarType t = new VarType();
 }
 {
 	( t=TypeFixed() |
@@ -613,7 +586,7 @@ LanguageType Type() #void : {
 	  t=TypeSigned() )
     {
       Info(t.toString());
-      return t;//.bitwidth;    }	
+      return t;    }	
 }
 
 long FloatLong() #void :{
@@ -622,7 +595,6 @@ long FloatLong() #void :{
 {
    t=<FLOAT_LITERAL>
    {
-     //jjtThis.setFloatNumber(true);
      return FloatStringToLong(t.image);
    }  
         
@@ -650,15 +622,14 @@ long Long() #void :{
 
 void Pin() : {
 	Token pinDir, pinName, pinType=null;
-	//int pinWidth=0;
-	LanguageType type= new LanguageType();
+	VarType type= new VarType();
 }
 {
 	(pinDir=<IN> | pinDir=<OUT>) ( pinType=<IDENTIFIER> | type=Type()) pinName=<IDENTIFIER>
 	{
 		if (pinType != null) {
 		    if (allTypedefs.containsKey(pinType.image)) {
-				type=(LanguageType)(allTypedefs.get(pinType.image));
+				type=(VarType)(allTypedefs.get(pinType.image));
 				
 				//DEBUG
 				//InfoToken(pinDir.image + "put pin " + pinName.image + " of type " + pinType.image + " found", pinName);
@@ -699,28 +670,28 @@ void Declarations() #void : {}
 
 void Declaration() #void : {
 	Token varType=null;
-	LanguageType type= null;
+	VarType type= null;
 }
 {
 	(varType=<IDENTIFIER> | type=Type()) 
 	{
 		if (varType != null) {
 			if (allTypedefs.containsKey(varType.image)) {
-				type=(LanguageType)(allTypedefs.get(varType.image));
+				type=(VarType)(allTypedefs.get(varType.image));
 			}
 			else {
 				ErrorToken("Type " + varType.image + " NOT found!", varType);
 			}
 		}
 	}
-	(Variable(type.bitwidth)) ("," (Variable(type.bitwidth)))* <SEMICOLON>
+	(Variable(type)) ("," (Variable(type)))* <SEMICOLON>
 }
 
-void Variable(int varWidth) : {
+void Variable(VarType type) : {
 	Token tName;
 	Integer size = null;
 	Long init = null;
-	Vector<Long> inits = null;
+	Vector<String> inits = null;
 }
 {
 	
@@ -736,11 +707,13 @@ void Variable(int varWidth) : {
 		jjtThis.setArraySize(size);
         jjtThis.jjtSetValue(init);
 		jjtThis.setInits(inits);
-		jjtThis.setWidth(varWidth);
+		jjtThis.setWidth(type.bitwidth);
 		jjtThis.setToken(tName);
+		jjtThis.setVarType(type);
         
         // 
-		if(floatValue)
+		//if(floatValue || type.getType()== VarType.Type.FLOAT)
+		if(type.getType()== VarType.Type.FLOAT)
         {
           floatValue = false;
           jjtThis.setFloatNumber(true);
@@ -759,7 +732,7 @@ void Result(int varWidth, Process process) : {
 	Token tName;
 	Integer size = null;
 	Long init = null;
-	Vector<Long> inits = null;
+	Vector<String> inits = null;
 }
 {
 	tName=<IDENTIFIER> (<LBRACKET> (size=ConstOrInt())? <RBRACKET>)? ("=" (init=ConstOrLong() | inits=MemoryInit(inits)))?
@@ -801,7 +774,7 @@ void TestbenchEntry(int varWidth) : {
 	Token tName;
 	Integer size = null;
 	Long init = null;
-	Vector<Long> inits = null;
+	Vector<String> inits = null;
 }
 {
 	tName=<IDENTIFIER> (<LBRACKET> (size=ConstOrInt())? <RBRACKET>)? ("=" (init=ConstOrLong() | inits=MemoryInit(inits)))?
@@ -827,42 +800,28 @@ void TestbenchEntry(int varWidth) : {
 }
 
 
-Vector<Long> MemoryInit(Vector<Long> inits) #void : {
-	Token t1, t2=null;
+Vector<String> MemoryInit(Vector<String> inits) #void : {
+    Token t1, t2=null;
 }
 {
-	<LBRACE> (t1=<INTEGER_LITERAL> | t1=<FLOAT_LITERAL>)
-	{
-		if (inits == null) {
-			inits = new Vector<Long>();
-		}
-
-		if(t1.kind == INTEGER_LITERAL)		{		  inits.add(StringToLong(t1.image));
-		}
-		else		{
-		  inits.add(FloatStringToLong(t1.image));
-		}
-		 
-	}
-	( <COMMA> (t2=<INTEGER_LITERAL>|t2=<FLOAT_LITERAL>)
-	{
-		if (t2 != null) {
-		  if(t2.kind == INTEGER_LITERAL)
-          {
-            inits.add(StringToLong(t2.image));
-          }
-          else
-          {
-            inits.add(FloatStringToLong(t2.image));
-          }
-		}
-	}
-	)* <RBRACE>
-	{
-		return inits;
-	}
+    <LBRACE> (t1=<INTEGER_LITERAL> | t1=<FLOAT_LITERAL>)
+    {
+        if (inits == null) {
+            inits = new Vector<String>();
+        }
+          inits.add(t1.image);
+    }
+    ( <COMMA> (t2=<INTEGER_LITERAL>|t2=<FLOAT_LITERAL>)
+    {
+        if (t2 != null) {
+            inits.add(t2.image);
+        }
+    }
+    )* <RBRACE>
+    {
+        return inits;
+    }
 }
-
 
 void Counter() : {
 	
@@ -1238,22 +1197,22 @@ int Constant() #void :{
 
 
 int ConstOrInt() #void : {
-	int size = 0;
+	int value = 0;
 }
 {
-   (size=Int()|size=Constant())
+   (value=Int()|value=Constant())
    {
-     return size;   } 
+     return value;   } 
 }
 
 
 long ConstOrLong() #void : {
-	long size = 0;
+	long value = 0;
 }
 {
-   (size=Long()|size=Constant())
+   (value=Long() | value=Constant() | value=FloatLong())
    {
-     return size;
+     return value;
    } 
 }
 
