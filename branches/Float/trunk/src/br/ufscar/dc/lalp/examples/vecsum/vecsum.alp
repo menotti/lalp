@@ -29,8 +29,8 @@ int main() {
 const DATA_WIDTH = 32;
 const ITERATIONS = 2048;
 
-typedef fixed(DATA_WIDTH, 1) int;
-typedef fixed(1, 0) bit;
+typedef signed(DATA_WIDTH) int;
+
 
 vecsum(out int result, out bit done, in bit init) {
 	{
@@ -70,7 +70,7 @@ vecsum(out int result, out bit done, in bit init) {
 		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5
 		};
 		int z[ITERATIONS];
-		fixed(16, 0) i;
+		unsigned(16) i;
 	}
 	counter (i=0; i<ITERATIONS; i++);
 	i.clk_en = init;

@@ -202,6 +202,12 @@ library IEEE;
 use IEEE.std_logic_1164.all;
 use IEEE.std_logic_arith.all;
 
+library ieee_proposed;
+use ieee_proposed.fixed_float_types.all;
+use ieee_proposed.fixed_pkg.all;
+use ieee_proposed.float_pkg.all;
+
+
 entity sub_reg_op_fl is  
 	generic (
 		w_in1	: integer	:= 16;

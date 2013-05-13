@@ -15,8 +15,7 @@
 const DATA_WIDTH = 32;
 const ITERATIONS = 2048;
 
-typedef fixed(DATA_WIDTH, 1) int;
-typedef fixed(1, 0) bit;
+typedef signed(DATA_WIDTH) int;
 
 max(in bit init, out fixed(DATA_WIDTH, 1) maxval, out bit done) {
 	{

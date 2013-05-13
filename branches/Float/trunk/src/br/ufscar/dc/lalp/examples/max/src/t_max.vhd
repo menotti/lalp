@@ -12,7 +12,7 @@
 -- SUFFERED BY LICENSEE AS A RESULT OF USING, MODIFYING OR DISTRIBUTING THIS
 -- SOFTWARE OR ITS DERIVATIVES.
 --
--- Generated at Tue Dec 11 15:01:25 BRST 2012
+-- Generated at Mon May 13 15:28:38 WEST 2013
 --
 
 -- IEEE Libraries --
@@ -31,7 +31,7 @@ component max
 		\clk\	: in	std_logic;
 		\done\	: out	std_logic;
 		\init\	: in	std_logic;
-		\maxval\	: out	std_logic_vector(31 downto 0);
+		\maxval\	: out	std_logic_vector(32 downto 0);
 		\reset\	: in	std_logic
 	);
 end component;
@@ -40,7 +40,7 @@ signal \clear\	: std_logic	:= '0';
 signal \clk\	: std_logic	:= '0';
 signal \done\	: std_logic	:= '0';
 signal \init\	: std_logic	:= '0';
-signal \maxval\	: std_logic_vector(31 downto 0)	:= (others => '0');
+signal \maxval\	: std_logic_vector(32 downto 0)	:= (others => '0');
 signal \reset\	: std_logic	:= '0';
 
 begin

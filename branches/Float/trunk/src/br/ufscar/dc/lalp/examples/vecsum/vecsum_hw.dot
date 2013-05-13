@@ -1,11 +1,11 @@
 digraph vecsum {
 	// Components (Nodes)
+	"c14" [shape=record, fontcolor=blue, style="filled", fillcolor="lightgray", label="{{<a>a[1]|<clk>clk|<reset>reset}|delay_op:c14\ndelay=2|{<a_delayed>a_delayed[1]}}"];
 	"result" [shape=msquare fontcolor=blue label="result"];
 	"c13" [shape=record, fontcolor=blue, style="filled", fillcolor="lightgray", label="{{<a>a[16]|<clk>clk|<reset>reset}|delay_op:c13\ndelay=2|{<a_delayed>a_delayed[16]}}"];
+	"c12" [fontcolor=red label="c12=0x800"];
 	"c11" [fontcolor=red label="c11=0x0"];
 	"c15" [shape=record, fontcolor=blue, style="filled", fillcolor="lightgray", label="{{<a>a[1]|<clk>clk|<reset>reset}|delay_op:c15\ndelay=4|{<a_delayed>a_delayed[1]}}"];
-	"c14" [shape=record, fontcolor=blue, style="filled", fillcolor="lightgray", label="{{<a>a[1]|<clk>clk|<reset>reset}|delay_op:c14\ndelay=2|{<a_delayed>a_delayed[1]}}"];
-	"c12" [fontcolor=red label="c12=0x800"];
 	"x_add_op_s_y" [shape=record, fontcolor=blue, label="{{<I0>I0[32]|<I1>I1[32]}|add_op_s:x_add_op_s_y|{<O0>O0[32]}}"];
 	"z" [shape=record, fontcolor=blue, style="filled", fillcolor="lightgray", label="{{<address>address[11]|<clk>clk|<data_in>data_in[32]|<oe>oe|<we>we}|block_ram:z|{<data_out>data_out[32]}}"];
 	"x" [shape=record, fontcolor=blue, style="filled", fillcolor="lightgray", label="{{<address>address[11]|<clk>clk|<data_in>data_in[32]|<oe>oe|<we>we}|block_ram:x|{<data_out>data_out[32]}}"];

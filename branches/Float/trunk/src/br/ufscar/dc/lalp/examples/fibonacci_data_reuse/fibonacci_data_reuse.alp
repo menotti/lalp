@@ -15,8 +15,7 @@
 const DATA_WIDTH = 32;
 const ITERATIONS = 32;
 
-typedef fixed(DATA_WIDTH, 1) int;
-typedef fixed(1, 0) bit;
+typedef signed(DATA_WIDTH) int;
 
 fibonacci_data_reuse(in bit init, out int output, out bit done) {
 

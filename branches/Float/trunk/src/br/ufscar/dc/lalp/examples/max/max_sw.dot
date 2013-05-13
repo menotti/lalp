@@ -17,16 +17,16 @@ digraph max {
 	// Signals (Edges)
 	"c11" -> "i"
 	"c14" -> "done"
-	"init" -> "i"
 	"c13" -> "a"
 	"i" -> "c14":input
-	"a_if_gt_op_s_b" -> "b" [style=dashed];
+	"init" -> "i"
 	"i" -> "c13":input
+	"a_if_gt_op_s_b" -> "b" [style=dashed];
 	"b" -> "a_if_gt_op_s_b" [style=dashed];
 	"v" -> "a"
 	"c12" -> "i"
-	"a" -> "b"
 	"b" -> "maxval"
+	"a" -> "b"
 	"a" -> "a_if_gt_op_s_b" [style=dashed];
 	"i" -> "v"
 }

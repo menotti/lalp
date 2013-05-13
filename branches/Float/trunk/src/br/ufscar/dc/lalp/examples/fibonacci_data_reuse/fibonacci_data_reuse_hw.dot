@@ -8,21 +8,21 @@ digraph fibonacci_data_reuse {
 	"v" [shape=record, fontcolor=blue, style="filled", fillcolor="lightgray", label="{{<address>address[3]|<clk>clk|<data_in>data_in[32]|<oe>oe|<we>we}|block_ram:v|{<data_out>data_out[32]}}"];
 	"b" [shape=record, fontcolor=blue, style="filled", fillcolor="lightgray", label="{{<I0>I0[32]|<I1>I1[32]|<Sel1>Sel1[1]|<clk>clk|<reset>reset|<we>we}|add_reg_op_s:b|{<O0>O0[32]}}"];
 	"output" [shape=msquare fontcolor=blue label="output"];
-	"i" [shape=record, fontcolor=blue, style="filled", fillcolor="lightgray", label="{{<clk>clk|<clk_en>clk_en|<input>input[6]|<load>load|<reset>reset|<termination>termination[6]}|counter:i\n\<\n+=1\nsteps=1|{<done>done|<output>output[6]|<step>step}}"];
+	"i" [shape=record, fontcolor=blue, style="filled", fillcolor="lightgray", label="{{<clk>clk|<clk_en>clk_en|<input>input[7]|<load>load|<reset>reset|<termination>termination[7]}|counter:i\n\<\n+=1\nsteps=1|{<done>done|<output>output[7]|<step>step}}"];
 	"a" [shape=record, fontcolor=blue, style="filled", fillcolor="lightgray", label="{{<I0>I0[32]|<clk>clk|<reset>reset|<we>we}|reg_op:a|{<O0>O0[32]}}"];
 	"init" [shape=msquare fontcolor=blue label="init"];
 
 	// Signals (Edges)
-	"c10" -> "i":input [label="s0[6]" color=red fontcolor=red];
+	"c10" -> "i":input [label="s0[7]" color=red fontcolor=red];
 	"i":done -> "c13":a [label="s10" color=olivedrab];
 	"c13":a_delayed -> "done" [label="s11[1]" color=red fontcolor=red];
 	"v":data_out -> "output" [label="s9[32]" color=red fontcolor=red];
 	"a":O0 -> "b":I1 [label="s7[32]" color=red fontcolor=red style=dashed];
 	"a":O0 -> "v":data_in [label="s5[32]" color=red fontcolor=red style=dashed];
 	"c12" -> "v":we [label="s3[32]" color=red fontcolor=red];
-	"c11" -> "i":termination [label="s1[6]" color=red fontcolor=red];
+	"c11" -> "i":termination [label="s1[7]" color=red fontcolor=red];
 	"b":O0 -> "a":I0 [label="s8[32]" color=red fontcolor=red style=dashed];
 	"b":O0 -> "b":I0 [label="s6[32]" color=red fontcolor=red style=dashed];
-	"i":output -> "v":address [label="s4[6]" color=red fontcolor=red];
+	"i":output -> "v":address [label="s4[7]" color=red fontcolor=red];
 	"init" -> "i":clk_en [label="s2" color=olivedrab];
 }

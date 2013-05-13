@@ -25,9 +25,9 @@ const M = 64; //N*N
 const num_fdcts = 10;
 const SIZE = 640; //  < 640=num_fdcts*M;
 	
-typedef fixed(32,1) int;
-typedef fixed(10,0) address;
-typedef fixed(1,0) bool;
+typedef signed(32) int;
+typedef unsigned(10) address;
+typedef unsigned(1) bool;
 
 fdct(in bool init, out bool done, out int output) {
   

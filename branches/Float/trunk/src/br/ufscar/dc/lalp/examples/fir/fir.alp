@@ -14,8 +14,7 @@
 
 const DATA_WIDTH = 32;
 
-typedef fixed(DATA_WIDTH, 1) int;
-typedef fixed(1, 0) bit;
+typedef signed(DATA_WIDTH) int;
 
 fir(in bit init, in int a, in int b, in int c, in int d, in int e, out int result) {
 	{

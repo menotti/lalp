@@ -1,8 +1,7 @@
 const DATA_WIDTH = 16;
 const SIZE = 25; 
 
-typedef fixed(DATA_WIDTH, 1) int;
-typedef fixed(1, 0) bit;
+typedef signed(DATA_WIDTH) int;
 
 matmult(in bit init, out bit done, out int result) {
 	{
