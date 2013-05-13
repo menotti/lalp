@@ -35,7 +35,7 @@ public class ALPParser/*@bgen(jjtree)*/implements ALPParserTreeConstants, ALPPar
         public Design design;
         public Hashtable<String, Integer> allConsts = new Hashtable<String, Integer>();
         //public Hashtable<String, Integer> allTypedefs = new Hashtable<String, Integer>();
-        public Hashtable<String, LanguageType> allTypedefs = new Hashtable<String, LanguageType>();
+        public Hashtable<String, VarType> allTypedefs = new Hashtable<String, VarType>();
         public Hashtable<String, SimpleNode> allPins = new Hashtable<String, SimpleNode>();
         public Hashtable<String, SimpleNode> allVariables = new Hashtable<String, SimpleNode>();
         public Hashtable<String, SimpleNode> allResults = new Hashtable<String, SimpleNode>();
@@ -281,7 +281,7 @@ public class ALPParser/*@bgen(jjtree)*/implements ALPParserTreeConstants, ALPPar
         boolean jjtc000 = true;
         jjtree.openNodeScope(jjtn000);Token varType=null;
 //	int varWidth=0;
-        LanguageType type= null;
+        VarType type= null;
     try {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case IDENTIFIER:
@@ -303,7 +303,7 @@ public class ALPParser/*@bgen(jjtree)*/implements ALPParserTreeConstants, ALPPar
       }
                 if (varType != null) {
                         if (allTypedefs.containsKey(varType.image)) {
-                                type=(LanguageType)(allTypedefs.get(varType.image));
+                                type=(VarType)(allTypedefs.get(varType.image));
                         }
                         else {
                                 ErrorToken("Type " + varType.image + " NOT found!", varType);
@@ -338,7 +338,7 @@ public class ALPParser/*@bgen(jjtree)*/implements ALPParserTreeConstants, ALPPar
         boolean jjtc000 = true;
         jjtree.openNodeScope(jjtn000);Token varType=null;
         //int varWidth=0;
-        LanguageType type= null;
+        VarType type= null;
     try {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case IDENTIFIER:
@@ -360,7 +360,7 @@ public class ALPParser/*@bgen(jjtree)*/implements ALPParserTreeConstants, ALPPar
       }
                 if (varType != null) {
                         if (allTypedefs.containsKey(varType.image)) {
-                                type=(LanguageType)(allTypedefs.get(varType.image));
+                                type=(VarType)(allTypedefs.get(varType.image));
                         }
                         else {
                                 ErrorToken("Type " + varType.image + " NOT found!", varType);
@@ -443,6 +443,7 @@ Vector<Long> TestResult(Vector<Long> inits) #void : {
             if(node!= null)
             {
               jjtn000.setFloatNumber(node.isFloat());
+              jjtn000.setVarType(node.getVarType());
             }
                 }
                 else {
@@ -492,7 +493,7 @@ Vector<Long> TestResult(Vector<Long> inits) #void : {
         jjtree.openNodeScope(jjtn000);Token typedefName;
         //int typedefVal;
         //desfazer ateh aqui
-        LanguageType type= new LanguageType();
+        VarType type= new VarType();
     try {
       jj_consume_token(TYPEDEF);
       type = Type();
@@ -530,119 +531,161 @@ Vector<Long> TestResult(Vector<Long> inits) #void : {
     }
   }
 
-  final public LanguageType TypeFloat() throws ParseException {
-  int a=32,b=32;
-  LanguageType t = new LanguageType();
+  final public VarType TypeFloat() throws ParseException {
+  int a=8,b=24;
+  VarType t = new VarType();
     jj_consume_token(FLOAT);
-    jj_consume_token(LPAREN);
-    a = ConstOrInt();
-    jj_consume_token(COMMA);
-    b = ConstOrInt();
-    jj_consume_token(RPAREN);
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case LPAREN:
+      jj_consume_token(LPAREN);
+      a = ConstOrInt();
+      jj_consume_token(COMMA);
+      b = ConstOrInt();
+      jj_consume_token(RPAREN);
+      break;
+    default:
+      jj_la1[12] = jj_gen;
+      ;
+    }
     if((a<0)||(b<0))
     {
       Error("Invalid value for typedef!!\u005cn");
     }
-    t.setType(LanguageType.Type.FLOAT);
+    t.setType(VarType.Type.FLOAT);
     t.bitwidth = a+b;
     {if (true) return t;}
     throw new Error("Missing return statement in function");
   }
 
-  final public LanguageType TypeFixed() throws ParseException {
-  int a=32,b=32;
-  LanguageType t = new LanguageType();
+  final public VarType TypeFixed() throws ParseException {
+  int a=16,b=16;
+  VarType t = new VarType();
     jj_consume_token(FIXED);
-    jj_consume_token(LPAREN);
-    a = ConstOrInt();
-    jj_consume_token(COMMA);
-    b = ConstOrInt();
-    jj_consume_token(RPAREN);
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case LPAREN:
+      jj_consume_token(LPAREN);
+      a = ConstOrInt();
+      jj_consume_token(COMMA);
+      b = ConstOrInt();
+      jj_consume_token(RPAREN);
+      break;
+    default:
+      jj_la1[13] = jj_gen;
+      ;
+    }
     if((a<0)||(b<0))
     {
       Error("Invalid value for typedef!!\u005cn");
     }
-    t.setType(LanguageType.Type.UFIXED);
+    t.setType(VarType.Type.UFIXED);
     t.bitwidth = a+b;
     {if (true) return t;}
     throw new Error("Missing return statement in function");
   }
 
-  final public LanguageType TypeSFixed() throws ParseException {
-  int a=32,b=32;
-  LanguageType t = new LanguageType();
+  final public VarType TypeSFixed() throws ParseException {
+  int a=16,b=16;
+  VarType t = new VarType();
     jj_consume_token(SFIXED);
-    jj_consume_token(LPAREN);
-    a = ConstOrInt();
-    jj_consume_token(COMMA);
-    b = ConstOrInt();
-    jj_consume_token(RPAREN);
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case LPAREN:
+      jj_consume_token(LPAREN);
+      a = ConstOrInt();
+      jj_consume_token(COMMA);
+      b = ConstOrInt();
+      jj_consume_token(RPAREN);
+      break;
+    default:
+      jj_la1[14] = jj_gen;
+      ;
+    }
     if((a<0)||(b<0))
     {
       Error("Invalid value for typedef!!\u005cn");
     }
-    t.setType(LanguageType.Type.SFIXED);
+    t.setType(VarType.Type.SFIXED);
     t.bitwidth = a+b;
     {if (true) return t;}
     throw new Error("Missing return statement in function");
   }
 
-  final public LanguageType TypeUFixed() throws ParseException {
+  final public VarType TypeUFixed() throws ParseException {
   int a=32,b=32;
-  LanguageType t = new LanguageType();
+  VarType t = new VarType();
     jj_consume_token(UFIXED);
-    jj_consume_token(LPAREN);
-    a = ConstOrInt();
-    jj_consume_token(COMMA);
-    b = ConstOrInt();
-    jj_consume_token(RPAREN);
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case LPAREN:
+      jj_consume_token(LPAREN);
+      a = ConstOrInt();
+      jj_consume_token(COMMA);
+      b = ConstOrInt();
+      jj_consume_token(RPAREN);
+      break;
+    default:
+      jj_la1[15] = jj_gen;
+      ;
+    }
     if((a<0)||(b<0))
     {
       Error("Invalid value for typedef!!\u005cn");
     }
-    t.setType(LanguageType.Type.UFIXED);
+    t.setType(VarType.Type.UFIXED);
     t.bitwidth = a+b;
     {if (true) return t;}
     throw new Error("Missing return statement in function");
   }
 
-  final public LanguageType TypeBit() throws ParseException {
-  LanguageType t = new LanguageType();
+  final public VarType TypeBit() throws ParseException {
+  VarType t = new VarType();
     jj_consume_token(BIT);
-    t.setType(LanguageType.Type.BIT);
+    t.setType(VarType.Type.BIT);
     t.bitwidth = 1;
     {if (true) return t;}
     throw new Error("Missing return statement in function");
   }
 
-  final public LanguageType TypeUnsigned() throws ParseException {
+  final public VarType TypeUnsigned() throws ParseException {
   int bitwidth=32;
-  LanguageType t = new LanguageType();
+  VarType t = new VarType();
     jj_consume_token(UNSIGNED);
-    jj_consume_token(LPAREN);
-    bitwidth = ConstOrInt();
-    jj_consume_token(RPAREN);
-      t.setType(LanguageType.Type.UNSIGNED);
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case LPAREN:
+      jj_consume_token(LPAREN);
+      bitwidth = ConstOrInt();
+      jj_consume_token(RPAREN);
+      break;
+    default:
+      jj_la1[16] = jj_gen;
+      ;
+    }
+      t.setType(VarType.Type.UNSIGNED);
       t.bitwidth = bitwidth;
       {if (true) return t;}
     throw new Error("Missing return statement in function");
   }
 
-  final public LanguageType TypeSigned() throws ParseException {
+  final public VarType TypeSigned() throws ParseException {
   int bitwidth=32;
-  LanguageType t = new LanguageType();
+  VarType t = new VarType();
     jj_consume_token(SIGNED);
-    jj_consume_token(LPAREN);
-    bitwidth = ConstOrInt();
-    jj_consume_token(RPAREN);
-      t.setType(LanguageType.Type.SIGNED);
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case LPAREN:
+      jj_consume_token(LPAREN);
+      bitwidth = ConstOrInt();
+      jj_consume_token(RPAREN);
+      break;
+    default:
+      jj_la1[17] = jj_gen;
+      ;
+    }
+      t.setType(VarType.Type.SIGNED);
       t.bitwidth = bitwidth;
       {if (true) return t;}
     throw new Error("Missing return statement in function");
   }
 
-  final public LanguageType Type() throws ParseException {
-        LanguageType t = new LanguageType();
+  final public VarType Type() throws ParseException {
+        VarType t = new VarType();
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case FIXED:
       t = TypeFixed();
@@ -666,20 +709,18 @@ Vector<Long> TestResult(Vector<Long> inits) #void : {
       t = TypeSigned();
       break;
     default:
-      jj_la1[12] = jj_gen;
+      jj_la1[18] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
       Info(t.toString());
-      {if (true) return t;}//.bitwidth;
-
+      {if (true) return t;}
     throw new Error("Missing return statement in function");
   }
 
   final public long FloatLong() throws ParseException {
     Token t;
     t = jj_consume_token(FLOAT_LITERAL);
-     //jjtThis.setFloatNumber(true);
      {if (true) return FloatStringToLong(t.image);}
     throw new Error("Missing return statement in function");
   }
@@ -704,7 +745,7 @@ Vector<Long> TestResult(Vector<Long> inits) #void : {
         boolean jjtc000 = true;
         jjtree.openNodeScope(jjtn000);Token pinDir, pinName, pinType=null;
         //int pinWidth=0;
-        LanguageType type= new LanguageType();
+        VarType type= new VarType();
     try {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case IN:
@@ -714,7 +755,7 @@ Vector<Long> TestResult(Vector<Long> inits) #void : {
         pinDir = jj_consume_token(OUT);
         break;
       default:
-        jj_la1[13] = jj_gen;
+        jj_la1[19] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -732,7 +773,7 @@ Vector<Long> TestResult(Vector<Long> inits) #void : {
         type = Type();
         break;
       default:
-        jj_la1[14] = jj_gen;
+        jj_la1[20] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -741,7 +782,7 @@ Vector<Long> TestResult(Vector<Long> inits) #void : {
           jjtc000 = false;
                 if (pinType != null) {
                     if (allTypedefs.containsKey(pinType.image)) {
-                                type=(LanguageType)(allTypedefs.get(pinType.image));
+                                type=(VarType)(allTypedefs.get(pinType.image));
 
                                 //DEBUG
                                 //InfoToken(pinDir.image + "put pin " + pinName.image + " of type " + pinType.image + " found", pinName);
@@ -793,7 +834,7 @@ Vector<Long> TestResult(Vector<Long> inits) #void : {
       Declarations();
       break;
     default:
-      jj_la1[15] = jj_gen;
+      jj_la1[21] = jj_gen;
       ;
     }
     label_7:
@@ -805,7 +846,7 @@ Vector<Long> TestResult(Vector<Long> inits) #void : {
         ;
         break;
       default:
-        jj_la1[16] = jj_gen;
+        jj_la1[22] = jj_gen;
         break label_7;
       }
     }
@@ -828,7 +869,7 @@ Vector<Long> TestResult(Vector<Long> inits) #void : {
         ;
         break;
       default:
-        jj_la1[17] = jj_gen;
+        jj_la1[23] = jj_gen;
         break label_8;
       }
     }
@@ -837,7 +878,7 @@ Vector<Long> TestResult(Vector<Long> inits) #void : {
 
   final public void Declaration() throws ParseException {
         Token varType=null;
-        LanguageType type= null;
+        VarType type= null;
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case IDENTIFIER:
       varType = jj_consume_token(IDENTIFIER);
@@ -852,19 +893,19 @@ Vector<Long> TestResult(Vector<Long> inits) #void : {
       type = Type();
       break;
     default:
-      jj_la1[18] = jj_gen;
+      jj_la1[24] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
                 if (varType != null) {
                         if (allTypedefs.containsKey(varType.image)) {
-                                type=(LanguageType)(allTypedefs.get(varType.image));
+                                type=(VarType)(allTypedefs.get(varType.image));
                         }
                         else {
                                 ErrorToken("Type " + varType.image + " NOT found!", varType);
                         }
                 }
-    Variable(type.bitwidth);
+    Variable(type);
     label_9:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -872,23 +913,23 @@ Vector<Long> TestResult(Vector<Long> inits) #void : {
         ;
         break;
       default:
-        jj_la1[19] = jj_gen;
+        jj_la1[25] = jj_gen;
         break label_9;
       }
       jj_consume_token(COMMA);
-      Variable(type.bitwidth);
+      Variable(type);
     }
     jj_consume_token(SEMICOLON);
   }
 
-  final public void Variable(int varWidth) throws ParseException {
+  final public void Variable(VarType type) throws ParseException {
                                /*@bgen(jjtree) Variable */
         SimpleNode jjtn000 = new SimpleNode(this, JJTVARIABLE);
         boolean jjtc000 = true;
         jjtree.openNodeScope(jjtn000);Token tName;
         Integer size = null;
         Long init = null;
-        Vector<Long> inits = null;
+        Vector<String> inits = null;
     try {
       tName = jj_consume_token(IDENTIFIER);
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -900,19 +941,20 @@ Vector<Long> TestResult(Vector<Long> inits) #void : {
           size = ConstOrInt();
           break;
         default:
-          jj_la1[20] = jj_gen;
+          jj_la1[26] = jj_gen;
           ;
         }
         jj_consume_token(RBRACKET);
         break;
       default:
-        jj_la1[21] = jj_gen;
+        jj_la1[27] = jj_gen;
         ;
       }
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case ASSIGN:
         jj_consume_token(ASSIGN);
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+        case FLOAT_LITERAL:
         case INTEGER_LITERAL:
         case IDENTIFIER:
           init = ConstOrLong();
@@ -921,13 +963,13 @@ Vector<Long> TestResult(Vector<Long> inits) #void : {
           inits = MemoryInit(inits);
           break;
         default:
-          jj_la1[22] = jj_gen;
+          jj_la1[28] = jj_gen;
           jj_consume_token(-1);
           throw new ParseException();
         }
         break;
       default:
-        jj_la1[23] = jj_gen;
+        jj_la1[29] = jj_gen;
         ;
       }
           jjtree.closeNodeScope(jjtn000, true);
@@ -941,11 +983,13 @@ Vector<Long> TestResult(Vector<Long> inits) #void : {
                 jjtn000.setArraySize(size);
         jjtn000.jjtSetValue(init);
                 jjtn000.setInits(inits);
-                jjtn000.setWidth(varWidth);
+                jjtn000.setWidth(type.bitwidth);
                 jjtn000.setToken(tName);
+                jjtn000.setVarType(type);
 
         // 
-                if(floatValue)
+                //if(floatValue || type.getType()== VarType.Type.FLOAT)
+                if(type.getType()== VarType.Type.FLOAT)
         {
           floatValue = false;
           jjtn000.setFloatNumber(true);
@@ -986,7 +1030,7 @@ Vector<Long> TestResult(Vector<Long> inits) #void : {
         jjtree.openNodeScope(jjtn000);Token tName;
         Integer size = null;
         Long init = null;
-        Vector<Long> inits = null;
+        Vector<String> inits = null;
     try {
       tName = jj_consume_token(IDENTIFIER);
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -998,19 +1042,20 @@ Vector<Long> TestResult(Vector<Long> inits) #void : {
           size = ConstOrInt();
           break;
         default:
-          jj_la1[24] = jj_gen;
+          jj_la1[30] = jj_gen;
           ;
         }
         jj_consume_token(RBRACKET);
         break;
       default:
-        jj_la1[25] = jj_gen;
+        jj_la1[31] = jj_gen;
         ;
       }
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case ASSIGN:
         jj_consume_token(ASSIGN);
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+        case FLOAT_LITERAL:
         case INTEGER_LITERAL:
         case IDENTIFIER:
           init = ConstOrLong();
@@ -1019,13 +1064,13 @@ Vector<Long> TestResult(Vector<Long> inits) #void : {
           inits = MemoryInit(inits);
           break;
         default:
-          jj_la1[26] = jj_gen;
+          jj_la1[32] = jj_gen;
           jj_consume_token(-1);
           throw new ParseException();
         }
         break;
       default:
-        jj_la1[27] = jj_gen;
+        jj_la1[33] = jj_gen;
         ;
       }
           jjtree.closeNodeScope(jjtn000, true);
@@ -1088,7 +1133,7 @@ Vector<Long> TestResult(Vector<Long> inits) #void : {
         jjtree.openNodeScope(jjtn000);Token tName;
         Integer size = null;
         Long init = null;
-        Vector<Long> inits = null;
+        Vector<String> inits = null;
     try {
       tName = jj_consume_token(IDENTIFIER);
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -1100,19 +1145,20 @@ Vector<Long> TestResult(Vector<Long> inits) #void : {
           size = ConstOrInt();
           break;
         default:
-          jj_la1[28] = jj_gen;
+          jj_la1[34] = jj_gen;
           ;
         }
         jj_consume_token(RBRACKET);
         break;
       default:
-        jj_la1[29] = jj_gen;
+        jj_la1[35] = jj_gen;
         ;
       }
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case ASSIGN:
         jj_consume_token(ASSIGN);
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+        case FLOAT_LITERAL:
         case INTEGER_LITERAL:
         case IDENTIFIER:
           init = ConstOrLong();
@@ -1121,13 +1167,13 @@ Vector<Long> TestResult(Vector<Long> inits) #void : {
           inits = MemoryInit(inits);
           break;
         default:
-          jj_la1[30] = jj_gen;
+          jj_la1[36] = jj_gen;
           jj_consume_token(-1);
           throw new ParseException();
         }
         break;
       default:
-        jj_la1[31] = jj_gen;
+        jj_la1[37] = jj_gen;
         ;
       }
           jjtree.closeNodeScope(jjtn000, true);
@@ -1171,8 +1217,8 @@ Vector<Long> TestResult(Vector<Long> inits) #void : {
     }
   }
 
-  final public Vector<Long> MemoryInit(Vector<Long> inits) throws ParseException {
-        Token t1, t2=null;
+  final public Vector<String> MemoryInit(Vector<String> inits) throws ParseException {
+    Token t1, t2=null;
     jj_consume_token(LBRACE);
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case INTEGER_LITERAL:
@@ -1182,22 +1228,14 @@ Vector<Long> TestResult(Vector<Long> inits) #void : {
       t1 = jj_consume_token(FLOAT_LITERAL);
       break;
     default:
-      jj_la1[32] = jj_gen;
+      jj_la1[38] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
-                if (inits == null) {
-                        inits = new Vector<Long>();
-                }
-
-                if(t1.kind == INTEGER_LITERAL)
-                {
-                  inits.add(StringToLong(t1.image));
-                }
-                else
-                {
-                  inits.add(FloatStringToLong(t1.image));
-                }
+        if (inits == null) {
+            inits = new Vector<String>();
+        }
+          inits.add(t1.image);
     label_10:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -1205,7 +1243,7 @@ Vector<Long> TestResult(Vector<Long> inits) #void : {
         ;
         break;
       default:
-        jj_la1[33] = jj_gen;
+        jj_la1[39] = jj_gen;
         break label_10;
       }
       jj_consume_token(COMMA);
@@ -1217,12 +1255,44 @@ Vector<Long> TestResult(Vector<Long> inits) #void : {
         t2 = jj_consume_token(FLOAT_LITERAL);
         break;
       default:
-        jj_la1[34] = jj_gen;
+        jj_la1[40] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
-                if (t2 != null) {
-                  if(t2.kind == INTEGER_LITERAL)
+        if (t2 != null) {
+            inits.add(t2.image);
+        }
+    }
+    jj_consume_token(RBRACE);
+        {if (true) return inits;}
+    throw new Error("Missing return statement in function");
+  }
+
+/*
+
+Vector<Long> MemoryInit(Vector<Long> inits) #void : {
+	Token t1, t2=null;
+}
+{
+	<LBRACE> (t1=<INTEGER_LITERAL> | t1=<FLOAT_LITERAL>)
+	{
+		if (inits == null) {
+			inits = new Vector<Long>();
+		}
+
+		if(t1.kind == INTEGER_LITERAL)		{		  inits.add(StringToLong(t1.image));
+		}
+		else		{
+		  inits.add(FloatStringToLong(t1.image));
+		}
+        
+       
+		 
+	}
+	( <COMMA> (t2=<INTEGER_LITERAL>|t2=<FLOAT_LITERAL>)
+	{
+		if (t2 != null) {
+		  if(t2.kind == INTEGER_LITERAL)
           {
             inits.add(StringToLong(t2.image));
           }
@@ -1230,13 +1300,15 @@ Vector<Long> TestResult(Vector<Long> inits) #void : {
           {
             inits.add(FloatStringToLong(t2.image));
           }
-                }
-    }
-    jj_consume_token(RBRACE);
-                {if (true) return inits;}
-    throw new Error("Missing return statement in function");
-  }
-
+          
+		}
+	}
+	)* <RBRACE>
+	{
+		return inits;
+	}
+}
+*/
   final public void Counter() throws ParseException {
                   /*@bgen(jjtree) Counter */
         SimpleNode jjtn000 = new SimpleNode(this, JJTCOUNTER);
@@ -1261,7 +1333,7 @@ Vector<Long> TestResult(Vector<Long> inits) #void : {
         vLoad = jj_consume_token(IDENTIFIER);
         break;
       default:
-        jj_la1[35] = jj_gen;
+        jj_la1[41] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -1295,7 +1367,7 @@ Vector<Long> TestResult(Vector<Long> inits) #void : {
         vTerm = jj_consume_token(IDENTIFIER);
         break;
       default:
-        jj_la1[36] = jj_gen;
+        jj_la1[42] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -1330,7 +1402,7 @@ Vector<Long> TestResult(Vector<Long> inits) #void : {
         increment = ConstOrInt();
         break;
       default:
-        jj_la1[37] = jj_gen;
+        jj_la1[43] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -1340,7 +1412,7 @@ Vector<Long> TestResult(Vector<Long> inits) #void : {
         steps = ConstOrInt();
         break;
       default:
-        jj_la1[38] = jj_gen;
+        jj_la1[44] = jj_gen;
         ;
       }
                 jjtn000.setIncOper(tIncOper.image);
@@ -1400,7 +1472,7 @@ Vector<Long> TestResult(Vector<Long> inits) #void : {
       t = jj_consume_token(NE);
       break;
     default:
-      jj_la1[39] = jj_gen;
+      jj_la1[45] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -1417,7 +1489,7 @@ Vector<Long> TestResult(Vector<Long> inits) #void : {
       Counter();
       break;
     default:
-      jj_la1[40] = jj_gen;
+      jj_la1[46] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -1438,7 +1510,7 @@ Vector<Long> TestResult(Vector<Long> inits) #void : {
         When();
         break;
       default:
-        jj_la1[41] = jj_gen;
+        jj_la1[47] = jj_gen;
         ;
       }
           jjtree.closeNodeScope(jjtn000, true);
@@ -1518,7 +1590,7 @@ Vector<Long> TestResult(Vector<Long> inits) #void : {
           ;
           break;
         default:
-          jj_la1[42] = jj_gen;
+          jj_la1[48] = jj_gen;
           break label_11;
         }
       }
@@ -1556,12 +1628,13 @@ Vector<Long> TestResult(Vector<Long> inits) #void : {
     try {
       jj_consume_token(FOREACH);
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case FLOAT_LITERAL:
       case INTEGER_LITERAL:
       case IDENTIFIER:
         value = ConstOrLong();
         break;
       default:
-        jj_la1[43] = jj_gen;
+        jj_la1[49] = jj_gen;
         ;
       }
       jj_consume_token(CLOCK);
@@ -1576,7 +1649,7 @@ Vector<Long> TestResult(Vector<Long> inits) #void : {
           ;
           break;
         default:
-          jj_la1[44] = jj_gen;
+          jj_la1[50] = jj_gen;
           break label_12;
         }
       }
@@ -1618,7 +1691,7 @@ Vector<Long> TestResult(Vector<Long> inits) #void : {
         tPort = jj_consume_token(IDENTIFIER);
         break;
       default:
-        jj_la1[45] = jj_gen;
+        jj_la1[51] = jj_gen;
         ;
       }
           jjtree.closeNodeScope(jjtn000, true);
@@ -1682,7 +1755,7 @@ Vector<Long> TestResult(Vector<Long> inits) #void : {
       t = jj_consume_token(ORASSIGN);
       break;
     default:
-      jj_la1[46] = jj_gen;
+      jj_la1[52] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -1766,13 +1839,13 @@ Vector<Long> TestResult(Vector<Long> inits) #void : {
                                                                jjtn000.setEndStepDelay(endAmount);
           break;
         default:
-          jj_la1[47] = jj_gen;
+          jj_la1[53] = jj_gen;
           ;
         }
                                                                                                        jjtn000.setStepDelay(amount);
         break;
       default:
-        jj_la1[48] = jj_gen;
+        jj_la1[54] = jj_gen;
         ;
       }
     } catch (Throwable jjte000) {
@@ -1812,7 +1885,7 @@ Vector<Long> TestResult(Vector<Long> inits) #void : {
         ConditionalOrExpression();
         break;
       default:
-        jj_la1[49] = jj_gen;
+        jj_la1[55] = jj_gen;
         ;
       }
     } catch (Throwable jjte000) {
@@ -1850,7 +1923,7 @@ Vector<Long> TestResult(Vector<Long> inits) #void : {
           ;
           break;
         default:
-          jj_la1[50] = jj_gen;
+          jj_la1[56] = jj_gen;
           break label_13;
         }
                                 jjtn000.setComponentClass(or_op.class);
@@ -1892,7 +1965,7 @@ Vector<Long> TestResult(Vector<Long> inits) #void : {
           ;
           break;
         default:
-          jj_la1[51] = jj_gen;
+          jj_la1[57] = jj_gen;
           break label_14;
         }
                              jjtn000.setComponentClass(and_op.class);
@@ -1934,7 +2007,7 @@ Vector<Long> TestResult(Vector<Long> inits) #void : {
           ;
           break;
         default:
-          jj_la1[52] = jj_gen;
+          jj_la1[58] = jj_gen;
           break label_15;
         }
                              jjtn000.setComponentClass(or_op.class);
@@ -1976,7 +2049,7 @@ Vector<Long> TestResult(Vector<Long> inits) #void : {
           ;
           break;
         default:
-          jj_la1[53] = jj_gen;
+          jj_la1[59] = jj_gen;
           break label_16;
         }
                      jjtn000.setComponentClass(xor_op.class);
@@ -2018,7 +2091,7 @@ Vector<Long> TestResult(Vector<Long> inits) #void : {
           ;
           break;
         default:
-          jj_la1[54] = jj_gen;
+          jj_la1[60] = jj_gen;
           break label_17;
         }
            jjtn000.setComponentClass(and_op.class);
@@ -2061,7 +2134,7 @@ Vector<Long> TestResult(Vector<Long> inits) #void : {
           ;
           break;
         default:
-          jj_la1[55] = jj_gen;
+          jj_la1[61] = jj_gen;
           break label_18;
         }
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -2074,7 +2147,7 @@ Vector<Long> TestResult(Vector<Long> inits) #void : {
               jjtn000.setComponentClass(if_ne_op_s.class);
           break;
         default:
-          jj_la1[56] = jj_gen;
+          jj_la1[62] = jj_gen;
           jj_consume_token(-1);
           throw new ParseException();
         }
@@ -2118,7 +2191,7 @@ Vector<Long> TestResult(Vector<Long> inits) #void : {
           ;
           break;
         default:
-          jj_la1[57] = jj_gen;
+          jj_la1[63] = jj_gen;
           break label_19;
         }
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -2139,7 +2212,7 @@ Vector<Long> TestResult(Vector<Long> inits) #void : {
         jjtn000.setComponentClass(if_ge_op_s.class);
           break;
         default:
-          jj_la1[58] = jj_gen;
+          jj_la1[64] = jj_gen;
           jj_consume_token(-1);
           throw new ParseException();
         }
@@ -2182,7 +2255,7 @@ Vector<Long> TestResult(Vector<Long> inits) #void : {
           ;
           break;
         default:
-          jj_la1[59] = jj_gen;
+          jj_la1[65] = jj_gen;
           break label_20;
         }
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -2198,7 +2271,7 @@ Vector<Long> TestResult(Vector<Long> inits) #void : {
           jj_consume_token(RUNSIGNEDSHIFT);
           break;
         default:
-          jj_la1[60] = jj_gen;
+          jj_la1[66] = jj_gen;
           jj_consume_token(-1);
           throw new ParseException();
         }
@@ -2241,7 +2314,7 @@ Vector<Long> TestResult(Vector<Long> inits) #void : {
           ;
           break;
         default:
-          jj_la1[61] = jj_gen;
+          jj_la1[67] = jj_gen;
           break label_21;
         }
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -2254,7 +2327,7 @@ Vector<Long> TestResult(Vector<Long> inits) #void : {
            jjtn000.setComponentClass(sub_op_s.class);
           break;
         default:
-          jj_la1[62] = jj_gen;
+          jj_la1[68] = jj_gen;
           jj_consume_token(-1);
           throw new ParseException();
         }
@@ -2299,7 +2372,7 @@ Vector<Long> TestResult(Vector<Long> inits) #void : {
           ;
           break;
         default:
-          jj_la1[63] = jj_gen;
+          jj_la1[69] = jj_gen;
           break label_22;
         }
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -2316,7 +2389,7 @@ Vector<Long> TestResult(Vector<Long> inits) #void : {
             endAmount = ConstOrInt();
             break;
           default:
-            jj_la1[64] = jj_gen;
+            jj_la1[70] = jj_gen;
             ;
           }
                                                             jjtn000.setStepDelay(amount);
@@ -2331,7 +2404,7 @@ Vector<Long> TestResult(Vector<Long> inits) #void : {
               jjtn000.setComponentClass(mod_op_s.class);
           break;
         default:
-          jj_la1[65] = jj_gen;
+          jj_la1[71] = jj_gen;
           jj_consume_token(-1);
           throw new ParseException();
         }
@@ -2376,7 +2449,7 @@ Vector<Long> TestResult(Vector<Long> inits) #void : {
            jjtn000.setComponentClass(neg_op_s.class);
           break;
         default:
-          jj_la1[66] = jj_gen;
+          jj_la1[72] = jj_gen;
           jj_consume_token(-1);
           throw new ParseException();
         }
@@ -2399,7 +2472,7 @@ Vector<Long> TestResult(Vector<Long> inits) #void : {
         UnaryExpressionNotPlusMinus();
         break;
       default:
-        jj_la1[67] = jj_gen;
+        jj_la1[73] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -2502,7 +2575,7 @@ Vector<Long> TestResult(Vector<Long> inits) #void : {
        jjtn000.setComponentClass(not_op.class);
           break;
         default:
-          jj_la1[68] = jj_gen;
+          jj_la1[74] = jj_gen;
           jj_consume_token(-1);
           throw new ParseException();
         }
@@ -2517,7 +2590,7 @@ Vector<Long> TestResult(Vector<Long> inits) #void : {
         PostfixExpression();
         break;
       default:
-        jj_la1[69] = jj_gen;
+        jj_la1[75] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -2561,13 +2634,13 @@ Vector<Long> TestResult(Vector<Long> inits) #void : {
           jj_consume_token(DECR);
           break;
         default:
-          jj_la1[70] = jj_gen;
+          jj_la1[76] = jj_gen;
           jj_consume_token(-1);
           throw new ParseException();
         }
         break;
       default:
-        jj_la1[71] = jj_gen;
+        jj_la1[77] = jj_gen;
         ;
       }
     } catch (Throwable jjte000) {
@@ -2613,7 +2686,7 @@ Vector<Long> TestResult(Vector<Long> inits) #void : {
         Name();
         break;
       default:
-        jj_la1[72] = jj_gen;
+        jj_la1[78] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -2658,7 +2731,7 @@ Vector<Long> TestResult(Vector<Long> inits) #void : {
         t = jj_consume_token(STRING_LITERAL);
         break;
       default:
-        jj_la1[73] = jj_gen;
+        jj_la1[79] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -2692,38 +2765,41 @@ Vector<Long> TestResult(Vector<Long> inits) #void : {
   }
 
   final public int ConstOrInt() throws ParseException {
-        int size = 0;
+        int value = 0;
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case INTEGER_LITERAL:
-      size = Int();
+      value = Int();
       break;
     case IDENTIFIER:
-      size = Constant();
+      value = Constant();
       break;
     default:
-      jj_la1[74] = jj_gen;
+      jj_la1[80] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
-     {if (true) return size;}
+     {if (true) return value;}
     throw new Error("Missing return statement in function");
   }
 
   final public long ConstOrLong() throws ParseException {
-        long size = 0;
+        long value = 0;
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case INTEGER_LITERAL:
-      size = Long();
+      value = Long();
       break;
     case IDENTIFIER:
-      size = Constant();
+      value = Constant();
+      break;
+    case FLOAT_LITERAL:
+      value = FloatLong();
       break;
     default:
-      jj_la1[75] = jj_gen;
+      jj_la1[81] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
-     {if (true) return size;}
+     {if (true) return value;}
     throw new Error("Missing return statement in function");
   }
 
@@ -2782,7 +2858,7 @@ Vector<Long> TestResult(Vector<Long> inits) #void : {
   public Token jj_nt;
   private int jj_ntk;
   private int jj_gen;
-  final private int[] jj_la1 = new int[76];
+  final private int[] jj_la1 = new int[82];
   static private int[] jj_la1_0;
   static private int[] jj_la1_1;
   static private int[] jj_la1_2;
@@ -2792,13 +2868,13 @@ Vector<Long> TestResult(Vector<Long> inits) #void : {
       jj_la1_init_2();
    }
    private static void jj_la1_init_0() {
-      jj_la1_0 = new int[] {0x800000,0x2000,0x0,0x600000,0x4000000,0x1fc000,0x12000000,0x12000000,0x8000000,0x1fc000,0x1fc000,0x0,0x1fc000,0x600000,0x1fc000,0x0,0x1000000,0x1fc000,0x1fc000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x1000000,0x2000000,0x8000000,0x0,0x8000000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,};
+      jj_la1_0 = new int[] {0x800000,0x2000,0x0,0x600000,0x4000000,0x1fc000,0x12000000,0x12000000,0x8000000,0x1fc000,0x1fc000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x1fc000,0x600000,0x1fc000,0x0,0x1000000,0x1fc000,0x1fc000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x1000000,0x2000000,0x8000000,0x0,0x8000000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,};
    }
    private static void jj_la1_init_1() {
-      jj_la1_1 = new int[] {0x0,0x0,0x20000,0x0,0x0,0x80,0x1,0x1,0x0,0x80,0x80,0x40000,0x0,0x0,0x80,0x1000,0x80,0x80,0x80,0x20000,0x84,0x4000,0x1084,0x80000,0x84,0x4000,0x1084,0x80000,0x84,0x4000,0x1084,0x80000,0x6,0x20000,0x6,0x84,0x84,0x0,0x100000,0x78600000,0x80,0x0,0x0,0x84,0x0,0x40000,0x80000,0x0,0x100000,0x2000000,0x80000000,0x0,0x0,0x0,0x0,0x48000000,0x48000000,0x30600000,0x30600000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x18004e6,0x1800000,0x18004e6,0x0,0x0,0x4e6,0x66,0x84,0x84,};
+      jj_la1_1 = new int[] {0x0,0x0,0x20000,0x0,0x0,0x80,0x1,0x1,0x0,0x80,0x80,0x40000,0x400,0x400,0x400,0x400,0x400,0x400,0x0,0x0,0x80,0x1000,0x80,0x80,0x80,0x20000,0x84,0x4000,0x1086,0x80000,0x84,0x4000,0x1086,0x80000,0x84,0x4000,0x1086,0x80000,0x6,0x20000,0x6,0x84,0x84,0x0,0x100000,0x78600000,0x80,0x0,0x0,0x86,0x0,0x40000,0x80000,0x0,0x100000,0x2000000,0x80000000,0x0,0x0,0x0,0x0,0x48000000,0x48000000,0x30600000,0x30600000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x18004e6,0x1800000,0x18004e6,0x0,0x0,0x4e6,0x66,0x84,0x86,};
    }
    private static void jj_la1_init_2() {
-      jj_la1_2 = new int[] {0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0xc006,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x1ffc000,0x2000000,0x0,0x0,0x0,0x1,0x100,0x200,0x80,0x0,0x0,0x0,0x0,0x3800,0x3800,0x18,0x18,0x4000460,0x2000000,0x4000460,0x18,0x1e,0x0,0x0,0x6,0x6,0x0,0x0,0x0,0x0,};
+      jj_la1_2 = new int[] {0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0xc006,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x1ffc000,0x2000000,0x0,0x0,0x0,0x1,0x100,0x200,0x80,0x0,0x0,0x0,0x0,0x3800,0x3800,0x18,0x18,0x4000460,0x2000000,0x4000460,0x18,0x1e,0x0,0x0,0x6,0x6,0x0,0x0,0x0,0x0,};
    }
 
   /** Constructor with InputStream. */
@@ -2812,7 +2888,7 @@ Vector<Long> TestResult(Vector<Long> inits) #void : {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 76; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 82; i++) jj_la1[i] = -1;
   }
 
   /** Reinitialise. */
@@ -2827,7 +2903,7 @@ Vector<Long> TestResult(Vector<Long> inits) #void : {
     jj_ntk = -1;
     jjtree.reset();
     jj_gen = 0;
-    for (int i = 0; i < 76; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 82; i++) jj_la1[i] = -1;
   }
 
   /** Constructor. */
@@ -2837,7 +2913,7 @@ Vector<Long> TestResult(Vector<Long> inits) #void : {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 76; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 82; i++) jj_la1[i] = -1;
   }
 
   /** Reinitialise. */
@@ -2848,7 +2924,7 @@ Vector<Long> TestResult(Vector<Long> inits) #void : {
     jj_ntk = -1;
     jjtree.reset();
     jj_gen = 0;
-    for (int i = 0; i < 76; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 82; i++) jj_la1[i] = -1;
   }
 
   /** Constructor with generated Token Manager. */
@@ -2857,7 +2933,7 @@ Vector<Long> TestResult(Vector<Long> inits) #void : {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 76; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 82; i++) jj_la1[i] = -1;
   }
 
   /** Reinitialise. */
@@ -2867,7 +2943,7 @@ Vector<Long> TestResult(Vector<Long> inits) #void : {
     jj_ntk = -1;
     jjtree.reset();
     jj_gen = 0;
-    for (int i = 0; i < 76; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 82; i++) jj_la1[i] = -1;
   }
 
   private Token jj_consume_token(int kind) throws ParseException {
@@ -2923,7 +2999,7 @@ Vector<Long> TestResult(Vector<Long> inits) #void : {
       la1tokens[jj_kind] = true;
       jj_kind = -1;
     }
-    for (int i = 0; i < 76; i++) {
+    for (int i = 0; i < 82; i++) {
       if (jj_la1[i] == jj_gen) {
         for (int j = 0; j < 32; j++) {
           if ((jj_la1_0[i] & (1<<j)) != 0) {

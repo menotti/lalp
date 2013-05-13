@@ -22,6 +22,7 @@ import java.util.Vector;
 import br.ufscar.dc.lalp.components.*;
 import br.ufscar.dc.lalp.core.*;
 import br.ufscar.dc.lalp.parser.lang.*;
+import br.ufscar.dc.lalp.utils.LalpUtils;
 
 
 
@@ -77,7 +78,7 @@ public class LangParser {
 	 * Create components based on types and access
 	 */
 	public void createComponents() {
-		System.out.print("Instantiating hardware components...");
+		System.out.println("Instantiating hardware components...");
 		try {
 			createIOComponents();
 			createIComponents();
@@ -150,14 +151,22 @@ public class LangParser {
 			boolean isAssign = false;
 			boolean isRegMux = false;
 			boolean isMemory = false;
+			
 			if (SimpleNode.allAccess.get(name) != null) {
+				
 				Vector<String> assignments = new Vector<String>();
-				if (n.getArraySize() != null) { // memory
+				
+				if (n.getArraySize() != null) // memory
+				{
 					isMemory = true;
-				}
-				for (SimpleNode a : SimpleNode.allAccess.get(name)) {
-					if (a.id == ALPParserTreeConstants.JJTCOUNTER) {
-						if (isMemory | isCounter | isAssign | isRegMux) {
+				}// if (n.getArraySize() != null)
+				
+				for (SimpleNode a : SimpleNode.allAccess.get(name))
+				{
+					if (a.id == ALPParserTreeConstants.JJTCOUNTER)
+					{
+						if (isMemory | isCounter | isAssign | isRegMux)
+						{
 							ErrorToken("Duplicate use of variable "+name, a.getToken());
 						}
 						// update node reference to get counter properties
@@ -165,40 +174,73 @@ public class LangParser {
 						n = a;
 						isCounter = true;
 					}
-					else if (a.id == ALPParserTreeConstants.JJTLHS) {
-						if (((SimpleNode)a.jjtGetParent()).getIdentifier().equals("+=")) {
-							if (isMemory | isCounter | isAssign | isRegMux) {
-								ErrorToken("Duplicate use of variable "+name, a.getToken()); //FIXME: Esta msg de erro está correta??
+					else if (a.id == ALPParserTreeConstants.JJTLHS)
+					{
+						if (((SimpleNode)a.jjtGetParent()).getIdentifier().equals("+="))
+						{
+							if (isMemory | isCounter | isAssign | isRegMux)
+							{
+								ErrorToken("Duplicate use of variable "+name, a.getToken());
 							}
 							
-							compClass = add_reg_op_s.class; //FIXME: Incluir operador de Float
+							//FIXME: Tratar os outros tipos de dados  
+							if(n.getVarType().getType()==VarType.Type.FLOAT)
+							{
+								compClass = add_reg_op_fl.class;	
+							}
+							else
+							{
+								compClass = add_reg_op_s.class;	
+							}
 							
 							isAssign = true;
 						}
-						else if (((SimpleNode)a.jjtGetParent()).getIdentifier().equals("-=")) {
-							if (isMemory | isCounter | isAssign | isRegMux) {
-								ErrorToken("Duplicate use of variable "+name, a.getToken());//FIXME: Esta msg de erro está correta??
+						else if (((SimpleNode)a.jjtGetParent()).getIdentifier().equals("-="))
+						{
+							if (isMemory | isCounter | isAssign | isRegMux)
+							{
+								ErrorToken("Duplicate use of variable "+name, a.getToken());
 							}
-							compClass = sub_reg_op_s.class; //FIXME: Incluir operador de Float
+
+							//FIXME: Tratar os outros tipos de dados							
+							if(n.getVarType().getType()==VarType.Type.FLOAT)
+							{
+								compClass = sub_reg_op_fl.class;	
+							}
+							else
+							{
+								compClass = sub_reg_op_s.class;	
+							}
+							
 							isAssign = true;
 						}
-						else if (((SimpleNode)a.jjtGetParent()).getConnections().getSecond().id == ALPParserTreeConstants.JJTCONDITIONALEXPRESSION) {
-							if (isMemory | isCounter | isAssign | isRegMux) {
-								ErrorToken("Duplicate use of variable "+name, a.getToken());//FIXME: Esta msg de erro está correta??
+						else if (((SimpleNode)a.jjtGetParent()).getConnections().getSecond().id == ALPParserTreeConstants.JJTCONDITIONALEXPRESSION)
+						{
+							if (isMemory | isCounter | isAssign | isRegMux)
+							{
+								ErrorToken("Duplicate use of variable "+name, a.getToken());
 							}
 							compClass = null; //reg_mux_op created with operations
 							isRegMux = true;
 						}
+						
 						String port = a.getPort();
+						
 						if (port == null)
-							port = "DEFAULT";
+						{
+						  port = "DEFAULT";
+						}
 						if (assignments.contains(a.getPort()))
-							ErrorToken("Duplicate use of variable "+name, a.getToken());
-						else
-							if (!port.equals("reset"))
-								assignments.add(port);
+						{
+						  ErrorToken("Duplicate use of variable "+name, a.getToken());
+						}
+						else if (!port.equals("reset"))
+						{
+						  assignments.add(port);
+						}
 					}
 				} // for allAccess
+				
 				try {
 					if (isCounter) {
 						comp = new counter(name, width, n.getStepDelay(), n.getInc(), (n.getIncOper().charAt(0)=='-'?1:0), counter.getConditionValue(n.getTermCond()));
@@ -207,10 +249,12 @@ public class LangParser {
 						comp = new block_ram(name, log2(n.getArraySize()), n.getWidth());
 						if (n.getInits() != null) {
 							long[] inits = new long[n.getInits().size()];
-							for (int i=0; i<n.getInits().size(); i++){								
-								inits[i] = n.getInits().get(i);
+
+							for (int i=0; i<n.getInits().size(); i++){
+								inits[i] = LalpUtils.parseValue(n.getInits().get(i),n.getVarType());
 							}
-							((block_ram)comp).setInitialValue(inits); //TODO: Talvez seja melhor converter os valores aqui.
+							
+							((block_ram)comp).setInitialValue(inits); 
 						}
 					}
 					else if (assignments.size() > 1) {
@@ -240,6 +284,7 @@ public class LangParser {
 			else {
 				Info("Variable " + name + " is never used!");
 			}
+			
 		} //for allVariables
 	}
 
@@ -363,7 +408,7 @@ public class LangParser {
 		}
 		System.out.println();
 		System.out.println("Hashtable<String,Integer> allTypedefs");
-		for (Map.Entry<String, LanguageType> e : parser.allTypedefs.entrySet()) {
+		for (Map.Entry<String, VarType> e : parser.allTypedefs.entrySet()) {
 			System.out.println(e);
 		}		
 		System.out.println();

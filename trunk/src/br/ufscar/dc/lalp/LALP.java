@@ -30,6 +30,7 @@ import br.ufscar.dc.lalp.core.Parameters;
 import br.ufscar.dc.lalp.parser.GraphParser;
 import br.ufscar.dc.lalp.parser.LangParser;
 import br.ufscar.dc.lalp.parser.lang.SimpleNode;
+import br.ufscar.dc.lalp.utils.LalpUtils;
 
 
 
@@ -80,6 +81,7 @@ public class LALP {
 		Design design = null;
 		LangParser lp = null;
 
+		
 		if (args.length == 0) {
 			info(usage);
 			System.exit(0);
@@ -289,6 +291,9 @@ public class LALP {
 		System.err.println("Error: " + s);
 		System.exit(1);
 	}
+
+
+	
 }
 
 

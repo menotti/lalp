@@ -27,7 +27,8 @@ public class SimpleNode implements Node {
 	protected Class componentClass = null; // Pin/Expression(s)/LHS
 	protected PortType portType = null; // Pin
 	protected Token token = null; // Variable
-	protected Vector<Long> inits = null; // Variable (Memory initialization)
+	protected Vector<String> inits = null; // Variable (Memory initialization)
+	
 	// Counter attributes
 	protected Object counterLoad = null; // const or component name
 	protected String counterIncrementOperation = null; // ++ -- += -=
@@ -35,13 +36,14 @@ public class SimpleNode implements Node {
 	protected String counterTerminationCondition = null; // < <= > >= == !=
 	protected Object counterTermination = null;
 	protected boolean counterDown = false;
+	
 	// Float and Fixed
 	protected boolean floatNumber = false; // The node or any of its children
 											// has a floating-point
 											// number/operation
-	protected boolean fixedNumber = false;
-	protected Integer fixedIntSize = 16; // Number of bits for Integer part
-	protected Integer fixedDecSize = 16; // Number of bits for Decimal part
+	protected VarType varType = null; //Variable definitions(width, type, etc)
+
+
 	// used?
 	protected Component component = null;
 	protected Connections connections = null;
@@ -148,6 +150,10 @@ public class SimpleNode implements Node {
 		}
 		if (getStepDelay() != null) {
 			sb.append("@" + getStepDelay());
+		}
+		
+		if(getVarType()!=null){ // FIXME: Debug
+			sb.append(getVarType());			
 		}
 
 		sb.append((isFloat() ? "(float)" : ""));// FIXME: Debug
@@ -356,14 +362,20 @@ public class SimpleNode implements Node {
 		this.token = token;
 	}
 
-	public Vector<Long> getInits() {
+	public Vector<String> getInits() {
 		return inits;
 	}
+	
 
-	public void setInits(Vector<Long> inits) {
+	public void setInits(Vector<String> inits) {
 		this.inits = inits;
 	}
-
+///////////////////////////
+	/**
+	 * These methods are used to set floatNumber for all nodes that have a
+	 * floating-point number These methods are recursive!
+	 * */
+	
 	public boolean hasChildFloat() {
 		Integer n_children = jjtGetNumChildren();
 
@@ -380,11 +392,6 @@ public class SimpleNode implements Node {
 		return floatNumber;
 	}
 
-	/**
-	 * This method is used to set floatNumber for all nodes that have a
-	 * floating-point number This method is recursive!
-	 * */
-
 	public void updateFloat() {
 		Integer n_children = jjtGetNumChildren();
 
@@ -397,7 +404,7 @@ public class SimpleNode implements Node {
 			}
 		}
 	}
-
+/////////////////////////
 	/**
 	 * This method is used to replace default Integer operators by
 	 * Floating-point operators. This method is recursive!
@@ -423,12 +430,8 @@ public class SimpleNode implements Node {
 				}
 			}
 		}
-		/*
-		 * if(getIdentifier()=="+="){ if(this.floatNumber){
-		 * System.out.println("\nFound a floating-point operation.");
-		 * System.out.println("Replacing operator " + getIdentifier());
-		 * this.setComponentClass(add_reg_op_fl.class); } }
-		 */
+
+		
 		if (n_children > 0) {
 
 			for (int i = 0; i < n_children; i++) {
@@ -821,30 +824,16 @@ public class SimpleNode implements Node {
 	public void setFloatNumber(boolean b) {
 		this.floatNumber = b;
 	}
-
-	public boolean isFixed() {
-		return fixedNumber;
+	
+	public VarType getVarType() {
+		return varType;
 	}
 
-	public void setFixedNumber(boolean b) {
-		this.fixedNumber = b;
+	public void setVarType(VarType varType) {
+		this.varType = varType;
 	}
 
-	public Integer getFixedIntSize() {
-		return fixedIntSize;
-	}
-
-	public void setFixedIntSize(Integer val) {
-		this.fixedIntSize = val;
-	}
-
-	public Integer getFixedDecSize() {
-		return fixedDecSize;
-	}
-
-	public void setFixedDecSize(Integer val) {
-		this.fixedDecSize = val;
-	}
+	
 }
 
 /*

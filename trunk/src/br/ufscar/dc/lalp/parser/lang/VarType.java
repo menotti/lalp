@@ -1,6 +1,6 @@
 package br.ufscar.dc.lalp.parser.lang;
 
-public class LanguageType {
+public class VarType {
 
 	public int bitwidth;   //numero total de bits
 	private int frac_width; //numero de bits da parte fracinaria
@@ -10,7 +10,7 @@ public class LanguageType {
     
     private Type type;
 	
-	LanguageType() {
+	VarType() {
 		super();
 		this.bitwidth = 32;
 		this.frac_width = 0;
@@ -50,10 +50,18 @@ public class LanguageType {
 	
 	@Override
 	public String toString() {
-		return "LanguageType [bitwidth=" + bitwidth + ", frac_width="
+		return "[bitwidth=" + bitwidth + ", frac_width="
 				+ frac_width + ", int_width=" + int_width + ", type=" + type
 				+ "]";
 	}
+	
+	public String toString(boolean typeOnly) {
+		
+		if(typeOnly)
+		return "[type=" + type+ "]";
+		else return toString();
+	}
+
 
 	
 }
