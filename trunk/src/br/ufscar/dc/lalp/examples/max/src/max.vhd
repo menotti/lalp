@@ -12,7 +12,7 @@
 -- SUFFERED BY LICENSEE AS A RESULT OF USING, MODIFYING OR DISTRIBUTING THIS
 -- SOFTWARE OR ITS DERIVATIVES.
 --
--- Generated at Tue Dec 11 15:01:25 BRST 2012
+-- Generated at Mon May 13 15:28:38 WEST 2013
 --
 
 -- IEEE Libraries --
@@ -26,7 +26,7 @@ entity max is
 		\clk\	: in	std_logic;
 		\done\	: out	std_logic;
 		\init\	: in	std_logic;
-		\maxval\	: out	std_logic_vector(31 downto 0);
+		\maxval\	: out	std_logic_vector(32 downto 0);
 		\reset\	: in	std_logic
 	);
 end max;
@@ -109,18 +109,18 @@ port (
 );
 end component;
 
-signal s0	: std_logic_vector(11 downto 0);
+signal s0	: std_logic_vector(12 downto 0);
 signal s13	: std_logic_vector(0 downto 0);
-signal s11	: std_logic;
 signal s10	: std_logic_vector(0 downto 0);
 signal s12	: std_logic;
-signal s7	: std_logic_vector(0 downto 0);
+signal s11	: std_logic;
 signal s9	: std_logic;
+signal s7	: std_logic_vector(0 downto 0);
 signal s3	: std_logic_vector(31 downto 0);
-signal s1	: std_logic_vector(11 downto 0);
-signal s6	: std_logic_vector(31 downto 0);
+signal s1	: std_logic_vector(12 downto 0);
 signal s8	: std_logic_vector(31 downto 0);
-signal s2	: std_logic_vector(11 downto 0);
+signal s6	: std_logic_vector(31 downto 0);
+signal s2	: std_logic_vector(12 downto 0);
 
 begin
 
@@ -186,7 +186,7 @@ begin
 
 	\i\: counter
 	generic map (
-		bits => 12,
+		bits => 13,
 		condition => 0,
 		down => 0,
 		increment => 1,
@@ -217,9 +217,9 @@ begin
 	);
 
 	\done\ <= s13(0);
-	s1 <= conv_std_logic_vector(2048, 12);
-	s0 <= conv_std_logic_vector(0, 12);
-	\maxval\ <= s8;
+	s1 <= conv_std_logic_vector(2048, 13);
+	s0 <= conv_std_logic_vector(0, 13);
+	\maxval\(31 downto 0) <= s8(31 downto 0);
 	s11 <= \init\;
 
 end behavior;

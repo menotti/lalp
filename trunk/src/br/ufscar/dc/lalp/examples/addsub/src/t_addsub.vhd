@@ -12,7 +12,7 @@
 -- SUFFERED BY LICENSEE AS A RESULT OF USING, MODIFYING OR DISTRIBUTING THIS
 -- SOFTWARE OR ITS DERIVATIVES.
 --
--- Generated at Wed Dec 12 13:38:55 BRST 2012
+-- Generated at Mon May 13 15:19:59 WEST 2013
 --
 
 -- IEEE Libraries --
@@ -86,6 +86,14 @@ process
 begin
 
 	wait for 10 ns;
+
+	wait on \s\;
+	assert \a\ = conv_std_logic_vector(4,32)
+		report "value different from the expected" severity error;
+
+	wait on \s\;
+	assert \a\ = conv_std_logic_vector(4,32)
+		report "value different from the expected" severity error;
 
 	wait on \s\;
 	assert \a\ = conv_std_logic_vector(4,32)

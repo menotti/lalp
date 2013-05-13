@@ -12,7 +12,7 @@
 -- SUFFERED BY LICENSEE AS A RESULT OF USING, MODIFYING OR DISTRIBUTING THIS
 -- SOFTWARE OR ITS DERIVATIVES.
 --
--- Generated at Tue Dec 11 14:58:52 BRST 2012
+-- Generated at Mon May 13 15:25:19 WEST 2013
 --
 
 -- IEEE Libraries --
@@ -114,15 +114,15 @@ port (
 );
 end component;
 
-signal s0	: std_logic_vector(5 downto 0);
+signal s0	: std_logic_vector(6 downto 0);
 signal s10	: std_logic;
 signal s11	: std_logic_vector(0 downto 0);
 signal s9	: std_logic_vector(31 downto 0);
 signal s7	: std_logic_vector(31 downto 0);
 signal s3	: std_logic_vector(31 downto 0);
-signal s1	: std_logic_vector(5 downto 0);
+signal s1	: std_logic_vector(6 downto 0);
 signal s8	: std_logic_vector(31 downto 0);
-signal s4	: std_logic_vector(5 downto 0);
+signal s4	: std_logic_vector(6 downto 0);
 signal s2	: std_logic;
 
 begin
@@ -169,7 +169,7 @@ begin
 
 	\i\: counter
 	generic map (
-		bits => 6,
+		bits => 7,
 		condition => 0,
 		down => 0,
 		increment => 1,
@@ -198,9 +198,9 @@ begin
 	);
 
 	\done\ <= s11(0);
-	s0 <= conv_std_logic_vector(0, 6);
+	s0 <= conv_std_logic_vector(0, 7);
 	s3 <= conv_std_logic_vector(1, 32);
-	s1 <= conv_std_logic_vector(32, 6);
+	s1 <= conv_std_logic_vector(32, 7);
 	\output\ <= s9;
 	s2 <= \init\;
 

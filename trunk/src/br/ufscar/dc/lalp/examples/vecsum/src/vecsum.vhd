@@ -12,7 +12,7 @@
 -- SUFFERED BY LICENSEE AS A RESULT OF USING, MODIFYING OR DISTRIBUTING THIS
 -- SOFTWARE OR ITS DERIVATIVES.
 --
--- Generated at Wed Dec 12 13:55:14 BRST 2012
+-- Generated at Mon May 13 15:31:57 WEST 2013
 --
 
 -- IEEE Libraries --
@@ -141,6 +141,18 @@ signal s2	: std_logic;
 
 begin
 
+	\c14\: delay_op
+	generic map (
+		bits => 1,
+		delay => 2
+	)
+	port map (
+		a(0) => s12,
+		a_delayed => s13,
+		clk => \clk\,
+		reset => \reset\
+	);
+
 	\c13\: delay_op
 	generic map (
 		bits => 16,
@@ -161,18 +173,6 @@ begin
 	port map (
 		a(0) => s14,
 		a_delayed => s15,
-		clk => \clk\,
-		reset => \reset\
-	);
-
-	\c14\: delay_op
-	generic map (
-		bits => 1,
-		delay => 2
-	)
-	port map (
-		a(0) => s12,
-		a_delayed => s13,
 		clk => \clk\,
 		reset => \reset\
 	);
@@ -244,8 +244,8 @@ begin
 	);
 
 	\result\ <= s9;
-	s0 <= conv_std_logic_vector(0, 16);
 	s1 <= conv_std_logic_vector(2048, 16);
+	s0 <= conv_std_logic_vector(0, 16);
 	\done\ <= s15(0);
 	s2 <= \init\;
 

@@ -47,8 +47,8 @@ digraph matmult {
 	"c33" -> "m":input [label="s0[16]" color=red fontcolor=red];
 	"i_step_not_op_delay_op_5":a_delayed -> "s":we [label="s52[1]" color=red fontcolor=red];
 	"k":step -> "l":we [label="s11" color=olivedrab];
-	"c38" -> "l_add_op_s_1":I1 [label="s15[16]" color=red fontcolor=red];
 	"i_step_delay_op_4":a_delayed -> "sum":we [label="s48[1]" color=red fontcolor=red];
+	"c38" -> "l_add_op_s_1":I1 [label="s15[16]" color=red fontcolor=red];
 	"b":data_out -> "a_mult_op_s_b":I1 [label="s45[16]" color=red fontcolor=red];
 	"i":output -> "addra":I0 [label="s30[16]" color=red fontcolor=red];
 	"m":step -> "m_plus_5":we [label="s29" color=olivedrab];

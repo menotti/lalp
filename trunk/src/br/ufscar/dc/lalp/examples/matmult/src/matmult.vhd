@@ -12,7 +12,7 @@
 -- SUFFERED BY LICENSEE AS A RESULT OF USING, MODIFYING OR DISTRIBUTING THIS
 -- SOFTWARE OR ITS DERIVATIVES.
 --
--- Generated at Wed Dec 12 13:47:07 BRST 2012
+-- Generated at Mon May 13 15:28:02 WEST 2013
 --
 
 -- IEEE Libraries --
@@ -194,8 +194,8 @@ end component;
 
 signal s0	: std_logic_vector(15 downto 0);
 signal s52	: std_logic_vector(0 downto 0);
-signal s15	: std_logic_vector(15 downto 0);
 signal s48	: std_logic_vector(0 downto 0);
+signal s15	: std_logic_vector(15 downto 0);
 signal s45	: std_logic_vector(15 downto 0);
 signal s30	: std_logic_vector(15 downto 0);
 signal s29	: std_logic;

@@ -12,7 +12,7 @@
 -- SUFFERED BY LICENSEE AS A RESULT OF USING, MODIFYING OR DISTRIBUTING THIS
 -- SOFTWARE OR ITS DERIVATIVES.
 --
--- Generated at Wed Dec 12 13:46:22 BRST 2012
+-- Generated at Mon May 13 15:26:43 WEST 2013
 --
 
 -- IEEE Libraries --
@@ -132,79 +132,6 @@ begin
 		reset => \reset\
 	);
 
-	\d1\: reg_op
-	generic map (
-		initial => 0,
-		w_in => 32
-	)
-	port map (
-		I0 => s11,
-		O0 => s19,
-		clk => \clk\,
-		reset => \reset\
-	);
-
-	\c_mult_op_s_7\: mult_op_s
-	generic map (
-		w_in1 => 32,
-		w_in2 => 32,
-		w_out => 32
-	)
-	port map (
-		I0 => s6,
-		I1 => s7,
-		O0 => s8
-	);
-
-	\a1_add_op_s_b1_add_op_s_c1\: add_op_s
-	generic map (
-		w_in1 => 32,
-		w_in2 => 32,
-		w_out => 32
-	)
-	port map (
-		I0 => s17,
-		I1 => s18,
-		O0 => s21
-	);
-
-	\a1_add_op_s_b1_add_op_s_c1_add_op_s_d1_add_op_s_e1\: add_op_s
-	generic map (
-		w_in1 => 32,
-		w_in2 => 32,
-		w_out => 32
-	)
-	port map (
-		I0 => s21,
-		I1 => s22,
-		O0 => s24
-	);
-
-	\sum\: reg_op
-	generic map (
-		initial => 0,
-		w_in => 32
-	)
-	port map (
-		I0 => s24,
-		O0 => s26,
-		clk => \clk\,
-		reset => \reset\,
-		we => s25(0)
-	);
-
-	\a1\: reg_op
-	generic map (
-		initial => 0,
-		w_in => 32
-	)
-	port map (
-		I0 => s2,
-		O0 => s15,
-		clk => \clk\,
-		reset => \reset\
-	);
-
 	\a_mult_op_s_3\: mult_op_s
 	generic map (
 		w_in1 => 32,
@@ -241,6 +168,30 @@ begin
 		O0 => s22
 	);
 
+	\d1\: reg_op
+	generic map (
+		initial => 0,
+		w_in => 32
+	)
+	port map (
+		I0 => s11,
+		O0 => s19,
+		clk => \clk\,
+		reset => \reset\
+	);
+
+	\c_mult_op_s_7\: mult_op_s
+	generic map (
+		w_in1 => 32,
+		w_in2 => 32,
+		w_out => 32
+	)
+	port map (
+		I0 => s6,
+		I1 => s7,
+		O0 => s8
+	);
+
 	\b_mult_op_s_5\: mult_op_s
 	generic map (
 		w_in1 => 32,
@@ -251,6 +202,30 @@ begin
 		I0 => s3,
 		I1 => s4,
 		O0 => s5
+	);
+
+	\a1_add_op_s_b1_add_op_s_c1\: add_op_s
+	generic map (
+		w_in1 => 32,
+		w_in2 => 32,
+		w_out => 32
+	)
+	port map (
+		I0 => s17,
+		I1 => s18,
+		O0 => s21
+	);
+
+	\d_mult_op_s_9\: mult_op_s
+	generic map (
+		w_in1 => 32,
+		w_in2 => 32,
+		w_out => 32
+	)
+	port map (
+		I0 => s9,
+		I1 => s10,
+		O0 => s11
 	);
 
 	\c1\: reg_op
@@ -265,16 +240,16 @@ begin
 		reset => \reset\
 	);
 
-	\d_mult_op_s_9\: mult_op_s
+	\a1_add_op_s_b1_add_op_s_c1_add_op_s_d1_add_op_s_e1\: add_op_s
 	generic map (
 		w_in1 => 32,
 		w_in2 => 32,
 		w_out => 32
 	)
 	port map (
-		I0 => s9,
-		I1 => s10,
-		O0 => s11
+		I0 => s21,
+		I1 => s22,
+		O0 => s24
 	);
 
 	\e1\: reg_op
@@ -301,6 +276,31 @@ begin
 		O0 => s17
 	);
 
+	\a1\: reg_op
+	generic map (
+		initial => 0,
+		w_in => 32
+	)
+	port map (
+		I0 => s2,
+		O0 => s15,
+		clk => \clk\,
+		reset => \reset\
+	);
+
+	\sum\: reg_op
+	generic map (
+		initial => 0,
+		w_in => 32
+	)
+	port map (
+		I0 => s24,
+		O0 => s26,
+		clk => \clk\,
+		reset => \reset\,
+		we => s25(0)
+	);
+
 	\b1\: reg_op
 	generic map (
 		initial => 0,
@@ -315,13 +315,13 @@ begin
 
 	\result\ <= s26;
 	s1 <= conv_std_logic_vector(3, 32);
+	s7 <= conv_std_logic_vector(7, 32);
 	s13 <= conv_std_logic_vector(11, 32);
 	s10 <= conv_std_logic_vector(9, 32);
 	s4 <= conv_std_logic_vector(5, 32);
 	s23 <= \init\;
 	s12 <= \e\;
 	s3 <= \b\;
-	s7 <= conv_std_logic_vector(7, 32);
 	s6 <= \c\;
 	s9 <= \d\;
 	s0 <= \a\;
