@@ -59,12 +59,12 @@ import java.awt.Font;
 import java.awt.Frame;
 import java.awt.Graphics;
 import java.awt.Insets;
-//import java.awt.Rectangle;
+import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-//import java.awt.event.MouseEvent;
-//import java.awt.event.MouseMotionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeEvent;
@@ -90,7 +90,6 @@ import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
-import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -102,10 +101,8 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
-import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 import javax.swing.JToolBar;
 import javax.swing.JViewport;
@@ -152,26 +149,12 @@ class ALPGUI extends JPanel {
 	private Design design = null;
 	private Component graph;
 	private JSplitPane splitPane;
-	private JTabbedPane tabPane;
 	LangParser lp;
-	private JTextComponent editor;
-	private Hashtable commands;
-	private Hashtable menuItems;
-	protected JMenuBar menubar;
-	private JToolBar toolbar;
-	private JComponent status;
-	private JFrame elementTreeFrame;
-	private File f;
-	private String file, directory;
-	
-
-	protected FileDialog fileDialog;
 
 	static {
 		try {
-			resources = ResourceBundle.getBundle("br.ufscar.dc.lalp.gui.resources.ALPGUI", Locale.getDefault());
+			resources = ResourceBundle.getBundle("lalp.gui.resources.ALPGUI", Locale.getDefault());
 		} catch (MissingResourceException mre) {
-			System.err.println(mre.getMessage());
 			System.err.println("lalp/gui/resources/ALPGUI.properties not found");
 			System.exit(1);
 		}
@@ -197,6 +180,8 @@ class ALPGUI extends JPanel {
 
 		// create the embedded JTextComponent
 		editor = createEditor();
+		// Add this as a listener for undoable edits.
+		editor.getDocument().addUndoableEditListener(undoHandler);
 
 		// install the command table
 		commands = new Hashtable();
@@ -231,18 +216,13 @@ class ALPGUI extends JPanel {
 		panel.setLayout(new BorderLayout());
 		panel.add("Center", scroller);
 	 	panel.setMinimumSize(new Dimension(200, 200)); 
-		/*
-	 	JPanel paramPanel = createParamBar();
-        splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, panel, paramPanel); 
+		
+        splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, panel, graph); 
         splitPane.setContinuousLayout(true); 
         splitPane.setOneTouchExpandable(true);
-        */
-        tabPane = new JTabbedPane();
-        tabPane.add("Code", editor);
-        tabPane.add("Graph", graph);
 		
 		add("North", createToolbar());
-		add("Center", tabPane);
+		add("Center", splitPane);
 		add("South", createStatusbar());
 	}
 	
@@ -285,8 +265,8 @@ class ALPGUI extends JPanel {
 			frame.setJMenuBar(myALPGUI.menubar);
 
 			frame.pack();
-			frame.setSize(800, 600);
-			frame.setVisible(true);
+			frame.setSize(500, 600);
+			frame.show();
 		} catch (Throwable t) {
 			System.out.println("uncaught exception: " + t);
 			t.printStackTrace();
@@ -310,8 +290,6 @@ class ALPGUI extends JPanel {
 		JTextComponent c = new JTextArea();
 		c.setDragEnabled(true);
 		c.setFont(new Font("monospaced", Font.PLAIN, 12));
-		// Add this as a listener for undoable edits.
-		c.getDocument().addUndoableEditListener(undoHandler);
 		return c;
 	}
 
@@ -418,25 +396,6 @@ class ALPGUI extends JPanel {
 		return menubar;
 	}
 
-	
-	protected JPanel createParamBar() {
-		JPanel p = new JPanel();
-		
-		//p.setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
-		JCheckBox myCheckBox = new JCheckBox("VHDL");
-		//myCheckBox.addActionListener(this);					
-		p.add(myCheckBox);
-		myCheckBox = new JCheckBox("ALPG");
-		//myCheckBox.addActionListener(this);					
-		p.add(myCheckBox);
-		
-		myCheckBox = new JCheckBox("Graphviz");
-		//myCheckBox.addActionListener(this);					
-		p.add(myCheckBox);
-		
-		return p;
-	}
-	
 	/**
 	 * Create a status bar
 	 */
@@ -597,7 +556,7 @@ class ALPGUI extends JPanel {
 			}
 		}
 	}
-/*
+
 	private JTextComponent editor;
 	private Hashtable commands;
 	private Hashtable menuItems;
@@ -610,7 +569,7 @@ class ALPGUI extends JPanel {
 	
 
 	protected FileDialog fileDialog;
-*/
+
 	/**
 	 * Listener for the edits on the current document.
 	 */
@@ -676,11 +635,9 @@ class ALPGUI extends JPanel {
 			myCheckBox = new JCheckBox("ALPG");
 			myCheckBox.addActionListener(this);					
 			add(myCheckBox);
-			
 			myCheckBox = new JCheckBox("Graphviz");
 			myCheckBox.addActionListener(this);					
 			add(myCheckBox);
-			
 		}
 
 		public void paint(Graphics g) {
@@ -698,7 +655,6 @@ class ALPGUI extends JPanel {
 			}
 			if (e.getActionCommand().equals("Graphviz")) {
 				Parameters.graphviz = ((JCheckBox)e.getSource()).isSelected();
-				
 			}
 	        Toolkit.getDefaultToolkit().beep();
 		}
@@ -810,6 +766,8 @@ class ALPGUI extends JPanel {
 		}
 	}
 	
+
+
 	class NewAction extends AbstractAction {
 
 		NewAction() {
@@ -865,38 +823,6 @@ class ALPGUI extends JPanel {
 			super(nm);
 		}
 		
-		private ImageIcon gerateSoftwareGraphImage(Graphviz dot){
-			dot.generateSoftwareVisualization(design, directory);
-			return gerateGraphImage(dot, "/graphSW.png");
-		}
-		private ImageIcon gerateHardwareGraphImage(Graphviz dot){
-			dot.generateHardwareVisualization(design, directory);
-			return gerateGraphImage(dot, "/graphHW.png");
-		}
-		
-		private ImageIcon gerateGraphImage(Graphviz dot, String tmpFilename)
-		{
-			if (Parameters.graphvizSubgraphs)
-				dot.generateSCCSubgraphs(design);
-			Runtime runtime = Runtime.getRuntime();
-            try {
-            	String cmd = "dot -Tpng -o " + System.getProperty("java.io.tmpdir")+ tmpFilename + " "+ dot.getFileName();
-				runtime.exec(cmd, null, new File(directory));
-			} catch (IOException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-			try {
-				Thread.sleep(500);
-			} catch (InterruptedException e1) {
-				e1.printStackTrace();
-			}
-			
-			ImageIcon img = new ImageIcon(System.getProperty("java.io.tmpdir")+ tmpFilename);
-			
-			return img;
-		}
-		
 		public void actionPerformed(ActionEvent e) {
 			try {
 				StringTokenizer st = new StringTokenizer(file, ".");
@@ -905,12 +831,13 @@ class ALPGUI extends JPanel {
 					Error("Only files with the following extensions are accepted: LALP/ALPG");
 				}
 				String extension = st.nextToken().toUpperCase();
-				if (extension.equals("ALP")) {
+				if (extension.equals("LALP")) {
 					System.out.print("Reading from file " + file + "...");
 					FileInputStream inStream = new FileInputStream(directory + file);
 					lp = new LangParser(inStream);
 					System.out.println("Ok!");
-					//lp.dump();
+					//DEBUG
+//					lp.dump();
 					lp.createComponents();
 					design = lp.getDesign();
 					System.out.print("Connecting hardware components...");
@@ -960,39 +887,35 @@ class ALPGUI extends JPanel {
 			}
 			
 			if (Parameters.graphviz) {
-				Graphviz dotHW = new Graphviz();
-				Graphviz dotSW = new Graphviz();
-				
-				if (Parameters.runScc){
-					dotSW.setSccLevels(true);
-					dotHW.setSccLevels(true);
-				}
-				if (Parameters.runAsapAlap){
-					dotSW.setSchedulingTimes(true);
-					dotHW.setSchedulingTimes(true);
-				}
+				Graphviz dot = new Graphviz();
+				if (Parameters.runScc)
+					dot.setSccLevels(true);
+				if (Parameters.runAsapAlap)
+					dot.setSchedulingTimes(true);
 //				dot.setRank(true);
 //				dot.setDominator(true);
-				
-				//img.getImage().flush();
-				//graph = new JScrollPane(new JLabel(img));
-				//splitPane.setRightComponent(graph);
-				//splitPane.revalidate();
-
-				ImageIcon imgSW = gerateSoftwareGraphImage(dotSW);
-				imgSW.getImage().flush();
-				JScrollPane graphSW = new JScrollPane(new JLabel(imgSW));
-				tabPane.remove(1);
-                tabPane.add("Graph SW", graphSW);
-				tabPane.revalidate();
-				
-				ImageIcon imgHW = gerateHardwareGraphImage(dotHW);
-				imgHW.getImage().flush();
-				JScrollPane graphHW = new JScrollPane(new JLabel(imgHW));
-
-                tabPane.add("Graph HW", graphHW);
-				tabPane.revalidate();
-				
+				dot.generateSoftwareVisualization(design, directory);
+//				dot.generateHardwareVisualization(design);
+				if (Parameters.graphvizSubgraphs)
+					dot.generateSCCSubgraphs(design);
+				Runtime runtime = Runtime.getRuntime();
+	            try {
+	            	String cmd = "/usr/local/bin/dot -Tpng -o " + System.getProperty("java.io.tmpdir")+"graph.png " + dot.getFileName();
+					runtime.exec(cmd, null, new File(directory));
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				try {
+					Thread.sleep(500);
+				} catch (InterruptedException e1) {
+					e1.printStackTrace();
+				}
+				ImageIcon img = new ImageIcon(System.getProperty("java.io.tmpdir")+"graph.png");
+				img.getImage().flush();
+				graph = new JScrollPane(new JLabel(img));
+				splitPane.setRightComponent(graph);
+				splitPane.revalidate();
 			}
 			
 			if (Parameters.debugOutputs) {

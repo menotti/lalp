@@ -23,6 +23,7 @@ import br.ufscar.dc.lalp.algorithms.DepthFirstSearch;
 import br.ufscar.dc.lalp.algorithms.Dijkstra;
 import br.ufscar.dc.lalp.algorithms.Dominators;
 import br.ufscar.dc.lalp.components.output;
+import br.ufscar.dc.lalp.parser.lang.SimpleNode;
 
 
 
@@ -55,6 +56,7 @@ public class Component extends SparseVertex implements ComponentInterface {
 	protected boolean visited = false;
 	protected int width = 1;
 	protected int line = 0;
+	protected SimpleNode node;
 	/**
 	 * @see Dijkstra
 	 */
@@ -370,5 +372,11 @@ public class Component extends SparseVertex implements ComponentInterface {
 			else
 				return c.getSuccessorsLine();
 		return 0;
+	}
+	public SimpleNode getNode() {
+		return node;
+	}
+	public void setNode(SimpleNode node) {
+		this.node = node;
 	}
 }

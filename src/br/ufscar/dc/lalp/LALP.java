@@ -20,7 +20,7 @@ import java.util.StringTokenizer;
 
 import br.ufscar.dc.lalp.algorithms.ALPG;
 import br.ufscar.dc.lalp.algorithms.Dijkstra;
-//import br.ufscar.dc.lalp.algorithms.Dominators;
+import br.ufscar.dc.lalp.algorithms.Dominators;
 import br.ufscar.dc.lalp.algorithms.Graphviz;
 import br.ufscar.dc.lalp.algorithms.Scheduling;
 import br.ufscar.dc.lalp.algorithms.StrongConnectedComponents;
@@ -44,13 +44,12 @@ import br.ufscar.dc.lalp.parser.lang.SimpleNode;
  * @see "Aggressive Loop Pipelining for Reconfigurable Architectures"
  */
 public class LALP {
-
+	
 	private final static String version = "LALP version 0.1 release 107, Copyright (c) 2012 Ricardo Menotti, Joao V. B. Moreira, Gabriel J. Trabasso, Tulio J. Duarte";
 	
 	public String getVersion() { 
 		return version; 
 	}
-	
 	private static final String usage =  
 		"Usage: LALP [-options] file\n" +
 		"where options include:\n" +
@@ -84,8 +83,7 @@ public class LALP {
 			info(usage);
 			System.exit(0);
 		}
-		
-		
+
 		for (int i = 0; i < args.length; i++) {
 			if (args[i].equals("-version")) {
 				info(version);
@@ -180,11 +178,12 @@ public class LALP {
 				if (Parameters.verbose)
 					lp.dump();
 				lp.createComponents();
-				design = lp.getDesign();
+				//design = lp.getDesign();
 				System.out.print("Connecting hardware components...");
-				lp.getRoot().connectComponents();
-				if (SimpleNode.allComponents.containsKey("init")) {
-					lp.getParser().design.setInit(SimpleNode.allComponents.get("init"));
+				for(int i = 0; i < lp.getDesigns().size(); i++){
+					lp.getRoot().connectComponents(i);
+					if (SimpleNode.allComponents.containsKey("init"))
+						lp.getParser().design.get(i).setInit(SimpleNode.allComponents.get("init"));
 				}
 				System.out.println("Ok!");
 			}
@@ -206,69 +205,73 @@ public class LALP {
 			System.exit(1);
 		}
 		
-		int schedResult = -1;
-		if (Parameters.runAsapAlap) {
-			Scheduling aa = new Scheduling(design);
-			if (Parameters.runTopological)
-				aa.detectBackwardEdges(design, lp);
-//			schedResult  = aa.ASAP(design);
-			schedResult  = aa.ALAP(design);
-			if (Parameters.runBalance)
-				aa.balanceAndSyncrhonize(design);
-		}
-		
-		if (Parameters.runScc) {
-			StrongConnectedComponents scc = new StrongConnectedComponents(); 
-			scc.detectStrongConnectedComponents(design);
-		}
-		
-		if (Parameters.runDijkstra) {
-			Dijkstra dijkstra = new Dijkstra();
-			dijkstra.detectBigestCycle(design);
-		}
-		//FIXME: ???? 
-		if (Parameters.runDominators) {
-//			Dominators dom = new Dominators();
-//			dom.detectBackwardEdges(design);
-//			dom.generateReport(design);
-		}
-		
-		if (Parameters.graphviz) {
-			Graphviz dot = new Graphviz();
-			if (Parameters.runScc)
-				dot.setSccLevels(true);
-//			if (Parameters.runAsapAlap && schedResult == 0)
-//				dot.setSchedulingTimes(true);
-//			if (Parameters.runTopological)
-//				dot.setLines(true);
-//			if (schedResult == 0)
-//				dot.setRank(true);
-//			dot.setDominator(true);
-			dot.generateHardwareVisualization(design);
-			dot.generateSoftwareVisualization(design);
-			if (Parameters.graphvizSubgraphs)
-				dot.generateSCCSubgraphs(design);			
-		}
-		
-		if (Parameters.debugOutputs) {
-			try {
-				design.generateDebugOutputs();
-			} catch (Exception e) {
-				e.printStackTrace();
-				System.exit(1);
+		for(int i = 0; i < lp.getDesigns().size(); i++){
+			int schedResult = -1;
+			design = lp.getDesigns().get(i);
+			if (Parameters.runAsapAlap) {
+				Scheduling aa = new Scheduling(design);
+				if (Parameters.runTopological)
+					aa.detectBackwardEdges(design, lp);
+//				schedResult  = aa.ASAP(design);
+				schedResult  = aa.ALAP(design);
+				if (Parameters.runBalance)
+					aa.balanceAndSyncrhonize(design);
+			}
+			
+			if (Parameters.runScc) {
+				StrongConnectedComponents scc = new StrongConnectedComponents(); 
+				scc.detectStrongConnectedComponents(design);
+			}
+			
+			if (Parameters.runDijkstra) {
+				Dijkstra dijkstra = new Dijkstra();
+				dijkstra.detectBigestCycle(design);
+			}
+			//FIXME: ???? 
+			if (Parameters.runDominators) {
+//				Dominators dom = new Dominators();
+//				dom.detectBackwardEdges(design);
+//				dom.generateReport(design);
+			}
+			
+			if (Parameters.graphviz) {
+				Graphviz dot = new Graphviz();
+				if (Parameters.runScc)
+					dot.setSccLevels(true);
+//				if (Parameters.runAsapAlap && schedResult == 0)
+//					dot.setSchedulingTimes(true);
+//				if (Parameters.runTopological)
+//					dot.setLines(true);
+//				if (schedResult == 0)
+//					dot.setRank(true);
+//				dot.setDominator(true);
+				dot.generateHardwareVisualization(design);
+				dot.generateSoftwareVisualization(design);
+				if (Parameters.graphvizSubgraphs)
+					dot.generateSCCSubgraphs(design);			
+			}
+			
+			if (Parameters.debugOutputs) {
+				try {
+					design.generateDebugOutputs();
+				} catch (Exception e) {
+					e.printStackTrace();
+					System.exit(1);
+				}
+			}
+			
+			if (Parameters.vhdl) { // && schedResult == 0) {
+				VHDL vhd = new VHDL();
+				vhd.generateVHDL(design);
+				if (Parameters.vhdlMemory)
+					vhd.generateVHDLInitialization(design);
+				if (Parameters.vhdlTestbench)
+					if (lp!=null)
+						vhd.generateVHDLTestbench(lp);
+	       
 			}
 		}
 		
-		if (Parameters.vhdl) { // && schedResult == 0) {
-			VHDL vhd = new VHDL();
-			vhd.generateVHDL(design);
-			if (Parameters.vhdlMemory)
-				vhd.generateVHDLInitialization(design);
-			if (Parameters.vhdlTestbench)
-				if (lp!=null)
-					vhd.generateVHDLTestbench(lp);
-       
-		}
 		
 		if (Parameters.alpg) {
 			ALPG alpg = new ALPG();

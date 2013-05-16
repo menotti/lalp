@@ -56,7 +56,7 @@ import br.ufscar.dc.lalp.components.*;
 @SuppressWarnings("unchecked") 
 public class ALPParser {
 
-	public Design design;
+	public Vector<Design> design = new Vector<Design>();
 	public Hashtable<String, Integer> allConsts = new Hashtable<String, Integer>();
 	public Hashtable<String, Integer> allTypedefs = new Hashtable<String, Integer>();
 	public Hashtable<String, SimpleNode> allPins = new Hashtable<String, SimpleNode>();
@@ -71,7 +71,7 @@ public class ALPParser {
 	TestbenchUnity testbenchUnity;*/
 	public Vector<Process> allProcesses = new Vector<Process>();
 	public Hashtable<String, SimpleNode> allTestbenchEntries = new Hashtable<String, SimpleNode>();
-	protected boolean floatValue = false;
+	
 
 /*	public static void main(String args[]) {
 		FileInputStream inStream;
@@ -158,20 +158,10 @@ TOKEN: {
 	| < CLOCK: "clock">	
 	| < WAIT: "wait">
  }
-
- /* Tipos de variaveis */
-TOKEN: {
-  <FLOAT: "float">
-  //| <INT: "int">
-  //| <BYTE: "byte">
-  //| <BOOLEAN: "bool">}
+ 
 
 TOKEN : /* LITERALS */
 {
-  < FLOAT_LITERAL:
-   ("-")? (["0"-"9"])* "." (["0"-"9"])+ 
-  >
-| 
   < INTEGER_LITERAL:
         ("-")? <DECIMAL_LITERAL> (["l","L"])?
       | ("-")? <HEX_LITERAL> (["l","L"])?
@@ -429,7 +419,6 @@ Vector<Long> TestResult(Vector<Long> inits) #void : {
 
 void Name() : {
 	Token tName, tPort = null;
-	SimpleNode node = null;
 }
 {
 	tName=<IDENTIFIER> (<DOT> tPort=<IDENTIFIER>)?
@@ -440,17 +429,10 @@ void Name() : {
 			if (tPort != null) {
 				jjtThis.setPort(tPort.image);
 			}
-            //Verifica se o nome corresponde a uma variável float
-            node = allVariables.get(tName.image);
-            if(node!= null)
-            {
-              jjtThis.setFloatNumber(node.isFloat());
-            }
 		}
 		else {
 			ErrorToken("Variable/Pin " + tName.image + " NOT found!", tName);
 		}
-		
 	}
 }
 
@@ -458,7 +440,7 @@ void Const() : {
 	Token constName, constVal;
 }
 {
-	<CONST> constName=<IDENTIFIER> "=" constVal=<INTEGER_LITERAL>  <SEMICOLON>
+	<CONST> constName=<IDENTIFIER> "=" constVal=<INTEGER_LITERAL> <SEMICOLON>
 	{
 		if (allConsts.containsKey(constName.image)) {
 			ErrorToken("Redefinition of Const " + constName.image, constName);
@@ -490,7 +472,6 @@ void Typedef() : {
  	}
 }
 
-
 int Fixed() #void : {
 	int bitwidth;
 }
@@ -499,38 +480,6 @@ int Fixed() #void : {
 	{
 		return bitwidth;
 	}
-}
-
-long FloatLong() #void :{
-    Token t;
-}
-{
-   t=<FLOAT_LITERAL>
-   {
-     //jjtThis.setFloatNumber(true);
-     return FloatStringToLong(t.image);
-   }  
-        
-}
-
-int Int() #void :{
-    Token t;
-}
-{
-   t=<INTEGER_LITERAL>
-   {
-     return StringToInteger(t.image);
-   }
-}
-
-long Long() #void :{
-    Token t;
-}
-{
-   t=<INTEGER_LITERAL>
-   {
-     return StringToLong(t.image);
-   }
 }
 
 void Pin() : {
@@ -577,7 +526,6 @@ void Statements() #void : {}
 void Declarations() #void : {}
 {
  	 <LBRACE> (Declaration())+ <RBRACE>
- 	
 }
 
 void Declaration() #void : {
@@ -606,7 +554,6 @@ void Variable(int varWidth) : {
 	Vector<Long> inits = null;
 }
 {
-	
 	tName=<IDENTIFIER> (<LBRACKET> (size=ConstOrInt())? <RBRACKET>)? ("=" (init=ConstOrLong() | inits=MemoryInit(inits)))?
 	{
 		if (allVariables.containsKey(tName.image)) {
@@ -616,18 +563,10 @@ void Variable(int varWidth) : {
 		if (size == null && inits != null && inits.size() != 0)
 			size = inits.size();
 		jjtThis.setArraySize(size);
-        jjtThis.jjtSetValue(init);
+		jjtThis.jjtSetValue(init);
 		jjtThis.setInits(inits);
 		jjtThis.setWidth(varWidth);
 		jjtThis.setToken(tName);
-        
-        //Verifica se houve  
-		if(floatValue)
-        {
-          floatValue = false;
-          jjtThis.setFloatNumber(true);
-        }
-        
 		allVariables.put(tName.image, jjtThis);
 		// comp = design.addComponent(comp);
 		// jjtThis.setComponent(comp);
@@ -708,43 +647,28 @@ void TestbenchEntry(int varWidth) : {
 	}
 }
 
-
 Vector<Long> MemoryInit(Vector<Long> inits) #void : {
 	Token t1, t2=null;
 }
 {
-	<LBRACE> (t1=<INTEGER_LITERAL> | t1=<FLOAT_LITERAL>)
+	"{" t1=<INTEGER_LITERAL>
 	{
 		if (inits == null) {
 			inits = new Vector<Long>();
 		}
-
-		if(t1.kind == INTEGER_LITERAL)		{		  inits.add(StringToLong(t1.image));
-		}
-		else		{
-		  inits.add(FloatStringToLong(t1.image));
-		}
-		 
+		inits.add(StringToLong(t1.image));
 	}
-	( <COMMA> (t2=<INTEGER_LITERAL>|t2=<FLOAT_LITERAL>)
+	( "," t2=<INTEGER_LITERAL>
 	{
 		if (t2 != null) {
-		  if(t2.kind == INTEGER_LITERAL)
-          {
-            inits.add(StringToLong(t2.image));
-          }
-          else
-          {
-            inits.add(FloatStringToLong(t2.image));
-          }
+			inits.add(StringToLong(t2.image));
 		}
 	}
-	)* <RBRACE>
+	)* "}"
 	{
 		return inits;
 	}
 }
-
 
 void Counter() : {
 	
@@ -953,7 +877,7 @@ void DelayExpression() : {
 {
 	ConditionalExpression() (
 	LOOKAHEAD(1) {jjtThis.setComponentClass(delay_op.class);} 
-	<AT> amount=ConstOrInt()(<HASH> endAmount=ConstOrInt(){jjtThis.setEndStepDelay(endAmount);})? {jjtThis.setStepDelay(amount);} 
+	"@" amount=ConstOrInt()(<HASH> endAmount=ConstOrInt(){jjtThis.setEndStepDelay(endAmount);})? {jjtThis.setStepDelay(amount);} 
 	)?
 }
 
@@ -1023,9 +947,8 @@ void ShiftExpression() : {
 void AdditiveExpression() : {}
 {
   MultiplicativeExpression() ( ( 
-  <PLUS> {jjtThis.setComponentClass(add_op_s.class);}
-  | 
-  <MINUS> {jjtThis.setComponentClass(sub_op_s.class);}
+  "+" {jjtThis.setComponentClass(add_op_s.class);} | 
+  "-" {jjtThis.setComponentClass(sub_op_s.class);}
   ) MultiplicativeExpression() )*
 }
 
@@ -1035,18 +958,18 @@ void MultiplicativeExpression() : {
 }
 {
   UnaryExpression() ( ( 
-  <STAR>     {jjtThis.setComponentClass(mult_op_s.class);} |
+  "*" {jjtThis.setComponentClass(mult_op_s.class);} | 
   "*@" amount=ConstOrInt()(<HASH> endAmount=ConstOrInt())? {jjtThis.setStepDelay(amount);} {jjtThis.setComponentClass(mult_op_s_p.class);} | // pipelined multiply 
-  <SLASH>    {jjtThis.setComponentClass(div_op_s.class);} |
-  <REM>      {jjtThis.setComponentClass(mod_op_s.class);}
+  "/" {jjtThis.setComponentClass(div_op_s.class);} |
+  "%" {jjtThis.setComponentClass(mod_op_s.class);}
   ) UnaryExpression() )*
 }
 
 void UnaryExpression() : {}
 {
   ( 
-  <PLUS> | 
-  <MINUS> {jjtThis.setComponentClass(neg_op_s.class);}  
+  "+" | 
+  "-" {jjtThis.setComponentClass(neg_op_s.class);}  
   ) UnaryExpression()
 |
   PreIncrementExpression()
@@ -1056,16 +979,16 @@ void UnaryExpression() : {}
   UnaryExpressionNotPlusMinus()
 }
 
-//TODO: talvez convenha remover estas duas operações 
+//TODO talvez convenha remover estas duas operações 
 
 void PreIncrementExpression() : {}
 {
-  <INCR> PrimaryExpression()
+  "++" PrimaryExpression()
 }
 
 void PreDecrementExpression() : {}
 {
-  <DECR> PrimaryExpression()
+  "--" PrimaryExpression()
 }
 
 void UnaryExpressionNotPlusMinus() : {}
@@ -1082,61 +1005,66 @@ void UnaryExpressionNotPlusMinus() : {}
 
 void PostfixExpression() : {}
 {
-  PrimaryExpression() [ <INCR> | <DECR> ]
+  PrimaryExpression() [ "++" | "--" ]
 }
 
-void PrimaryExpression() :{}
+void PrimaryExpression() : {}
 {
-	<LPAREN> Expression() <RPAREN> | Literal() | Name()
+	<LPAREN> Expression() <RPAREN> | Literal() | Name() 
 }
 
 void Literal() : {
 	Token t;
 }
 {
-	(t=<INTEGER_LITERAL> | t=<FLOAT_LITERAL> | t=<CHARACTER_LITERAL> | t=<STRING_LITERAL> )
+	(t=<INTEGER_LITERAL> | t=<CHARACTER_LITERAL> | t=<STRING_LITERAL>)
 	{
-	  if(t.kind== FLOAT_LITERAL)	  {
-	    jjtThis.jjtSetValue(FloatStringToLong(t.image));
-	    jjtThis.setFloatNumber(true);
-	  }else	  {
-	    jjtThis.jjtSetValue(StringToLong(t.image));
-	  }
+		jjtThis.jjtSetValue(StringToLong(t.image));
 	}
 }
 
-int Constant() #void :{
-  Token t;}
-{
-  t=<IDENTIFIER>
-  {    if (allConsts.containsKey(t.image)) {
-          return allConsts.get(t.image);
-    }
-    else {
-       ErrorToken("Const " + t.image + " NOT found!", t);
-    }
-        
-   }}
-
-
 int ConstOrInt() #void : {
+	Token t;
 	int size = 0;
 }
 {
-   (size=Int()|size=Constant())
-   {
-     return size;   } 
+	(t=<INTEGER_LITERAL> | t=<IDENTIFIER>)
+	{
+		if (t.kind == IDENTIFIER) {
+			if (allConsts.containsKey(t.image)) {
+				size = allConsts.get(t.image);
+			}
+			else {
+				ErrorToken("Const " + t.image + " NOT found!", t);
+			}
+		}
+		else {
+			size = StringToInteger(t.image);
+		}
+		return size;
+	}
 }
 
-
 long ConstOrLong() #void : {
+	Token t;
 	long size = 0;
 }
 {
-   (size=Long()|size=Constant())
-   {
-     return size;
-   } 
+	(t=<INTEGER_LITERAL> | t=<IDENTIFIER>)
+	{
+		if (t.kind == IDENTIFIER) {
+			if (allConsts.containsKey(t.image)) {
+				size = allConsts.get(t.image);
+			}
+			else {
+				ErrorToken("Const " + t.image + " NOT found!", t);
+			}
+		}
+		else {
+			size = StringToLong(t.image);
+		}
+		return size;
+	}
 }
 
 void Error(String s) #void : {} 
@@ -1171,26 +1099,19 @@ void InfoToken(String s, Token t) #void : {}
 Integer StringToInteger(String s) #void : {}
 {
 	{
-        if (s.length() > 1 && s.charAt(1) == 'x'){			return Integer.parseInt(s.substring(2), 16);
-     	}
-		else{		  return Integer.parseInt(s);
-        }
+		if (s.length() > 1 && s.charAt(1) == 'x')
+			return Integer.parseInt(s.substring(2), 16);
+		else
+			return Integer.parseInt(s);
 	}
 }
 
 Long StringToLong(String s) #void : {}
 {
 	{
-	  if (s.length() > 1 && s.charAt(1) == 'x')      {    	return Long.parseLong(s.substring(2), 16);
-	  }
-	  else	  {		return Long.parseLong(s);	  }	}
-}
-
-Long FloatStringToLong(String s) #void : {}
-{
-  {
-     int raw = Float.floatToIntBits((Float.parseFloat(s)));
-     floatValue = true;
-     return new Long(raw);
-  }
+		if (s.length() > 1 && s.charAt(1) == 'x')
+			return Long.parseLong(s.substring(2), 16);
+		else
+			return Long.parseLong(s);
+	}
 }
