@@ -1,0 +1,17 @@
+digraph addsub {
+	// Components (Nodes)
+	"x" [shape=msquare fontcolor=blue label="x"];
+	"x_sub_op_s_y" [shape=record, fontcolor=blue, label="{{<I0>I0[32]|<I1>I1[32]}|sub_op_s:x_sub_op_s_y|{<O0>O0[32]}}"];
+	"y" [shape=msquare fontcolor=blue label="y"];
+	"a" [shape=msquare fontcolor=blue label="a"];
+	"x_add_op_s_y" [shape=record, fontcolor=blue, label="{{<I0>I0[32]|<I1>I1[32]}|add_op_s:x_add_op_s_y|{<O0>O0[32]}}"];
+	"s" [shape=msquare fontcolor=blue label="s"];
+
+	// Signals (Edges)
+	"x" -> "x_add_op_s_y":I0 [label="s0[32]" color=red fontcolor=red];
+	"x_sub_op_s_y":O0 -> "s" [label="s5[32]" color=red fontcolor=red];
+	"x" -> "x_sub_op_s_y":I0 [label="s3[32]" color=red fontcolor=red];
+	"y" -> "x_add_op_s_y":I1 [label="s1[32]" color=red fontcolor=red];
+	"y" -> "x_sub_op_s_y":I1 [label="s4[32]" color=red fontcolor=red];
+	"x_add_op_s_y":O0 -> "a" [label="s2[32]" color=red fontcolor=red];
+}
