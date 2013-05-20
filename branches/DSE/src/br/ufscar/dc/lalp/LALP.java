@@ -182,8 +182,8 @@ public class LALP {
 				System.out.print("Connecting hardware components...");
 				for(int i = 0; i < lp.getDesigns().size(); i++){
 					lp.getRoot().connectComponents(i);
-					if (SimpleNode.allComponents.containsKey("init"))
-						lp.getParser().design.get(i).setInit(SimpleNode.allComponents.get("init"));
+					if (SimpleNode.allComponents.get(i).containsKey("init"))
+						lp.getParser().design.get(i).setInit(SimpleNode.allComponents.get(i).get("init"));
 				}
 				System.out.println("Ok!");
 			}
