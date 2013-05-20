@@ -16,6 +16,7 @@ package br.ufscar.dc.lalp.parser;
 
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.util.Hashtable;
 import java.util.Map;
 import java.util.Vector;
 
@@ -96,6 +97,7 @@ public class LangParser {
 		System.out.print("Instantiating hardware components...");
 		try {
 			for(int i = 0; i < parser.design.size(); i++){
+				SimpleNode.allComponents.add(i, new Hashtable<String, Component>());
 				createIOComponents(i);
 				createIComponents(i);
 				createOperations(i);
@@ -145,7 +147,7 @@ public class LangParser {
 			}
 			comp = parser.design.get(designIndex).addComponent(comp);
 			n.setComponent(comp);
-			SimpleNode.allComponents.put(name, comp);	
+			SimpleNode.allComponents.get(designIndex).put(name, comp);	
 			//DEBUG 
 //			System.out.println(comp);
 		}
@@ -251,7 +253,7 @@ public class LangParser {
 					n.setComponent(comp);
 					if (parser.allAttribution.containsKey(name))
 						comp.setLine(parser.allAttribution.get(name));
-					SimpleNode.allComponents.put(name, comp);
+					SimpleNode.allComponents.get(designIndex).put(name, comp);
 				}
 			}
 			else {
@@ -270,7 +272,7 @@ public class LangParser {
 			String name = n.getIdentifier();
 			Class compClass = n.getComponentClass();
 			Component comp = null;
-			Integer width = operationWidth(n);
+			Integer width = operationWidth(n, designIndex);
 			try {
 				if (n.id == ALPParserTreeConstants.JJTDELAYEXPRESSION) {
 					if(n.getEndStepDelay() != 0)
@@ -282,7 +284,10 @@ public class LangParser {
 					comp = (Component)compClass.getConstructor(String.class, int.class, int.class).newInstance(name, (Integer)n.getStepDelay(), width);
 				}
 				else if (n.id == ALPParserTreeConstants.JJTMULTIPLICATIVEEXPRESSION && n.getStepDelay() != null) {
-					comp = (Component)compClass.getConstructor(String.class, int.class, int.class).newInstance(name, (Integer)n.getStepDelay(), width);						
+					if(n.getEndStepDelay() != 0)
+						comp = (Component)compClass.getConstructor(String.class, int.class, int.class).newInstance(name, (Integer)(beginDelay + designIndex), width);
+					else
+						comp = (Component)compClass.getConstructor(String.class, int.class, int.class).newInstance(name, (Integer)n.getStepDelay(), width);
 				}
 				else {
 					//TODO obviamente o trecho abaixo não funciona para todos os componentes
@@ -300,7 +305,7 @@ public class LangParser {
 			
 			comp = parser.design.get(designIndex).addComponent(comp);
 			
-			while (SimpleNode.allComponents.containsKey(name)) {
+			while (SimpleNode.allComponents.get(designIndex).containsKey(name)) {
 				name = name + "_";
 				//TODO: this must be outside of the loop!?
 				comp.setName(name);
@@ -309,22 +314,22 @@ public class LangParser {
 			if (parser.allAttribution.get(name) != null)
 				comp.setLine(parser.allAttribution.get(name));
 			n.setComponent(comp);
-			SimpleNode.allComponents.put(name, comp);
+			SimpleNode.allComponents.get(designIndex).put(name, comp);
 			//DEBUG 
 //			System.out.println(comp);
 		}
 	}
 	
-	public int operationWidth(SimpleNode n) {
+	public int operationWidth(SimpleNode n, int designIndex) {
 		SimpleNode refSize = n;
 		while (refSize.id != ALPParserTreeConstants.JJTASSIGNMENT && refSize.id != ALPParserTreeConstants.JJTDELAYEXPRESSION && refSize.id != ALPParserTreeConstants.JJTUNARYEXPRESSIONNOTPLUSMINUS) {
 			refSize = refSize.getConnections().getParent();
 		}
 		// obtains parent width
-		Integer width=connectionWidth(refSize.getConnections().getFirst());
+		Integer width=connectionWidth(refSize.getConnections().getFirst(), designIndex);
 		// obtains first child width
-		Integer firstWidth = connectionWidth(n.getConnections().getFirst());
-		Integer secondWidth = connectionWidth(n.getConnections().getSecond());
+		Integer firstWidth = connectionWidth(n.getConnections().getFirst(), designIndex);
+		Integer secondWidth = connectionWidth(n.getConnections().getSecond(), designIndex);
 		if (firstWidth == secondWidth && firstWidth != width)
 			width = firstWidth;
 		n.setWidth(width);
@@ -334,7 +339,7 @@ public class LangParser {
 			return 0; //FIXME ZERO size bus
 	}
 	
-	public Integer connectionWidth(SimpleNode n) {
+	public Integer connectionWidth(SimpleNode n, int designIndex) {
 		if (n == null)
 			return null;
 		String name = null, port = null;
@@ -344,13 +349,13 @@ public class LangParser {
 		Component c;
 		name = n.getIdentifier();
 		port = n.getPort();
-		if (name != null && SimpleNode.allComponents.containsKey(name)) {
-			c = (Component)SimpleNode.allComponents.get(name);
+		if (name != null && SimpleNode.allComponents.get(designIndex).containsKey(name)) {
+			c = (Component)SimpleNode.allComponents.get(designIndex).get(name);
 			if (c instanceof input || c instanceof output) {
 				width = c.getWidth();
 			}
 			else {
-				comp = (IComponent)SimpleNode.allComponents.get(name);
+				comp = (IComponent)SimpleNode.allComponents.get(designIndex).get(name);
 				port = refSize.getPort();
 				if (port != null) {
 					width = comp.getPort(port).getWidth();

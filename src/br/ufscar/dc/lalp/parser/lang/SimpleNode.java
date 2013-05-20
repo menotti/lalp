@@ -291,12 +291,12 @@ public class SimpleNode implements Node {
 	 * 
 	 * @return
 	 */
-	public Component getComponent() {
+	public Component getComponent(int designIndex) {
 		if (this.component != null) {
 			return component;
 		}
-		else if (this.getIdentifier() != null && allComponents.containsKey(this.getIdentifier())) {
-			return allComponents.get(this.getIdentifier());					 
+		else if (this.getIdentifier() != null && allComponents.get(designIndex).containsKey(this.getIdentifier())) {
+			return allComponents.get(designIndex).get(this.getIdentifier());					 
 		}
 		return null;
 	}
@@ -490,30 +490,30 @@ public class SimpleNode implements Node {
 		if (getConnections() != null && getConnections().getOwner() == this) { //connectable components
 			try {
 				if (this.id == ALPParserTreeConstants.JJTCOUNTER) {
-					connectCounter();
+					connectCounter(designIndex);
 				}
 				else if (this.id == ALPParserTreeConstants.JJTDELAYEXPRESSION) {
-					connectDelay();
+					connectDelay(designIndex);
 				}
 				else if (this.id == ALPParserTreeConstants.JJTCONDITIONALEXPRESSION) {
-					connectConditional();
+					connectConditional(designIndex);
 				}
 				else if (this.id == ALPParserTreeConstants.JJTASSIGNMENT) {
-					Component cTo = getConnections().getFirst().getComponent();
+					Component cTo = getConnections().getFirst().getComponent(designIndex);
 					if (getIdentifier().equals("=")) {
 						if (cTo instanceof mux_m_op) {
-							connectMux();
+							connectMux(designIndex);
 						}
 						else if (getConnections().getSecond().id != ALPParserTreeConstants.JJTCONDITIONALEXPRESSION) {
-							connectRegister();
+							connectRegister(designIndex);
 						}
 					}
 					else {
-						connectAccumulator();
+						connectAccumulator(designIndex);
 					}
 				}
 				else {
-					connectOthers();
+					connectOthers(designIndex);
 				}
 			}
 			catch (Exception e) {
@@ -523,83 +523,83 @@ public class SimpleNode implements Node {
 		}
 	}
 	
-	private void connectAccumulator() {
-		Component cFirst = getConnections().getFirst().getComponent();
+	private void connectAccumulator(int designIndex) {
+		Component cFirst = getConnections().getFirst().getComponent(designIndex);
 		String cFirstPort = getConnections().getFirst().getPort();
 		connectComponents(cFirst, cFirstPort, cFirst, "I0");
 		if (getConnections().getSecond() != null) {
-			Component cSecond = getConnections().getSecond().getComponent();
+			Component cSecond = getConnections().getSecond().getComponent(designIndex);
 			String cSecondPort = getConnections().getSecond().getPort();
 			if (cSecond == null) {
-				cSecond = createConstant(getConnections().getSecond());
+				cSecond = createConstant(getConnections().getSecond(), designIndex);
 			}			
 			connectComponents(cSecond, cSecondPort, cFirst, "I1");
 		}
 		if (getConnections().getThird() != null) {
-			Component cCond = getConnections().getThird().getComponent();
+			Component cCond = getConnections().getThird().getComponent(designIndex);
 			String cCondPort = getConnections().getThird().getPort();
 			connectComponents(cCond, cCondPort, cFirst, "we");
 		}		
 	}
 
-	private void connectOthers() {
-		Component cTo = getComponent();
-		Component cFirst = getConnections().getFirst().getComponent();
+	private void connectOthers(int designIndex) {
+		Component cTo = getComponent(designIndex);
+		Component cFirst = getConnections().getFirst().getComponent(designIndex);
 		String cFirstPort = getConnections().getFirst().getPort();
 		if (cFirst == null) {
-			cFirst = createConstant(getConnections().getFirst());
+			cFirst = createConstant(getConnections().getFirst(), designIndex);
 		}
 		connectComponents(cFirst, cFirstPort, cTo, "I0");
 		if (getConnections().getSecond() != null) {
-			Component cSecond = getConnections().getSecond().getComponent();
+			Component cSecond = getConnections().getSecond().getComponent(designIndex);
 			String cSecondPort = getConnections().getSecond().getPort();
 			if (cSecond == null) {
-				cSecond = createConstant(getConnections().getSecond());
+				cSecond = createConstant(getConnections().getSecond(), designIndex);
 			}			
 			connectComponents(cSecond, cSecondPort, cTo, "I1");
 		}
 		if (getConnections().getThird() != null) {
-			Component cCond = getConnections().getThird().getComponent();
+			Component cCond = getConnections().getThird().getComponent(designIndex);
 			String cCondPort = getConnections().getThird().getPort();
 			connectComponents(cCond, cCondPort, cTo, "we");
 		}		
 	}
 
-	private void connectConditional() throws Exception {
-		Component cFirst = getConnections().getSecond().getComponent();
+	private void connectConditional(int designIndex) throws Exception {
+		Component cFirst = getConnections().getSecond().getComponent(designIndex);
 		String cFirstPort = getConnections().getSecond().getPort();
 		if (cFirst == null) {
-			cFirst = createConstant(getConnections().getSecond());
+			cFirst = createConstant(getConnections().getSecond(), designIndex);
 		}
-		Component cSecond = getConnections().getThird().getComponent();
+		Component cSecond = getConnections().getThird().getComponent(designIndex);
 		String cSecondPort = getConnections().getThird().getPort();
 		if (cSecond == null) {
-			cSecond = createConstant(getConnections().getThird());
+			cSecond = createConstant(getConnections().getThird(), designIndex);
 		}	
-		connectComponents(getConnections().getFirst().getComponent(), getConnections().getFirst().getPort(), getComponent(), "Sel1");
-		connectComponents(cFirst, cFirstPort, getComponent(), "I1");
-		connectComponents(cSecond, cSecondPort, getComponent(), "I0");
+		connectComponents(getConnections().getFirst().getComponent(designIndex), getConnections().getFirst().getPort(), getComponent(designIndex), "Sel1");
+		connectComponents(cFirst, cFirstPort, getComponent(designIndex), "I1");
+		connectComponents(cSecond, cSecondPort, getComponent(designIndex), "I0");
 		if (getConnections().getParent().id == ALPParserTreeConstants.JJTASSIGNMENT) {
 			if (getConnections().getParent().getConnections().getThird() != null) {
-				Component cCond = getConnections().getParent().getConnections().getThird().getComponent();
+				Component cCond = getConnections().getParent().getConnections().getThird().getComponent(designIndex);
 				String cCondPort = getConnections().getParent().getConnections().getThird().getPort();
-				connectComponents(cCond, cCondPort, getComponent(), "we");
+				connectComponents(cCond, cCondPort, getComponent(designIndex), "we");
 			}	
 		}
 	}
 	
-	private void connectRegister() {
-		Component cTo = getConnections().getFirst().getComponent();
+	private void connectRegister(int designIndex) {
+		Component cTo = getConnections().getFirst().getComponent(designIndex);
 		String cToPort = getConnections().getFirst().getPort();
 		
-		Component cFrom = getConnections().getSecond().getComponent();
+		Component cFrom = getConnections().getSecond().getComponent(designIndex);
 		String cFromPort = getConnections().getSecond().getPort();
 		if (cFrom == null) {
-			cFrom = createConstant(getConnections().getSecond());
+			cFrom = createConstant(getConnections().getSecond(), designIndex);
 		}
 		connectComponents(cFrom, cFromPort, cTo, cToPort);
 		if (getConnections().getThird() != null) {
-			Component cCond = getConnections().getThird().getComponent();
+			Component cCond = getConnections().getThird().getComponent(designIndex);
 			String cCondPort = getConnections().getThird().getPort();
 			cTo.setUserSync(true);
 			if (cToPort != null && cToPort.equals("address"))
@@ -609,48 +609,48 @@ public class SimpleNode implements Node {
 		}	
 	}
 
-	private void connectMux() {
+	private void connectMux(int designIndex) {
 		Component cFrom = null;
-		Component cTo = getConnections().getFirst().getComponent();		
+		Component cTo = getConnections().getFirst().getComponent(designIndex);		
 		String cFromPort=null, cToPort = "I0";
 		if (getConnections().getSecond().id == ALPParserTreeConstants.JJTLITERAL) {
 			int width = cTo.getWidth();
 			cFrom = parser.design.get(designIndex).addComponent(new const_op(new Integer(getConnections().getSecond().jjtGetValue().toString()), width));
 		}
 		else {
-			cFrom = getConnections().getSecond().getComponent();
+			cFrom = getConnections().getSecond().getComponent(designIndex);
 			cFromPort = getConnections().getSecond().getPort();							
 		}
 		connectComponents(cFrom, cFromPort, cTo, cToPort);
 		if (getConnections().getThird() != null) {
-			Component cCond = getConnections().getThird().getComponent();
+			Component cCond = getConnections().getThird().getComponent(designIndex);
 			String cCondPort = getConnections().getThird().getPort();
 			connectComponents(cCond, cCondPort, cTo, "Sel");
 		}	
 	}
 
-	private void connectDelay() {
-		connectComponents(getConnections().getFirst().getComponent(), getConnections().getFirst().getPort(), this.getComponent(), null);
+	private void connectDelay(int designIndex) {
+		connectComponents(getConnections().getFirst().getComponent(designIndex), getConnections().getFirst().getPort(), this.getComponent(designIndex), null);
 	}
 
-	private void connectCounter() {
+	private void connectCounter(int designIndex) {
 		if (getLoad() instanceof Integer) { // counter initialization with literal 
 			Component c = new const_op((Integer)getLoad(), getWidth());
 			c = parser.design.get(designIndex).addComponent(c);
-			connectComponents(c, null, getComponent(), "input");
+			connectComponents(c, null, getComponent(designIndex), "input");
 		}
 		else { // counter initialization with variable
 			SimpleNode nl = (SimpleNode)getLoad(); 
-			connectComponents(nl.getComponent(), nl.getPort(), getComponent(), "input");
+			connectComponents(nl.getComponent(designIndex), nl.getPort(), getComponent(designIndex), "input");
 		}
 		if (getTerm() instanceof Integer) { // counter termination with literal
 			Component c = new const_op((Integer)getTerm(), getWidth());
 			c = parser.design.get(designIndex).addComponent(c);
-			connectComponents(c, null, getComponent(), "termination");
+			connectComponents(c, null, getComponent(designIndex), "termination");
 		}
 		else { // counter termination with variable
 			SimpleNode nl = (SimpleNode)getTerm(); 
-			connectComponents(nl.getComponent(), nl.getPort(), getComponent(), "termination");
+			connectComponents(nl.getComponent(designIndex), nl.getPort(), getComponent(designIndex), "termination");
 		}
 	}
 	
@@ -659,7 +659,7 @@ public class SimpleNode implements Node {
 	 * @param n
 	 * @return
 	 */
-	private Component createConstant(SimpleNode n) {
+	private Component createConstant(SimpleNode n, int designIndex) {
 		Component c = null;
 		if (n.id == ALPParserTreeConstants.JJTLITERAL) {
 			c = parser.design.get(designIndex).addComponent(new const_op((Long)n.value, getWidth()));
