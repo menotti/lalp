@@ -54,7 +54,7 @@ public class LangParser {
 			root.updateConnections();
 			root.accessComponents();
 			for(SimpleNode n: SimpleNode.allOperations){
-				if (n.id == ALPParserTreeConstants.JJTDELAYEXPRESSION) { //TODO *
+				if (n.id == ALPParserTreeConstants.JJTDELAYEXPRESSION || n.id == ALPParserTreeConstants.JJTMULTIPLICATIVEEXPRESSION) { //TODO *
 					if(n.getEndStepDelay() != 0){
 						beginDelay = n.getStepDelay();
 						endDelay = n.getEndStepDelay();
