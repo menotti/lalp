@@ -2071,13 +2071,14 @@ Vector<Long> TestResult(Vector<Long> inits) #void : {
           case HASH:
             jj_consume_token(HASH);
             endAmount = ConstOrInt();
+                                                         jjtn000.setEndStepDelay(endAmount);
             break;
           default:
             jj_la1[62] = jj_gen;
             ;
           }
-                                                            jjtn000.setStepDelay(amount);
-                                                                                            jjtn000.setComponentClass(mult_op_s_p.class);
+                                                                                                 jjtn000.setStepDelay(amount);
+                                                                                                                                 jjtn000.setComponentClass(mult_op_s_p.class);
           break;
         case SLASH:
           jj_consume_token(SLASH);

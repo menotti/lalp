@@ -1803,7 +1803,7 @@ void MultiplicativeExpression() : {/*@bgen(jjtree) MultiplicativeExpression */
 /*@egen*/
   UnaryExpression() ( ( 
   "*" {jjtn000.setComponentClass(mult_op_s.class);} | 
-  "*@" amount=ConstOrInt()(<HASH> endAmount=ConstOrInt())? {jjtn000.setStepDelay(amount);} {jjtn000.setComponentClass(mult_op_s_p.class);} | // pipelined multiply 
+  "*@" amount=ConstOrInt()(<HASH> endAmount=ConstOrInt(){jjtn000.setEndStepDelay(endAmount);})? {jjtn000.setStepDelay(amount);} {jjtn000.setComponentClass(mult_op_s_p.class);} | // pipelined multiply 
   "/" {jjtn000.setComponentClass(div_op_s.class);} |
   "%" {jjtn000.setComponentClass(mod_op_s.class);}
   ) UnaryExpression() )*/*@bgen(jjtree)*/
