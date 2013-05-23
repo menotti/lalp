@@ -39,6 +39,7 @@ public class SimpleNode implements Node {
 	protected boolean counterDown = false;
 	// used?
 	protected Component component = null;
+	protected Vector<Component> components = new Vector<Component>();
 	protected Connections connections = null;
 	private int designIndex = 0;
 	
@@ -50,6 +51,7 @@ public class SimpleNode implements Node {
 		allOperations = new Vector<SimpleNode>();
 		allAccess = new Hashtable<String, Vector<SimpleNode>>();
 		allComponents = new Vector<Hashtable<String, Component>>();
+		components = new Vector<Component>();
 	}
 	
 	public SimpleNode(int i) {
@@ -292,8 +294,8 @@ public class SimpleNode implements Node {
 	 * @return
 	 */
 	public Component getComponent(int designIndex) {
-		if (this.component != null) {
-			return component;
+		if (designIndex < this.components.size()) {
+			return components.get(designIndex);
 		}
 		else if (this.getIdentifier() != null && allComponents.get(designIndex).containsKey(this.getIdentifier())) {
 			return allComponents.get(designIndex).get(this.getIdentifier());					 
@@ -301,8 +303,8 @@ public class SimpleNode implements Node {
 		return null;
 	}
 
-	public void setComponent(Component comp) {
-		this.component = comp;
+	public void setComponent(int designIndex, Component comp) {
+		this.components.add(designIndex, comp);
 	}
 
 	public Connections getConnections() {

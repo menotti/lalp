@@ -146,7 +146,7 @@ public class LangParser {
 				//System.exit(1);
 			}
 			comp = parser.design.get(designIndex).addComponent(comp);
-			n.setComponent(comp);
+			n.setComponent(designIndex, comp);
 			SimpleNode.allComponents.get(designIndex).put(name, comp);	
 			//DEBUG 
 //			System.out.println(comp);
@@ -250,7 +250,7 @@ public class LangParser {
 				}
 				if (comp != null) {
 					comp = parser.design.get(designIndex).addComponent(comp);					
-					n.setComponent(comp);
+					n.setComponent(designIndex, comp);
 					if (parser.allAttribution.containsKey(name))
 						comp.setLine(parser.allAttribution.get(name));
 					SimpleNode.allComponents.get(designIndex).put(name, comp);
@@ -284,7 +284,7 @@ public class LangParser {
 					comp = (Component)compClass.getConstructor(String.class, int.class, int.class).newInstance(name, (Integer)n.getStepDelay(), width);
 				}
 				else if (n.id == ALPParserTreeConstants.JJTMULTIPLICATIVEEXPRESSION && n.getStepDelay() != null) {
-					if(n.getEndStepDelay() != 0)
+					if(n.getEndStepDelay() != null && n.getEndStepDelay() != 0)
 						comp = (Component)compClass.getConstructor(String.class, int.class, int.class).newInstance(name, (Integer)(beginDelay + designIndex), width);
 					else
 						comp = (Component)compClass.getConstructor(String.class, int.class, int.class).newInstance(name, (Integer)n.getStepDelay(), width);
@@ -313,7 +313,7 @@ public class LangParser {
 			}
 			if (parser.allAttribution.get(name) != null)
 				comp.setLine(parser.allAttribution.get(name));
-			n.setComponent(comp);
+			n.setComponent(designIndex, comp);
 			SimpleNode.allComponents.get(designIndex).put(name, comp);
 			//DEBUG 
 //			System.out.println(comp);
