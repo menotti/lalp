@@ -1,0 +1,11 @@
+#Limpar
+make clean
+
+#Rodar
+make check
+
+#visualisar
+run.sh hello.c.dot
+
+#Rodar Executavel
+./myTranslator -c hello.c
