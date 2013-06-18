@@ -18,7 +18,7 @@ BOOST_INSTALL=/home/demo/opt/boost-1.40.0
 
 ## Your translator
 TRANSLATOR=Main
-TRANSLATOR_SOURCE=$(TRANSLATOR).cpp autoParSupport.cpp
+TRANSLATOR_SOURCE=$(TRANSLATOR).cpp autoParSupport.cpp Componente.cpp
 
 ## Input testcode for your translator
 TESTCODE=hello.c

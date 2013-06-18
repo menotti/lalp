@@ -9,6 +9,7 @@
 #include <AstInterface_ROSE.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <sstream>
 #include <algorithm>
 #include <iterator>
 #include <set>
@@ -17,12 +18,14 @@
 #include "analysis.h"
 #include <list>
 #include <sstream>
+#include <stdlib.h>
 #include <iostream>
 #include <fstream>
 #include <string>
 #include <algorithm>
 #include <map>
 #include "liveDeadVarAnalysis.h"
+#include "Componente.h"
 
 using namespace std;
 using namespace SageInterface;
@@ -38,15 +41,19 @@ class Main : public AstSimpleProcessing
     public: virtual void geraGraficoDataFlow(SgProject *project, const string& nome);
     public: virtual void geraGraficoDefuseAnalysis(SgProject *project, const string& nome);
     //public: virtual void teste(SgProject *project, const string& nome);
+    public: virtual void identificaVariaveis(SgProject *project);
+    public: virtual void identificaFor(SgProject *project);
 };
 
 void Main::visit(SgNode* n){
-    
+    /*
     SgFunctionDefinition* nodo = isSgFunctionDefinition(n);
     if (nodo != NULL)
     {
         PRE::partialRedundancyEliminationFunction(nodo);
     }
+     * */
+    
     /*
     SgType*  t_node = isSgType(n);
     if (t_node != NULL)
@@ -71,7 +78,7 @@ void Main::visit(SgNode* n){
     SgInitializedName*  i_node = isSgInitializedName(n);
     if (i_node != NULL)
     {
-        cout<<"-----------------------------"<<endl;
+      cout<<"-----------------------------"<<endl;
       cout<<"SgInitializedName "<< i_node->class_name()<<endl;
       cout<<"\tunparsed string is "<< i_node->unparseToString()<<endl;
       cout<<"\tmangled name is "<< i_node->get_mangled_name().getString()  <<endl;
@@ -105,6 +112,7 @@ void Main::visit(SgNode* n){
 void Main::geraGraficoFluxo(SgProject *project, const string& nome=""){
     
     Rose_STL_Container<SgNode*> functions = NodeQuery::querySubTree(project, V_SgFunctionDefinition);
+
     
     for( Rose_STL_Container<SgNode*>::const_iterator i = functions.begin(); i != functions.end(); ++i){
         SgFunctionDefinition* proc = isSgFunctionDefinition(*i);
@@ -304,14 +312,176 @@ vector<string> Main::split(const string& s, const string& delim) {
     return result;
 }
 
+void Main::identificaVariaveis(SgProject *project) {
+    string nome = "";
+    // For each source file in the project
+    ROSE_ASSERT (project != NULL);
+    initialize_analysis (project,false);
+    SgFilePtrList & ptr_list = project->get_fileList();
+    for (SgFilePtrList::iterator iter = ptr_list.begin(); iter!=ptr_list.end(); iter++)
+    {
+        SgFile* sageFile = (*iter);
+        SgSourceFile * sfile = isSgSourceFile(sageFile);
+        ROSE_ASSERT(sfile);
+        SgGlobal *root = sfile->get_globalScope();
+        SgDeclarationStatementPtrList& declList = root->get_declarations ();
+        bool hasOpenMP= false; // flag to indicate if omp.h is needed in this file
+
+        //For each function body in the scope
+        for (SgDeclarationStatementPtrList::iterator p = declList.begin(); p != declList.end(); ++p) 
+        {
+            
+            SgFunctionDeclaration *func = isSgFunctionDeclaration(*p);
+            if (func == 0)  continue;
+            SgFunctionDefinition *defn = func->get_definition();
+            if (defn == 0)  continue;
+            //ignore functions in system headers, Can keep them to test robustness
+            if (defn->get_file_info()->get_filename()!=sageFile->get_file_info()->get_filename())
+                continue;
+            SgBasicBlock *body = defn->get_body();  
+            // For each loop 
+            
+            Rose_STL_Container<SgNode*> var = NodeQuery::querySubTree(defn,V_SgInitializedName); 
+            if (var.size()==0) continue;
+            
+            for (Rose_STL_Container<SgNode*>::iterator i = var.begin(); i != var.end(); i++ ) 
+            {
+                SgInitializedName* cur_var = isSgInitializedName(*i);
+                SgVariableDeclaration* varDec =  isSgVariableDeclaration(cur_var->get_parent());
+                
+
+                
+                //cout<< ""<< endl;
+                //cout<< "teste"<< varDec->get_mangled_name().getString()<< endl;
+                //cout<< ""<< endl;                
+               
+                if (cur_var != NULL){
+                    ROSE_ASSERT(cur_var);
+                    Componente comp(cur_var);
+                    comp.imprime();
+                }         
+            }
+        }
+    }   
+}
+
+void Main::identificaFor(SgProject *project) {
+    string nome = "";
+    // For each source file in the project
+    ROSE_ASSERT (project != NULL);
+    initialize_analysis (project,false);
+    SgFilePtrList & ptr_list = project->get_fileList();
+    for (SgFilePtrList::iterator iter = ptr_list.begin(); iter!=ptr_list.end(); iter++)
+    {
+        SgFile* sageFile = (*iter);
+        SgSourceFile * sfile = isSgSourceFile(sageFile);
+        ROSE_ASSERT(sfile);
+        SgGlobal *root = sfile->get_globalScope();
+        SgDeclarationStatementPtrList& declList = root->get_declarations ();
+        bool hasOpenMP= false; // flag to indicate if omp.h is needed in this file
+
+        //For each function body in the scope
+        for (SgDeclarationStatementPtrList::iterator p = declList.begin(); p != declList.end(); ++p) 
+        {
+            
+            SgFunctionDeclaration *func = isSgFunctionDeclaration(*p);
+            if (func == 0)  continue;
+            SgFunctionDefinition *defn = func->get_definition();
+            if (defn == 0)  continue;
+            //ignore functions in system headers, Can keep them to test robustness
+            if (defn->get_file_info()->get_filename()!=sageFile->get_file_info()->get_filename())
+                continue;
+            SgBasicBlock *body = defn->get_body();  
+            // For each loop 
+            
+            Rose_STL_Container<SgNode*> var = NodeQuery::querySubTree(defn,V_SgForStatement); 
+            if (var.size()==0) continue;
+            
+            for (Rose_STL_Container<SgNode*>::iterator i = var.begin(); i != var.end(); i++ ) 
+            {
+                SgForStatement* cur_for = isSgForStatement(*i);
+                
+                if (cur_for != NULL){
+                    ROSE_ASSERT(cur_for);
+                    
+                    
+                    //Componente comp(cur_var);
+                    //comp.imprime();
+                    
+                    /**********************************************************/
+                    //Parte de pegar o padrao de inicio do FOR => EX.: int i = 0 
+                    SgForInitStatement* stmt    = cur_for->get_for_init_stmt();
+                    
+                    Rose_STL_Container<SgNode*> NodosFor1 = NodeQuery::querySubTree(stmt,V_SgNode); 
+                    if (NodosFor1.size()==0) continue;
+                    cout<<"FOR - Parte 1 - inicializacao FOR"<< endl;    
+                    for (Rose_STL_Container<SgNode*>::iterator for1 = NodosFor1.begin(); for1 != NodosFor1.end(); for1++ ) 
+                    {
+                        SgNode* node = isSgNode(*for1);
+                        cout<<node->class_name()<< endl;
+                        
+                        
+                    }               
+                    cout<<""<< endl;
+                    /**********************************************************/
+                    
+                    
+                    /**********************************************************/
+                    //SageInterface::getLoopCondition()
+                    //Expressao que valida o FOR => EX.: i < 10
+                    SgStatement* test           = cur_for->get_test();
+                    SgExpression* testExp       = cur_for->get_test_expr();
+                    
+                    Rose_STL_Container<SgNode*> NodosFor2 = NodeQuery::querySubTree(testExp,V_SgNode);
+                    if (NodosFor2.size()==0) continue;
+                    
+                    cout<<"FOR - Parte 2 - Condicao de parada FOR"<< endl;    
+                    for (Rose_STL_Container<SgNode*>::iterator for2 = NodosFor2.begin(); for2 != NodosFor2.end(); for2++ ) 
+                    {
+                        SgNode* node = isSgNode(*for2);
+                        cout<<node->class_name()<< endl;
+                    }               
+                    cout<<""<< endl;
+                    /**********************************************************/
+                    
+                    
+                    /**********************************************************/
+                    //Parte que identifica o incremento do FOR => EX.: i++
+                    SgExpression* increment     = cur_for->get_increment();
+                    
+                    Rose_STL_Container<SgNode*> NodosFor3 = NodeQuery::querySubTree(increment,V_SgNode);
+                    if (NodosFor3.size()==0) continue;
+                    
+                    cout<<"FOR - Parte 3 - Incremental FOR"<< endl;
+                    for (Rose_STL_Container<SgNode*>::iterator for3 = NodosFor3.begin(); for3 != NodosFor3.end(); for3++ ) 
+                    {
+                        SgNode* node = isSgNode(*for3);
+                        cout<<node->class_name()<< endl;
+                    }               
+                    cout<<""<< endl;
+                    /**********************************************************/
+                    
+                    
+                    /**********************************************************/
+                    //Corpo do Loop com as operacoes
+                    SgStatement* loopBody       = cur_for->get_loop_body();
+                    SgStatement* loopBody1      = SageInterface::getLoopBody(cur_for);
+                    /**********************************************************/
+                }         
+            }
+        }
+    }   
+}
+
+
 int main(int argc, char * argv[]){
     SgProject *project = frontend (argc, argv);
     initAnalysis(project);
     Main        	myvisitor;
     bool OpenMP         = false;
     bool Redundancia    = false; 
-    bool VarLiveDead    = true;
-    bool AnaliseLoops   = true;
+    bool VarLiveDead    = false;
+    bool AnaliseLoops   = false;
     ROSE_ASSERT (project != NULL);
     
     //RETIRAR REDUNDANCIA
@@ -360,6 +530,31 @@ int main(int argc, char * argv[]){
         myvisitor.analisaLoop(project, OpenMP);
     }
     
+    cout<<"###############################################"<<endl;
+    cout<<"#          IDENTIFICACAO DE VARIAVEIS         #"<<endl;
+    cout<<"###############################################"<<endl;
+    cout<<"#                                             #"<<endl;
+    cout<<"# Iniciando processo de identificacao das     #"<<endl;
+    cout<<"# Variaveis                                   #"<<endl;
+    myvisitor.identificaVariaveis(project);
+    //myvisitor.traverseInputFiles(project,preorder);
+    cout<<"# ------------------------------------------  #"<<endl;
+    cout<<"# Variaveis identificadas                     #"<<endl;
+    cout<<"###############################################"<<endl;
+    
+    
+    cout<<"###############################################"<<endl;
+    cout<<"#           IDENTIFICACAO DE LOOPS            #"<<endl;
+    cout<<"###############################################"<<endl;
+    cout<<"#                                             #"<<endl;
+    cout<<"# Iniciando processo de identificacao dos     #"<<endl;
+    cout<<"# Loops                                       #"<<endl;
+    myvisitor.identificaFor(project);
+    //myvisitor.traverseInputFiles(project,preorder);
+    cout<<"# ------------------------------------------  #"<<endl;
+    cout<<"# Loops identificados                         #"<<endl;
+    cout<<"###############################################"<<endl;
+    
     //PERCORRE CADA NODO
     //myvisitor.traverseInputFiles(project,preorder);
     
@@ -367,11 +562,31 @@ int main(int argc, char * argv[]){
     //myvisitor.geraGraficoFluxo(project, "DEPOIS");
     
     //myvisitor.geraGraficoDataFlow(project,"GDF");
-    //generateGraphOfAST(project,"AST");
+    generateGraphOfAST(project,"AST");
     /******************************************************/
     
     //myvisitor.teste(project,"teste");
     
+    //SageInterface::outputLocalSymbolTables(project);
+    
     release_analysis();
+    generatePDF(*project);
+    
+    // Dump mangled map
+    cout<<""<<endl;
+    cout<<"----------- mangled name map -------------"<<endl;
+    std::map< SgNode *, std::string > & m_map = SgNode::get_globalMangledNameMap ();
+    //std::map< SgNode *, std::string > & m_map = SgNode::get_globalQualifiedNameMapForTypes();
+    std::map< SgNode *, std::string >::iterator iter = m_map.begin();
+    for (; iter != m_map.end(); iter++)
+    {
+      cout<<"SgNode is "<< (*iter).first->class_name()<<"    ";
+      cout<<"Mangled name is "<< (*iter).second <<endl;
+    }
+
+    // Dump mangled types
+    cout<<"----------- mangled types-------------"<<endl;
+    
+    
     return backend(project);
 }
