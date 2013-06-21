@@ -1,0 +1,1 @@
+NET _clk_ TNM_NET = _clk_; TIMESPEC TS__clk_ = PERIOD _clk_ 3000 ns HIGH 50%;

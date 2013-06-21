@@ -1,0 +1,92 @@
+digraph sobel {
+	// Components (Nodes)
+	node [shape=ellipse, style=filled, color=dodgerblue2];
+	"result" [color=bisque4 shape=invtriangle label="result"];
+	"c22" [color=bisque4 shape=invtriangle label="0x1"];
+	"c26" [label="{|}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"output" [label="output" shape=doubleoctagon  color=dodgerblue2 ];
+	"i12" [label="i12" shape=doubleoctagon  color=dodgerblue2 ];
+	"c37" [label="{||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"c30" [label="{|}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"c34" [label="{|}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"c29" [label="{|}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"c33" [label="{|}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"c27" [label="{|}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"c25" [label="{||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"i_add_op_s_1" [label="i_add_op_s_1:+"  color=dodgerblue2 ];
+	"c21" [color=bisque4 shape=invtriangle label="0x4e"];
+	"c23" [color=bisque4 shape=invtriangle label="0xff"];
+	"i01" [label="i01" shape=doubleoctagon  color=dodgerblue2 ];
+	"O" [label="O" shape=doubleoctagon  color=dodgerblue2 ];
+	"i20" [label="i20" shape=doubleoctagon  color=dodgerblue2 ];
+	"i22" [label="i22" shape=doubleoctagon  color=dodgerblue2 ];
+	"done" [color=bisque4 shape=invtriangle label="done"];
+	"H" [label="H" shape=doubleoctagon  color=dodgerblue2 ];
+	"i" [label="i" shape=doubleoctagon  color=dodgerblue2 ];
+	"c20" [color=bisque4 shape=invtriangle label="0x0"];
+	"c24" [label="{||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"c31" [label="{|}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"c28" [label="{|}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"c35" [label="{|}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"c32" [label="{|}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"input" [label="input" shape=doubleoctagon  color=dodgerblue2 ];
+	"c36" [label="{|}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"addr" [label="addr"  color=dodgerblue2 ];
+	"i10" [label="i10" shape=doubleoctagon  color=dodgerblue2 ];
+	"i00" [label="i00" shape=doubleoctagon  color=dodgerblue2 ];
+	"Otrunk" [label="Otrunk"  color=dodgerblue2 ];
+	"i02" [label="i02" shape=doubleoctagon  color=dodgerblue2 ];
+	"V" [label="V" shape=doubleoctagon  color=dodgerblue2 ];
+	"i21" [label="i21" shape=doubleoctagon  color=dodgerblue2 ];
+	"init" [color=bisque4 shape=invtriangle label="init"];
+
+	// Signals (Edges)
+	"init" -> "i"
+	"c24" -> "output"
+	"c26" -> "i00"
+	"input" -> "i10"
+	"c37" -> "done"
+	"input" -> "i22"
+	"c33" -> "i22"
+	"i" -> "c32":input
+	"i" -> "c36":input
+	"c35" -> "V"
+	"i" -> "c34":input
+	"c28" -> "i02"
+	"c30" -> "i12"
+	"i" -> "c28":input
+	"i" -> "c30":input
+	"i" -> "c27":input
+	"i" -> "c26":input
+	"i" -> "c24":input
+	"i" -> "c25":input
+	"input" -> "i01"
+	"addr" -> "input"
+	"c22" -> "i_add_op_s_1"
+	"i" -> "addr"
+	"c20" -> "i"
+	"input" -> "i20"
+	"c23" -> "Otrunk"
+	"output" -> "result"
+	"c25" -> "output"
+	"i" -> "c29":input
+	"c27" -> "i01"
+	"i" -> "c31":input
+	"c32" -> "i21"
+	"c29" -> "i10"
+	"i" -> "c35":input
+	"c34" -> "H"
+	"c36" -> "O"
+	"i" -> "c33":input
+	"input" -> "i21"
+	"c31" -> "i20"
+	"input" -> "i02"
+	"O" -> "Otrunk"
+	"i" -> "c37":input
+	"input" -> "i12"
+	"Otrunk" -> "output"
+	"input" -> "i00"
+	"i_add_op_s_1" -> "addr"
+	"i" -> "i_add_op_s_1"
+	"c21" -> "i"
+}

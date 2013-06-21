@@ -1,0 +1,11 @@
+Benchmark;Slice Registers;occupied Slices;Slice LUTs;Fmax
+dotprod10;130;88;44;306.185;
+dotprod1;90;54;27;134.372;
+dotprod2;92;54;27;166.445;
+dotprod3;92;73;28;202.922;
+dotprod4;93;73;28;299.491;
+dotprod5;125;73;42;319.898;
+dotprod6;126;88;45;319.898;
+dotprod7;127;88;44;319.898;
+dotprod8;128;88;45;307.598;
+dotprod9;129;88;46;305.998;

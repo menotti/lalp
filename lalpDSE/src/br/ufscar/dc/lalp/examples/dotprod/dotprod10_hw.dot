@@ -1,0 +1,31 @@
+digraph dotprod10 {
+	// Components (Nodes)
+	"sum" [shape=msquare fontcolor=blue label="sum"];
+	"done" [shape=msquare fontcolor=blue label="done"];
+	"c128" [fontcolor=red label="c128=0x0"];
+	"i" [shape=record, fontcolor=blue, style="filled", fillcolor="lightgray", label="{{<clk>clk|<clk_en>clk_en|<input>input[16]|<load>load|<reset>reset|<termination>termination[16]}|counter:i\n\<\n+=1\nsteps=1|{<done>done|<output>output[16]|<step>step}}"];
+	"init" [shape=msquare fontcolor=blue label="init"];
+	"acc" [shape=record, fontcolor=blue, style="filled", fillcolor="lightgray", label="{{<I0>I0[32]|<I1>I1[32]|<Sel1>Sel1[1]|<clk>clk|<reset>reset|<we>we}|add_reg_op_s:acc|{<O0>O0[32]}}"];
+	"c149" [shape=record, fontcolor=blue, style="filled", fillcolor="lightgray", label="{{<a>a[1]|<clk>clk|<reset>reset}|delay_op:c149\ndelay=12|{<a_delayed>a_delayed[1]}}"];
+	"c129" [fontcolor=red label="c129=0x800"];
+	"c148" [shape=record, fontcolor=blue, style="filled", fillcolor="lightgray", label="{{<a>a[1]|<clk>clk|<reset>reset}|delay_op:c148\ndelay=13|{<a_delayed>a_delayed[1]}}"];
+	"x" [shape=record, fontcolor=blue, style="filled", fillcolor="lightgray", label="{{<address>address[11]|<clk>clk|<data_in>data_in[32]|<oe>oe|<we>we}|block_ram:x|{<data_out>data_out[32]}}"];
+	"x_mult_op_s_p_y_1" [shape=record, fontcolor=blue, style="filled", fillcolor="lightgray", label="{{<I0>I0[32]|<I1>I1[32]|<clk>clk}|mult_op_s_p:x_mult_op_s_p_y_1\nk=10|{<O0>O0[32]}}"];
+	"y" [shape=record, fontcolor=blue, style="filled", fillcolor="lightgray", label="{{<address>address[11]|<clk>clk|<data_in>data_in[32]|<oe>oe|<we>we}|block_ram:y|{<data_out>data_out[32]}}"];
+
+	// Signals (Edges)
+	"acc":O0 -> "acc":I0 [label="s96[32]" color=red fontcolor=red style=dashed];
+	"x":data_out -> "x_mult_op_s_p_y_1":I0 [label="s94[32]" color=red fontcolor=red];
+	"i":step -> "c149":a [label="s265" color=olivedrab];
+	"c149":a_delayed -> "acc":we [label="s266[1]" color=red fontcolor=red];
+	"i":done -> "c148":a [label="s263" color=olivedrab];
+	"init" -> "i":clk_en [label="s262" color=olivedrab];
+	"c148":a_delayed -> "done" [label="s264[1]" color=red fontcolor=red];
+	"y":data_out -> "x_mult_op_s_p_y_1":I1 [label="s95[32]" color=red fontcolor=red];
+	"i":output -> "y":address [label="s93[16]" color=red fontcolor=red];
+	"x_mult_op_s_p_y_1":O0 -> "acc":I1 [label="s97[32]" color=red fontcolor=red];
+	"acc":O0 -> "sum" [label="s99[32]" color=red fontcolor=red];
+	"c129" -> "i":termination [label="s91[16]" color=red fontcolor=red];
+	"c128" -> "i":input [label="s90[16]" color=red fontcolor=red];
+	"i":output -> "x":address [label="s92[16]" color=red fontcolor=red];
+}

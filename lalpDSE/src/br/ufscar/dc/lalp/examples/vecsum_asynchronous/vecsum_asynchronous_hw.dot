@@ -1,0 +1,12 @@
+digraph vecsum_asynchronous {
+	// Components (Nodes)
+	"result" [shape=msquare fontcolor=blue label="result"];
+	"x_add_op_s_y" [shape=record, fontcolor=blue, label="{{<I0>I0[32]|<I1>I1[32]}|add_op_s:x_add_op_s_y|{<O0>O0[32]}}"];
+	"x" [shape=msquare fontcolor=blue label="x"];
+	"y" [shape=msquare fontcolor=blue label="y"];
+
+	// Signals (Edges)
+	"x" -> "x_add_op_s_y":I0 [label="s0[32]" color=red fontcolor=red];
+	"y" -> "x_add_op_s_y":I1 [label="s1[32]" color=red fontcolor=red];
+	"x_add_op_s_y":O0 -> "result" [label="s2[32]" color=red fontcolor=red];
+}

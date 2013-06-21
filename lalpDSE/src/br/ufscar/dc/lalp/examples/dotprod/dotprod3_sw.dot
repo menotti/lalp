@@ -1,0 +1,32 @@
+digraph dotprod3 {
+	// Components (Nodes)
+	node [shape=ellipse, style=filled, color=dodgerblue2];
+	"y" [label="y" shape=doubleoctagon  color=dodgerblue2 ];
+	"x" [label="x" shape=doubleoctagon  color=dodgerblue2 ];
+	"sum" [color=bisque4 shape=invtriangle label="sum"];
+	"done" [color=bisque4 shape=invtriangle label="done"];
+	"acc" [label="acc" shape=doubleoctagon  color=dodgerblue2 ];
+	"i" [label="i" shape=doubleoctagon  color=dodgerblue2 ];
+	"c135" [label="{||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"c134" [label="{|||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"x_mult_op_s_p_y_1" [label="*" shape=doubleoctagon  color=dodgerblue2 ];
+	"init" [color=bisque4 shape=invtriangle label="init"];
+	"c114" [color=bisque4 shape=invtriangle label="0x0"];
+	"c115" [color=bisque4 shape=invtriangle label="0x800"];
+
+	// Signals (Edges)
+	"i" -> "x"
+	"i" -> "c134":input
+	"acc" -> "acc" [style=dashed];
+	"c114" -> "i"
+	"x" -> "x_mult_op_s_p_y_1"
+	"acc" -> "sum"
+	"x_mult_op_s_p_y_1" -> "acc"
+	"y" -> "x_mult_op_s_p_y_1"
+	"c115" -> "i"
+	"init" -> "i"
+	"i" -> "y"
+	"c134" -> "done"
+	"c135" -> "acc"
+	"i" -> "c135":input
+}

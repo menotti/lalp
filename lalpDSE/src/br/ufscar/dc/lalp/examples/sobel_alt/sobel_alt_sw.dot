@@ -1,0 +1,314 @@
+digraph sobel_alt {
+	// Components (Nodes)
+	node [shape=ellipse, style=filled, color=dodgerblue2];
+	"result" [color=bisque4 shape=invtriangle label="result"];
+	"c100" [color=bisque4 shape=invtriangle label="0x0"];
+	"i21h" [label="i21h" shape=doubleoctagon  color=dodgerblue2 ];
+	"H_if_lt_op_s_0" [label="H_if_lt_op_s_0:<"  color=dodgerblue2 ];
+	"i18" [label="i18" shape=doubleoctagon  color=dodgerblue2 ];
+	"i22v_delay_op_1" [label="{}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"c119" [label="{|||||||||||||||||||||||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"c104" [color=bisque4 shape=invtriangle label="0xff"];
+	"i00h" [label="i00h" shape=doubleoctagon  color=dodgerblue2 ];
+	"i09" [label="i09" shape=doubleoctagon  color=dodgerblue2 ];
+	"i05" [label="i05" shape=doubleoctagon  color=dodgerblue2 ];
+	"i00_neg_op_s_" [label="!"  color=dodgerblue2 ];
+	"c123" [label="{||||||||||||||||||||||||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"c121" [label="{||||||||||||||||||||||||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"c125" [label="{|||||||||||||||||||||||||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"i02h" [label="i02h" shape=doubleoctagon  color=dodgerblue2 ];
+	"i_step_delay_op_25_______" [label="{||||||||||||||||||||||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"i10_add_op_s_i10" [label="i10_add_op_s_i10:+"  color=dodgerblue2 ];
+	"i_step_delay_op_25________" [label="{||||||||||||||||||||||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"i19" [label="i19" shape=doubleoctagon  color=dodgerblue2 ];
+	"i16" [label="i16" shape=doubleoctagon  color=dodgerblue2 ];
+	"i00hi01hi02h_add_op_s_i20hi21hi22h" [label="i00hi01hi02h_add_op_s_i20hi21hi22h:+"  color=dodgerblue2 ];
+	"i10v" [label="i10v" shape=doubleoctagon  color=dodgerblue2 ];
+	"c102" [color=bisque4 shape=invtriangle label="0x0"];
+	"c117" [label="{|||||||||||||||||||||||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"i07" [label="i07" shape=doubleoctagon  color=dodgerblue2 ];
+	"c106" [label="{||||||||||||||||||||||||||||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"i02v" [label="i02v" shape=doubleoctagon  color=dodgerblue2 ];
+	"i22h" [label="i22h" shape=doubleoctagon  color=dodgerblue2 ];
+	"i12v" [label="i12v" shape=doubleoctagon  color=dodgerblue2 ];
+	"i00_neg_op_s" [label="!"  color=dodgerblue2 ];
+	"i22h_delay_op_1" [label="{}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"i20v_delay_op_1" [label="{}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"i12" [label="i12" shape=doubleoctagon  color=dodgerblue2 ];
+	"i01h" [label="i01h" shape=doubleoctagon  color=dodgerblue2 ];
+	"O_if_gt_op_s_255" [label="O_if_gt_op_s_255:>"  color=dodgerblue2 ];
+	"i03" [label="i03" shape=doubleoctagon  color=dodgerblue2 ];
+	"c111" [label="{|||||||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"c126" [label="{||||||||||||||||||||||||||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"i02vi12v" [label="i02vi12v" shape=doubleoctagon  color=dodgerblue2 ];
+	"c115" [label="{|||||||||||||||||||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"i_step_delay_op_25___" [label="{||||||||||||||||||||||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"i02_neg_op_s" [label="!"  color=dodgerblue2 ];
+	"i01_add_op_s_i01_neg_op_s" [label="!"  color=dodgerblue2 ];
+	"i_step_delay_op_25____" [label="{||||||||||||||||||||||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"i00hi01h" [label="i00hi01h" shape=doubleoctagon  color=dodgerblue2 ];
+	"input" [label="input" shape=doubleoctagon  color=dodgerblue2 ];
+	"i21" [label="i21" shape=doubleoctagon  color=dodgerblue2 ];
+	"done" [color=bisque4 shape=invtriangle label="done"];
+	"H_neg_op_s" [label="!"  color=dodgerblue2 ];
+	"V_if_lt_op_s_0" [label="V_if_lt_op_s_0:<"  color=dodgerblue2 ];
+	"c109" [label="{|||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"i13" [label="i13" shape=doubleoctagon  color=dodgerblue2 ];
+	"i10" [label="i10" shape=doubleoctagon  color=dodgerblue2 ];
+	"Vpos" [label="Vpos" shape=doubleoctagon  color=dodgerblue2 ];
+	"c128" [label="{|||||||||||||||||||||||||||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"c113" [label="{|||||||||||||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"i_step_delay_op_25" [label="{||||||||||||||||||||||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"i22v" [label="i22v" shape=doubleoctagon  color=dodgerblue2 ];
+	"i01" [label="i01" shape=doubleoctagon  color=dodgerblue2 ];
+	"i_step_delay_op_25__________" [label="{||||||||||||||||||||||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"i15" [label="i15" shape=doubleoctagon  color=dodgerblue2 ];
+	"i20h_add_op_s_i21h" [label="i20h_add_op_s_i21h:+"  color=dodgerblue2 ];
+	"i00h_add_op_s_i01h" [label="i00h_add_op_s_i01h:+"  color=dodgerblue2 ];
+	"i02h_delay_op_1" [label="{}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"i_step_delay_op_25_____" [label="{||||||||||||||||||||||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"c122" [label="{||||||||||||||||||||||||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"i22" [label="i22" shape=doubleoctagon  color=dodgerblue2 ];
+	"i" [label="i" shape=doubleoctagon  color=dodgerblue2 ];
+	"c118" [label="{|||||||||||||||||||||||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"c107" [label="{||||||||||||||||||||||||||||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"i20h" [label="i20h" shape=doubleoctagon  color=dodgerblue2 ];
+	"c103" [color=bisque4 shape=invtriangle label="0x0"];
+	"i06" [label="i06" shape=doubleoctagon  color=dodgerblue2 ];
+	"output" [label="output" shape=doubleoctagon  color=dodgerblue2 ];
+	"i02vi12v_add_op_s_i22v_delay_op_1" [label="i02vi12v_add_op_s_i22v_delay_op_1:+"  color=dodgerblue2 ];
+	"i00vi10v_add_op_s_i20v_delay_op_1" [label="i00vi10v_add_op_s_i20v_delay_op_1:+"  color=dodgerblue2 ];
+	"i00vi10vi20v_add_op_s_i02vi12vi22v" [label="i00vi10vi20v_add_op_s_i02vi12vi22v:+"  color=dodgerblue2 ];
+	"i20hi21h_add_op_s_i22h_delay_op_1" [label="i20hi21h_add_op_s_i22h_delay_op_1:+"  color=dodgerblue2 ];
+	"c120" [label="{||||||||||||||||||||||||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"i00vi10vi20v" [label="i00vi10vi20v" shape=doubleoctagon  color=dodgerblue2 ];
+	"c124" [label="{|||||||||||||||||||||||||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"i08" [label="i08" shape=doubleoctagon  color=dodgerblue2 ];
+	"i04" [label="i04" shape=doubleoctagon  color=dodgerblue2 ];
+	"c105" [color=bisque4 shape=invtriangle label="0xff"];
+	"i20hi21h" [label="i20hi21h" shape=doubleoctagon  color=dodgerblue2 ];
+	"Otrunk" [label="Otrunk"  color=dodgerblue2 ];
+	"O" [label="O" shape=doubleoctagon  color=dodgerblue2 ];
+	"i17" [label="i17" shape=doubleoctagon  color=dodgerblue2 ];
+	"H" [label="H" shape=doubleoctagon  color=dodgerblue2 ];
+	"c101" [color=bisque4 shape=invtriangle label="0x4e"];
+	"i_step_delay_op_25______" [label="{||||||||||||||||||||||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"i_step_delay_op_25_________" [label="{||||||||||||||||||||||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"i10_add_op_s_i10_neg_op_s" [label="!"  color=dodgerblue2 ];
+	"i20_neg_op_s" [label="!"  color=dodgerblue2 ];
+	"i_step_delay_op_25__" [label="{||||||||||||||||||||||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"i00" [label="i00" shape=doubleoctagon  color=dodgerblue2 ];
+	"i02vi12vi22v" [label="i02vi12vi22v" shape=doubleoctagon  color=dodgerblue2 ];
+	"c129" [label="{||||||||||||||||||||||||||||||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"c114" [label="{|||||||||||||||||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"i01_add_op_s_i01" [label="i01_add_op_s_i01:+"  color=dodgerblue2 ];
+	"i20v" [label="i20v" shape=doubleoctagon  color=dodgerblue2 ];
+	"i14" [label="i14" shape=doubleoctagon  color=dodgerblue2 ];
+	"i00vi10v" [label="i00vi10v" shape=doubleoctagon  color=dodgerblue2 ];
+	"c110" [label="{||||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"c108" [label="{|}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"i11" [label="i11" shape=doubleoctagon  color=dodgerblue2 ];
+	"i00v_add_op_s_i10v" [label="i00v_add_op_s_i10v:+"  color=dodgerblue2 ];
+	"i_step_delay_op_25___________" [label="{||||||||||||||||||||||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"i00hi01h_add_op_s_i02h_delay_op_1" [label="i00hi01h_add_op_s_i02h_delay_op_1:+"  color=dodgerblue2 ];
+	"i02v_add_op_s_i12v" [label="i02v_add_op_s_i12v:+"  color=dodgerblue2 ];
+	"i12_add_op_s_i12" [label="i12_add_op_s_i12:+"  color=dodgerblue2 ];
+	"i21_add_op_s_i21" [label="i21_add_op_s_i21:+"  color=dodgerblue2 ];
+	"i_step_delay_op_25_" [label="{||||||||||||||||||||||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"c127" [label="{||||||||||||||||||||||||||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"i02" [label="i02" shape=doubleoctagon  color=dodgerblue2 ];
+	"c116" [label="{|||||||||||||||||||||||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"c112" [label="{||||||||||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"i20hi21hi22h" [label="i20hi21hi22h" shape=doubleoctagon  color=dodgerblue2 ];
+	"i00v" [label="i00v" shape=doubleoctagon  color=dodgerblue2 ];
+	"Hpos_add_op_s_Vpos" [label="Hpos_add_op_s_Vpos:+"  color=dodgerblue2 ];
+	"V_neg_op_s" [label="!"  color=dodgerblue2 ];
+	"Hpos" [label="Hpos" shape=doubleoctagon  color=dodgerblue2 ];
+	"V" [label="V" shape=doubleoctagon  color=dodgerblue2 ];
+	"i00hi01hi02h" [label="i00hi01hi02h" shape=doubleoctagon  color=dodgerblue2 ];
+	"i20" [label="i20" shape=doubleoctagon  color=dodgerblue2 ];
+	"init" [color=bisque4 shape=invtriangle label="init"];
+
+	// Signals (Edges)
+	"c126" -> "Hpos"
+	"c100" -> "i"
+	"i" -> "c119":input
+	"i22v" -> "i22v_delay_op_1":input
+	"i15" -> "i14"
+	"i00hi01h" -> "i00hi01h_add_op_s_i02h_delay_op_1"
+	"i11" -> "i10"
+	"i02v" -> "i02v_add_op_s_i12v"
+	"V_if_lt_op_s_0" -> "Vpos"
+	"i00hi01hi02h" -> "i00hi01hi02h_add_op_s_i20hi21hi22h"
+	"c128" -> "O"
+	"i" -> "i_step_delay_op_25____":input
+	"i01" -> "i01_add_op_s_i01"
+	"i01_add_op_s_i01_neg_op_s" -> "i01h"
+	"i_step_delay_op_25________" -> "i20v"
+	"Vpos" -> "Hpos_add_op_s_Vpos"
+	"V" -> "Vpos"
+	"O" -> "Otrunk"
+	"i17" -> "i16"
+	"i" -> "c117":input
+	"i" -> "c116":input
+	"i12" -> "i12_add_op_s_i12"
+	"i02" -> "i02v"
+	"i" -> "i_step_delay_op_25__________":input
+	"i13" -> "i12"
+	"i" -> "c118":input
+	"i09" -> "i08"
+	"c125" -> "V"
+	"i02v_add_op_s_i12v" -> "i02vi12v"
+	"i" -> "c120":input
+	"i00_neg_op_s" -> "i00h"
+	"i22v_delay_op_1" -> "i02vi12v_add_op_s_i22v_delay_op_1"
+	"c103" -> "V_if_lt_op_s_0"
+	"i01_add_op_s_i01" -> "i01_add_op_s_i01_neg_op_s"
+	"c127" -> "Vpos"
+	"i00hi01hi02h_add_op_s_i20hi21hi22h" -> "H"
+	"i00" -> "i00_neg_op_s_"
+	"i22" -> "i22h"
+	"i_step_delay_op_25____" -> "i21h"
+	"i00_neg_op_s_" -> "i00v"
+	"c107" -> "output"
+	"c108" -> "i22"
+	"c109" -> "i20"
+	"c110" -> "i17"
+	"i00v_add_op_s_i10v" -> "i00vi10v"
+	"i21h" -> "i20h_add_op_s_i21h"
+	"i04" -> "i03"
+	"i00" -> "i00_neg_op_s"
+	"i20v" -> "i20v_delay_op_1":input
+	"c129" -> "done"
+	"c124" -> "H"
+	"i" -> "i_step_delay_op_25__":input
+	"c102" -> "H_if_lt_op_s_0"
+	"O" -> "O_if_gt_op_s_255"
+	"i20" -> "i20h"
+	"H" -> "Hpos"
+	"i_step_delay_op_25_______" -> "i10v"
+	"i" -> "i_step_delay_op_25_______":input
+	"i10" -> "i10_add_op_s_i10"
+	"i" -> "i_step_delay_op_25________":input
+	"i" -> "c112":input
+	"i" -> "c113":input
+	"i19" -> "i18"
+	"i21" -> "i20"
+	"input" -> "i22"
+	"c101" -> "i"
+	"i" -> "c115":input
+	"i" -> "c114":input
+	"i02h_delay_op_1" -> "i00hi01h_add_op_s_i02h_delay_op_1"
+	"i22h" -> "i22h_delay_op_1":input
+	"c123" -> "i02vi12vi22v"
+	"i00vi10vi20v_add_op_s_i02vi12vi22v" -> "V"
+	"i20v_delay_op_1" -> "i00vi10v_add_op_s_i20v_delay_op_1"
+	"i06" -> "i05"
+	"i02" -> "i01"
+	"i22h_delay_op_1" -> "i20hi21h_add_op_s_i22h_delay_op_1"
+	"c105" -> "Otrunk"
+	"H_if_lt_op_s_0" -> "Hpos"
+	"i_step_delay_op_25______" -> "i00v"
+	"i21" -> "i21_add_op_s_i21"
+	"i_step_delay_op_25__" -> "i02h"
+	"i" -> "i_step_delay_op_25___________":input
+	"output" -> "result"
+	"Otrunk" -> "output"
+	"c106" -> "output"
+	"i08" -> "i07"
+	"c121" -> "i20hi21hi22h"
+	"c120" -> "i00hi01hi02h"
+	"i01h" -> "i00h_add_op_s_i01h"
+	"i_step_delay_op_25___________" -> "i22v"
+	"c122" -> "i00vi10vi20v"
+	"i00v" -> "i00v_add_op_s_i10v"
+	"i" -> "c108":input
+	"i20_neg_op_s" -> "i20v"
+	"Hpos" -> "Hpos_add_op_s_Vpos"
+	"i" -> "i_step_delay_op_25______":input
+	"i" -> "i_step_delay_op_25_____":input
+	"V" -> "V_neg_op_s"
+	"i" -> "c128":input
+	"i00vi10vi20v" -> "i00vi10vi20v_add_op_s_i02vi12vi22v"
+	"i_step_delay_op_25" -> "i00h"
+	"i02vi12v_add_op_s_i22v_delay_op_1" -> "i02vi12vi22v"
+	"i" -> "i_step_delay_op_25_":input
+	"i" -> "c126":input
+	"i" -> "i_step_delay_op_25":input
+	"i" -> "c125":input
+	"i12v" -> "i02v_add_op_s_i12v"
+	"i20h_add_op_s_i21h" -> "i20hi21h"
+	"i" -> "c127":input
+	"i02h" -> "i02h_delay_op_1":input
+	"i" -> "c111":input
+	"i20h" -> "i20h_add_op_s_i21h"
+	"i" -> "c110":input
+	"i" -> "c109":input
+	"V_neg_op_s" -> "Vpos"
+	"i" -> "c107":input
+	"i_step_delay_op_25_____" -> "i22h"
+	"Hpos_add_op_s_Vpos" -> "O"
+	"i01" -> "i01_add_op_s_i01"
+	"i_step_delay_op_25_" -> "i01h"
+	"i20hi21hi22h" -> "i00hi01hi02h_add_op_s_i20hi21hi22h"
+	"init" -> "i"
+	"i21_add_op_s_i21" -> "i21h"
+	"i12" -> "i11"
+	"i16" -> "i15"
+	"i10" -> "i09"
+	"i14" -> "i13"
+	"c118" -> "i20hi21h"
+	"c119" -> "i02vi12v"
+	"i02vi12v" -> "i02vi12v_add_op_s_i22v_delay_op_1"
+	"i00vi10v_add_op_s_i20v_delay_op_1" -> "i00vi10vi20v"
+	"i" -> "i_step_delay_op_25_________":input
+	"i12_add_op_s_i12" -> "i12v"
+	"i_step_delay_op_25_________" -> "i02v"
+	"c117" -> "i00vi10v"
+	"c116" -> "i00hi01h"
+	"i12" -> "i12_add_op_s_i12"
+	"c111" -> "i14"
+	"i10_add_op_s_i10_neg_op_s" -> "i10v"
+	"i" -> "c106":input
+	"i" -> "i_step_delay_op_25___":input
+	"i21" -> "i21_add_op_s_i21"
+	"O_if_gt_op_s_255" -> "Otrunk"
+	"H_neg_op_s" -> "Hpos"
+	"i10" -> "i10_add_op_s_i10"
+	"i01" -> "i00"
+	"i07" -> "i06"
+	"i05" -> "i04"
+	"i" -> "c123":input
+	"i" -> "c124":input
+	"H" -> "H_if_lt_op_s_0"
+	"i02vi12vi22v" -> "i00vi10vi20v_add_op_s_i02vi12vi22v"
+	"i03" -> "i02"
+	"i00h" -> "i00h_add_op_s_i01h"
+	"i22" -> "i22v"
+	"i10v" -> "i00v_add_op_s_i10v"
+	"i" -> "c122":input
+	"i" -> "c121":input
+	"i00h_add_op_s_i01h" -> "i00hi01h"
+	"c112" -> "i11"
+	"i_step_delay_op_25__________" -> "i12v"
+	"i20" -> "i20_neg_op_s"
+	"i10_add_op_s_i10" -> "i10_add_op_s_i10_neg_op_s"
+	"c104" -> "O_if_gt_op_s_255"
+	"i02_neg_op_s" -> "i02h"
+	"V" -> "V_if_lt_op_s_0"
+	"H" -> "H_neg_op_s"
+	"i_step_delay_op_25___" -> "i20h"
+	"i02" -> "i02_neg_op_s"
+	"i" -> "c129":input
+	"i20hi21h_add_op_s_i22h_delay_op_1" -> "i20hi21hi22h"
+	"i20hi21h" -> "i20hi21h_add_op_s_i22h_delay_op_1"
+	"i00vi10v" -> "i00vi10v_add_op_s_i20v_delay_op_1"
+	"c115" -> "i02"
+	"i00hi01h_add_op_s_i02h_delay_op_1" -> "i00hi01hi02h"
+	"c114" -> "i04"
+	"c113" -> "i08"
+	"i18" -> "i17"
+	"i20" -> "i19"
+	"i22" -> "i21"
+	"i" -> "input"
+}

@@ -1,0 +1,11 @@
+Benchmark;Combinational ALUTs;Memory ALUTs;Dedicated logic registers;Total registers;Total pins;Total virtual pins;Total block memory bits;DSP block 18-bit elements;Total GXB Receiver Channel PCS;Total GXB Receiver Channel PMA;Total GXB Transmitter Channel PCS;Total GXB Transmitter Channel PMA;Total PLLs;Total DLLs;900mV -40C Fmax;900mV -40C Restricted Fmax;900mV 100C Fmax;900mV 100C Restricted Fmax
+dotprod10;71;0;320;320;37;0;131,135;4;0;0;0;0;0;0;140.71;140.71;135.48;135.48
+dotprod1;52;0;67;67;37;0;131,072;4;0;0;0;0;0;0;135.83;135.83;131.16;131.16
+dotprod2;52;0;101;101;37;0;131,072;4;0;0;0;0;0;0;140.71;140.71;134.81;134.81
+dotprod3;52;0;135;135;37;0;131,072;4;0;0;0;0;0;0;137.89;137.89;132.89;132.89
+dotprod4;52;0;169;169;37;0;131,072;4;0;0;0;0;0;0;141.84;141.84;136.02;136.02
+dotprod5;52;0;203;203;37;0;131,072;4;0;0;0;0;0;0;138.1;138.1;133.3;133.3
+dotprod6;70;0;210;210;37;0;131,107;4;0;0;0;0;0;0;136.24;136.24;130.75;130.75
+dotprod7;68;0;237;237;37;0;131,114;4;0;0;0;0;0;0;139.1;139.1;133.44;133.44
+dotprod8;70;0;264;264;37;0;131,121;4;0;0;0;0;0;0;138.33;138.33;133.3;133.3
+dotprod9;60;0;289;289;37;0;131,128;4;0;0;0;0;0;0;140.04;140.04;134.61;134.61
