@@ -1,0 +1,2 @@
+vhdl work ../../NenyaBehaLib.vhd
+vhdl work ../src/vecsum_asynchronous.vhd

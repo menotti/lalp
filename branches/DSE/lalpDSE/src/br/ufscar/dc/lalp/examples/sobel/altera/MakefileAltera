@@ -1,0 +1,12 @@
+all:	
+	quartus_map $(PROJECT) --source=../../src/$(PROJECT).vhd --source=../../src/memory.vhd --source=../../../NenyaBehaLib.vhd --family="ArriaII"
+	quartus_fit $(PROJECT) --part=EP2AGX45DF29I5
+	quartus_sta $(PROJECT)
+	echo $(PROJECT) > $(PROJECT)Report.csv
+	egrep $(ALTERA_DATA) $(PROJECT).flow.rpt | sed 's/18-// ; s/;//g ; s/[a-z]//Ig ; s/\/.*//g ; s/ //g' >> $(PROJECT)Report.csv
+	sed '/; Slow $(VOLTAGE) $(MIN_TEMPERATURE) Model Fmax Summary/,+5!d' $(PROJECT).sta.rpt | sed '/+/d ; /Fmax/d ; s/; clk.*// ; s/ *//g ; s/MHz//g ; s/;//' >> $(PROJECT)Report.csv
+	sed '/; Slow $(VOLTAGE) $(MAX_TEMPERATURE) Model Fmax Summary/,+5!d' $(PROJECT).sta.rpt | sed '/+/d ; /Fmax/d ; s/; clk.*// ; s/ *//g ; s/MHz//g ; s/;//' >> $(PROJECT)Report.csv
+	sed ':begin ; $$ b end ; $$! N ; s/\n/;/ ; b begin ; :end' $(PROJECT)Report.csv > temp2.txt
+	sed 's/--.*//g' temp2.txt > $(PROJECT)Report.csv
+	cat $(PROJECT)Report.csv >> ../../../alteraReport.csv
+	rm temp2.txt

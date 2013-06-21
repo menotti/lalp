@@ -1,0 +1,81 @@
+digraph matmult {
+	// Components (Nodes)
+	node [shape=ellipse, style=filled, color=dodgerblue2];
+	"result" [color=bisque4 shape=invtriangle label="result"];
+	"c22" [color=bisque4 shape=invtriangle label="0x0"];
+	"c26" [color=bisque4 shape=invtriangle label="0x3"];
+	"i" [label="i" shape=doubleoctagon  color=dodgerblue2 ];
+	"a" [label="a" shape=doubleoctagon  color=dodgerblue2 ];
+	"c30" [color=bisque4 shape=invtriangle label="0x5"];
+	"c29" [color=bisque4 shape=invtriangle label="0x14"];
+	"c33" [label="{|}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"c27" [color=bisque4 shape=invtriangle label="0x1"];
+	"c25" [color=bisque4 shape=invtriangle label="0x19"];
+	"reg" [label="reg" shape=doubleoctagon  color=dodgerblue2 ];
+	"m_add_op_s_5" [label="m_add_op_s_5:+"  color=dodgerblue2 ];
+	"c23" [color=bisque4 shape=invtriangle label="0x19"];
+	"j" [label="j" shape=doubleoctagon  color=dodgerblue2 ];
+	"addra" [label="addra" shape=doubleoctagon  color=dodgerblue2 ];
+	"addrb" [label="addrb" shape=doubleoctagon  color=dodgerblue2 ];
+	"m_plus_5" [label="m_plus_5" shape=doubleoctagon  color=dodgerblue2 ];
+	"done" [color=bisque4 shape=invtriangle label="done"];
+	"sum" [label="sum" shape=doubleoctagon  color=dodgerblue2 ];
+	"l_if_gt_op_s_3" [label="l_if_gt_op_s_3:>"  color=dodgerblue2 ];
+	"l_add_op_s_20" [label="l_add_op_s_20:+"  color=dodgerblue2 ];
+	"c24" [color=bisque4 shape=invtriangle label="0x0"];
+	"c31" [label="{}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"c28" [color=bisque4 shape=invtriangle label="0x0"];
+	"c32" [label="{||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"b" [label="b" shape=doubleoctagon  color=dodgerblue2 ];
+	"l_plus_20" [label="l_plus_20" shape=doubleoctagon  color=dodgerblue2 ];
+	"s" [label="s" shape=doubleoctagon  color=dodgerblue2 ];
+	"addrs" [label="addrs" shape=doubleoctagon  color=dodgerblue2 ];
+	"l_add_op_s_1" [label="l_add_op_s_1:+"  color=dodgerblue2 ];
+	"k" [label="k" shape=doubleoctagon  color=dodgerblue2 ];
+	"l" [label="l" shape=doubleoctagon  color=dodgerblue2 ];
+	"m" [label="m" shape=doubleoctagon  color=dodgerblue2 ];
+	"init" [color=bisque4 shape=invtriangle label="init"];
+
+	// Signals (Edges)
+	"c22" -> "m"
+	"m" -> "i"
+	"m" -> "m_add_op_s_5"
+	"k" -> "l"
+	"c27" -> "l_add_op_s_1"
+	"k" -> "c33":input
+	"c31" -> "sum"
+	"c33" -> "addrs"
+	"i" -> "addra"
+	"addrb" -> "b"
+	"m" -> "m_plus_5"
+	"addra" -> "a"
+	"c30" -> "m_add_op_s_5"
+	"k" -> "i"
+	"l" -> "l_add_op_s_20"
+	"l_add_op_s_20" -> "l_plus_20"
+	"m_plus_5" -> "i" [style=dashed];
+	"k" -> "j"
+	"l_plus_20" -> "j" [style=dashed];
+	"init" -> "k"
+	"c24" -> "k"
+	"c23" -> "m"
+	"c26" -> "l_if_gt_op_s_3"
+	"c28" -> "reg"
+	"c29" -> "l_add_op_s_20"
+	"init" -> "i"
+	"j" -> "addrb"
+	"m_add_op_s_5" -> "m_plus_5"
+	"s" -> "result"
+	"i" -> "c32":input
+	"c32" -> "done"
+	"l" -> "l_add_op_s_1"
+	"i" -> "c31":input
+	"reg" -> "l" [style=dashed];
+	"l_if_gt_op_s_3" -> "reg"
+	"l" -> "l_if_gt_op_s_3"
+	"l_add_op_s_1" -> "reg"
+	"init" -> "j"
+	"l" -> "j" [style=dashed];
+	"c25" -> "k"
+	"init" -> "m"
+}

@@ -1,0 +1,361 @@
+{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf430
+{\fonttbl\f0\fnil\fcharset0 Monaco;}
+{\colortbl;\red255\green255\blue255;\red127\green0\blue85;\red0\green0\blue192;\red63\green127\blue95;
+}
+\paperw11900\paperh16840\margl1440\margr1440\vieww18560\viewh12840\viewkind0
+\deftab720
+\pard\pardeftab720\ql\qnatural
+
+\f0\fs22 \cf2 \
+\pard\pardeftab720\ql\qnatural
+\cf0 ALPParser\
+	\cf2 protected\cf0  JJTALPParserState \cf3 jjtree\cf0  = \cf2 new\cf0  JJTALPParserState();\
+	\cf2 public\cf0  Design \cf3 design\cf0 ;\
+	\cf2 public\cf0  Hashtable<String, Object> \cf3 allPins\cf0  = \cf2 new\cf0  Hashtable<String, Object>(); \cf4 //Pin\cf0 \
+	\cf2 public\cf0  Hashtable<String, Integer> \cf3 allConsts\cf0  = \cf2 new\cf0  Hashtable<String, Integer>(); \cf4 //Const\cf0 \
+	\cf2 public\cf0  Hashtable<String, Integer> \cf3 allTypedefs\cf0  = \cf2 new\cf0  Hashtable<String, Integer>(); \cf4 //Typedef\cf0 \
+	\cf2 public\cf0  Hashtable<String, Object> \cf3 allVariables\cf0  = \cf2 new\cf0  Hashtable<String, Object>(); \cf4 //Variable\cf0 \
+\
+\
+SimpleNode\
+	\cf2 protected\cf0  Node \cf3 parent\cf0 ;\
+	\cf2 protected\cf0  Node[] \cf3 children\cf0 ;\
+	\cf2 public\cf0  \cf2 int\cf0  \cf3 id\cf0 ;\
+	\cf2 protected\cf0  Object \cf3 value\cf0 ; \cf4 //Const/Variable/Literal\cf0 \
+	\cf2 protected\cf0  ALPParser \cf3 parser\cf0 ;\
+	\cf4 // custom attributes\cf0 \
+	\cf2 protected\cf0  String \cf3 identifier\cf0  = \cf2 null\cf0 ; \cf4 //Start/Name/Const/Typedef/Pin/Variable/Counter\cf0 \
+	\cf2 protected\cf0  String \cf3 port\cf0  = \cf2 null\cf0 ; \cf4 //Name\cf0 \
+	\cf2 protected\cf0  Integer \cf3 arraySize\cf0  = \cf2 null\cf0 ; \cf4 //Variable\cf0 \
+	\cf2 protected\cf0  Integer \cf3 width\cf0  = \cf2 null\cf0 ; \cf4 //Typedef/Pin/Variable\cf0 \
+	\cf2 protected\cf0  Integer \cf3 stepDelay\cf0  = \cf2 null\cf0 ; \cf4 //Counter/Delay\cf0 \
+	\cf2 protected\cf0  Class \cf3 componentClass\cf0  = \cf2 null\cf0 ; \cf4 //Expression(s)\cf0 \
+	\cf2 protected\cf0  PortType \cf3 portType\cf0  = \cf2 null\cf0 ; \cf4 //Pin\cf0 \
+	\cf2 protected\cf0  Token \cf3 token\cf0  = \cf2 null\cf0 ; \cf4 //Variable\cf0 \
+	\cf4 // Counter attributes\cf0 \
+	\cf2 protected\cf0  Object \cf3 counterLoad\cf0  = \cf2 null\cf0 ; \cf4 // const or component name\cf0 \
+	\cf2 protected\cf0  String \cf3 counterIncrementOperation\cf0  = \cf2 null\cf0 ; \cf4 // ++ -- += -=\cf0 \
+	\cf2 protected\cf0  Integer \cf3 counterIncrement\cf0  = \cf2 null\cf0 ; \
+	\cf2 protected\cf0  String \cf3 counterTerminationCondition\cf0  = \cf2 null\cf0 ; \cf4 // < <= > >= == !=\cf0 \
+	\cf2 protected\cf0  Object \cf3 counterTermination\cf0  = \cf2 null\cf0 ;\
+	\cf2 protected\cf0  \cf2 boolean\cf0  \cf3 counterDown\cf0  = \cf2 false\cf0 ;\
+	\cf4 // used?\cf0 \
+	\cf2 protected\cf0  Component \cf3 component\cf0  = \cf2 null\cf0 ;\
+	\cf2 protected\cf0  Connections \cf3 connections\cf0  = \cf2 null\cf0 ;\
+\
+	\cf2 public\cf0  \cf2 static\cf0  Hashtable<String, SimpleNode> \cf3 allOperations\cf0  = \cf2 new\cf0  Hashtable<String, SimpleNode>();\
+	\cf2 public\cf0  \cf2 static\cf0  Hashtable<String, Component> \cf3 allComponents\cf0  = \cf2 new\cf0  Hashtable<String, Component>();\
+	\cf2 public\cf0  \cf2 static\cf0  Hashtable<String, Vector<SimpleNode>> \cf3 allAccess\cf0  = \cf2 new\cf0  Hashtable<String, Vector<SimpleNode>>();\
+\
+\
+\pard\pardeftab720
+\cf0 Reading from file src/loop/designs/basic/teste.alp...\
+SimpleNode root:\
+parsing: Start:teste\
+parsing: .Const:DATA_WIDTH=32\
+parsing: .Const:ADDRESS_WIDTH=10\
+parsing: .Const:ITERATIONS=1024\
+parsing: .Typedef:int<32>\
+parsing: .Typedef:bool<1>\
+parsing: .Pin:init<1>:INPUT\
+parsing: .Pin:done<1>:OUTPUT\
+parsing: .Variable:i<32>\
+parsing: .Variable:x<32>\
+parsing: .Variable:y<32>\
+parsing: .Variable:a<32>[10]\
+parsing: .Assignment:=\
+parsing: ..LHS:i.clk_en\
+parsing: ..RHS\
+parsing: ...Expression\
+parsing: ....DelayExpression\
+parsing: .....ConditionalExpression\
+parsing: ......ConditionalOrExpression\
+parsing: .......ConditionalAndExpression\
+parsing: ........InclusiveOrExpression\
+parsing: .........ExclusiveOrExpression\
+parsing: ..........AndExpression\
+parsing: ...........EqualityExpression\
+parsing: ............RelationalExpression\
+parsing: .............ShiftExpression\
+parsing: ..............AdditiveExpression\
+parsing: ...............MultiplicativeExpression\
+parsing: ................UnaryExpression\
+parsing: .................UnaryExpressionNotPlusMinus\
+parsing: ..................PostfixExpression\
+parsing: ...................PrimaryExpression\
+parsing: ....................Name:init\
+parsing: .Counter:class loop.components.counter:i<32>=0; i<1024; i++1@1\
+parsing: .Assignment:=\
+parsing: ..LHS:a.address\
+parsing: ..RHS\
+parsing: ...Expression\
+parsing: ....DelayExpression\
+parsing: .....ConditionalExpression\
+parsing: ......ConditionalOrExpression\
+parsing: .......ConditionalAndExpression\
+parsing: ........InclusiveOrExpression\
+parsing: .........ExclusiveOrExpression\
+parsing: ..........AndExpression\
+parsing: ...........EqualityExpression\
+parsing: ............RelationalExpression\
+parsing: .............ShiftExpression\
+parsing: ..............AdditiveExpression\
+parsing: ...............MultiplicativeExpression\
+parsing: ................UnaryExpression\
+parsing: .................UnaryExpressionNotPlusMinus\
+parsing: ..................PostfixExpression\
+parsing: ...................PrimaryExpression\
+parsing: ....................Name:i\
+parsing: .Assignment:=\
+parsing: ..LHS:x\
+parsing: ..RHS\
+parsing: ...Expression\
+parsing: ....DelayExpression\
+parsing: .....ConditionalExpression\
+parsing: ......ConditionalOrExpression\
+parsing: .......ConditionalAndExpression\
+parsing: ........InclusiveOrExpression\
+parsing: .........ExclusiveOrExpression\
+parsing: ..........AndExpression\
+parsing: ...........EqualityExpression\
+parsing: ............RelationalExpression\
+parsing: .............ShiftExpression\
+parsing: ..............AdditiveExpression\
+parsing: ...............MultiplicativeExpression\
+parsing: ................UnaryExpression\
+parsing: .................UnaryExpressionNotPlusMinus\
+parsing: ..................PostfixExpression\
+parsing: ...................PrimaryExpression\
+parsing: ....................Name:a.data_out\
+parsing: .Assignment:=\
+parsing: ..LHS:y\
+parsing: ..RHS\
+parsing: ...Expression\
+parsing: ....DelayExpression\
+parsing: .....ConditionalExpression:class loop.components.reg_mux_op:x_if_lt_op_s_0_reg_mux_op_x\
+parsing: ......ConditionalOrExpression\
+parsing: .......ConditionalAndExpression\
+parsing: ........InclusiveOrExpression\
+parsing: .........ExclusiveOrExpression\
+parsing: ..........AndExpression\
+parsing: ...........EqualityExpression\
+parsing: ............RelationalExpression:class loop.components.if_lt_op_s:x_if_lt_op_s_0\
+parsing: .............ShiftExpression\
+parsing: ..............AdditiveExpression\
+parsing: ...............MultiplicativeExpression\
+parsing: ................UnaryExpression\
+parsing: .................UnaryExpressionNotPlusMinus\
+parsing: ..................PostfixExpression\
+parsing: ...................PrimaryExpression\
+parsing: ....................Name:x\
+parsing: .............ShiftExpression\
+parsing: ..............AdditiveExpression\
+parsing: ...............MultiplicativeExpression\
+parsing: ................UnaryExpression\
+parsing: .................UnaryExpressionNotPlusMinus\
+parsing: ..................PostfixExpression\
+parsing: ...................PrimaryExpression\
+parsing: ....................Literal=0\
+parsing: ......Expression\
+parsing: .......DelayExpression\
+parsing: ........ConditionalExpression\
+parsing: .........ConditionalOrExpression\
+parsing: ..........ConditionalAndExpression\
+parsing: ...........InclusiveOrExpression\
+parsing: ............ExclusiveOrExpression\
+parsing: .............AndExpression\
+parsing: ..............EqualityExpression\
+parsing: ...............RelationalExpression\
+parsing: ................ShiftExpression\
+parsing: .................AdditiveExpression\
+parsing: ..................MultiplicativeExpression\
+parsing: ...................UnaryExpression\
+parsing: ....................UnaryExpressionNotPlusMinus\
+parsing: .....................PostfixExpression\
+parsing: ......................PrimaryExpression\
+parsing: .......................Name:x\
+parsing: ......Expression\
+parsing: .......DelayExpression\
+parsing: ........ConditionalExpression\
+parsing: .........ConditionalOrExpression\
+parsing: ..........ConditionalAndExpression\
+parsing: ...........InclusiveOrExpression\
+parsing: ............ExclusiveOrExpression\
+parsing: .............AndExpression\
+parsing: ..............EqualityExpression\
+parsing: ...............RelationalExpression\
+parsing: ................ShiftExpression\
+parsing: .................AdditiveExpression\
+parsing: ..................MultiplicativeExpression\
+parsing: ...................UnaryExpression\
+parsing: ....................UnaryExpressionNotPlusMinus\
+parsing: .....................PostfixExpression\
+parsing: ......................PrimaryExpression\
+parsing: .......................Literal=0\
+parsing: ..When\
+parsing: ...Expression\
+parsing: ....DelayExpression\
+parsing: .....ConditionalExpression\
+parsing: ......ConditionalOrExpression\
+parsing: .......ConditionalAndExpression\
+parsing: ........InclusiveOrExpression\
+parsing: .........ExclusiveOrExpression\
+parsing: ..........AndExpression\
+parsing: ...........EqualityExpression\
+parsing: ............RelationalExpression\
+parsing: .............ShiftExpression\
+parsing: ..............AdditiveExpression\
+parsing: ...............MultiplicativeExpression\
+parsing: ................UnaryExpression\
+parsing: .................UnaryExpressionNotPlusMinus\
+parsing: ..................PostfixExpression\
+parsing: ...................PrimaryExpression\
+parsing: ....................Name:init\
+parsing: .Assignment:+=\
+parsing: ..LHS:x\
+parsing: ..RHS\
+parsing: ...Expression\
+parsing: ....DelayExpression\
+parsing: .....ConditionalExpression\
+parsing: ......ConditionalOrExpression\
+parsing: .......ConditionalAndExpression\
+parsing: ........InclusiveOrExpression\
+parsing: .........ExclusiveOrExpression\
+parsing: ..........AndExpression\
+parsing: ...........EqualityExpression\
+parsing: ............RelationalExpression\
+parsing: .............ShiftExpression\
+parsing: ..............AdditiveExpression\
+parsing: ...............MultiplicativeExpression:class loop.components.mult_op_s:y_mult_op_s_y\
+parsing: ................UnaryExpression\
+parsing: .................UnaryExpressionNotPlusMinus\
+parsing: ..................PostfixExpression\
+parsing: ...................PrimaryExpression\
+parsing: ....................Name:y\
+parsing: ................UnaryExpression\
+parsing: .................UnaryExpressionNotPlusMinus\
+parsing: ..................PostfixExpression\
+parsing: ...................PrimaryExpression\
+parsing: ....................Name:y\
+parsing: ..When\
+parsing: ...Expression\
+parsing: ....DelayExpression\
+parsing: .....ConditionalExpression\
+parsing: ......ConditionalOrExpression\
+parsing: .......ConditionalAndExpression\
+parsing: ........InclusiveOrExpression\
+parsing: .........ExclusiveOrExpression\
+parsing: ..........AndExpression\
+parsing: ...........EqualityExpression\
+parsing: ............RelationalExpression\
+parsing: .............ShiftExpression\
+parsing: ..............AdditiveExpression\
+parsing: ...............MultiplicativeExpression\
+parsing: ................UnaryExpression\
+parsing: .................UnaryExpressionNotPlusMinus\
+parsing: ..................PostfixExpression\
+parsing: ...................PrimaryExpression\
+parsing: ....................Name:init\
+parsing: .Assignment:=\
+parsing: ..LHS:done\
+parsing: ..RHS\
+parsing: ...Expression\
+parsing: ....DelayExpression\
+parsing: .....ConditionalExpression\
+parsing: ......ConditionalOrExpression\
+parsing: .......ConditionalAndExpression\
+parsing: ........InclusiveOrExpression\
+parsing: .........ExclusiveOrExpression\
+parsing: ..........AndExpression\
+parsing: ...........EqualityExpression\
+parsing: ............RelationalExpression\
+parsing: .............ShiftExpression\
+parsing: ..............AdditiveExpression\
+parsing: ...............MultiplicativeExpression\
+parsing: ................UnaryExpression\
+parsing: .................UnaryExpressionNotPlusMinus\
+parsing: ..................PostfixExpression\
+parsing: ...................PrimaryExpression\
+parsing: ....................Name:i.done\
+\
+SimpleNode connections:\
+parsing: .Assignment:=\
+parsing: .1LHS:i.clk_en\
+parsing: .2Name:init\
+parsing: .Counter:class loop.components.counter:i<32>=0; i<1024; i++1@1\
+parsing: .1Counter:class loop.components.counter:i<32>=0; i<1024; i++1@1\
+parsing: .Assignment:=\
+parsing: .1LHS:a.address\
+parsing: .2Name:i\
+parsing: .Assignment:=\
+parsing: .1LHS:x\
+parsing: .2Name:a.data_out\
+parsing: .Assignment:=\
+parsing: .1LHS:y\
+parsing: .2ConditionalExpression:class loop.components.reg_mux_op:x_if_lt_op_s_0_reg_mux_op_x\
+parsing: .3Name:init\
+parsing: .....ConditionalExpression:class loop.components.reg_mux_op:x_if_lt_op_s_0_reg_mux_op_x\
+parsing: .....1RelationalExpression:class loop.components.if_lt_op_s:x_if_lt_op_s_0\
+parsing: .....2Name:x\
+parsing: .....3Literal=0\
+parsing: ............RelationalExpression:class loop.components.if_lt_op_s:x_if_lt_op_s_0\
+parsing: ............1Name:x\
+parsing: ............2Literal=0\
+parsing: .Assignment:+=\
+parsing: .1LHS:x\
+parsing: .2MultiplicativeExpression:class loop.components.mult_op_s:y_mult_op_s_y\
+parsing: .3Name:init\
+parsing: ...............MultiplicativeExpression:class loop.components.mult_op_s:y_mult_op_s_y\
+parsing: ...............1Name:y\
+parsing: ...............2Name:y\
+parsing: .Assignment:=\
+parsing: .1LHS:done\
+parsing: .2Name:i.done\
+\
+Hashtable<String,Integer> allConsts\
+ADDRESS_WIDTH=10\
+ITERATIONS=1024\
+DATA_WIDTH=32\
+\
+Hashtable<String,Integer> allTypedefs\
+bool=1\
+int=32\
+\
+Hashtable<String,Object> allPins\
+done=Pin:done<1>:OUTPUT\
+init=Pin:init<1>:INPUT\
+\
+Hashtable<String,Object> allVariables\
+x=Variable:x<32>\
+a=Variable:a<32>[10]\
+i=Variable:i<32>\
+y=Variable:y<32>\
+\
+Hashtable<String,SimpleNode> allAccess\
+x:4\
+	LHS:x\
+	Name:x\
+	Name:x\
+	LHS:x\
+done:1\
+	LHS:done\
+a:2\
+	LHS:a.address\
+	Name:a.data_out\
+i:4\
+	LHS:i.clk_en\
+	Counter:class loop.components.counter:i<32>=0; i<1024; i++1@1\
+	Name:i\
+	Name:i.done\
+init:3\
+	Name:init\
+	Name:init\
+	Name:init\
+y:3\
+	LHS:y\
+	Name:y\
+	Name:y\
+Ok!\
+Generating Graphviz Software Representation...Ok!\
+Generating Graphviz Hardware Representation...Ok!\
+}

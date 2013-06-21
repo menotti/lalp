@@ -1,0 +1,1117 @@
+/* Copyright (c) 2009 João M. P. Cardoso <jmpc@acm.org>, All Rights Reserved.
+ * Copyright (c) 2009 Ricardo Menotti <ricardomenotti@acm.org>, All Rights Reserved.
+ *
+ * Permission to use, copy, modify, and distribute this software and its 
+ * documentation for NON-COMERCIAL purposes and without fee is hereby granted 
+ * provided that this copyright notice appears in all copies.
+ *
+ * RICARDO MENOTTI MAKES NO REPRESENTATIONS OR WARRANTIES ABOUT THE SUITABILITY
+ * OF THE SOFTWARE, EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE 
+ * IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, OR 
+ * NON-INFRINGEMENT. RICARDO MENOTTI SHALL NOT BE LIABLE FOR ANY DAMAGES 
+ * SUFFERED BY LICENSEE AS A RESULT OF USING, MODIFYING OR DISTRIBUTING THIS 
+ * SOFTWARE OR ITS DERIVATIVES. 
+ */
+
+options {
+    LOOKAHEAD=1;
+    IGNORE_CASE=true;
+    STATIC = false;
+    NODE_USES_PARSER=true;
+}
+
+//TODO check duplicated Variable/Pin names
+
+PARSER_BEGIN(ALPParser)
+/* Copyright (c) 2009 João M. P. Cardoso <jmpc@acm.org>, All Rights Reserved.
+ * Copyright (c) 2009 Ricardo Menotti <ricardomenotti@acm.org>, All Rights Reserved.
+ *
+ * Permission to use, copy, modify, and distribute this software and its 
+ * documentation for NON-COMERCIAL purposes and without fee is hereby granted 
+ * provided that this copyright notice appears in all copies.
+ *
+ * RICARDO MENOTTI MAKES NO REPRESENTATIONS OR WARRANTIES ABOUT THE SUITABILITY
+ * OF THE SOFTWARE, EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE 
+ * IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, OR 
+ * NON-INFRINGEMENT. RICARDO MENOTTI SHALL NOT BE LIABLE FOR ANY DAMAGES 
+ * SUFFERED BY LICENSEE AS A RESULT OF USING, MODIFYING OR DISTRIBUTING THIS 
+ * SOFTWARE OR ITS DERIVATIVES. 
+ */
+
+package br.ufscar.dc.lalp.parser.lang;
+
+import java.util.*;
+
+import br.ufscar.dc.lalp.core.*;
+import br.ufscar.dc.lalp.core.Process;
+import br.ufscar.dc.lalp.components.*;
+
+/**
+ * @author <a href="mailto:ricardomenotti@acm.org">Ricardo Menotti</a>
+ * @author <a href="http://menotti.pro.br/">Author Page</a>
+ * @author <a href="http://www.dc.ufscar.br/">DC UFSCar</a>
+ * @version January, 2009
+ */
+ 
+@SuppressWarnings("unchecked") 
+public class ALPParser {
+
+	public Vector<Design> design = new Vector<Design>();
+	public Hashtable<String, Integer> allConsts = new Hashtable<String, Integer>();
+	public Hashtable<String, Integer> allTypedefs = new Hashtable<String, Integer>();
+	public Hashtable<String, SimpleNode> allPins = new Hashtable<String, SimpleNode>();
+	public Hashtable<String, SimpleNode> allVariables = new Hashtable<String, SimpleNode>();
+	public Hashtable<String, SimpleNode> allResults = new Hashtable<String, SimpleNode>();
+	public Hashtable<String, Integer> allAttribution = new Hashtable<String, Integer>();
+	public TreeMap<Integer, String> allAttributionLines = new TreeMap<Integer, String>();
+	/*
+	public List<TestbenchUnity> whenList = new ArrayList<TestbenchUnity>();
+	public List<TestbenchUnity> foreachList = new ArrayList<TestbenchUnity>();
+	public List<TestbenchUnity> equalityList = new ArrayList<TestbenchUnity>();
+	TestbenchUnity testbenchUnity;*/
+	public Vector<Process> allProcesses = new Vector<Process>();
+	public Hashtable<String, SimpleNode> allTestbenchEntries = new Hashtable<String, SimpleNode>();
+	
+
+/*	public static void main(String args[]) {
+		FileInputStream inStream;
+		if (args.length == 0) {
+			System.out.println("usage: java RunFile <input_file>");
+			System.exit(1);
+		} else if (args.length != 1) {
+			System.out.println("usage: java RunFile <input_file>");
+			System.exit(1);
+		}
+		try {
+			System.out.println("parsing: Reading from file " + args[0] + "...");
+			inStream = new FileInputStream(args[0]);
+			ALPParser parser = new ALPParser(inStream);
+			SimpleNode root = parser.Start();
+		} catch (FileNotFoundException e) {
+			System.out.println("parsing:  File " + args[0] + " not found.");
+			System.exit(1);
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.exit(1);
+		}
+	}*/
+}
+
+PARSER_END(ALPParser)
+
+/* WHITE SPACE */
+SKIP :
+{
+  " "
+| "\t"
+| "\n"
+| "\r"
+| "\f"
+}
+
+/* COMMENTS */
+MORE :
+{
+  "//" : IN_SINGLE_LINE_COMMENT
+|  <"/**" ~["/"]> { input_stream.backup(1); } : IN_FORMAL_COMMENT
+|  "/*" : IN_MULTI_LINE_COMMENT
+}
+
+<IN_SINGLE_LINE_COMMENT>
+SPECIAL_TOKEN :
+{
+  <SINGLE_LINE_COMMENT: "\n" | "\r" | "\r\n" > : DEFAULT
+}
+
+<IN_FORMAL_COMMENT>
+SPECIAL_TOKEN :
+{
+  <FORMAL_COMMENT: "*/" > : DEFAULT
+}
+
+<IN_MULTI_LINE_COMMENT>
+SPECIAL_TOKEN :
+{
+  <MULTI_LINE_COMMENT: "*/" > : DEFAULT
+}
+
+<IN_SINGLE_LINE_COMMENT,IN_FORMAL_COMMENT,IN_MULTI_LINE_COMMENT>
+MORE :
+{
+  < ~[] >
+}
+
+/* reserved words */
+TOKEN: {
+	< TYPEDEF: "typedef" >
+	| < FIXED: "fixed" >
+	| < IN: "in" >
+	| < OUT: "out" >
+	| < CONST: "const">
+	| < COUNTER: "counter">
+	| < WHEN: "when">
+	| < ASSERT: "assert">
+	| < CHECK: "check">
+	| < FOREACH: "foreach">
+	| < CHANGES: "changes">
+	| < AS: "as">
+	| < CLOCK: "clock">	
+	| < WAIT: "wait">
+ }
+ 
+
+TOKEN : /* LITERALS */
+{
+  < INTEGER_LITERAL:
+        ("-")? <DECIMAL_LITERAL> (["l","L"])?
+      | ("-")? <HEX_LITERAL> (["l","L"])?
+  >
+|
+  < #DECIMAL_LITERAL: (["0"-"9"])+ >
+|
+  < #HEX_LITERAL: "0" ["x","X"] (["0"-"9","a"-"f","A"-"F"])+ >
+|
+  < CHARACTER_LITERAL:
+      "'"
+      (   (~["'","\\","\n","\r"])
+        | ("\\"
+            ( ["n","t","b","r","f","\\","'","\""]
+            | ["0"-"7"] ( ["0"-"7"] )?
+            | ["0"-"3"] ["0"-"7"] ["0"-"7"]
+            )
+          )
+      )
+      "'"
+  >
+|
+  < STRING_LITERAL:
+      "\""
+      (   (~["\"","\\","\n","\r"])
+        | ("\\"
+            ( ["n","t","b","r","f","\\","'","\""]
+            | ["0"-"7"] ( ["0"-"7"] )?
+            | ["0"-"3"] ["0"-"7"] ["0"-"7"]
+            )
+          )
+      )*
+      "\""
+  >
+}
+
+TOKEN : /* IDENTIFIERS */
+{
+  < IDENTIFIER: <LETTER> (<LETTER>|<DIGIT>)* >
+|
+  < #LETTER:
+      [
+       "\u0024",
+       "\u0041"-"\u005a",
+       "\u005f",
+       "\u0061"-"\u007a",
+       "\u00c0"-"\u00d6",
+       "\u00d8"-"\u00f6",
+       "\u00f8"-"\u00ff",
+       "\u0100"-"\u1fff",
+       "\u3040"-"\u318f",
+       "\u3300"-"\u337f",
+       "\u3400"-"\u3d2d",
+       "\u4e00"-"\u9fff",
+       "\uf900"-"\ufaff"
+      ]
+  >
+|
+  < #DIGIT:
+      [
+       "\u0030"-"\u0039",
+       "\u0660"-"\u0669",
+       "\u06f0"-"\u06f9",
+       "\u0966"-"\u096f",
+       "\u09e6"-"\u09ef",
+       "\u0a66"-"\u0a6f",
+       "\u0ae6"-"\u0aef",
+       "\u0b66"-"\u0b6f",
+       "\u0be7"-"\u0bef",
+       "\u0c66"-"\u0c6f",
+       "\u0ce6"-"\u0cef",
+       "\u0d66"-"\u0d6f",
+       "\u0e50"-"\u0e59",
+       "\u0ed0"-"\u0ed9",
+       "\u1040"-"\u1049"
+      ]
+  >
+}
+ 
+TOKEN :
+{
+	  < LPAREN: "(" >
+	| < RPAREN: ")" >
+	| < LBRACE: "{" >
+	| < RBRACE: "}" >
+	| < LBRACKET: "[" >
+	| < RBRACKET: "]" >
+	| < SEMICOLON: ";" >
+	| < COMMA: "," >
+	| < DOT: "." >
+}
+
+TOKEN : /* OPERATORS */
+{
+  < ASSIGN: "=" >
+| < AT: "@" >
+| < GT: ">" >
+| < LT: "<" >
+| < BANG: "!" >
+| < TILDE: "~" >
+| < HOOK: "?" >
+| < COLON: ":" >
+| < EQ: "==" >
+| < LE: "<=" >
+| < GE: ">=" >
+| < NE: "!=" >
+| < SC_OR: "||" >
+| < SC_AND: "&&" >
+| < INCR: "++" >
+| < DECR: "--" >
+| < PLUS: "+" >
+| < MINUS: "-" >
+| < STAR: "*" >
+| < SLASH: "/" >
+| < BIT_AND: "&" >
+| < BIT_OR: "|" >
+| < XOR: "^" >
+| < REM: "%" >
+| < LSHIFT: "<<" >
+| < RSIGNEDSHIFT: ">>" >
+| < RUNSIGNEDSHIFT: ">>>" >
+| < PLUSASSIGN: "+=" >
+| < MINUSASSIGN: "-=" >
+| < STARASSIGN: "*=" >
+| < SLASHASSIGN: "/=" >
+| < ANDASSIGN: "&=" >
+| < ORASSIGN: "|=" >
+| < XORASSIGN: "^=" >
+| < REMASSIGN: "%=" >
+| < LSHIFTASSIGN: "<<=" >
+| < RSIGNEDSHIFTASSIGN: ">>=" >
+| < RUNSIGNEDSHIFTASSIGN: ">>>=" >
+| <HASH : "#">
+}
+
+
+SimpleNode Start() : {
+	Token t;
+}
+{
+ 	(Const())* 
+ 	(Typedef())* 
+ 	t=<IDENTIFIER>
+ 	{
+ 		jjtThis.setIdentifier(t.image);
+ 	}
+ 	<LPAREN> (Pin() (<COMMA> Pin())*)? <RPAREN> 
+ 	<LBRACE> Statements() <RBRACE>
+            (Testbench())? 
+	{
+ 		return jjtThis;
+ 	}
+}
+
+void Testbench() : {
+	Token t;
+}
+{
+	{
+		Info("This file has a testbench!");
+	}	
+	<ASSERT><LBRACE>
+	(TestbenchEntries())* 
+	(ForeachChecking() | WhenChecking() | EqualityChecking())+
+	<RBRACE>
+}
+
+
+
+void EqualityChecking(): 
+{
+	Token tName;
+	long value;
+	Process process = null;
+}
+{
+	<WAIT> tName=<IDENTIFIER> "==" value=ConstOrLong()
+	{
+		if(!allPins.containsKey(tName.image))
+			ErrorToken("Variable " + tName.image + " NOT found!", tName);
+		else
+			process = new Process(Process.CheckingType.WAIT, tName.image, (int)value);		
+	}
+	<LBRACE>
+		(<CHECK> Results(process))+
+	<RBRACE>
+	{
+		allProcesses.add(process);
+	}
+}
+
+
+void Results(Process process) : {
+	Token varType=null;
+	int varWidth=0;
+}
+{
+	(varType=<IDENTIFIER> | varWidth=Fixed()) 
+	{
+		if (varType != null) {
+			if (allTypedefs.containsKey(varType.image)) {
+				varWidth=(Integer)(allTypedefs.get(varType.image));
+			}
+			else {
+				ErrorToken("Type " + varType.image + " NOT found!", varType);
+			}
+		}
+	}
+	Result(varWidth, process) <SEMICOLON>
+}
+
+void TestbenchEntries() : {
+	Token varType=null;
+	int varWidth=0;
+}
+{
+	(varType=<IDENTIFIER> | varWidth=Fixed()) 
+	{
+		if (varType != null) {
+			if (allTypedefs.containsKey(varType.image)) {
+				varWidth=(Integer)(allTypedefs.get(varType.image));
+			}
+			else {
+				ErrorToken("Type " + varType.image + " NOT found!", varType);
+			}
+		}
+	}
+	TestbenchEntry(varWidth) <SEMICOLON>
+}
+
+/*
+Vector<Long> TestResult(Vector<Long> inits) #void : {
+	Token t1, t2=null;
+}
+{
+	"{" t1=<INTEGER_LITERAL>
+	{
+		if (inits == null) {
+			inits = new Vector<Long>();
+		}
+		inits.add(StringToLong(t1.image));
+	}
+	( "," t2=<INTEGER_LITERAL>
+	{
+		if (t2 != null) {
+			inits.add(StringToLong(t2.image));
+		}
+	}
+	)* "}"
+	{
+		return inits;
+	}
+}
+*/
+
+void Name() : {
+	Token tName, tPort = null;
+}
+{
+	tName=<IDENTIFIER> (<DOT> tPort=<IDENTIFIER>)?
+	{
+		if (allVariables.containsKey(tName.image) || allConsts.containsKey(tName.image) || allPins.containsKey(tName.image)) {
+			jjtThis.setIdentifier(tName.image);
+			//jjtThis.setComponentClass(loop.components.reg_op.class);
+			if (tPort != null) {
+				jjtThis.setPort(tPort.image);
+			}
+		}
+		else {
+			ErrorToken("Variable/Pin " + tName.image + " NOT found!", tName);
+		}
+	}
+}
+
+void Const() : {
+	Token constName, constVal;
+}
+{
+	<CONST> constName=<IDENTIFIER> "=" constVal=<INTEGER_LITERAL> <SEMICOLON>
+	{
+		if (allConsts.containsKey(constName.image)) {
+			ErrorToken("Redefinition of Const " + constName.image, constName);
+		}
+		allConsts.put(constName.image, StringToInteger(constVal.image));
+		jjtThis.setIdentifier(constName.image);
+		jjtThis.jjtSetValue(StringToInteger(constVal.image));
+		//jjtThis.setComponentClass(loop.components.const_op.class);
+		//DEBUG
+		//InfoToken("Const " + constName.image + " with value " + constVal.image + " found", constName);
+	}
+}
+
+void Typedef() : {
+	Token typedefName;
+	int typedefVal;
+}
+{
+	<TYPEDEF> typedefVal=Fixed() typedefName=<IDENTIFIER> <SEMICOLON>
+ 	{
+ 		if (allTypedefs.containsKey(typedefName.image)) {
+			ErrorToken("Redefinition of Typedef " + typedefName.image, typedefName);
+		}
+ 		allTypedefs.put(typedefName.image, typedefVal);
+		jjtThis.setIdentifier(typedefName.image);
+		jjtThis.setWidth(typedefVal);
+		//DEBUG
+		//InfoToken("Type " + typedefName.image + " with " + typedefVal + " bit(s) found", typedefName);
+ 	}
+}
+
+int Fixed() #void : {
+	int bitwidth;
+}
+{
+	<FIXED> <LPAREN> bitwidth=ConstOrInt() <COMMA> ConstOrInt() (<COMMA> ConstOrInt())? <RPAREN>
+	{
+		return bitwidth;
+	}
+}
+
+void Pin() : {
+	Token pinDir, pinName, pinType=null;
+	int pinWidth=0;
+}
+{
+	(pinDir=<IN> | pinDir=<OUT>) (pinType=<IDENTIFIER> | pinWidth=Fixed()) pinName=<IDENTIFIER>
+	{
+		if (pinType != null) {
+			if (allTypedefs.containsKey(pinType.image)) {
+				pinWidth=(Integer)(allTypedefs.get(pinType.image));
+				//DEBUG
+				//InfoToken(pinDir.image + "put pin " + pinName.image + " of type " + pinType.image + " found", pinName);
+			}
+			else {
+				ErrorToken("Type " + pinType.image + " NOT found!", pinType);
+			}
+		}
+		else {
+			//DEBUG
+			//InfoToken(pinDir.image + "put pin " + pinName.image + " of size " + pinWidth + " found", pinName);
+		}
+		jjtThis.setIdentifier(pinName.image);
+		jjtThis.setWidth(pinWidth);		
+		allPins.put(pinName.image, jjtThis);
+		if (pinDir.kind == IN) {
+			jjtThis.setPortType(PortType.INPUT);
+		}
+		else {
+			jjtThis.setPortType(PortType.OUTPUT);
+		}
+		//allComponents.put(pinName.image, comp);
+		//jjtThis.setComponent(comp);
+	}
+}
+
+void Statements() #void : {}
+{
+ 	 (Declarations())?
+ 	 (Statement())+
+}
+
+void Declarations() #void : {}
+{
+ 	 <LBRACE> (Declaration())+ <RBRACE>
+}
+
+void Declaration() #void : {
+	Token varType=null;
+	int varWidth=0;
+}
+{
+	(varType=<IDENTIFIER> | varWidth=Fixed()) 
+	{
+		if (varType != null) {
+			if (allTypedefs.containsKey(varType.image)) {
+				varWidth=(Integer)(allTypedefs.get(varType.image));
+			}
+			else {
+				ErrorToken("Type " + varType.image + " NOT found!", varType);
+			}
+		}
+	}
+	(Variable(varWidth)) ("," (Variable(varWidth)))* <SEMICOLON>
+}
+
+void Variable(int varWidth) : {
+	Token tName;
+	Integer size = null;
+	Long init = null;
+	Vector<Long> inits = null;
+}
+{
+	tName=<IDENTIFIER> (<LBRACKET> (size=ConstOrInt())? <RBRACKET>)? ("=" (init=ConstOrLong() | inits=MemoryInit(inits)))?
+	{
+		if (allVariables.containsKey(tName.image)) {
+			ErrorToken("Redefinition of Variable " + tName.image, tName);
+		}
+		jjtThis.setIdentifier(tName.image);
+		if (size == null && inits != null && inits.size() != 0)
+			size = inits.size();
+		jjtThis.setArraySize(size);
+		jjtThis.jjtSetValue(init);
+		jjtThis.setInits(inits);
+		jjtThis.setWidth(varWidth);
+		jjtThis.setToken(tName);
+		allVariables.put(tName.image, jjtThis);
+		// comp = design.addComponent(comp);
+		// jjtThis.setComponent(comp);
+		// allComponents.put(tName.image, comp);
+		//DEBUG 
+		//InfoToken("Variable " + tName.image + (size>0 ? "[" + size +"]" : "") + (init != null ? " with initial value " + init : "") +" found", tName);
+	}
+}
+
+void Result(int varWidth, Process process) : {
+	Token tName;
+	Integer size = null;
+	Long init = null;
+	Vector<Long> inits = null;
+}
+{
+	tName=<IDENTIFIER> (<LBRACKET> (size=ConstOrInt())? <RBRACKET>)? ("=" (init=ConstOrLong() | inits=MemoryInit(inits)))?
+	{
+		/*if (allResults.containsKey(tName.image)) {
+			ErrorToken("Redefinition of Result " + tName.image, tName);
+		}*/
+		jjtThis.setIdentifier(tName.image);
+		if (size == null && inits != null && inits.size() != 0)
+			size = inits.size();
+		jjtThis.setArraySize(size);
+		jjtThis.jjtSetValue(init);
+		jjtThis.setInits(inits);
+		jjtThis.setWidth(varWidth);
+		jjtThis.setToken(tName);
+		allResults.put(tName.image, jjtThis);
+		process.addResult(jjtThis);
+		// comp = design.addComponent(comp);
+		// jjtThis.setComponent(comp);
+		// allComponents.put(tName.image, comp);
+		//DEBUG 
+		//InfoToken("Variable " + tName.image + (size>0 ? "[" + size +"]" : "") + (init != null ? " with initial value " + init : "") +" found", tName);
+		/*
+		testbenchUnity = new TestbenchUnity();
+		testbenchUnity.setResultName(tName.image);
+		testbenchUnity.setConditionalSignal(conditionalSignal);
+		//Add the result to the list of its type
+		if(resultType.equals("When"))
+			whenList.add(testbenchUnity);
+		else if(resultType.equals("Foreach"))
+			foreachList.add(testbenchUnity);
+		else
+			equalityList.add(testbenchUnity);*/					
+		
+	}
+}
+
+void TestbenchEntry(int varWidth) : {
+	Token tName;
+	Integer size = null;
+	Long init = null;
+	Vector<Long> inits = null;
+}
+{
+	tName=<IDENTIFIER> (<LBRACKET> (size=ConstOrInt())? <RBRACKET>)? ("=" (init=ConstOrLong() | inits=MemoryInit(inits)))?
+	{
+		if (!allPins.containsKey(tName.image)) {
+			ErrorToken("Output Variable " + tName.image + " NOT found!", tName);
+		}
+		jjtThis.setIdentifier(tName.image);
+		if (size == null && inits != null && inits.size() != 0)
+			size = inits.size();
+		jjtThis.setArraySize(size);
+		jjtThis.jjtSetValue(init);
+		jjtThis.setInits(inits);
+		jjtThis.setWidth(varWidth);
+		jjtThis.setToken(tName);
+		allTestbenchEntries.put(tName.image, jjtThis);
+		// comp = design.addComponent(comp);
+		// jjtThis.setComponent(comp);
+		// allComponents.put(tName.image, comp);
+		//DEBUG 
+		//InfoToken("Variable " + tName.image + (size>0 ? "[" + size +"]" : "") + (init != null ? " with initial value " + init : "") +" found", tName);
+	}
+}
+
+Vector<Long> MemoryInit(Vector<Long> inits) #void : {
+	Token t1, t2=null;
+}
+{
+	"{" t1=<INTEGER_LITERAL>
+	{
+		if (inits == null) {
+			inits = new Vector<Long>();
+		}
+		inits.add(StringToLong(t1.image));
+	}
+	( "," t2=<INTEGER_LITERAL>
+	{
+		if (t2 != null) {
+			inits.add(StringToLong(t2.image));
+		}
+	}
+	)* "}"
+	{
+		return inits;
+	}
+}
+
+void Counter() : {
+	
+	Token tVarInit, iLoad=null, vLoad=null;
+	
+	Token tVarTerm, iTerm=null, vTerm=null;
+	String termCond;
+	
+	Token tVarInc, tIncOper;
+	Integer steps = 1, increment = 1;
+	
+}
+{
+	<COUNTER> <LPAREN> 
+		
+	(tVarInit=<IDENTIFIER> "=" (iLoad=<INTEGER_LITERAL> | vLoad=<IDENTIFIER>))
+	{
+		if (!allVariables.containsKey(tVarInit.image)) {
+			ErrorToken("Variable " + tVarInit.image + " NOT found!", tVarInit);
+		}		
+		if (iLoad != null) { //literal initialization
+			jjtThis.setLoad(StringToInteger(iLoad.image));
+		}
+		else if (allConsts.containsKey(vLoad.image)) { //constant initialization
+			jjtThis.setLoad(new Integer(allConsts.get(vLoad.image)));
+		}
+		else if (allVariables.containsKey(vLoad.image)) { //variable initialization
+			jjtThis.setLoad(allVariables.get(vLoad.image));
+		}
+		else {
+			ErrorToken("Constant/Variable "+vLoad.image+" NOT found!", vLoad);
+		}
+		jjtThis.setIdentifier(tVarInit.image);
+		allAttribution.put(tVarInit.image, tVarInit.beginLine);
+		//allVariables.put(tVarInit.image, jjtThis);	
+	}
+	
+	<SEMICOLON> 
+	
+	(tVarTerm=<IDENTIFIER> termCond=CounterComp() (iTerm=<INTEGER_LITERAL> | vTerm=<IDENTIFIER>))
+	{
+		if (iTerm != null) { //literal initialization
+			jjtThis.setTerm(StringToInteger(iTerm.image));
+		}
+		else if (allConsts.containsKey(vTerm.image)) { //constant initialization
+			jjtThis.setTerm(new Integer(allConsts.get(vTerm.image)));
+		}
+		else if (allVariables.containsKey(vTerm.image)) { //variable initialization
+			jjtThis.setTerm(allVariables.get(vTerm.image));
+		}
+		else {
+			ErrorToken("Constant/Variable "+vTerm.image+" NOT found!", vTerm);
+		}
+		jjtThis.setTermCond(termCond);
+	}
+	
+	<SEMICOLON> 
+	
+	(tVarInc=<IDENTIFIER> (tIncOper="++" | tIncOper="--" | tIncOper="+=" increment=ConstOrInt() | tIncOper="-=" increment=ConstOrInt()) (<AT> steps=ConstOrInt())?)
+	{
+		jjtThis.setIncOper(tIncOper.image);
+		jjtThis.setStepDelay(steps);
+		jjtThis.setInc(increment);
+	}
+	
+	<RPAREN>
+	
+	{
+		if (!(tVarInit.image.equals(tVarTerm.image) && tVarTerm.image.equals(tVarInc.image))) {
+			Error("Counter Initialization/Termination/Increment must use the same variable");
+		}
+		String incOper=tIncOper.image;
+		if (incOper.charAt(0)=='-') {
+			jjtThis.setCounterDown(true);
+		}						
+		jjtThis.setComponentClass(counter.class);		
+	}
+}
+
+String CounterComp() #void : {
+	Token t;
+}
+{
+	(t="<" | t="<=" | t=">" | t=">=" | t="==" | t="!=")
+	{
+		return t.image;
+	}
+}
+
+void Statement() #void : {}
+{
+	(Assignment() | Counter()) <SEMICOLON>
+}
+
+void Assignment() : {
+	String operator = null;
+}
+{
+	LHS() operator=AssignmentOperator() RHS() (When())?
+	{		
+		jjtThis.setIdentifier(operator);
+	}
+}
+
+void When() : {}
+{
+	<WHEN> Expression()
+}
+
+void WhenChecking(): 
+{
+	Token tName;
+	Process process = null;
+}
+{
+
+	<WHEN> tName=<IDENTIFIER> <CHANGES>
+	{
+		if(!allPins.containsKey(tName.image))
+			ErrorToken("Variable " + tName.image + " NOT found!", tName);
+		else
+			process = new Process(Process.CheckingType.WHEN, tName.image);
+	}
+	<LBRACE>
+		(<CHECK> Results(process))+
+	<RBRACE>
+	{
+		allProcesses.add(process);
+	}
+}
+
+void ForeachChecking(): 
+{
+	Process process = null;
+	long value = 0;
+}
+{
+	<FOREACH> (value = ConstOrLong())? <CLOCK>
+	{
+		process = new Process(Process.CheckingType.FOREACH, (int)value);
+	}
+	<LBRACE>
+		(<CHECK> Results(process))+
+	<RBRACE>
+	{
+		allProcesses.add(process);
+	}
+}
+
+void LHS() : {
+	Token tName, tPort = null;
+}
+{
+	tName=<IDENTIFIER> (<DOT> tPort=<IDENTIFIER>)?
+	{
+		if (allVariables.containsKey(tName.image) || allPins.containsKey(tName.image)) {
+			jjtThis.setIdentifier(tName.image);
+			//jjtThis.setComponentClass(loop.components.reg_op.class);
+			if (tPort != null) {
+				jjtThis.setPort(tPort.image);
+			}
+			allAttribution.put(tName.image, tName.beginLine);
+			allAttributionLines.put(tName.beginLine, tName.image);
+		}
+		else {
+			ErrorToken("Variable/Pin " + tName.image + " NOT found!", tName);
+		}
+	}
+}
+
+String AssignmentOperator() #void : {
+	Token t;
+}
+{
+	( t="=" 
+	| t="*=" 
+	| t="/=" 
+	| t="%=" 
+	| t="+=" 
+	| t="-=" 
+	| t="<<=" 
+	| t=">>=" 
+	| t=">>>=" 
+	| t="&=" 
+	| t="^=" 
+	| t="|=")
+	{
+		return t.image;
+	}
+}
+
+void RHS() : {}
+{
+	Expression()
+}
+
+void Expression() : {}
+{
+	DelayExpression()
+}
+
+void DelayExpression() : {
+	Integer amount = null;
+	Integer endAmount = null;
+}
+{
+	ConditionalExpression() (
+	LOOKAHEAD(1) {jjtThis.setComponentClass(delay_op.class);} 
+	"@" amount=ConstOrInt()(<HASH> endAmount=ConstOrInt(){jjtThis.setEndStepDelay(endAmount);})? {jjtThis.setStepDelay(amount);} 
+	)?
+}
+
+
+void ConditionalExpression() : {}
+{
+  ConditionalOrExpression() [ "?" {jjtThis.setComponentClass(reg_mux_op.class);} ConditionalOrExpression() ":" ConditionalOrExpression() ]
+}
+
+void ConditionalOrExpression() : {}
+{
+  ConditionalAndExpression() ( {jjtThis.setComponentClass(or_op.class);} "||" ConditionalAndExpression() )*
+}
+
+void ConditionalAndExpression() : {}
+{
+  InclusiveOrExpression() ( {jjtThis.setComponentClass(and_op.class);} "&&" InclusiveOrExpression() )*
+}
+
+void InclusiveOrExpression() : {}
+{
+  ExclusiveOrExpression() ( {jjtThis.setComponentClass(or_op.class);} "|" ExclusiveOrExpression() )*
+}
+
+void ExclusiveOrExpression() : {}
+{
+  AndExpression() ( {jjtThis.setComponentClass(xor_op.class);} "^" AndExpression() )*
+}
+
+void AndExpression() : {}
+{
+ 	EqualityExpression() 
+ 	( {jjtThis.setComponentClass(and_op.class);} "&" EqualityExpression() )*
+}
+
+void EqualityExpression() : {}
+{
+	RelationalExpression() 
+	( ( 
+	"==" {jjtThis.setComponentClass(if_eq_op_s.class);} | 
+	"!=" {jjtThis.setComponentClass(if_ne_op_s.class);}
+	) RelationalExpression() )*
+}
+
+void RelationalExpression() : {}
+{
+  ShiftExpression() 
+  ( ( 
+  "<" {jjtThis.setComponentClass(if_lt_op_s.class);} | 
+  ">" {jjtThis.setComponentClass(if_gt_op_s.class);} | 
+  "<=" {jjtThis.setComponentClass(if_le_op_s.class);}| 
+  ">=" {jjtThis.setComponentClass(if_ge_op_s.class);}
+  ) ShiftExpression() )*
+}
+
+void ShiftExpression() : {
+	Integer amount = null;
+}
+{
+  AdditiveExpression() ( ( 
+  "<<" {jjtThis.setComponentClass(shl_c_op_s.class);} | 
+  ">>" {jjtThis.setComponentClass(shr_c_op_s.class);} | 
+  ">>>" //TODO verificar qual dos dois shifts e o correto para a operação sem sinal que está no VHDL
+  ) amount=ConstOrInt() {jjtThis.setStepDelay(amount);} )*
+}
+
+void AdditiveExpression() : {}
+{
+  MultiplicativeExpression() ( ( 
+  "+" {jjtThis.setComponentClass(add_op_s.class);} | 
+  "-" {jjtThis.setComponentClass(sub_op_s.class);}
+  ) MultiplicativeExpression() )*
+}
+
+void MultiplicativeExpression() : {
+	Integer amount = null;
+	Integer endAmount = null;
+}
+{
+  UnaryExpression() ( ( 
+  "*" {jjtThis.setComponentClass(mult_op_s.class);} | 
+  "*@" amount=ConstOrInt()(<HASH> endAmount=ConstOrInt(){jjtThis.setEndStepDelay(endAmount);})? {jjtThis.setStepDelay(amount);} {jjtThis.setComponentClass(mult_op_s_p.class);} | // pipelined multiply 
+  "/" {jjtThis.setComponentClass(div_op_s.class);} |
+  "%" {jjtThis.setComponentClass(mod_op_s.class);}
+  ) UnaryExpression() )*
+}
+
+void UnaryExpression() : {}
+{
+  ( 
+  "+" | 
+  "-" {jjtThis.setComponentClass(neg_op_s.class);}  
+  ) UnaryExpression()
+|
+  PreIncrementExpression()
+|
+  PreDecrementExpression()
+|
+  UnaryExpressionNotPlusMinus()
+}
+
+//TODO talvez convenha remover estas duas operações 
+
+void PreIncrementExpression() : {}
+{
+  "++" PrimaryExpression()
+}
+
+void PreDecrementExpression() : {}
+{
+  "--" PrimaryExpression()
+}
+
+void UnaryExpressionNotPlusMinus() : {}
+{
+  ( 
+  "~" {jjtThis.setComponentClass(not_op.class);} | 
+  "!" {jjtThis.setComponentClass(not_op.class);} 
+  ) UnaryExpression()
+|
+  PostfixExpression()
+}
+
+//TODO talvez convenha remover estas duas operações 
+
+void PostfixExpression() : {}
+{
+  PrimaryExpression() [ "++" | "--" ]
+}
+
+void PrimaryExpression() : {}
+{
+	<LPAREN> Expression() <RPAREN> | Literal() | Name() 
+}
+
+void Literal() : {
+	Token t;
+}
+{
+	(t=<INTEGER_LITERAL> | t=<CHARACTER_LITERAL> | t=<STRING_LITERAL>)
+	{
+		jjtThis.jjtSetValue(StringToLong(t.image));
+	}
+}
+
+int ConstOrInt() #void : {
+	Token t;
+	int size = 0;
+}
+{
+	(t=<INTEGER_LITERAL> | t=<IDENTIFIER>)
+	{
+		if (t.kind == IDENTIFIER) {
+			if (allConsts.containsKey(t.image)) {
+				size = allConsts.get(t.image);
+			}
+			else {
+				ErrorToken("Const " + t.image + " NOT found!", t);
+			}
+		}
+		else {
+			size = StringToInteger(t.image);
+		}
+		return size;
+	}
+}
+
+long ConstOrLong() #void : {
+	Token t;
+	long size = 0;
+}
+{
+	(t=<INTEGER_LITERAL> | t=<IDENTIFIER>)
+	{
+		if (t.kind == IDENTIFIER) {
+			if (allConsts.containsKey(t.image)) {
+				size = allConsts.get(t.image);
+			}
+			else {
+				ErrorToken("Const " + t.image + " NOT found!", t);
+			}
+		}
+		else {
+			size = StringToLong(t.image);
+		}
+		return size;
+	}
+}
+
+void Error(String s) #void : {} 
+{
+	{
+		System.err.println(s);
+		System.exit(1);
+	}
+}
+
+void ErrorToken(String s, Token t) #void : {}
+{
+	{
+		Error(s + " line " + t.beginLine + " column " + t.beginColumn);
+	}
+}
+
+void Info(String s) #void : {} 
+{
+	{
+		System.out.println("parsing: " + s);
+	}
+}
+
+void InfoToken(String s, Token t) #void : {} 
+{
+	{
+		Info(s + " line " + t.beginLine + " column " + t.beginColumn);
+	}
+}
+
+Integer StringToInteger(String s) #void : {}
+{
+	{
+		if (s.length() > 1 && s.charAt(1) == 'x')
+			return Integer.parseInt(s.substring(2), 16);
+		else
+			return Integer.parseInt(s);
+	}
+}
+
+Long StringToLong(String s) #void : {}
+{
+	{
+		if (s.length() > 1 && s.charAt(1) == 'x')
+			return Long.parseLong(s.substring(2), 16);
+		else
+			return Long.parseLong(s);
+	}
+}

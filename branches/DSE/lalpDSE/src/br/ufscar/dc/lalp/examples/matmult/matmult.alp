@@ -1,0 +1,81 @@
+const DATA_WIDTH = 16;
+const SIZE = 25; 
+
+typedef fixed(DATA_WIDTH, 1) int;
+typedef fixed(1, 0) bit;
+
+matmult(in bit init, out bit done, out int result) {
+	{
+		int a[SIZE] = {
+			1, 2, 3, 4, 6,
+			6, 1, 5, 3, 8,
+			2, 6, 4, 9, 9,
+			1, 3, 8, 3, 4,
+			5, 7, 8, 2, 5
+		};
+		int b[SIZE] = {
+			3, 5, 0, 8, 7,
+			2, 2, 4, 8, 3,
+			0, 2, 5, 1, 2,
+			1, 4, 0, 5, 1,
+			3, 4, 8, 2, 3
+		};
+		int s[SIZE]; 
+		int i, j,k,l,m,l_plus_20, m_plus_5,reg,sum,sum1;
+		int addra, addrb, addrs;
+		
+	}
+	
+	counter (m=0; m<SIZE; m+=5@30);
+	m.clk_en = init;
+	
+	counter(k=0; k < SIZE; k++@6);
+	k.clk_en =  init;
+	
+	counter (j=l; j<l_plus_20; j+=5);
+	j.clk_en =init;
+	j.load = k.step; 
+	
+	
+	l= reg when k.step;
+	reg = l>3 ? 0: l + 1;
+	l_plus_20 = l + 20; 
+	
+	counter (i=m; i< m_plus_5; i++);
+	i.clk_en = init;
+	i.load= k.step;
+	
+	m_plus_5 = m + 5 when m.step;
+	
+	addra = i;
+	addrb = j;	
+	addrs = k;
+	
+	a.address = addra;
+	b.address = addrb;
+	s.address = addrs@4;
+	
+	sum1 = (i.step@5) ? sum1 + sum : 0 when init;
+					
+	sum = a * b when i.step@4;
+	
+	s.data_in = sum1 when !i.step@5;
+	
+	result = s.data_out ;
+	
+	/* result 
+	29   55   71   59   41
+	47   86   93   92   82
+	54  102  116  131   76
+	24   55   84   63   47
+	46   83  108  124   89
+	*/
+}
+{
+	int result = {29, 55, 71,   59,   41,
+	47,   86,   93,   92,   82,
+	54,  102,  116,  131,   76,
+	24,   55,   84,   63,   47,
+	46,   83,  108,  124,   89};
+}
+

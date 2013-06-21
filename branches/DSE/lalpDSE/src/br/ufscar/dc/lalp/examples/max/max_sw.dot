@@ -1,0 +1,32 @@
+digraph max {
+	// Components (Nodes)
+	node [shape=ellipse, style=filled, color=dodgerblue2];
+	"c14" [label="{|||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"done" [color=bisque4 shape=invtriangle label="done"];
+	"c13" [label="{|}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"c12" [color=bisque4 shape=invtriangle label="0x800"];
+	"c11" [color=bisque4 shape=invtriangle label="0x0"];
+	"a_if_gt_op_s_b" [label="a_if_gt_op_s_b:>"  color=dodgerblue2 ];
+	"v" [label="v" shape=doubleoctagon  color=dodgerblue2 ];
+	"b" [label="b" shape=doubleoctagon  color=dodgerblue2 ];
+	"maxval" [color=bisque4 shape=invtriangle label="maxval"];
+	"i" [label="i" shape=doubleoctagon  color=dodgerblue2 ];
+	"a" [label="a" shape=doubleoctagon  color=dodgerblue2 ];
+	"init" [color=bisque4 shape=invtriangle label="init"];
+
+	// Signals (Edges)
+	"c11" -> "i"
+	"c14" -> "done"
+	"init" -> "i"
+	"c13" -> "a"
+	"i" -> "c14":input
+	"a_if_gt_op_s_b" -> "b" [style=dashed];
+	"i" -> "c13":input
+	"b" -> "a_if_gt_op_s_b" [style=dashed];
+	"v" -> "a"
+	"c12" -> "i"
+	"a" -> "b"
+	"b" -> "maxval"
+	"a" -> "a_if_gt_op_s_b" [style=dashed];
+	"i" -> "v"
+}

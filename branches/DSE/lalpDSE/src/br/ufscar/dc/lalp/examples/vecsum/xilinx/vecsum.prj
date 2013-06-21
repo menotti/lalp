@@ -1,0 +1,3 @@
+vhdl work ../src/memory.vhd
+vhdl work ../../NenyaBehaLib.vhd
+vhdl work ../src/vecsum.vhd

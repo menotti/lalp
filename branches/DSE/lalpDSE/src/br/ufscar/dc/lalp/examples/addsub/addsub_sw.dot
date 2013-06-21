@@ -1,0 +1,18 @@
+digraph addsub {
+	// Components (Nodes)
+	node [shape=ellipse, style=filled, color=dodgerblue2];
+	"x" [color=bisque4 shape=invtriangle label="x"];
+	"x_sub_op_s_y" [label="x_sub_op_s_y:-"  color=dodgerblue2 ];
+	"y" [color=bisque4 shape=invtriangle label="y"];
+	"a" [color=bisque4 shape=invtriangle label="a"];
+	"x_add_op_s_y" [label="x_add_op_s_y:+"  color=dodgerblue2 ];
+	"s" [color=bisque4 shape=invtriangle label="s"];
+
+	// Signals (Edges)
+	"x" -> "x_add_op_s_y"
+	"x_sub_op_s_y" -> "s"
+	"x" -> "x_sub_op_s_y"
+	"y" -> "x_add_op_s_y"
+	"y" -> "x_sub_op_s_y"
+	"x_add_op_s_y" -> "a"
+}

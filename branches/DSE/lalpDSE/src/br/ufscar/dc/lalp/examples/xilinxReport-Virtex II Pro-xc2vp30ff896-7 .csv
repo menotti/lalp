@@ -1,0 +1,11 @@
+Benchmark;Slice Flip Flops;occupied Slices;Total Number of 4 input LUTs;bonded IOBs;RAMB16s;BUFGMUXs;Fmax
+dotprod10;170;101;119;36;4;1;206.271;
+dotprod1;101;65;85;36;4;1;103.670;
+dotprod2;103;65;85;36;4;1;189.107;
+dotprod3;148;91;104;36;4;1;222.618;
+dotprod4;164;98;104;36;4;1;213.402;
+dotprod5;165;99;119;36;4;1;197.941;
+dotprod6;166;99;119;36;4;1;197.941;
+dotprod7;167;100;119;36;4;1;206.740;
+dotprod8;168;100;119;36;4;1;209.996;
+dotprod9;169;101;119;36;4;1;197.785;
