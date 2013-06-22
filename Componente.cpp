@@ -22,40 +22,247 @@ using std::string;
 Componente::Componente(SgNode* node) {
     this->limpaAtributos();
     this->node = node;
-    this->montaComponente();
+    
+    /************************************************/
+    //DECLARACAO VARIAVEL-VETOR
+    SgInitializedName* nodo_var  = isSgInitializedName(this->node);
+    if(nodo_var != NULL){
+        this->montaComponenteVar();
+    }
+    /************************************************/
+    
+    /************************************************/
+    //LACO FOR
+    SgForStatement* nodo_for    = isSgForStatement(this->node);
+    if(nodo_for != NULL){
+        this->montaComponenteLoop();
+    }
+    /************************************************/
+    
+    /************************************************/
+    //OP ADD
+    SgAddOp* nodo_op_add = isSgAddOp(this->node);
+    if(nodo_op_add != NULL){
+        this->montaComponenteOp();
+    }
+    //TODO - Fazer para outras operacoes
+    /************************************************/
+    
+    /************************************************/
+    //CONSTANTE INTEIRA
+    SgIntVal* nodo_int  = isSgIntVal(this->node);
+    if(nodo_int != NULL){
+        this->montaComponenteConst();
+    }
+    //TODO - Fazer para outras constantes - float, char, etc
+    /************************************************/
+    
+    /************************************************/
+    //REFERENCIA DE VARIAVEL NA EXPRESSAO
+    SgVarRefExp* nodo_ref_var     = isSgVarRefExp(this->node);
+    SgPntrArrRefExp* nodo_ref_arr = isSgPntrArrRefExp(this->node);
+    if(nodo_ref_var != NULL || nodo_ref_arr != NULL){
+        this->montaComponenteRef();
+    }
+    
+    /************************************************/
 }
+
+//void Componente::ligadoEm(SgNode* nodo){
+    //Cria a ligacao do noto atual na entrada do nodo do PARAMETRO
+    //this->ligadoEm = nodo;
+//}
 
 void Componente::limpaAtributos(){
     //COMUM
     this->nome;
-    this->tipo_comp     = "";      //Tipo do Componente - Registrador - Operacao - Contador - etc
+    this->tipo_comp     = "";     //Tipo do Componente - Registrador - Operacao - Contador - etc
     this->eInicializado = false;  //Se a variavel foi inicializada
+    this->ligadoEm      = NULL;   //Relacionado com os nodos nas expressoes
 
     //VAR
-    this->tipo_var      = "";       //Int - Str - Flo
-    this->valor         = "";          //Valor da Variavel ou Todos os elementos do Vetor
+    this->tipo_var      = "";     //Int - Str - Flo
+    this->valor         = "";     //Valor da Variavel ou Todos os elementos do Vetor
 
     //VETOR
     this->eVetor        = false;
-    this->qtd_ele_vet   = 0;    //quantidade de elementos dentro do vetor
+    this->qtd_ele_vet   = 0;      //quantidade de elementos dentro do vetor
 
     //OPERACAO
-    this->tipo_op       = "";  
+    this->op_tipo       = "";
+    
+    //FOR
+    this->for_ctr_var   = "";    //Variavel de controle - EX.: (i) => for (i = 0, ....)
+    this->for_ctr_val_ini= 0;//Valor inicial da variavel de controle
+    this->for_cond_var  = "";   //variavel de condicao - EX.: (i) => i < 10
+    this->for_cond_val  = 0;   //valor de condicao - EX.: (10) => i < 10
+    this->for_cond_op   = "";    //operacao de controle do for - EX.: (<) => i < 10
+    this->for_incr_var  = "";   //variavel incrementar for - EX.: (i) => i++;
+    this->for_incr_op   = "";    //incrementar for - EX.: (++) => i++;
+    this->for_incr_val  = 0;   //valor incrementar for - EX.: 1
+    
+    //Constante
+    this->cons_tipo     = "";
+    
+    //Referencias
+    this->ref_var_nome  = "";
+    this->ref_var_index  = "";
 }
 
 void Componente::imprime(){
-    cout<< "NOME VAR:  "<< this->nome           << endl;
-    cout<< "E INICIADO:"<< this->eInicializado  << endl;
-    cout<< "E VETOR:   "<< this->eVetor         << endl;
-    cout<< "TIPO VAR:  "<< this->tipo_var       << endl;
-    cout<< "TIPO COMP: "<< this->tipo_comp      << endl;
-    cout<< "QTD ELEME: "<< this->qtd_ele_vet    << endl;
-    cout<< "VALOR:     "<< this->valor          << endl;
-    cout<< " "<< endl;
+    if(this->tipo_comp == "REG" || this->tipo_comp == "MEM"){
+        cout<< "NOME VAR:  "<< this->nome           << endl;
+        cout<< "E INICIADO:"<< this->eInicializado  << endl;
+        cout<< "E VETOR:   "<< this->eVetor         << endl;
+        cout<< "TIPO VAR:  "<< this->tipo_var       << endl;
+        cout<< "TIPO COMP: "<< this->tipo_comp      << endl;
+        cout<< "QTD ELEME: "<< this->qtd_ele_vet    << endl;
+        cout<< "VALOR:     "<< this->valor          << endl;
+        cout<< "--------------------------------------------"<< endl;
+    }else if(this->tipo_comp == "CTD"){
+        cout<< "VAR:       "<<this->for_ctr_var     << endl;
+        cout<< "VAL INI:   "<<this->for_ctr_val_ini << endl;
+        cout<< " "<< endl;
+        cout<< "VAR:       "<<this->for_cond_var    << endl;
+        cout<< "OP CONTR:  "<<this->for_cond_op     << endl;
+        cout<< "VAL CONTR: "<<this->for_cond_val    << endl;  
+        cout<< " "<< endl;
+        cout<< "VAR INCR:  "<<this->for_incr_var    << endl;
+        cout<< "OP  INCR:  "<<this->for_incr_op     << endl;
+        cout<< "VAL INCR:  "<<this->for_incr_val    << endl;
+        cout<< "--------------------------------------------"<< endl;
+    }else if(this->tipo_comp == "OPE"){
+        cout<<"OPERCACAO:  "<<this->tipo_comp       <<endl;
+        cout<<"TIPO OP:    "<<this->op_tipo         <<endl;
+        cout<< "--------------------------------------------"<< endl;
+    }else if(this->tipo_comp == "CON"){
+        cout<<"Constante"<<endl;
+        cout<<"TIPO:      "<<this->cons_tipo        <<endl;
+        cout<<"VALOR:     "<<this->valor             <<endl;
+    }
 }
 
-//Metodo Resonsavel por montar o componente de acordo com sua estrutura: VARIAVEL, LACO, ETC
-void Componente::montaComponente(){
+void Componente::montaComponenteRef(){
+    SgVarRefExp* nodo_ref_var     = isSgVarRefExp(this->node);
+    SgPntrArrRefExp* nodo_ref_arr = isSgPntrArrRefExp(this->node);
+    this->tipo_comp = "REF";
+    if(nodo_ref_var != NULL){
+        this->ref_var_nome = nodo_ref_var->get_symbol()->get_name().getString();
+    }
+    if(nodo_ref_arr != NULL){
+        string arrName  = "";
+        string arrPos   = ""; 
+        SgVarRefExp* fe = isSgVarRefExp( nodo_ref_arr->get_lhs_operand_i() );
+        SgVarRefExp* fd = isSgVarRefExp( nodo_ref_arr->get_rhs_operand_i() );
+        if ( fe != NULL &&  fd != NULL){
+            arrName     = fe->get_symbol()->get_name().getString();
+            arrPos      = fd->get_symbol()->get_name().getString();
+            this->ref_var_nome = arrName;
+            this->ref_var_index= arrPos;
+        }
+    }
+}
+
+void Componente::montaComponenteLoop(){
+    SgForStatement* cur_for = isSgForStatement(this->node);
+    this->tipo_comp = "CTD";     
+    if (cur_for != NULL){
+        ROSE_ASSERT(cur_for);
+
+        this->for_ctr_var = getLoopIndexVariable(this->node)->get_name().str();
+      
+        /**********************************************************/
+        //Parte de pegar o padrao de inicio do FOR => EX.: int i = 0 
+        SgForInitStatement* stmt    = cur_for->get_for_init_stmt();
+
+        Rose_STL_Container<SgNode*> NodosFor1 = NodeQuery::querySubTree(stmt,V_SgNode); 
+        for (Rose_STL_Container<SgNode*>::iterator for1 = NodosFor1.begin(); for1 != NodosFor1.end(); for1++ ) 
+        {
+            SgIntVal* valIni = isSgIntVal(*for1);
+            if(valIni != NULL){
+                this->for_ctr_val_ini = valIni->get_value();
+            }
+        }               
+        /**********************************************************/
+
+
+        /**********************************************************/
+        //Condicao de parada do FOR => EX.: i < 10
+        this->for_cond_var = this->for_ctr_var;
+        
+        SgExpression* testExp       = cur_for->get_test_expr();
+        
+        Rose_STL_Container<SgNode*> NodosFor2 = NodeQuery::querySubTree(testExp,V_SgNode);
+        for (Rose_STL_Container<SgNode*>::iterator for2 = NodosFor2.begin(); for2 != NodosFor2.end(); for2++ ) 
+        {
+            //SgNode* node = isSgNode(*for2);
+            //cout<<node->class_name()<< endl;
+            SgLessThanOp* opMenorQue= isSgLessThanOp(*for2);
+            //SgLessThanOp* opMenorQue= isSgLessThanOp(*for2);
+            //SgLessThanOp* opMenorQue= isSgLessThanOp(*for2);
+            SgIntVal* valPar        = isSgIntVal(*for2);
+            if (opMenorQue != NULL){
+                //cond += " < ";
+                this->for_cond_op = "<";
+            }
+            if (valPar != NULL){
+                //std::string str = boost::lexical_cast<std::string>(valPar->get_value());
+                //cond += str;
+                this->for_cond_val = valPar->get_value();
+            }
+        }
+        /**********************************************************/
+
+
+        /**********************************************************/
+        //Parte que identifica o incremento do FOR => EX.: i++
+        this->for_incr_var = this->for_ctr_var;
+        
+        SgExpression* increment     = cur_for->get_increment();
+        Rose_STL_Container<SgNode*> NodosFor3 = NodeQuery::querySubTree(increment,V_SgNode);
+        
+        for (Rose_STL_Container<SgNode*>::iterator for3 = NodosFor3.begin(); for3 != NodosFor3.end(); for3++ ) 
+        {
+            //SgNode* node = isSgNode(*for3);
+            SgPlusPlusOp* opMaisMais    = isSgPlusPlusOp(*for3);
+            SgVarRefExp*  varIncr       = isSgVarRefExp(*for3);
+            if(opMaisMais != NULL){
+                this->for_incr_op  = "++";
+                this->for_incr_val = 1;
+            }
+        }
+        /**********************************************************/
+    }   
+}
+
+void Componente::montaComponenteConst(){
+    SgIntVal* nodo_int  = isSgIntVal(this->node);
+    if(nodo_int != NULL){
+        this->tipo_comp = "CON";
+        this->cons_tipo = "INT";
+        this->valor     = nodo_int->get_valueString();
+        //this->cons_out;    //Define saida da operacao ADD
+        
+        //cout<<"criando componente OP"<<endl;
+    }
+}
+
+void Componente::montaComponenteOp(){
+    SgAddOp* nodo_op_add = isSgAddOp(this->node);
+    if(nodo_op_add != NULL){
+        this->tipo_comp = "OPE";
+        this->op_tipo   = "ADD";
+        //this->op_in_add1;     //Define entrada 1 da operacao ADD
+        //this->op_in_add2;     //Define entrada 1 da operacao ADD
+        //this->op_out_add2;    //Define saida da operacao ADD
+        
+        cout<<"criando componente OP"<<endl;
+    }
+}
+
+
+//Metodo Resonsavel por montar o componente de acordo com sua estrutura: VARIAVEL
+void Componente::montaComponenteVar(){
     //VERIFICAR SE E VARIAVEL
     SgInitializedName* cur_var          = isSgInitializedName(this->node);
     SgVariableDeclaration* varDec       =  isSgVariableDeclaration(cur_var->get_parent());
