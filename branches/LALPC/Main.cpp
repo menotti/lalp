@@ -26,10 +26,22 @@
 #include <map>
 #include "liveDeadVarAnalysis.h"
 #include "Componente.h"
+#include <boost/lexical_cast.hpp>
+
+#include <boost/graph/adjacency_list.hpp>
+#include <boost/graph/kruskal_min_spanning_tree.hpp>
+#include <iostream>
+#include <fstream>
+#include <list>
+
+
 
 using namespace std;
 using namespace SageInterface;
-using namespace AutoParallelization;    
+using namespace AutoParallelization;
+using std::stringstream;
+using boost::lexical_cast;
+
 
 class Main : public AstSimpleProcessing
 {
@@ -41,8 +53,9 @@ class Main : public AstSimpleProcessing
     public: virtual void geraGraficoDataFlow(SgProject *project, const string& nome);
     public: virtual void geraGraficoDefuseAnalysis(SgProject *project, const string& nome);
     //public: virtual void teste(SgProject *project, const string& nome);
-    public: virtual void identificaVariaveis(SgProject *project);
-    public: virtual void identificaFor(SgProject *project);
+    public: virtual void identificaVariaveis(SgProject *project, list<Componente> &container);
+    public: virtual void identificaFor(SgProject *project, list<Componente> &container);
+    public: virtual void analisaExp(SgNode *nodoAtual, SgNode* pai, bool debug, list<Componente> &container);
 };
 
 void Main::visit(SgNode* n){
@@ -312,7 +325,7 @@ vector<string> Main::split(const string& s, const string& delim) {
     return result;
 }
 
-void Main::identificaVariaveis(SgProject *project) {
+void Main::identificaVariaveis(SgProject *project, list<Componente> &container) {
     string nome = "";
     // For each source file in the project
     ROSE_ASSERT (project != NULL);
@@ -349,23 +362,19 @@ void Main::identificaVariaveis(SgProject *project) {
                 SgInitializedName* cur_var = isSgInitializedName(*i);
                 SgVariableDeclaration* varDec =  isSgVariableDeclaration(cur_var->get_parent());
                 
-
-                
-                //cout<< ""<< endl;
-                //cout<< "teste"<< varDec->get_mangled_name().getString()<< endl;
-                //cout<< ""<< endl;                
-               
                 if (cur_var != NULL){
                     ROSE_ASSERT(cur_var);
                     Componente comp(cur_var);
-                    comp.imprime();
+                    container.push_back(comp);
+                    //comp.imprime();
+                    cout<<container.size()<<endl;
                 }         
             }
         }
     }   
 }
 
-void Main::identificaFor(SgProject *project) {
+void Main::identificaFor(SgProject *project, list<Componente> &container) {
     string nome = "";
     // For each source file in the project
     ROSE_ASSERT (project != NULL);
@@ -404,75 +413,306 @@ void Main::identificaFor(SgProject *project) {
                 if (cur_for != NULL){
                     ROSE_ASSERT(cur_for);
                     
-                    
-                    //Componente comp(cur_var);
+                    Componente comp(cur_for);
+                    container.push_back(comp);
                     //comp.imprime();
-                    
-                    /**********************************************************/
-                    //Parte de pegar o padrao de inicio do FOR => EX.: int i = 0 
-                    SgForInitStatement* stmt    = cur_for->get_for_init_stmt();
-                    
-                    Rose_STL_Container<SgNode*> NodosFor1 = NodeQuery::querySubTree(stmt,V_SgNode); 
-                    if (NodosFor1.size()==0) continue;
-                    cout<<"FOR - Parte 1 - inicializacao FOR"<< endl;    
-                    for (Rose_STL_Container<SgNode*>::iterator for1 = NodosFor1.begin(); for1 != NodosFor1.end(); for1++ ) 
-                    {
-                        SgNode* node = isSgNode(*for1);
-                        cout<<node->class_name()<< endl;
-                        
-                        
-                    }               
-                    cout<<""<< endl;
-                    /**********************************************************/
-                    
-                    
-                    /**********************************************************/
-                    //SageInterface::getLoopCondition()
-                    //Expressao que valida o FOR => EX.: i < 10
-                    SgStatement* test           = cur_for->get_test();
-                    SgExpression* testExp       = cur_for->get_test_expr();
-                    
-                    Rose_STL_Container<SgNode*> NodosFor2 = NodeQuery::querySubTree(testExp,V_SgNode);
-                    if (NodosFor2.size()==0) continue;
-                    
-                    cout<<"FOR - Parte 2 - Condicao de parada FOR"<< endl;    
-                    for (Rose_STL_Container<SgNode*>::iterator for2 = NodosFor2.begin(); for2 != NodosFor2.end(); for2++ ) 
-                    {
-                        SgNode* node = isSgNode(*for2);
-                        cout<<node->class_name()<< endl;
-                    }               
-                    cout<<""<< endl;
-                    /**********************************************************/
-                    
-                    
-                    /**********************************************************/
-                    //Parte que identifica o incremento do FOR => EX.: i++
-                    SgExpression* increment     = cur_for->get_increment();
-                    
-                    Rose_STL_Container<SgNode*> NodosFor3 = NodeQuery::querySubTree(increment,V_SgNode);
-                    if (NodosFor3.size()==0) continue;
-                    
-                    cout<<"FOR - Parte 3 - Incremental FOR"<< endl;
-                    for (Rose_STL_Container<SgNode*>::iterator for3 = NodosFor3.begin(); for3 != NodosFor3.end(); for3++ ) 
-                    {
-                        SgNode* node = isSgNode(*for3);
-                        cout<<node->class_name()<< endl;
-                    }               
-                    cout<<""<< endl;
-                    /**********************************************************/
-                    
-                    
+
                     /**********************************************************/
                     //Corpo do Loop com as operacoes
                     SgStatement* loopBody       = cur_for->get_loop_body();
-                    SgStatement* loopBody1      = SageInterface::getLoopBody(cur_for);
+                    //SgStatement* loopBody1      = SageInterface::getLoopBody(cur_for);
                     /**********************************************************/
+                    
+                    Rose_STL_Container<SgNode*> varLoopBody = NodeQuery::querySubTree(loopBody,V_SgNode); 
+                    if (varLoopBody.size()==0) continue;
+                    
+                    for (Rose_STL_Container<SgNode*>::iterator ilb = varLoopBody.begin(); ilb != varLoopBody.end(); ilb++ ) 
+                    {
+                        
+                        SgAssignOp* expStmt = isSgAssignOp(*ilb);
+                        if(expStmt != NULL){
+                            this->analisaExp(expStmt, NULL, false, container);
+                        }
+                    }
                 }         
             }
         }
     }   
 }
 
+void Main::analisaExp(SgNode *nodoAtual, SgNode* pai, bool debug, list<Componente> &container) {
+
+    // <editor-fold defaultstate="collapsed" desc="DEBUG">
+    if (debug) {
+        cout << "" << endl;
+        cout << "-------------------------" << endl;
+        cout << "         CHEGOU          " << endl;
+        cout << "-------------------------" << endl;
+        if (nodoAtual)
+            cout << "ATUAL: " << nodoAtual->class_name() << endl;
+
+        if (pai)
+            cout << "PAI:        " << pai->class_name() << endl;
+
+        cout << "-------------------------" << endl;
+    }// </editor-fold>
+
+    /*
+     * Quando identificar ATRIBUICAO
+     */
+    SgAssignOp* expStmt = isSgAssignOp(nodoAtual);
+    if(expStmt != NULL){
+        SgNode* filhoEsq = isSgNode(expStmt->get_lhs_operand_i());
+        SgNode* filhoDir = isSgNode(expStmt->get_rhs_operand_i());
+        
+        if(filhoEsq != NULL && filhoDir != NULL){
+            //O filho esquerdo pode ser uma REFERENCIA a uma VARIAVEL ou um ARRAY
+            //neste caso tem q ser tratado neste passo inicial
+            // <editor-fold defaultstate="collapsed" desc="DEBUG">
+            SgPntrArrRefExp* decArr = isSgPntrArrRefExp(filhoEsq);
+            if (decArr != NULL) {
+                string arrName = "";
+                string arrPos = "";
+                SgVarRefExp* fe = isSgVarRefExp(decArr->get_lhs_operand_i());
+                SgVarRefExp* fd = isSgVarRefExp(decArr->get_rhs_operand_i());
+                if (fe != NULL && fd != NULL) {
+                    arrName = fe->get_symbol()->get_name().getString();
+                    arrPos = fd->get_symbol()->get_name().getString();
+                    filhoEsq = fe->get_symbol()->get_symbol_basis();
+                }
+            }
+            //TODO - FAZER PARTE DE ADD NA LISTA
+
+            if (debug) {
+                cout << "-------------------------" << endl;
+                cout << "      CHAMOU RECURSAO    " << endl;
+                cout << "-------------------------" << endl;
+                cout << " ( " << filhoDir->class_name() << " , " << filhoEsq->class_name() << " ) " << endl;
+                cout << "-------------------------" << endl;
+            }// </editor-fold>
+            Componente comp(filhoEsq);
+            container.push_back(comp);
+            analisaExp(filhoDir,filhoEsq, debug, container);
+        }
+    }
+    
+    /*
+     * Quando identificar CAST_EXP
+     * neste caso ignora e passa para o NODO abaixo
+     */
+    // <editor-fold defaultstate="collapsed" desc="NODO CAST - IGNORADO">
+    SgCastExp* castExp = isSgCastExp(nodoAtual);
+    if (castExp != NULL) {
+        SgNode* proxNodo = isSgNode(castExp->get_operand_i());
+        analisaExp(proxNodo, pai, debug, container);
+    }// </editor-fold>
+
+    
+    /*
+     * Quando identificar operacao de SOMA
+     * este nodo sempre chama rescursao pois o mesmo sempre se encontra no meio
+     * da arvore.
+     */
+    SgAddOp* expAdd = isSgAddOp(nodoAtual);
+    if(expAdd != NULL){
+        SgNode* filhoEsq = isSgNode(expAdd->get_lhs_operand_i());
+        SgNode* filhoDir = isSgNode(expAdd->get_rhs_operand_i());
+        if(filhoEsq != NULL && filhoDir != NULL){
+            // <editor-fold defaultstate="collapsed" desc="DEBUG">
+            if (debug) {
+                cout << "-------------------------" << endl;
+                cout << "      CHAMOU RECURSAO    " << endl;
+                cout << "-------------------------" << endl;
+                cout << " ( " << filhoEsq->class_name() << " , " << nodoAtual->class_name() << " ) " << endl;
+                cout << "-------------------------" << endl;
+
+            }
+
+            if (debug) {
+                cout << "-------------------------" << endl;
+                cout << "      CHAMOU RECURSAO    " << endl;
+                cout << "-------------------------" << endl;
+                cout << " ( " << filhoDir->class_name() << " , " << nodoAtual->class_name() << " ) " << endl;
+                cout << "-------------------------" << endl;
+            }// </editor-fold>
+            Componente comp(expAdd);
+            container.push_back(comp);
+            analisaExp(filhoEsq,nodoAtual,debug, container);
+            analisaExp(filhoDir,nodoAtual,debug, container);
+        }         
+    }
+    
+    /*
+     * Quando identificar operacao de SUBTRACAO
+     * este nodo sempre chama rescursao pois o mesmo sempre se encontra no meio
+     * da arvore.
+     */
+    // <editor-fold defaultstate="collapsed" desc="OP SUB">
+    SgSubtractOp* expSub = isSgSubtractOp(nodoAtual);
+    if (expSub != NULL) {
+        SgNode* filhoEsq = isSgNode(expSub->get_lhs_operand_i());
+        SgNode* filhoDir = isSgNode(expSub->get_rhs_operand_i());
+        if (filhoEsq != NULL && filhoDir != NULL) {
+            if (debug) {
+                cout << "-------------------------" << endl;
+                cout << "      CHAMOU RECURSAO    " << endl;
+                cout << "-------------------------" << endl;
+                cout << " ( " << filhoEsq->class_name() << " , " << nodoAtual->class_name() << " ) " << endl;
+                cout << "-------------------------" << endl;
+
+            }
+            analisaExp(filhoEsq, nodoAtual, debug, container);
+            if (debug) {
+                cout << "-------------------------" << endl;
+                cout << "      CHAMOU RECURSAO    " << endl;
+                cout << "-------------------------" << endl;
+                cout << " ( " << filhoDir->class_name() << " , " << nodoAtual->class_name() << " ) " << endl;
+                cout << "-------------------------" << endl;
+            }
+            analisaExp(filhoDir, nodoAtual, debug, container);
+        }
+    }// </editor-fold>
+
+    
+    /*
+     * Quando identificar operacao de DIVISAO
+     * este nodo sempre chama rescursao pois o mesmo sempre se encontra no meio
+     * da arvore.
+     */
+    // <editor-fold defaultstate="collapsed" desc="OP DIV">
+    SgDivideOp* expDiv = isSgDivideOp(nodoAtual);
+    if (expDiv != NULL) {
+        SgNode* filhoEsq = isSgNode(expDiv->get_lhs_operand_i());
+        SgNode* filhoDir = isSgNode(expDiv->get_rhs_operand_i());
+        if (filhoEsq != NULL && filhoDir != NULL) {
+            if (debug) {
+                cout << "-------------------------" << endl;
+                cout << "      CHAMOU RECURSAO    " << endl;
+                cout << "-------------------------" << endl;
+                cout << " ( " << filhoEsq->class_name() << " , " << nodoAtual->class_name() << " ) " << endl;
+                cout << "-------------------------" << endl;
+
+            }
+            analisaExp(filhoEsq, nodoAtual, debug, container);
+            if (debug) {
+                cout << "-------------------------" << endl;
+                cout << "      CHAMOU RECURSAO    " << endl;
+                cout << "-------------------------" << endl;
+                cout << " ( " << filhoDir->class_name() << " , " << nodoAtual->class_name() << " ) " << endl;
+                cout << "-------------------------" << endl;
+            }
+            analisaExp(filhoDir, nodoAtual, debug, container);
+        }
+    }// </editor-fold>
+
+    
+    /*
+     * Quando identificar operacao de MULTIPLICACAO
+     * este nodo sempre chama rescursao pois o mesmo sempre se encontra no meio
+     * da arvore.
+     */
+    // <editor-fold defaultstate="collapsed" desc="OP MULT">
+    SgMultiplyOp* expMul = isSgMultiplyOp(nodoAtual);
+    if (expMul != NULL) {
+        SgNode* filhoEsq = isSgNode(expMul->get_lhs_operand_i());
+        SgNode* filhoDir = isSgNode(expMul->get_rhs_operand_i());
+        if (filhoEsq != NULL && filhoDir != NULL) {
+            if (debug) {
+                cout << "-------------------------" << endl;
+                cout << "      CHAMOU RECURSAO    " << endl;
+                cout << "-------------------------" << endl;
+                cout << " ( " << filhoEsq->class_name() << " , " << nodoAtual->class_name() << " ) " << endl;
+                cout << "-------------------------" << endl;
+
+            }
+            analisaExp(filhoEsq, nodoAtual, debug, container);
+            if (debug) {
+                cout << "-------------------------" << endl;
+                cout << "      CHAMOU RECURSAO    " << endl;
+                cout << "-------------------------" << endl;
+                cout << " ( " << filhoDir->class_name() << " , " << nodoAtual->class_name() << " ) " << endl;
+                cout << "-------------------------" << endl;
+            }
+            analisaExp(filhoDir, nodoAtual, debug, container);
+        }
+    }// </editor-fold>
+
+    
+    
+    /**************************************************************************/
+    //ABAIXO AS FOLHAS DAS ARVORES, NESTE CASO NAO CHAMA MAIS A RECURSAO
+    /*
+     * Quando identificar Pntr ARRAY
+     * este nodo mostra que identificou um array que 'e utilizado na 
+     * expressao, neste caso pode-se pegar os dois filhos deste nodo
+     * pois os mesmos ja sao folhas da arvore.
+     */
+    SgPntrArrRefExp* decArr = isSgPntrArrRefExp(nodoAtual);
+    if(decArr != NULL){
+        string arrName  = "";
+        string arrPos   = ""; 
+        SgVarRefExp* fe = isSgVarRefExp( decArr->get_lhs_operand_i() );
+        SgVarRefExp* fd = isSgVarRefExp( decArr->get_rhs_operand_i() );
+        if ( fe != NULL &&  fd != NULL){
+            // <editor-fold defaultstate="collapsed" desc="DEBUG">
+            arrName     = fe->get_symbol()->get_name().getString();
+            arrPos      = fd->get_symbol()->get_name().getString();
+            
+            if (debug) {
+                cout << "-------------------------------" << endl;
+                cout << "      DENTRO DO COMPONENTE     " << endl;
+                cout << "-------------------------------" << endl;
+                cout << "ATUAL:    " << nodoAtual->class_name() << endl;
+                cout << "PAI:      " << pai->class_name() << endl;
+                cout << "-------------------------------" << endl;
+                cout << "ARRAY:    " << arrName << "[ " << arrPos << " ]" << " ---> " << pai->class_name() << endl;
+                cout << "-------------------------------" << endl;
+            }// </editor-fold>
+            Componente comp(decArr);
+            //comp.ligadoEm(pai);
+            //container.push_back(comp);
+        }
+    }
+    
+    
+    /*
+     * Quando identificar uma REFERENCIA a uma VARIAVEL
+     * este nodo mostra que identificou uma variavel que 'e utilizado na 
+     * expressao.
+     */
+    SgVarRefExp* decVar = isSgVarRefExp(nodoAtual);
+    if(decVar != NULL){
+        string varNome  = "";
+        string arrPos   = "";         
+        varNome     = decVar->get_symbol()->get_name().getString();
+        Componente comp(decVar);
+        //comp.ligadoEm(pai);
+        container.push_back(comp);
+        // <editor-fold defaultstate="collapsed" desc="DEBUG">
+        if (debug) {
+            cout << "-------------------------------" << endl;
+            cout << "VAR: " << varNome << " ---> " << pai->class_name() << endl;
+            cout << "-------------------------------" << endl;
+        }// </editor-fold>   
+    }
+   
+    /*
+     * Quando identificar um valor INTEIRO na expressao.
+     */
+    SgIntVal* valInt = isSgIntVal(nodoAtual);
+    if(valInt != NULL){
+        Componente comp(valInt);
+        //comp.ligadoEm(pai);
+        container.push_back(comp);
+        // <editor-fold defaultstate="collapsed" desc="DEBUG">
+        if (debug) {
+            cout << "-------------------------------" << endl;
+            cout << "INT VALOR:    " << valInt->get_valueString() << " ---> " << pai->class_name() << endl;
+            cout << "-------------------------------" << endl;
+        }// </editor-fold> 
+    }
+    
+}
 
 int main(int argc, char * argv[]){
     SgProject *project = frontend (argc, argv);
@@ -483,6 +723,9 @@ int main(int argc, char * argv[]){
     bool VarLiveDead    = false;
     bool AnaliseLoops   = false;
     ROSE_ASSERT (project != NULL);
+    
+    //Criando Container dos componentes identificados na arvore AST
+    list<Componente> componentes;
     
     //RETIRAR REDUNDANCIA
     if(Redundancia == true){
@@ -536,8 +779,9 @@ int main(int argc, char * argv[]){
     cout<<"#                                             #"<<endl;
     cout<<"# Iniciando processo de identificacao das     #"<<endl;
     cout<<"# Variaveis                                   #"<<endl;
-    myvisitor.identificaVariaveis(project);
-    //myvisitor.traverseInputFiles(project,preorder);
+    
+    myvisitor.identificaVariaveis(project, componentes);
+    
     cout<<"# ------------------------------------------  #"<<endl;
     cout<<"# Variaveis identificadas                     #"<<endl;
     cout<<"###############################################"<<endl;
@@ -549,11 +793,27 @@ int main(int argc, char * argv[]){
     cout<<"#                                             #"<<endl;
     cout<<"# Iniciando processo de identificacao dos     #"<<endl;
     cout<<"# Loops                                       #"<<endl;
-    myvisitor.identificaFor(project);
+    myvisitor.identificaFor(project, componentes);
     //myvisitor.traverseInputFiles(project,preorder);
     cout<<"# ------------------------------------------  #"<<endl;
     cout<<"# Loops identificados                         #"<<endl;
     cout<<"###############################################"<<endl;
+    
+    
+    
+    cout<<"###############################################"<<endl;
+    cout<<"#            RODANDO COMPONENTES              #"<<endl;
+    cout<<"###############################################"<<endl;
+    cout<<"# Iniciando testes                            #"<<endl;
+    cout<<"  Total Comp: "<< componentes.size()<<endl;
+    list<Componente>::iterator i;
+    for(i=componentes.begin(); i != componentes.end(); i++){
+        //cout<< (*i).tipo_comp<< " - "<< cout<< (*i).node <<  endl;
+        (*i).imprime();
+    }
+    cout<<"###############################################"<<endl;
+    
+    
     
     //PERCORRE CADA NODO
     //myvisitor.traverseInputFiles(project,preorder);
@@ -573,6 +833,7 @@ int main(int argc, char * argv[]){
     generatePDF(*project);
     
     // Dump mangled map
+    /**
     cout<<""<<endl;
     cout<<"----------- mangled name map -------------"<<endl;
     std::map< SgNode *, std::string > & m_map = SgNode::get_globalMangledNameMap ();
@@ -586,7 +847,7 @@ int main(int argc, char * argv[]){
 
     // Dump mangled types
     cout<<"----------- mangled types-------------"<<endl;
-    
-    
+    */ 
+   
     return backend(project);
 }
