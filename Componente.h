@@ -20,8 +20,8 @@ using namespace SageInterface;
 class Componente {  
     public:
         Componente(SgNode* node);
+        void ligado_Em(SgNode* nodo);
         void imprime();
-        //void ligadoEm(SgNode* node);
         virtual ~Componente();
         string  tipo_comp; 
         SgNode* node;
@@ -31,7 +31,7 @@ class Componente {
         string  nome;
         //string  tipo_comp;      //Tipo do Componente - Registrador - Operacao - Contador - etc
         bool    eInicializado;  //Se a variavel foi inicializada
-        SgNode* ligadoEm;       //Relacionado com os nodos nas expressoes
+        SgNode* nodoPai;       //Relacionado com os nodos nas expressoes
         
         //VAR
         string  tipo_var;       //Int - Str - Flo
@@ -65,6 +65,7 @@ class Componente {
         //Referencias - Referencias de Arrays e Variaveis dentro das expressoes
         string  ref_var_nome;
         string  ref_var_index;
+        string  ref_var_tipo;   //A referencia pode ser Vetor ou Variavel
         
         void montaComponenteVar();
         void montaComponenteLoop();
