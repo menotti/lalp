@@ -68,17 +68,16 @@ Componente::Componente(SgNode* node) {
     /************************************************/
 }
 
-//void Componente::ligadoEm(SgNode* nodo){
+void Componente::ligado_Em(SgNode* nodo){
     //Cria a ligacao do noto atual na entrada do nodo do PARAMETRO
-    //this->ligadoEm = nodo;
-//}
+    this->nodoPai = nodo;
+}
 
 void Componente::limpaAtributos(){
     //COMUM
     this->nome;
     this->tipo_comp     = "";     //Tipo do Componente - Registrador - Operacao - Contador - etc
     this->eInicializado = false;  //Se a variavel foi inicializada
-    this->ligadoEm      = NULL;   //Relacionado com os nodos nas expressoes
 
     //VAR
     this->tipo_var      = "";     //Int - Str - Flo
@@ -106,8 +105,10 @@ void Componente::limpaAtributos(){
     
     //Referencias
     this->ref_var_nome  = "";
-    this->ref_var_index  = "";
+    this->ref_var_index = "";
+    this->ref_var_tipo  = "";
 }
+
 
 void Componente::imprime(){
     if(this->tipo_comp == "REG" || this->tipo_comp == "MEM"){
@@ -134,11 +135,19 @@ void Componente::imprime(){
     }else if(this->tipo_comp == "OPE"){
         cout<<"OPERCACAO:  "<<this->tipo_comp       <<endl;
         cout<<"TIPO OP:    "<<this->op_tipo         <<endl;
+        cout<<"LIGADO EM-->"<<this->nodoPai->class_name()   <<endl;
         cout<< "--------------------------------------------"<< endl;
     }else if(this->tipo_comp == "CON"){
         cout<<"Constante"<<endl;
         cout<<"TIPO:      "<<this->cons_tipo        <<endl;
         cout<<"VALOR:     "<<this->valor             <<endl;
+        cout<< "--------------------------------------------"<< endl;
+    }else if(this->tipo_comp == "REF"){
+        cout<<"Referencia "<<endl;
+        cout<<"TIPO:  "<<this->ref_var_tipo      <<endl;
+        cout<<"Nome Ref:  "<<this->ref_var_nome      <<endl;
+        cout<<"INDICE:    "<<this->ref_var_index     <<endl;
+        cout<< "--------------------------------------------"<< endl;
     }
 }
 
@@ -148,8 +157,10 @@ void Componente::montaComponenteRef(){
     this->tipo_comp = "REF";
     if(nodo_ref_var != NULL){
         this->ref_var_nome = nodo_ref_var->get_symbol()->get_name().getString();
+        this->ref_var_tipo  = "VAR";
     }
     if(nodo_ref_arr != NULL){
+        this->ref_var_tipo  = "VET";
         string arrName  = "";
         string arrPos   = ""; 
         SgVarRefExp* fe = isSgVarRefExp( nodo_ref_arr->get_lhs_operand_i() );
@@ -241,9 +252,6 @@ void Componente::montaComponenteConst(){
         this->tipo_comp = "CON";
         this->cons_tipo = "INT";
         this->valor     = nodo_int->get_valueString();
-        //this->cons_out;    //Define saida da operacao ADD
-        
-        //cout<<"criando componente OP"<<endl;
     }
 }
 
@@ -255,8 +263,6 @@ void Componente::montaComponenteOp(){
         //this->op_in_add1;     //Define entrada 1 da operacao ADD
         //this->op_in_add2;     //Define entrada 1 da operacao ADD
         //this->op_out_add2;    //Define saida da operacao ADD
-        
-        cout<<"criando componente OP"<<endl;
     }
 }
 
