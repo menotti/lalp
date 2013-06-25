@@ -13,10 +13,17 @@
 #include "variables.h"
 #include <boost/lexical_cast.hpp>
 #include "Componente.h"
+#include <boost/graph/graphviz.hpp>
+#include "grafo.h"
 
+#include <boost/graph/adjacency_list.hpp>
+#include <boost/graph/kruskal_min_spanning_tree.hpp>
+#include <iostream>
+#include <fstream>
 
 using namespace std;
 using namespace SageInterface;
+using namespace boost;
 using std::stringstream;
 using boost::lexical_cast;
 using std::string;
@@ -24,7 +31,6 @@ using std::string;
 ListaComponente::ListaComponente(SgProject *project) {
     this->project = project;
 }
-
 
 vector<string> ListaComponente::split(const string& s, const string& delim) {
     vector<string> result;
@@ -54,6 +60,7 @@ void ListaComponente::imprimeTodosComponentes() {
         (*i).imprime();
     }
 }
+
 void ListaComponente::identificaVariaveis() {
     SgProject *project = this->project;
     string nome = "";
@@ -466,6 +473,75 @@ void ListaComponente::identificaFor() {
             }
         }
     }   
+}
+
+void ListaComponente::geraGrafo(){
+    //SgGraph* g = new SgGraph("Demo graph");
+    SgGraph* g = new SgGraph("Demo graph");
+    
+    
+    //Efetuar contagem de nodos importantes para a geracao dos grafos.
+    //Nesse caso a declaracao de variaveis ou vetores e dispensavel, pois os 
+    //mesmos sao acessados pelas REFERENCIAS nas expressoes.
+    list<Componente>::iterator i;
+    int qtd = 0;
+    string nome = "";
+    for(i=this->ListaComp.begin(); i != this->ListaComp.end(); i++){
+        if ((*i).tipo_comp == "REG" || (*i).tipo_comp == "MEM" ) continue;
+        
+        qtd++;
+    }
+    
+    //CRIA ARQUIVO .DOT
+    std::ofstream fout("comp.dot");
+    
+     fout << "digraph diagram {\n";
+
+    //CRIAR NODOS
+    SgGraphNode* nodes[qtd];
+    int pos = 0;
+    for(i=this->ListaComp.begin(); i != this->ListaComp.end(); i++){
+        //cout<< (*i).tipo_comp<< " - "<< cout<< (*i).node <<  endl;
+        if ((*i).tipo_comp == "REG" || (*i).tipo_comp == "MEM" ) continue;
+        
+        if ((*i).tipo_comp == "CTD"){
+            nome = "CONTADOR: "+(*i).for_ctr_var;
+            fout << (*i).imprimeDOT();
+        }
+        if ((*i).tipo_comp == "OPE"){
+            nome = "OPERACAO: "+(*i).tipo_comp;
+        }
+        if ((*i).tipo_comp == "CON"){
+            nome = "CONSTANTE: "+(*i).cons_tipo+" VALOR "+(*i).valor;
+        }
+        if ((*i).tipo_comp == "REF"){
+            nome = "REFERENCIA: "+(*i).ref_var_nome;
+        }
+        
+        //Criando Node
+        SgGraphNode* nodeGraph = g->addNode(nome, (*i).node);
+        nodes[pos] = nodeGraph;
+        pos++;
+    }
+    fout << "}\n";
+    
+    //CRIAR ARESTAS
+    for(int i=0; i < qtd; i++){
+        for(int j=0; j < qtd; j++){
+            if (i < j){
+                g->addEdge(nodes[i],nodes[j]);
+            }
+        }    
+    }
+    GraphDotOutput(g);
+    
+    //Graph
+    
+    cout<< "numerdo de NODOS   " << g->numberOfGraphNodes()<< endl;
+    cout<< "numerdo de ARESTAS " << g->numberOfGraphEdges()<< endl;
+    
+    
+    
 }
 
 ListaComponente::~ListaComponente() {

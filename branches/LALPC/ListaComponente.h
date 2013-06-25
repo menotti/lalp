@@ -24,6 +24,7 @@ class ListaComponente {
         ListaComponente(SgProject *project);
         virtual ~ListaComponente();
         void identificaVariaveis();
+        void geraGrafo();
         void identificaFor();
         void analisaExp(SgNode *nodoAtual, SgNode* pai, bool debug);
         void imprimeTodosComponentes();

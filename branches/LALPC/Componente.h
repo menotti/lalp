@@ -21,10 +21,21 @@ class Componente {
     public:
         Componente(SgNode* node);
         void ligado_Em(SgNode* nodo);
+        string imprimeDOT();
         void imprime();
         virtual ~Componente();
         string  tipo_comp; 
         SgNode* node;
+        string  for_ctr_var;    //Variavel de controle - EX.: (i) => for (i = 0, ....)
+        string  op_tipo;        //Definir tipo de opercacao - soma, sub, mult, div, etc.
+        string  valor;          //Valor da Variavel ou Todos os elementos do Vetor
+        
+        //Referencias - Referencias de Arrays e Variaveis dentro das expressoes
+        string  ref_var_nome;
+        string  ref_var_index;
+        string  ref_var_tipo;   //A referencia pode ser Vetor ou Variavel
+        
+        string  cons_tipo;
     private:
         //COMUM
         //SgNode* node;
@@ -35,20 +46,20 @@ class Componente {
         
         //VAR
         string  tipo_var;       //Int - Str - Flo
-        string  valor;          //Valor da Variavel ou Todos os elementos do Vetor
+        //string  valor;          //Valor da Variavel ou Todos os elementos do Vetor
         
         //VETOR
         bool    eVetor;
         int     qtd_ele_vet;    //quantidade de elementos dentro do vetor
         
         //OPERACAO
-        string  op_tipo;        //Definir tipo de opercacao - soma, sub, mult, div, etc.
+        //string  op_tipo;        //Definir tipo de opercacao - soma, sub, mult, div, etc.
         string  op_in_add1;     //Define entrada 1 da operacao ADD
         string  op_in_add2;     //Define entrada 1 da operacao ADD
         string  op_out_add2;    //Define saida da operacao ADD       
         
         //CONTADOR - EX.: for (i = 0, i < 10, i++)
-        string  for_ctr_var;    //Variavel de controle - EX.: (i) => for (i = 0, ....)
+        //string  for_ctr_var;    //Variavel de controle - EX.: (i) => for (i = 0, ....)
         int     for_ctr_val_ini;//Valor inicial da variavel de controle
         string  for_cond_var;   //variavel de condicao - EX.: (i) => i < 10
         int     for_cond_val;   //valor de condicao - EX.: (10) => i < 10
@@ -59,13 +70,13 @@ class Componente {
         //DELAY
         
         //Constante - Numero dentro da Expressao
-        string  cons_tipo;
+        //string  cons_tipo;
         //valor
         
         //Referencias - Referencias de Arrays e Variaveis dentro das expressoes
-        string  ref_var_nome;
-        string  ref_var_index;
-        string  ref_var_tipo;   //A referencia pode ser Vetor ou Variavel
+        //string  ref_var_nome;
+        //string  ref_var_index;
+        //string  ref_var_tipo;   //A referencia pode ser Vetor ou Variavel
         
         void montaComponenteVar();
         void montaComponenteLoop();

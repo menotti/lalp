@@ -110,6 +110,66 @@ void Componente::limpaAtributos(){
 }
 
 
+string Componente::imprimeDOT(){
+    string res = "";
+    if(this->tipo_comp == "REG"){
+    
+        cout<< "NOME VAR:  "<< this->nome           << endl;
+        cout<< "E INICIADO:"<< this->eInicializado  << endl;
+        cout<< "E VETOR:   "<< this->eVetor         << endl;
+        cout<< "TIPO VAR:  "<< this->tipo_var       << endl;
+        cout<< "TIPO COMP: "<< this->tipo_comp      << endl;
+        cout<< "QTD ELEME: "<< this->qtd_ele_vet    << endl;
+        cout<< "VALOR:     "<< this->valor          << endl;
+    }if(this->tipo_comp == "MEM"){    
+        res += "\""+this->nome+"\"[shape=record, fontcolor=blue, style=\"filled\", fillcolor=\"lightgray\", label=\"{{<address>address[11]|<clk>clk|<data_in>data_in[32]|<oe>oe|<we>we}|block_ram:"+this->nome+"|{<data_out>data_out[32]}}\"]; \n";
+        cout<< "NOME VAR:  "<< this->nome           << endl;
+        cout<< "E INICIADO:"<< this->eInicializado  << endl;
+        cout<< "E VETOR:   "<< this->eVetor         << endl;
+        cout<< "TIPO VAR:  "<< this->tipo_var       << endl;
+        cout<< "TIPO COMP: "<< this->tipo_comp      << endl;
+        cout<< "QTD ELEME: "<< this->qtd_ele_vet    << endl;
+        cout<< "VALOR:     "<< this->valor          << endl;
+        cout<< "--------------------------------------------"<< endl;
+    }else if(this->tipo_comp == "CTD"){
+        res += "\""+this->for_ctr_var +"\"[shape=record, fontcolor=blue, style=\"filled\", fillcolor=\"lightgray\", label=\"{{<clk>clk|<clk_en>clk_en|<input>input[16]|<load>load|<reset>reset|<termination>termination[16]}|counter:"+this->for_ctr_var +"\n\\<\n+=1\nsteps=1|{<done>done|<output>output[16]|<step>step}}\"]; \n";   
+        cout<< "VAR:       "<<this->for_ctr_var     << endl;
+        cout<< "VAL INI:   "<<this->for_ctr_val_ini << endl;
+        cout<< " "<< endl;
+        cout<< "VAR:       "<<this->for_cond_var    << endl;
+        cout<< "OP CONTR:  "<<this->for_cond_op     << endl;
+        cout<< "VAL CONTR: "<<this->for_cond_val    << endl;  
+        cout<< " "<< endl;
+        cout<< "VAR INCR:  "<<this->for_incr_var    << endl;
+        cout<< "OP  INCR:  "<<this->for_incr_op     << endl;
+        cout<< "VAL INCR:  "<<this->for_incr_val    << endl;
+        cout<< "--------------------------------------------"<< endl;
+    }else if(this->tipo_comp == "OPE"){
+        
+        cout<<"OPERCACAO:  "<<this->tipo_comp       <<endl;
+         cout<<"TIPO OP:    "<<this->op_tipo         <<endl;
+        if(this->tipo_comp == "ADD"){
+            res += "\"x_add_op_s_y\" [shape=record, fontcolor=blue, label=\"{{<I0>I0[32]|<I1>I1[32]}|add_op_s:x_add_op_s_y|{<O0>O0[32]}}\"]; \n";
+        }
+       
+        
+        cout<<"TIPO OP:    "<<this->op_tipo         <<endl;
+        cout<<"LIGADO EM-->"<<this->nodoPai->class_name()   <<endl;
+        cout<< "--------------------------------------------"<< endl;
+    }else if(this->tipo_comp == "CON"){
+        cout<<"Constante"<<endl;
+        cout<<"TIPO:      "<<this->cons_tipo        <<endl;
+        cout<<"VALOR:     "<<this->valor             <<endl;
+        cout<< "--------------------------------------------"<< endl;
+    }else if(this->tipo_comp == "REF"){
+        cout<<"Referencia "<<endl;
+        cout<<"TIPO:  "<<this->ref_var_tipo      <<endl;
+        cout<<"Nome Ref:  "<<this->ref_var_nome      <<endl;
+        cout<<"INDICE:    "<<this->ref_var_index     <<endl;
+        cout<< "--------------------------------------------"<< endl;
+    }
+    return res;
+}
 void Componente::imprime(){
     if(this->tipo_comp == "REG" || this->tipo_comp == "MEM"){
         cout<< "NOME VAR:  "<< this->nome           << endl;
