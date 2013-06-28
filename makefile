@@ -18,7 +18,7 @@ BOOST_INSTALL=/home/demo/opt/boost-1.40.0
 
 ## Your translator
 TRANSLATOR=Main
-TRANSLATOR_SOURCE=$(TRANSLATOR).cpp autoParSupport.cpp Componente.cpp ListaComponente.cpp
+TRANSLATOR_SOURCE=$(TRANSLATOR).cpp autoParSupport.cpp Componente.cpp ListaComponente.cpp Ligacao.cpp
 
 ## Input testcode for your translator
 TESTCODE=hello.c
@@ -39,4 +39,4 @@ check:
 	./$(TRANSLATOR) -c -I. -I$(ROSE_INSTALL)/include $(TESTCODE) 
 	
 clean:
-	rm -rf $(TRANSLATOR) *.o rose_* *.dot
+	rm -rf $(TRANSLATOR) *.o *.pdf rose_* *.dot

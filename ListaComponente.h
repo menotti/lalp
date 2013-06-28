@@ -7,14 +7,16 @@
 #include "rose.h"
 #include <string>
 #include <stdio.h>
+#ifndef LISTACOMPONENTE_H
+#define	LISTACOMPONENTE_H
+
 #include <sstream>
 #include <stdlib.h>
 #include "variables.h"
 #include <list>
 #include "Componente.h"
 
-#ifndef LISTACOMPONENTE_H
-#define	LISTACOMPONENTE_H
+
 
 using namespace std;
 using namespace SageInterface;

@@ -393,7 +393,7 @@ int main(int argc, char * argv[]){
     //TODO Fazer Identificar Expressoes (fora do FOR)
     listaCom.identificaFor();
     //listaCom.geraGrafo();
-    //listaCom.FinalizaComponentes();
+    listaCom.FinalizaComponentes();
     listaCom.imprimeTodosComponentes();
     cout<<"###############################################"<<endl;
     

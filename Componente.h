@@ -1,3 +1,5 @@
+#ifndef COMPONENTE_H
+#define	COMPONENTE_H
 /* 
  * File:   Componente.h
  * Author: Lucas Porto
@@ -10,9 +12,11 @@
 #include <sstream>
 #include <stdlib.h>
 #include "variables.h"
+#include <list>
+#include "Ligacao.h"
 
-#ifndef COMPONENTE_H
-#define	COMPONENTE_H
+
+
 
 using namespace std;
 using namespace SageInterface;
@@ -22,17 +26,19 @@ class Componente {
                 Componente(SgNode* node);
         void    ligado_Em(SgNode* nodo);
         SgNode* getPai();
-        void    setSaida(Componente &pai);
-        void    setEntrada(Componente &filho);
+
+        void    imprimeLigacoes();
         string  imprimeDOT();
+        //void    addLigacao();
         void    imprime();
         virtual ~Componente();
+        void    addLigacao(Ligacao* lig);
         string  tipo_comp; 
         SgNode* node;
         string  for_ctr_var;    //Variavel de controle - EX.: (i) => for (i = 0, ....)
         string  op_tipo;        //Definir tipo de opercacao - soma, sub, mult, div, etc.
         string  valor;          //Valor da Variavel ou Todos os elementos do Vetor
-        Componente* out_comp;   //Define saida do componente (esse atributo 'e comum)
+        //Componente* out_comp;   //Define saida do componente (esse atributo 'e comum)
         
         //Referencias - Referencias de Arrays e Variaveis dentro das expressoes
         string  ref_var_nome;
@@ -48,6 +54,7 @@ class Componente {
         bool    eInicializado;  //Se a variavel foi inicializada
         SgNode* nodoPai;       //Relacionado com os nodos nas expressoes
         //Componente* out_comp;   //Define saida do componente (esse atributo 'e comum)
+        list<Ligacao*> ligacoes;
         
         //VAR
         string  tipo_var;       //Int - Str - Flo
@@ -59,8 +66,8 @@ class Componente {
         
         //OPERACAO
         //string  op_tipo;        //Definir tipo de opercacao - soma, sub, mult, div, etc.
-        Componente*  op_in_1;    //Define entrada 1
-        Componente*  op_in_2;    //Define entrada 2
+        //Componente*  op_in_1;    //Define entrada 1
+        //Componente*  op_in_2;    //Define entrada 2
         
         //CONTADOR - EX.: for (i = 0, i < 10, i++)
         //string  for_ctr_var;    //Variavel de controle - EX.: (i) => for (i = 0, ....)
