@@ -399,9 +399,9 @@ void ListaComponente::analisaExp(SgNode *nodoAtual, SgNode* pai, bool debug) {
     }// </editor-fold>
 
     
-    /**************************************************************************/
+    //**************************************************************************
     //ABAIXO AS FOLHAS DAS ARVORES, NESTE CASO NAO CHAMA MAIS A RECURSAO
-    /**************************************************************************/
+    //**************************************************************************
     /*
      * Quando identificar Pntr ARRAY
      * este nodo mostra que identificou um array que 'e utilizado na 
@@ -483,20 +483,20 @@ void ListaComponente::analisaExp(SgNode *nodoAtual, SgNode* pai, bool debug) {
 //de quem e o nodo PAI. Este passo vai preencher os atributos de ligacao dos 
 //componentes de acordo com o nodo pai.
 void ListaComponente::FinalizaComponentes(){
-    /**
-    list<Componente>::iterator i;
-    list<Componente>::iterator j;
+
+    list<Componente*>::iterator i;
+    list<Componente*>::iterator j;
     cout<<"Entrou no processo de finalizacao dos COMPONENTES"<<endl;
     for(i=this->ListaComp.begin(); i != this->ListaComp.end(); i++){
         for(j=this->ListaComp.begin(); j != this->ListaComp.end(); j++){
-            if ((*i).tipo_comp == "REG" || (*i).tipo_comp == "MEM" || (*j).tipo_comp == "REG" || (*j).tipo_comp == "MEM"  ) continue;
-            if ((*i).node == (*j).node ) continue;
+            if ((*i)->tipo_comp == "REG" || (*i)->tipo_comp == "MEM" || (*j)->tipo_comp == "REG" || (*j)->tipo_comp == "MEM"  ) continue;
+            if ((*i)->node == (*j)->node ) continue;
             
-            if( (*i).getPai() == (*j).node ){            
-                Componente filho= (*i);
-                Componente pai  = (*j);
-                (*i).setSaida(pai);
-                (*j).setEntrada(filho);
+            if( (*i)->getPai() == (*j)->node ){            
+                Componente* filho= (*i);
+                Componente* pai  = (*j);
+                Ligacao* lig = new Ligacao(filho, pai);
+                (*i)->addLigacao(lig);
             }
             
         }
@@ -506,14 +506,14 @@ void ListaComponente::FinalizaComponentes(){
     //Processo de identificacao dos componentes CONTADORES e criar a ligacao
     //para as memorias 
     for(i=this->ListaComp.begin(); i != this->ListaComp.end(); i++){
-        if ((*i).tipo_comp == "REG" || (*i).tipo_comp == "MEM" ) continue;
+        if ((*i)->tipo_comp == "REG" || (*i)->tipo_comp == "MEM" ) continue;
         
-        if ((*i).tipo_comp == "CTD"){
+        if ((*i)->tipo_comp == "CTD"){
             for(j=this->ListaComp.begin(); j != this->ListaComp.end(); j++){
-                if ((*j).tipo_comp == "REG" || (*j).tipo_comp == "MEM"  ) continue;
-                if ((*i).node == (*j).node ) continue;
+                if ((*j)->tipo_comp == "REG" || (*j)->tipo_comp == "MEM") continue;
+                if ((*i)->node == (*j)->node ) continue;
                 
-                if ((*j).tipo_comp == "REF" ){
+                if ((*j)->tipo_comp == "REF"){
                     
                 }
             }
@@ -521,7 +521,7 @@ void ListaComponente::FinalizaComponentes(){
     }
     
     cout<<"Saiu do processo de finalizacao dos COMPONENTES"<<endl;
-    */
+    
     
     //Apos finalizado o processo de setar todas as ligacoes o proximo passo 
     //e renomear todos os componentes de OPERACAO (necessidade ate o momento)

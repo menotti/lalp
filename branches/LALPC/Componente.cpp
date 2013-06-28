@@ -20,7 +20,7 @@ using std::stringstream;
 using boost::lexical_cast;
 using std::string;
 
-Componente::Componente(SgNode* node) {
+Componente::Componente(SgNode* node){
     this->limpaAtributos();
     this->node = node;
     
@@ -80,7 +80,7 @@ void Componente::limpaAtributos(){
     this->tipo_comp     = "";     //Tipo do Componente - Registrador - Operacao - Contador - etc
     this->eInicializado = false;  //Se a variavel foi inicializada
     this->nodoPai       = NULL;   //Informa o nodo Pai na expressao. 
-    this->out_comp      = NULL;
+    //this->out_comp      = NULL;
 
     //VAR
     this->tipo_var      = "";     //Int - Str - Flo
@@ -92,8 +92,8 @@ void Componente::limpaAtributos(){
 
     //OPERACAO
     this->op_tipo       = "";
-    this->op_in_1       = NULL; //Define entrada 1
-    this->op_in_2       = NULL; //Define entrada 2
+    //this->op_in_1       = NULL; //Define entrada 1
+    //this->op_in_2       = NULL; //Define entrada 2
     
     //FOR
     this->for_ctr_var   = "";   //Variavel de controle - EX.: (i) => for (i = 0, ....)
@@ -114,25 +114,14 @@ void Componente::limpaAtributos(){
     this->ref_var_tipo  = "";
 }
 
+void Componente::addLigacao(Ligacao* lig){
+    this->ligacoes.push_back(lig);
+}
 
 SgNode* Componente::getPai(){
     return this->nodoPai;
 }
-
-void Componente::setSaida(Componente &pai){
-    this->out_comp = &pai;
-}
-
-void Componente::setEntrada(Componente &filho){
-    if(this->tipo_comp == "OPE"){
-        if (this->op_in_1 == NULL) {
-            this->op_in_1 = &filho;
-        }else{
-            this->op_in_2 = &filho;
-        }
-    }
-}
-    
+ 
 
 string Componente::imprimeDOT(){
     string res = "";
@@ -220,10 +209,8 @@ void Componente::imprime(){
     }else if(this->tipo_comp == "OPE"){
         cout<<"OPERCACAO:  "<<this->tipo_comp       <<endl;
         cout<<"TIPO OP:    "<<this->op_tipo         <<endl;
-        //cout<<"SAIDA:      "<<this->out_comp->node->class_name()   <<endl;
-        //cout<<"ENTRADA 1:  "<<this->op_in_1->node->class_name()   <<endl;
-        //cout<<"ENTRADA 2:  "<<this->op_in_2->node->class_name()   <<endl;
-        //cout<<"LIGADO EM-->"<<this->nodoPai->class_name()   <<endl;
+        cout<<"-- LIGACOES:   "<<endl;
+        this->imprimeLigacoes();
         cout<< "--------------------------------------------"<< endl;
     }else if(this->tipo_comp == "CON"){
         cout<<"Constante   "<<endl;
@@ -241,6 +228,17 @@ void Componente::imprime(){
     }
 }
 
+void Componente::imprimeLigacoes(){
+    cout<<"Entrando no metodo impr Lig"<<endl;
+    list<Ligacao*>::iterator i;
+    for(i=this->ligacoes.begin(); i != this->ligacoes.end(); i++){
+        cout<< "ORIGEM:  "<< (*i)->getOrigem()->node->class_name()<<endl;
+        cout<< "DESTINO: "<< (*i)->getDestino()->node->class_name()<<endl;
+        cout<< "" <<endl;
+    }
+    cout<<"Saindo do metodo impr Lig"<<endl;
+}
+    
 void Componente::montaComponenteRef(){
     SgVarRefExp* nodo_ref_var     = isSgVarRefExp(this->node);
     SgPntrArrRefExp* nodo_ref_arr = isSgPntrArrRefExp(this->node);
