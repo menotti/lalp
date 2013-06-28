@@ -25,7 +25,7 @@
 #include <algorithm>
 #include <map>
 #include "liveDeadVarAnalysis.h"
-#include "Componente.h"
+//#include "Componente.h"
 #include "ListaComponente.h"
 #include <boost/lexical_cast.hpp>
 
@@ -392,8 +392,9 @@ int main(int argc, char * argv[]){
     listaCom.identificaVariaveis();
     //TODO Fazer Identificar Expressoes (fora do FOR)
     listaCom.identificaFor();
-    listaCom.geraGrafo();
-    //listaCom.imprimeTodosComponentes();
+    //listaCom.geraGrafo();
+    //listaCom.FinalizaComponentes();
+    listaCom.imprimeTodosComponentes();
     cout<<"###############################################"<<endl;
     
     

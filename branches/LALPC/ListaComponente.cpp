@@ -15,6 +15,7 @@
 #include "Componente.h"
 #include <boost/graph/graphviz.hpp>
 #include "grafo.h"
+#include "Ligacao.h"
 
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/kruskal_min_spanning_tree.hpp>
@@ -54,10 +55,11 @@ vector<string> ListaComponente::split(const string& s, const string& delim) {
 }
 
 void ListaComponente::imprimeTodosComponentes() {
-    list<Componente>::iterator i;
+    
+    list<Componente*>::iterator i;
     for(i=this->ListaComp.begin(); i != this->ListaComp.end(); i++){
         //cout<< (*i).tipo_comp<< " - "<< cout<< (*i).node <<  endl;
-        (*i).imprime();
+        (*i)->imprime();
     }
 }
 
@@ -100,14 +102,82 @@ void ListaComponente::identificaVariaveis() {
                 
                 if (cur_var != NULL){
                     ROSE_ASSERT(cur_var);
-                    Componente comp(cur_var);
+                    Componente* comp = new Componente(cur_var);
                     this->ListaComp.push_back(comp);
-                    //comp.imprime();
+                    //comp->imprime();
                     //cout<<container.size()<<endl;
                 }         
             }
         }
     }   
+}
+
+void ListaComponente::identificaFor() {
+    
+    SgProject *project = this->project;
+    string nome = "";
+    // For each source file in the project
+    ROSE_ASSERT (project != NULL);
+    SgFilePtrList & ptr_list = project->get_fileList();
+    for (SgFilePtrList::iterator iter = ptr_list.begin(); iter!=ptr_list.end(); iter++)
+    {
+        SgFile* sageFile = (*iter);
+        SgSourceFile * sfile = isSgSourceFile(sageFile);
+        ROSE_ASSERT(sfile);
+        SgGlobal *root = sfile->get_globalScope();
+        SgDeclarationStatementPtrList& declList = root->get_declarations ();
+        bool hasOpenMP= false; // flag to indicate if omp.h is needed in this file
+
+        //For each function body in the scope
+        for (SgDeclarationStatementPtrList::iterator p = declList.begin(); p != declList.end(); ++p) 
+        {
+            
+            SgFunctionDeclaration *func = isSgFunctionDeclaration(*p);
+            if (func == 0)  continue;
+            SgFunctionDefinition *defn = func->get_definition();
+            if (defn == 0)  continue;
+            //ignore functions in system headers, Can keep them to test robustness
+            if (defn->get_file_info()->get_filename()!=sageFile->get_file_info()->get_filename())
+                continue;
+            SgBasicBlock *body = defn->get_body();  
+            // For each loop 
+            
+            Rose_STL_Container<SgNode*> var = NodeQuery::querySubTree(defn,V_SgForStatement); 
+            if (var.size()==0) continue;
+            
+            for (Rose_STL_Container<SgNode*>::iterator i = var.begin(); i != var.end(); i++ ) 
+            {
+                SgForStatement* cur_for = isSgForStatement(*i);
+                
+                if (cur_for != NULL){
+                    ROSE_ASSERT(cur_for);
+                    
+                    Componente* comp = new Componente(cur_for);
+                    this->ListaComp.push_back(comp);
+                    //comp->imprime();
+
+                    
+                    //Corpo do Loop com as operacoes
+                    SgStatement* loopBody       = cur_for->get_loop_body();
+                    //SgStatement* loopBody1      = SageInterface::getLoopBody(cur_for);
+                    
+                    
+                    Rose_STL_Container<SgNode*> varLoopBody = NodeQuery::querySubTree(loopBody,V_SgNode); 
+                    if (varLoopBody.size()==0) continue;
+                    
+                    for (Rose_STL_Container<SgNode*>::iterator ilb = varLoopBody.begin(); ilb != varLoopBody.end(); ilb++ ) 
+                    {
+                        
+                        SgAssignOp* expStmt = isSgAssignOp(*ilb);
+                        if(expStmt != NULL){
+                            analisaExp(expStmt, NULL, false);
+                        }
+                    }
+                }         
+            }
+        }
+    } 
+    
 }
 
 void ListaComponente::analisaExp(SgNode *nodoAtual, SgNode* pai, bool debug) {
@@ -162,7 +232,7 @@ void ListaComponente::analisaExp(SgNode *nodoAtual, SgNode* pai, bool debug) {
                 cout << " ( " << filhoDir->class_name() << " , " << filhoEsq->class_name() << " ) " << endl;
                 cout << "-------------------------" << endl;
             }// </editor-fold>
-            Componente comp(filhoEsq);
+            Componente* comp = new Componente(filhoEsq);
             this->ListaComp.push_back(comp);
             analisaExp(filhoDir, filhoEsq, debug);
         }
@@ -209,8 +279,8 @@ void ListaComponente::analisaExp(SgNode *nodoAtual, SgNode* pai, bool debug) {
                 cout << " ( " << filhoDir->class_name() << " , " << nodoAtual->class_name() << " ) " << endl;
                 cout << "-------------------------" << endl;
             }// </editor-fold>
-            Componente comp(expAdd);
-            comp.ligado_Em(pai);
+            Componente* comp = new Componente(expAdd);
+            comp->ligado_Em(pai);
             this->ListaComp.push_back(comp);
             analisaExp(filhoEsq, nodoAtual, debug);
             analisaExp(filhoDir, nodoAtual, debug);
@@ -246,8 +316,8 @@ void ListaComponente::analisaExp(SgNode *nodoAtual, SgNode* pai, bool debug) {
                 cout << " ( " << filhoDir->class_name() << " , " << nodoAtual->class_name() << " ) " << endl;
                 cout << "-------------------------" << endl;
             }// </editor-fold>
-            Componente comp(expSub);
-            comp.ligado_Em(pai);
+            Componente* comp = new Componente(expSub);
+            comp->ligado_Em(pai);
             this->ListaComp.push_back(comp);
             analisaExp(filhoEsq, nodoAtual, debug);
             analisaExp(filhoDir, nodoAtual, debug);
@@ -283,8 +353,8 @@ void ListaComponente::analisaExp(SgNode *nodoAtual, SgNode* pai, bool debug) {
                 cout << "-------------------------" << endl;
             }// </editor-fold>
 
-            Componente comp(expDiv);
-            comp.ligado_Em(pai);
+            Componente* comp = new Componente(expDiv);
+            comp->ligado_Em(pai);
             this->ListaComp.push_back(comp);
             analisaExp(filhoEsq, nodoAtual, debug);
             analisaExp(filhoDir, nodoAtual, debug);
@@ -320,8 +390,8 @@ void ListaComponente::analisaExp(SgNode *nodoAtual, SgNode* pai, bool debug) {
                 cout << "-------------------------" << endl;
             }// </editor-fold>
 
-            Componente comp(expMul);
-            comp.ligado_Em(pai);
+            Componente* comp = new Componente(expMul);
+            comp->ligado_Em(pai);
             this->ListaComp.push_back(comp);
             analisaExp(filhoEsq, nodoAtual, debug);
             analisaExp(filhoDir, nodoAtual, debug);
@@ -360,8 +430,8 @@ void ListaComponente::analisaExp(SgNode *nodoAtual, SgNode* pai, bool debug) {
                 cout << "ARRAY:    " << arrName << "[ " << arrPos << " ]" << " ---> " << pai->class_name() << endl;
                 cout << "-------------------------------" << endl;
             }// </editor-fold>
-            Componente comp(decArr);
-            comp.ligado_Em(pai);
+            Componente* comp = new Componente(decArr);
+            comp->ligado_Em(pai);
             this->ListaComp.push_back(comp);
         }
     }// </editor-fold>
@@ -378,8 +448,8 @@ void ListaComponente::analisaExp(SgNode *nodoAtual, SgNode* pai, bool debug) {
         string varNome = "";
         string arrPos = "";
         varNome = decVar->get_symbol()->get_name().getString();
-        Componente comp(decVar);
-        comp.ligado_Em(pai);
+        Componente* comp = new Componente(decVar);
+        comp->ligado_Em(pai);
         this->ListaComp.push_back(comp);
         // <editor-fold defaultstate="collapsed" desc="DEBUG">
         if (debug) {
@@ -396,8 +466,8 @@ void ListaComponente::analisaExp(SgNode *nodoAtual, SgNode* pai, bool debug) {
     // <editor-fold defaultstate="collapsed" desc="CONSTANTE INTEIRA">
     SgIntVal* valInt = isSgIntVal(nodoAtual);
     if (valInt != NULL) {
-        Componente comp(valInt);
-        comp.ligado_Em(pai);
+        Componente* comp = new Componente(valInt);
+        comp->ligado_Em(pai);
         this->ListaComp.push_back(comp);
         // <editor-fold defaultstate="collapsed" desc="DEBUG">
         if (debug) {
@@ -409,73 +479,58 @@ void ListaComponente::analisaExp(SgNode *nodoAtual, SgNode* pai, bool debug) {
 
 }
 
-void ListaComponente::identificaFor() {
-    SgProject *project = this->project;
-    string nome = "";
-    // For each source file in the project
-    ROSE_ASSERT (project != NULL);
-    SgFilePtrList & ptr_list = project->get_fileList();
-    for (SgFilePtrList::iterator iter = ptr_list.begin(); iter!=ptr_list.end(); iter++)
-    {
-        SgFile* sageFile = (*iter);
-        SgSourceFile * sfile = isSgSourceFile(sageFile);
-        ROSE_ASSERT(sfile);
-        SgGlobal *root = sfile->get_globalScope();
-        SgDeclarationStatementPtrList& declList = root->get_declarations ();
-        bool hasOpenMP= false; // flag to indicate if omp.h is needed in this file
-
-        //For each function body in the scope
-        for (SgDeclarationStatementPtrList::iterator p = declList.begin(); p != declList.end(); ++p) 
-        {
+//Durante o processo de criacao dos componentes, estes armazenam informacoes 
+//de quem e o nodo PAI. Este passo vai preencher os atributos de ligacao dos 
+//componentes de acordo com o nodo pai.
+void ListaComponente::FinalizaComponentes(){
+    /**
+    list<Componente>::iterator i;
+    list<Componente>::iterator j;
+    cout<<"Entrou no processo de finalizacao dos COMPONENTES"<<endl;
+    for(i=this->ListaComp.begin(); i != this->ListaComp.end(); i++){
+        for(j=this->ListaComp.begin(); j != this->ListaComp.end(); j++){
+            if ((*i).tipo_comp == "REG" || (*i).tipo_comp == "MEM" || (*j).tipo_comp == "REG" || (*j).tipo_comp == "MEM"  ) continue;
+            if ((*i).node == (*j).node ) continue;
             
-            SgFunctionDeclaration *func = isSgFunctionDeclaration(*p);
-            if (func == 0)  continue;
-            SgFunctionDefinition *defn = func->get_definition();
-            if (defn == 0)  continue;
-            //ignore functions in system headers, Can keep them to test robustness
-            if (defn->get_file_info()->get_filename()!=sageFile->get_file_info()->get_filename())
-                continue;
-            SgBasicBlock *body = defn->get_body();  
-            // For each loop 
+            if( (*i).getPai() == (*j).node ){            
+                Componente filho= (*i);
+                Componente pai  = (*j);
+                (*i).setSaida(pai);
+                (*j).setEntrada(filho);
+            }
             
-            Rose_STL_Container<SgNode*> var = NodeQuery::querySubTree(defn,V_SgForStatement); 
-            if (var.size()==0) continue;
-            
-            for (Rose_STL_Container<SgNode*>::iterator i = var.begin(); i != var.end(); i++ ) 
-            {
-                SgForStatement* cur_for = isSgForStatement(*i);
+        }
+    }
+    
+    
+    //Processo de identificacao dos componentes CONTADORES e criar a ligacao
+    //para as memorias 
+    for(i=this->ListaComp.begin(); i != this->ListaComp.end(); i++){
+        if ((*i).tipo_comp == "REG" || (*i).tipo_comp == "MEM" ) continue;
+        
+        if ((*i).tipo_comp == "CTD"){
+            for(j=this->ListaComp.begin(); j != this->ListaComp.end(); j++){
+                if ((*j).tipo_comp == "REG" || (*j).tipo_comp == "MEM"  ) continue;
+                if ((*i).node == (*j).node ) continue;
                 
-                if (cur_for != NULL){
-                    ROSE_ASSERT(cur_for);
+                if ((*j).tipo_comp == "REF" ){
                     
-                    Componente comp(cur_for);
-                    this->ListaComp.push_back(comp);
-                    //comp.imprime();
-
-                    /**********************************************************/
-                    //Corpo do Loop com as operacoes
-                    SgStatement* loopBody       = cur_for->get_loop_body();
-                    //SgStatement* loopBody1      = SageInterface::getLoopBody(cur_for);
-                    /**********************************************************/
-                    
-                    Rose_STL_Container<SgNode*> varLoopBody = NodeQuery::querySubTree(loopBody,V_SgNode); 
-                    if (varLoopBody.size()==0) continue;
-                    
-                    for (Rose_STL_Container<SgNode*>::iterator ilb = varLoopBody.begin(); ilb != varLoopBody.end(); ilb++ ) 
-                    {
-                        
-                        SgAssignOp* expStmt = isSgAssignOp(*ilb);
-                        if(expStmt != NULL){
-                            analisaExp(expStmt, NULL, false);
-                        }
-                    }
-                }         
+                }
             }
         }
-    }   
+    }
+    
+    cout<<"Saiu do processo de finalizacao dos COMPONENTES"<<endl;
+    */
+    
+    //Apos finalizado o processo de setar todas as ligacoes o proximo passo 
+    //e renomear todos os componentes de OPERACAO (necessidade ate o momento)
+    //isso 'e necessario para a geracao correta do arquivo DOT e diferenciar 
+    //por exemplo dois componentes de SOMA
 }
-
+    
 void ListaComponente::geraGrafo(){
+    /**
     //SgGraph* g = new SgGraph("Demo graph");
     SgGraph* g = new SgGraph("Demo graph");
     
@@ -493,9 +548,9 @@ void ListaComponente::geraGrafo(){
     }
     
     //CRIA ARQUIVO .DOT
-    std::ofstream fout("comp.dot");
+    //std::ofstream fout("comp->dot");
     
-     fout << "digraph diagram {\n";
+    //fout << "digraph diagram {\n";
 
     //CRIAR NODOS
     SgGraphNode* nodes[qtd];
@@ -506,7 +561,7 @@ void ListaComponente::geraGrafo(){
         
         if ((*i).tipo_comp == "CTD"){
             nome = "CONTADOR: "+(*i).for_ctr_var;
-            fout << (*i).imprimeDOT();
+            //fout << (*i).imprimeDOT();
         }
         if ((*i).tipo_comp == "OPE"){
             nome = "OPERACAO: "+(*i).tipo_comp;
@@ -523,24 +578,27 @@ void ListaComponente::geraGrafo(){
         nodes[pos] = nodeGraph;
         pos++;
     }
-    fout << "}\n";
+    //fout << "}\n";
     
     //CRIAR ARESTAS
     for(int i=0; i < qtd; i++){
         for(int j=0; j < qtd; j++){
             if (i < j){
+                Componente a = nodes[i];
+                Componente b = nodes[j];
+                
                 g->addEdge(nodes[i],nodes[j]);
             }
         }    
     }
-    GraphDotOutput(g);
+    //GraphDotOutput(g);
     
     //Graph
     
     cout<< "numerdo de NODOS   " << g->numberOfGraphNodes()<< endl;
     cout<< "numerdo de ARESTAS " << g->numberOfGraphEdges()<< endl;
     
-    
+    */
     
 }
 

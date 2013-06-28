@@ -19,16 +19,20 @@ using namespace SageInterface;
 
 class Componente {  
     public:
-        Componente(SgNode* node);
-        void ligado_Em(SgNode* nodo);
-        string imprimeDOT();
-        void imprime();
+                Componente(SgNode* node);
+        void    ligado_Em(SgNode* nodo);
+        SgNode* getPai();
+        void    setSaida(Componente &pai);
+        void    setEntrada(Componente &filho);
+        string  imprimeDOT();
+        void    imprime();
         virtual ~Componente();
         string  tipo_comp; 
         SgNode* node;
         string  for_ctr_var;    //Variavel de controle - EX.: (i) => for (i = 0, ....)
         string  op_tipo;        //Definir tipo de opercacao - soma, sub, mult, div, etc.
         string  valor;          //Valor da Variavel ou Todos os elementos do Vetor
+        Componente* out_comp;   //Define saida do componente (esse atributo 'e comum)
         
         //Referencias - Referencias de Arrays e Variaveis dentro das expressoes
         string  ref_var_nome;
@@ -43,6 +47,7 @@ class Componente {
         //string  tipo_comp;      //Tipo do Componente - Registrador - Operacao - Contador - etc
         bool    eInicializado;  //Se a variavel foi inicializada
         SgNode* nodoPai;       //Relacionado com os nodos nas expressoes
+        //Componente* out_comp;   //Define saida do componente (esse atributo 'e comum)
         
         //VAR
         string  tipo_var;       //Int - Str - Flo
@@ -54,9 +59,8 @@ class Componente {
         
         //OPERACAO
         //string  op_tipo;        //Definir tipo de opercacao - soma, sub, mult, div, etc.
-        string  op_in_add1;     //Define entrada 1 da operacao ADD
-        string  op_in_add2;     //Define entrada 1 da operacao ADD
-        string  op_out_add2;    //Define saida da operacao ADD       
+        Componente*  op_in_1;    //Define entrada 1
+        Componente*  op_in_2;    //Define entrada 2
         
         //CONTADOR - EX.: for (i = 0, i < 10, i++)
         //string  for_ctr_var;    //Variavel de controle - EX.: (i) => for (i = 0, ....)

@@ -24,11 +24,12 @@ class ListaComponente {
         ListaComponente(SgProject *project);
         virtual ~ListaComponente();
         void identificaVariaveis();
+        void FinalizaComponentes();
         void geraGrafo();
         void identificaFor();
         void analisaExp(SgNode *nodoAtual, SgNode* pai, bool debug);
         void imprimeTodosComponentes();
-        list<Componente> ListaComp;
+        list<Componente*> ListaComp;
 
     private:
         SgProject* project;
