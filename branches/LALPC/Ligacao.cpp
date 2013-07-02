@@ -19,6 +19,12 @@ Ligacao::Ligacao(class Componente* origem, class Componente* destino, const stri
     //cout<< "Ligacao: " << origem->node->class_name() << "--->" << destino->node->class_name() << endl;
 }
 
+string Ligacao::imprimeDot(){
+    string res = "";
+    res += "\""+this->origem->getName()+"\" -> \"" +this->destino->getName()+"\"[label=\"" +this->nome+  "\" color=red fontcolor=red]; \n";
+    return res;
+}
+
 class Componente* Ligacao::getOrigem() {
     return this->origem;
 }

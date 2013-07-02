@@ -124,60 +124,20 @@ SgNode* Componente::getPai(){
 
 string Componente::imprimeDOT(){
     string res = "";
-    if(this->tipo_comp == "REG"){
-    
-        cout<< "NOME VAR:  "<< this->nome           << endl;
-        cout<< "E INICIADO:"<< this->eInicializado  << endl;
-        cout<< "E VETOR:   "<< this->eVetor         << endl;
-        cout<< "TIPO VAR:  "<< this->tipo_var       << endl;
-        cout<< "TIPO COMP: "<< this->tipo_comp      << endl;
-        cout<< "QTD ELEME: "<< this->qtd_ele_vet    << endl;
-        cout<< "VALOR:     "<< this->valor          << endl;
-    }if(this->tipo_comp == "MEM"){    
-        res += "\""+this->nome+"\" [shape=record, fontcolor=blue, style=\"filled\", fillcolor=\"lightgray\", label=\"{{<address>address[11]|<clk>clk|<data_in>data_in[32]|<oe>oe|<we>we}|block_ram:"+this->nome+"|{<data_out>data_out[32]}}\"]; \n";
-        cout<< "NOME VAR:  "<< this->nome           << endl;
-        cout<< "E INICIADO:"<< this->eInicializado  << endl;
-        cout<< "E VETOR:   "<< this->eVetor         << endl;
-        cout<< "TIPO VAR:  "<< this->tipo_var       << endl;
-        cout<< "TIPO COMP: "<< this->tipo_comp      << endl;
-        cout<< "QTD ELEME: "<< this->qtd_ele_vet    << endl;
-        cout<< "VALOR:     "<< this->valor          << endl;
-        cout<< "--------------------------------------------"<< endl;
-    }else if(this->tipo_comp == "CTD"){
+    if(this->tipo_comp == "CTD"){
         res += "\""+this->for_ctr_var +"\" [shape=record, fontcolor=blue, style=\"filled\", fillcolor=\"lightgray\", label=\"{{<clk>clk|<clk_en>clk_en|<input>input[16]|<load>load|<reset>reset|<termination>termination[16]}|counter:"+this->for_ctr_var +"\\n\\<\\n+=1\\nsteps=1|{<done>done|<output>output[16]|<step>step}}\"]; \n";   
-        cout<< "VAR:       "<<this->for_ctr_var     << endl;
-        cout<< "VAL INI:   "<<this->for_ctr_val_ini << endl;
-        cout<< " "<< endl;
-        cout<< "VAR:       "<<this->for_cond_var    << endl;
-        cout<< "OP CONTR:  "<<this->for_cond_op     << endl;
-        cout<< "VAL CONTR: "<<this->for_cond_val    << endl;  
-        cout<< " "<< endl;
-        cout<< "VAR INCR:  "<<this->for_incr_var    << endl;
-        cout<< "OP  INCR:  "<<this->for_incr_op     << endl;
-        cout<< "VAL INCR:  "<<this->for_incr_val    << endl;
-        cout<< "--------------------------------------------"<< endl;
     }else if(this->tipo_comp == "OPE"){  
-        cout<<"OPERCACAO:  "<<this->tipo_comp       <<endl;
-        cout<<"TIPO OP:    "<<this->op_tipo         <<endl;
-        if(this->tipo_comp == "ADD"){
-            res += "\"x_add_op_s_y\" [shape=record, fontcolor=blue, label=\"{{<I0>I0[32]|<I1>I1[32]}|add_op_s:x_add_op_s_y|{<O0>O0[32]}}\"]; \n";
-            //res += "\"x_add_op_s_y\" [shape=record, fontcolor=blue, label=\"{{<I0>I0[32]|<I1>I1[32]}|add_op_s:x_add_op_s_y|{<O0>O0[32]}}\"]; \n";
-        }       
-        
-        cout<<"TIPO OP:    "<<this->op_tipo         <<endl;
-        cout<<"LIGADO EM-->"<<this->nodoPai->class_name()   <<endl;
-        cout<< "--------------------------------------------"<< endl;
+            res += "\""+this->nome+"\" [shape=record, fontcolor=blue, label=\"{{<I0>I0[32]|<I1>I1[32]}|add_op_s:"+this->nome+"|{<O0>O0[32]}}\"]; \n";
+            //res += "\"x_add_op_s_y\" [shape=record, fontcolor=blue, label=\"{{<I0>I0[32]|<I1>I1[32]}|add_op_s:x_add_op_s_y|{<O0>O0[32]}}\"]; \n";     
     }else if(this->tipo_comp == "CON"){
-        cout<<"Constante"<<endl;
-        cout<<"TIPO:      "<<this->cons_tipo        <<endl;
-        cout<<"VALOR:     "<<this->valor             <<endl;
-        cout<< "--------------------------------------------"<< endl;
+        
     }else if(this->tipo_comp == "REF"){
-        cout<<"Referencia "<<endl;
-        cout<<"TIPO:  "<<this->ref_var_tipo      <<endl;
-        cout<<"Nome Ref:  "<<this->ref_var_nome      <<endl;
-        cout<<"INDICE:    "<<this->ref_var_index     <<endl;
-        cout<< "--------------------------------------------"<< endl;
+        if(this->ref_var_tipo == "VET"){
+                res += "\""+this->ref_var_nome+"\" [shape=record, fontcolor=blue, style=\"filled\", fillcolor=\"lightgray\", label=\"{{<address>address[11]|<clk>clk|<data_in>data_in[32]|<oe>oe|<we>we}|block_ram:"+this->ref_var_nome+"|{<data_out>data_out[32]}}\"]; \n";
+        }
+        if(this->ref_var_tipo == "VAR"){
+                res += "\""+this->ref_var_nome+"\" [shape=record, fontcolor=blue, style=\"filled\", fillcolor=\"lightgray\", label=\"{{<I0>I0[32]|<clk>clk|<reset>reset|<we>we}|reg_op:"+this->ref_var_nome+"|{<O0>O0[32]}}\"]; \n";
+        }
     }
     return res;
 }
@@ -208,7 +168,7 @@ void Componente::imprime(){
         cout<<"OPERCACAO:  "<<this->tipo_comp       <<endl;
         cout<<"TIPO OP:    "<<this->op_tipo         <<endl;
         cout<<"-- LIGACOES:   "<<endl;
-        this->imprimeLigacoes();
+        //this->imprimeLigacoes();
         cout<< "--------------------------------------------"<< endl;
     }else if(this->tipo_comp == "CON"){
         cout<<"Constante   "<<endl;
@@ -242,6 +202,7 @@ void Componente::montaComponenteRef(){
     this->tipo_comp = "REF";
     if(nodo_ref_var != NULL){
         this->ref_var_nome = nodo_ref_var->get_symbol()->get_name().getString();
+        this->nome = this->ref_var_nome;
         this->ref_var_tipo  = "VAR";
     }
     if(nodo_ref_arr != NULL){
@@ -255,6 +216,7 @@ void Componente::montaComponenteRef(){
             arrPos      = fd->get_symbol()->get_name().getString();
             this->ref_var_nome = arrName;
             this->ref_var_index= arrPos;
+            this->nome = this->ref_var_nome;
         }
     }
 }
@@ -266,7 +228,7 @@ void Componente::montaComponenteLoop(){
         ROSE_ASSERT(cur_for);
 
         this->for_ctr_var = getLoopIndexVariable(this->node)->get_name().str();
-      
+        this->nome = this->for_ctr_var;
         /**********************************************************/
         //Parte de pegar o padrao de inicio do FOR => EX.: int i = 0 
         SgForInitStatement* stmt    = cur_for->get_for_init_stmt();
@@ -349,6 +311,14 @@ void Componente::montaComponenteOp(){
         //this->op_in_add2;     //Define entrada 1 da operacao ADD
         //this->op_out_add2;    //Define saida da operacao ADD
     }
+}
+
+void Componente::setName(const string &nome){
+    this->nome = nome;
+}
+
+string Componente::getName(){
+    return this->nome;
 }
 
 //Metodo Resonsavel por montar o componente de acordo com sua estrutura: VARIAVEL
