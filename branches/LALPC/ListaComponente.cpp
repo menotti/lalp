@@ -220,7 +220,7 @@ void ListaComponente::analisaExp(SgNode *nodoAtual, SgNode* pai, bool debug) {
                 if (fe != NULL && fd != NULL) {
                     arrName = fe->get_symbol()->get_name().getString();
                     arrPos = fd->get_symbol()->get_name().getString();
-                    filhoEsq = fe->get_symbol()->get_symbol_basis();
+                    //filhoEsq = fe->get_symbol()->get_symbol_basis();
                 }
             }
             //TODO - FAZER PARTE DE ADD NA LISTA
@@ -486,17 +486,26 @@ void ListaComponente::FinalizaComponentes(){
 
     list<Componente*>::iterator i;
     list<Componente*>::iterator j;
+    int qtdLig = 0;
+    
+    //Processo de Ligacao SIMPLES (cria a ligacao disponivel na arvore AST gerada pelo ROSE)
     cout<<"Entrou no processo de finalizacao dos COMPONENTES"<<endl;
     for(i=this->ListaComp.begin(); i != this->ListaComp.end(); i++){
+        //if ((*i)->tipo_comp == "REG" || (*i)->tipo_comp == "MEM" ) continue;
+        //cout<< "Impressao: " << (*i)->tipo_comp << endl;
         for(j=this->ListaComp.begin(); j != this->ListaComp.end(); j++){
             if ((*i)->tipo_comp == "REG" || (*i)->tipo_comp == "MEM" || (*j)->tipo_comp == "REG" || (*j)->tipo_comp == "MEM"  ) continue;
             if ((*i)->node == (*j)->node ) continue;
             
-            if( (*i)->getPai() == (*j)->node ){            
+            if( (*i)->getPai() == (*j)->node ){    
                 Componente* filho= (*i);
                 Componente* pai  = (*j);
-                Ligacao* lig = new Ligacao(filho, pai);
+                std::string str = boost::lexical_cast<std::string>(qtdLig);
+                Ligacao* lig = new Ligacao(filho, pai, "s");
                 (*i)->addLigacao(lig);
+                //(*i)->imprimeLigacoes();
+                this->ListaLiga.push_back(lig);
+                qtdLig++;
             }
             
         }
@@ -507,18 +516,40 @@ void ListaComponente::FinalizaComponentes(){
     //para as memorias 
     for(i=this->ListaComp.begin(); i != this->ListaComp.end(); i++){
         if ((*i)->tipo_comp == "REG" || (*i)->tipo_comp == "MEM" ) continue;
-        
         if ((*i)->tipo_comp == "CTD"){
+            //cout<<"Contador usando indice na var: "<< (*i)->for_ctr_var <<endl;
             for(j=this->ListaComp.begin(); j != this->ListaComp.end(); j++){
                 if ((*j)->tipo_comp == "REG" || (*j)->tipo_comp == "MEM") continue;
                 if ((*i)->node == (*j)->node ) continue;
                 
                 if ((*j)->tipo_comp == "REF"){
-                    
+                    if ((*j)->ref_var_index == (*i)->for_ctr_var){
+                        Componente* filho= (*i);
+                        Componente* pai  = (*j);
+                        std::string str = boost::lexical_cast<std::string>(qtdLig);
+                        Ligacao* lig = new Ligacao(filho, pai, "s");
+                        (*i)->addLigacao(lig);
+                        this->ListaLiga.push_back(lig);
+                        qtdLig++;
+                    }
                 }
             }
         }
     }
+    
+    
+    //Processo de identificacao dos componentes CONTADORES e criar a ligacao
+    //para as memorias 
+    for(i=this->ListaComp.begin(); i != this->ListaComp.end(); i++){
+        if ((*i)->tipo_comp == "REG" || (*i)->tipo_comp == "MEM" ) continue;
+        
+        Componente* comp = (*i);
+        cout<<"--------------------------"<<endl;
+        cout<<"Componente: "<< comp->node->class_name() <<endl;
+        comp->imprimeLigacoes();
+        cout<<"--------------------------"<<endl;
+    }
+    
     
     cout<<"Saiu do processo de finalizacao dos COMPONENTES"<<endl;
     

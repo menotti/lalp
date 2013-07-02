@@ -121,7 +121,6 @@ void Componente::addLigacao(Ligacao* lig){
 SgNode* Componente::getPai(){
     return this->nodoPai;
 }
- 
 
 string Componente::imprimeDOT(){
     string res = "";
@@ -157,14 +156,13 @@ string Componente::imprimeDOT(){
         cout<< "OP  INCR:  "<<this->for_incr_op     << endl;
         cout<< "VAL INCR:  "<<this->for_incr_val    << endl;
         cout<< "--------------------------------------------"<< endl;
-    }else if(this->tipo_comp == "OPE"){
-        
+    }else if(this->tipo_comp == "OPE"){  
         cout<<"OPERCACAO:  "<<this->tipo_comp       <<endl;
         cout<<"TIPO OP:    "<<this->op_tipo         <<endl;
         if(this->tipo_comp == "ADD"){
             res += "\"x_add_op_s_y\" [shape=record, fontcolor=blue, label=\"{{<I0>I0[32]|<I1>I1[32]}|add_op_s:x_add_op_s_y|{<O0>O0[32]}}\"]; \n";
-        } 
-       
+            //res += "\"x_add_op_s_y\" [shape=record, fontcolor=blue, label=\"{{<I0>I0[32]|<I1>I1[32]}|add_op_s:x_add_op_s_y|{<O0>O0[32]}}\"]; \n";
+        }       
         
         cout<<"TIPO OP:    "<<this->op_tipo         <<endl;
         cout<<"LIGADO EM-->"<<this->nodoPai->class_name()   <<endl;
@@ -229,14 +227,13 @@ void Componente::imprime(){
 }
 
 void Componente::imprimeLigacoes(){
-    cout<<"Entrando no metodo impr Lig"<<endl;
     list<Ligacao*>::iterator i;
+    //cout<<"QTD ELEM: "<< this->ligacoes.size() << endl;
     for(i=this->ligacoes.begin(); i != this->ligacoes.end(); i++){
         cout<< "ORIGEM:  "<< (*i)->getOrigem()->node->class_name()<<endl;
         cout<< "DESTINO: "<< (*i)->getDestino()->node->class_name()<<endl;
         cout<< "" <<endl;
     }
-    cout<<"Saindo do metodo impr Lig"<<endl;
 }
     
 void Componente::montaComponenteRef(){
