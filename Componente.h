@@ -27,8 +27,10 @@ class Componente {
         void    ligado_Em(SgNode* nodo);
         SgNode* getPai();
 
+        void    setName(const string &nome);
         void    imprimeLigacoes();
         string  imprimeDOT();
+        string  getName();
         //void    addLigacao();
         void    imprime();
         virtual ~Componente();

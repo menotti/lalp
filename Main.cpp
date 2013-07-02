@@ -394,7 +394,8 @@ int main(int argc, char * argv[]){
     listaCom.identificaFor();
     //listaCom.geraGrafo();
     listaCom.FinalizaComponentes();
-    listaCom.imprimeTodosComponentes();
+    //listaCom.imprimeAll();
+    //listaCom.imprimeTodosComponentes();
     cout<<"###############################################"<<endl;
     
     

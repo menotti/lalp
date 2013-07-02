@@ -18,6 +18,7 @@ public:
     Ligacao(class Componente* origem, class Componente* destino,const string &nome = "");
     class Componente* getOrigem();
     class Componente* getDestino();
+    string imprimeDot();
     string getNome();
     virtual ~Ligacao();
 private:

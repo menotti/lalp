@@ -28,6 +28,7 @@ class ListaComponente {
         void identificaVariaveis();
         void FinalizaComponentes();
         void geraGrafo();
+        void imprimeAll();
         void identificaFor();
         void analisaExp(SgNode *nodoAtual, SgNode* pai, bool debug);
         void imprimeTodosComponentes();

@@ -486,6 +486,8 @@ void ListaComponente::FinalizaComponentes(){
 
     list<Componente*>::iterator i;
     list<Componente*>::iterator j;
+    list<Ligacao*>::iterator    k;
+    
     int qtdLig = 0;
     
     //Processo de Ligacao SIMPLES (cria a ligacao disponivel na arvore AST gerada pelo ROSE)
@@ -498,41 +500,12 @@ void ListaComponente::FinalizaComponentes(){
             if ((*i)->node == (*j)->node ) continue;
             
             if( (*i)->getPai() == (*j)->node ){    
-                Componente* filho= (*i);
-                Componente* pai  = (*j);
                 std::string str = boost::lexical_cast<std::string>(qtdLig);
-                Ligacao* lig = new Ligacao(filho, pai, "s");
+                Ligacao* lig = new Ligacao((*i), (*j), "s"+str);
                 (*i)->addLigacao(lig);
                 //(*i)->imprimeLigacoes();
                 this->ListaLiga.push_back(lig);
                 qtdLig++;
-            }
-            
-        }
-    }
-    
-    
-    //Processo de identificacao dos componentes CONTADORES e criar a ligacao
-    //para as memorias 
-    for(i=this->ListaComp.begin(); i != this->ListaComp.end(); i++){
-        if ((*i)->tipo_comp == "REG" || (*i)->tipo_comp == "MEM" ) continue;
-        if ((*i)->tipo_comp == "CTD"){
-            //cout<<"Contador usando indice na var: "<< (*i)->for_ctr_var <<endl;
-            for(j=this->ListaComp.begin(); j != this->ListaComp.end(); j++){
-                if ((*j)->tipo_comp == "REG" || (*j)->tipo_comp == "MEM") continue;
-                if ((*i)->node == (*j)->node ) continue;
-                
-                if ((*j)->tipo_comp == "REF"){
-                    if ((*j)->ref_var_index == (*i)->for_ctr_var){
-                        Componente* filho= (*i);
-                        Componente* pai  = (*j);
-                        std::string str = boost::lexical_cast<std::string>(qtdLig);
-                        Ligacao* lig = new Ligacao(filho, pai, "s");
-                        (*i)->addLigacao(lig);
-                        this->ListaLiga.push_back(lig);
-                        qtdLig++;
-                    }
-                }
             }
         }
     }
@@ -543,23 +516,95 @@ void ListaComponente::FinalizaComponentes(){
     for(i=this->ListaComp.begin(); i != this->ListaComp.end(); i++){
         if ((*i)->tipo_comp == "REG" || (*i)->tipo_comp == "MEM" ) continue;
         
-        Componente* comp = (*i);
-        cout<<"--------------------------"<<endl;
-        cout<<"Componente: "<< comp->node->class_name() <<endl;
-        comp->imprimeLigacoes();
-        cout<<"--------------------------"<<endl;
+        if ((*i)->tipo_comp == "CTD"){
+            //cout<<"Contador usando indice na var: "<< (*i)->for_ctr_var <<endl;
+            for(j=this->ListaComp.begin(); j != this->ListaComp.end(); j++){
+                if ((*j)->tipo_comp == "REG" || (*j)->tipo_comp == "MEM") continue;
+                if ((*i)->node == (*j)->node ) continue;
+                
+                if ((*j)->tipo_comp == "REF"){
+                    if ((*j)->ref_var_index == (*i)->for_ctr_var){
+                        std::string str = boost::lexical_cast<std::string>(qtdLig);
+                        Ligacao* lig = new Ligacao((*i), (*j), "s"+str);
+                        (*i)->addLigacao(lig);
+                        this->ListaLiga.push_back(lig);
+                        qtdLig++;
+                    }
+                }
+            }
+        }
     }
     
     
+    
+    //Processo responsavel por criar nomes dos componentes similar ao proposto
+    //no LALP (VAR_op_add_VAR) isso ajuda a diferenciar cada ligacao
+    
+    for(i=this->ListaComp.begin(); i != this->ListaComp.end(); i++){
+        if ((*i)->tipo_comp == "REG" || (*i)->tipo_comp == "MEM" ) continue;
+        
+        if ((*i)->tipo_comp == "OPE"){
+            string nome  = "";
+            int incr_nome= 0;
+            for(k=this->ListaLiga.begin(); k != this->ListaLiga.end(); k++){
+                Componente* destino = (*k)->getDestino();
+                if((*i)->node == destino->node){
+                    if (incr_nome < 1){
+                        //TODO fazer os restantes das OPERACOES
+                        nome += (*k)->getOrigem()->getName()+"_op_add_";
+                        incr_nome++;
+                    }else{
+                        nome += (*k)->getOrigem()->getName();
+                        (*i)->setName(nome);
+                    }
+                }    
+            }            
+        }  
+    }
+    
+ 
+    //CRIA ARQUIVO .DOT
+    std::ofstream fout("comp.dot");
+    fout << "digraph diagram {\n";
+    fout << "// Components (Nodes) \n";
+    cout<<"------------------------------------"<<endl;
+    for(i=this->ListaComp.begin(); i != this->ListaComp.end(); i++){
+        if ((*i)->tipo_comp == "REG" || (*i)->tipo_comp == "MEM" ) continue;  
+        
+        fout << (*i)->imprimeDOT();
+        cout << (*i)->imprimeDOT();
+    }
+    fout << "// Signals (Edges) \n";
+    for(k=this->ListaLiga.begin(); k != this->ListaLiga.end(); k++){
+        fout << (*k)->imprimeDot();
+        cout << (*k)->imprimeDot();
+    }
+    fout << "}\n";
+    cout<<"------------------------------------"<<endl;
     cout<<"Saiu do processo de finalizacao dos COMPONENTES"<<endl;
     
-    
-    //Apos finalizado o processo de setar todas as ligacoes o proximo passo 
-    //e renomear todos os componentes de OPERACAO (necessidade ate o momento)
-    //isso 'e necessario para a geracao correta do arquivo DOT e diferenciar 
-    //por exemplo dois componentes de SOMA
 }
     
+void ListaComponente::imprimeAll(){
+    list<Componente*>::iterator i;
+    list<Ligacao*>::iterator    k;
+    cout<<"*********************************"<<endl;
+    cout<<"COMPONENTES"<<endl;
+    cout<<"Qtd: "<< this->ListaComp.size() <<endl;
+    for(i=this->ListaComp.begin(); i != this->ListaComp.end(); i++){
+        if ((*i)->tipo_comp == "REG" || (*i)->tipo_comp == "MEM" ) continue;
+        
+        //cout << (*i)->node->class_name() << " - " << (*i)->tipo_comp << endl;
+        cout << (*i)->getName() << " - " << (*i)->tipo_comp << " - " << (*i)->node->class_name() << endl;
+    }
+    cout<<"*********************************"<<endl;
+    cout<<"*********************************"<<endl;
+    cout<<"LIGACOES"<<endl;
+    cout<<"Qtd: "<< this->ListaLiga.size() <<endl;
+    for(k=this->ListaLiga.begin(); k != this->ListaLiga.end(); k++){
+        cout<< (*k)->getOrigem()->getName()<< " -> "<< (*k)->getDestino()->getName() <<endl;
+    }
+}
 void ListaComponente::geraGrafo(){
     /**
     //SgGraph* g = new SgGraph("Demo graph");
