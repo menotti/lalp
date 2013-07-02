@@ -32,6 +32,7 @@ class ListaComponente {
         void analisaExp(SgNode *nodoAtual, SgNode* pai, bool debug);
         void imprimeTodosComponentes();
         list<Componente*> ListaComp;
+        list<Ligacao*> ListaLiga;
 
     private:
         SgProject* project;
