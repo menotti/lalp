@@ -539,48 +539,69 @@ void ListaComponente::FinalizaComponentes(){
     
     //Processo responsavel por criar nomes dos componentes similar ao proposto
     //no LALP (VAR_op_add_VAR) isso ajuda a diferenciar cada ligacao
-    
-    for(i=this->ListaComp.begin(); i != this->ListaComp.end(); i++){
-        if ((*i)->tipo_comp == "REG" || (*i)->tipo_comp == "MEM" ) continue;
-        
-        if ((*i)->tipo_comp == "OPE"){
-            string nome  = "";
-            int incr_nome= 0;
-            for(k=this->ListaLiga.begin(); k != this->ListaLiga.end(); k++){
-                Componente* destino = (*k)->getDestino();
-                if((*i)->node == destino->node){
-                    if (incr_nome < 1){
-                        //TODO fazer os restantes das OPERACOES
-                        nome += (*k)->getOrigem()->getName()+"_op_add_";
-                        incr_nome++;
-                    }else{
-                        nome += (*k)->getOrigem()->getName();
-                        (*i)->setName(nome);
+    bool sair = false;
+    while (sair == false){
+        sair = true;
+        for(i=this->ListaComp.begin(); i != this->ListaComp.end(); i++){
+            if ((*i)->tipo_comp == "REG" || (*i)->tipo_comp == "MEM" ) continue;
+            if ((*i)->tipo_comp == "OPE"){
+                string nome, aux= "";
+                int incr_nome= 0;
+                for(k=this->ListaLiga.begin(); k != this->ListaLiga.end(); k++){
+                    Componente* destino = (*k)->getDestino();
+                    if((*i)->node == destino->node){
+                        aux = (*k)->getOrigem()->getName();
+                        //cout<< "---------------------"<<endl;
+                        //cout<< "NODE: " << (*i)->node <<endl;
+                        //cout<< "NOME: " << (*i)->getName() <<endl;
+                        //cout<< "AUX:  " << aux <<endl;
+                        //cout<< "---------------------"<<endl;
+                        if (aux == "") {
+                            sair = false;
+                        }else if((*i)->getName() == ""){
+                            if (incr_nome < 1){
+                                //TODO fazer os restantes das OPERACOES
+                                nome += aux+"_op_add_";
+                                incr_nome++;
+                            }else{
+                                nome += aux;
+                                (*i)->setName(nome);
+                                //cout<< "---------------------"<<endl;
+                                //cout<< nome <<endl;
+                                //cout<< (*k)->getOrigem()->getName() <<endl;
+                                //cout<< "---------------------"<<endl;
+                            } 
+                        }
+                        //cout<< "SAIR: "<< sair <<endl;
+                        //cout<< "---------------------"<<endl;
                     }
                 }    
             }            
         }  
     }
     
+    
  
     //CRIA ARQUIVO .DOT
     std::ofstream fout("comp.dot");
     fout << "digraph diagram {\n";
     fout << "// Components (Nodes) \n";
-    cout<<"------------------------------------"<<endl;
+    //cout<<"------------------------------------"<<endl;
     for(i=this->ListaComp.begin(); i != this->ListaComp.end(); i++){
         if ((*i)->tipo_comp == "REG" || (*i)->tipo_comp == "MEM" ) continue;  
         
         fout << (*i)->imprimeDOT();
-        cout << (*i)->imprimeDOT();
+       // cout << (*i)->imprimeDOT();
     }
     fout << "// Signals (Edges) \n";
     for(k=this->ListaLiga.begin(); k != this->ListaLiga.end(); k++){
         fout << (*k)->imprimeDot();
-        cout << (*k)->imprimeDot();
+        //cout << (*k)->imprimeDot();
     }
     fout << "}\n";
-    cout<<"------------------------------------"<<endl;
+    //cout<<"------------------------------------"<<endl;
+    
+    
     cout<<"Saiu do processo de finalizacao dos COMPONENTES"<<endl;
     
 }
