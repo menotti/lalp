@@ -16,15 +16,22 @@ using namespace std;
 class Ligacao {
 public:
     Ligacao(class Componente* origem, class Componente* destino,const string &nome = "");
-    class Componente* getOrigem();
-    class Componente* getDestino();
-    string imprimeDot();
-    string getNome();
-    virtual ~Ligacao();
+    class       Componente* getOrigem();
+    class       Componente* getDestino();
+    void        setDestPort(const string &porta);
+    void        setOrigPort(const string &porta);
+    string      getDestPort();
+    string      getOrigPort();
+    string      imprimeDot();
+    string      getNome();
+    virtual     ~Ligacao();
 private:
-    class Componente* origem;
-    class Componente* destino;
-    string nome;
+    class       Componente* origem;
+    class       Componente* destino;
+    string      nome;
+    int         tamBarramento;
+    string      outPort;
+    string      inPort;
     //Componente* origem;
     //TODO: Pode ser que mais pra frente seja necessario novos atributos e 
     //metodos para identificar e parametrizar a ligacao
