@@ -16,11 +16,13 @@
 #include <boost/graph/graphviz.hpp>
 #include "grafo.h"
 #include "Ligacao.h"
+#include "ArquivosDotHW.h"
 
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/kruskal_min_spanning_tree.hpp>
 #include <iostream>
 #include <fstream>
+
 
 using namespace std;
 using namespace SageInterface;
@@ -612,28 +614,13 @@ void ListaComponente::imprimeAll(){
     }
 }
 
-void ListaComponente::imprimeHWDot(){
-    list<Componente*>::iterator i;
-    list<Ligacao*>::iterator    k;
-    //CRIA ARQUIVO .DOT
-    std::ofstream fout("comp.dot");
-    fout << "digraph diagram {\n";
-    fout << "// Components (Nodes) \n";
-    //cout<<"------------------------------------"<<endl;
-    for(i=this->ListaComp.begin(); i != this->ListaComp.end(); i++){
-        if ((*i)->tipo_comp == "REG" || (*i)->tipo_comp == "MEM" ) continue;  
-        
-        fout << (*i)->imprimeDOT();
-       // cout << (*i)->imprimeDOT();
-    }
-    fout << "// Signals (Edges) \n";
-    for(k=this->ListaLiga.begin(); k != this->ListaLiga.end(); k++){
-        fout << (*k)->imprimeDot();
-        //cout << (*k)->imprimeDot();
-    }
-    fout << "}\n";
-    //cout<<"------------------------------------"<<endl;
+void ListaComponente::geraArquivosDotHW(){
+    ArquivosDotHW *dot = new ArquivosDotHW(this->ListaComp, this->ListaLiga);
+    dot->imprimeHWDOT();
 }
+
+
+
 
 void ListaComponente::geraGrafo(){
     /**
