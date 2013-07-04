@@ -395,7 +395,7 @@ int main(int argc, char * argv[]){
     //listaCom.geraGrafo();
     listaCom.FinalizaComponentes();
     //listaCom.imprimeAll();
-    listaCom.imprimeHWDot();
+    listaCom.geraArquivosDotHW();
     //listaCom.imprimeTodosComponentes();
     cout<<"###############################################"<<endl;
     

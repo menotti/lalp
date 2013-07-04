@@ -28,7 +28,8 @@ class ListaComponente {
         void identificaVariaveis();
         void FinalizaComponentes();
         void geraGrafo();
-        void imprimeHWDot();
+        void geraArquivosDotHW();
+        void geraHW();
         void imprimeAll();
         void identificaFor();
         void analisaExp(SgNode *nodoAtual, SgNode* pai, bool debug);
