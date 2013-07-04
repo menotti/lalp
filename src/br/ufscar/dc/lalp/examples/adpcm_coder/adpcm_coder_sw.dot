@@ -1,0 +1,333 @@
+digraph adpcm_coder {
+	// Components (Nodes)
+	node [shape=ellipse, style=filled, color=dodgerblue2];
+	"done" [color=bisque4 shape=invtriangle label="done"];
+	"c100" [color=bisque4 shape=invtriangle label="0x58"];
+	"indexTable" [label="indexTable" shape=doubleoctagon  color=dodgerblue2 ];
+	"c89" [color=bisque4 shape=invtriangle label="0x2"];
+	"outdata" [label="outdata" shape=doubleoctagon  color=dodgerblue2 ];
+	"c85" [color=bisque4 shape=invtriangle label="0x0"];
+	"c119" [label="{|||||||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"c104" [label="{||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"diff3_if_ge_op_s_step2__" [label="diff3_if_ge_op_s_step2__:>="  color=dodgerblue2 ];
+	"step_shr_c_op_s_1" [label="step_shr_c_op_s_1:>>"  color=dodgerblue2 ];
+	"delta2" [label="delta2" shape=doubleoctagon  color=dodgerblue2 ];
+	"index3" [label="index3" shape=doubleoctagon  color=dodgerblue2 ];
+	"c123" [label="{|||||||||||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"c121" [label="{|||||||||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"c125" [label="{||||||||||||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"stepSizeTable" [label="stepSizeTable" shape=doubleoctagon  color=dodgerblue2 ];
+	"len_step_delay_op_14" [label="{|||||||||||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"valpred" [label="valpred" shape=doubleoctagon  color=dodgerblue2 ];
+	"index3_if_gt_op_s_88" [label="index3_if_gt_op_s_88:>"  color=dodgerblue2 ];
+	"indata" [label="indata" shape=doubleoctagon  color=dodgerblue2 ];
+	"len" [label="len" shape=doubleoctagon  color=dodgerblue2 ];
+	"c87" [color=bisque4 shape=invtriangle label="0x4"];
+	"diff2_sub_op_s_step" [label="diff2_sub_op_s_step:-"  color=dodgerblue2 ];
+	"c102" [color=bisque4 shape=invtriangle label="0xf"];
+	"c117" [label="{||||||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"diff3_if_ge_op_s_step2" [label="diff3_if_ge_op_s_step2:>="  color=dodgerblue2 ];
+	"c106" [label="{|||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"delta3_or_op_sign" [label="delta3_or_op_sign:||"  color=dodgerblue2 ];
+	"vpdiff3_add_op_s_step3" [label="vpdiff3_add_op_s_step3:+"  color=dodgerblue2 ];
+	"vpdiff3" [label="vpdiff3" shape=doubleoctagon  color=dodgerblue2 ];
+	"valpred_sub_op_s_vpdiff4" [label="valpred_sub_op_s_vpdiff4:-"  color=dodgerblue2 ];
+	"c81" [color=bisque4 shape=invtriangle label="0x0"];
+	"c83" [color=bisque4 shape=invtriangle label="0x0"];
+	"sign_if_ne_op_s_0" [label="sign_if_ne_op_s_0:!="  color=dodgerblue2 ];
+	"delta" [label="delta" shape=doubleoctagon  color=dodgerblue2 ];
+	"c96" [color=bisque4 shape=invtriangle label="0x0"];
+	"diff4" [label="diff4" shape=doubleoctagon  color=dodgerblue2 ];
+	"c111" [label="{||||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"c126" [label="{||||||||||||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"step2_shr_c_op_s_1" [label="step2_shr_c_op_s_1:>>"  color=dodgerblue2 ];
+	"c115" [label="{|||||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"valpred2_if_gt_op_s_32767" [label="valpred2_if_gt_op_s_32767:>"  color=dodgerblue2 ];
+	"len_step_delay_op_11" [label="{||||||||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"delta4_shl_c_op_s_4" [label="delta4_shl_c_op_s_4:<<"  color=dodgerblue2 ];
+	"index_add_op_s_indexTable_data_out" [label="index_add_op_s_indexTable_data_out:+"  color=dodgerblue2 ];
+	"step" [label="step" shape=doubleoctagon  color=dodgerblue2 ];
+	"step2" [label="step2" shape=doubleoctagon  color=dodgerblue2 ];
+	"step3" [label="step3" shape=doubleoctagon  color=dodgerblue2 ];
+	"output" [color=bisque4 shape=invtriangle label="output"];
+	"c90" [color=bisque4 shape=invtriangle label="0x1"];
+	"c92" [color=bisque4 shape=invtriangle label="0xf0"];
+	"c109" [label="{||||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"diff_if_lt_op_s_0" [label="diff_if_lt_op_s_0:<"  color=dodgerblue2 ];
+	"c98" [color=bisque4 shape=invtriangle label="0xffffffffffff8000"];
+	"diff2" [label="diff2" shape=doubleoctagon  color=dodgerblue2 ];
+	"c94" [color=bisque4 shape=invtriangle label="0x7fff"];
+	"c128" [label="{||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"c113" [label="{|||||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"valpred_add_op_s_vpdiff4" [label="valpred_add_op_s_vpdiff4:+"  color=dodgerblue2 ];
+	"delta2_or_op_1" [label="delta2_or_op_1:||"  color=dodgerblue2 ];
+	"vpdiff_add_op_s_step" [label="vpdiff_add_op_s_step:+"  color=dodgerblue2 ];
+	"delta4_and_op_15_or_op_outputbuffer" [label="delta4_and_op_15_or_op_outputbuffer:||"  color=dodgerblue2 ];
+	"c130" [label="{|}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"val" [label="val" shape=doubleoctagon  color=dodgerblue2 ];
+	"bufferstep_not_op__" [label="bufferstep_not_op__:!"  color=dodgerblue2 ];
+	"len_step_delay_op_15" [label="{||||||||||||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"index2_if_lt_op_s_0" [label="index2_if_lt_op_s_0:<"  color=dodgerblue2 ];
+	"c122" [label="{||||||||||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"sign_if_ne_op_s_0_" [label="sign_if_ne_op_s_0_:!="  color=dodgerblue2 ];
+	"diff4_if_ge_op_s_step3_" [label="diff4_if_ge_op_s_step3_:>="  color=dodgerblue2 ];
+	"c118" [label="{|||||||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"c107" [label="{|||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"diff3" [label="diff3" shape=doubleoctagon  color=dodgerblue2 ];
+	"c103" [label="{|}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"delta_or_op_2" [label="delta_or_op_2:||"  color=dodgerblue2 ];
+	"diff2_if_ge_op_s_step_" [label="diff2_if_ge_op_s_step_:>="  color=dodgerblue2 ];
+	"c86" [color=bisque4 shape=invtriangle label="0x0"];
+	"c84" [color=bisque4 shape=invtriangle label="0x8"];
+	"c88" [color=bisque4 shape=invtriangle label="0x0"];
+	"c82" [color=bisque4 shape=invtriangle label="0x400"];
+	"c120" [label="{||||||||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"vpdiff4" [label="vpdiff4" shape=doubleoctagon  color=dodgerblue2 ];
+	"c124" [label="{|||||||||||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"step_shr_c_op_s_3" [label="step_shr_c_op_s_3:>>"  color=dodgerblue2 ];
+	"diff3_if_ge_op_s_step2_" [label="diff3_if_ge_op_s_step2_:>="  color=dodgerblue2 ];
+	"c105" [label="{|||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"vpdiff2_add_op_s_step2" [label="vpdiff2_add_op_s_step2:+"  color=dodgerblue2 ];
+	"bufferstep" [label="bufferstep" shape=doubleoctagon  color=dodgerblue2 ];
+	"diff" [label="diff" shape=doubleoctagon  color=dodgerblue2 ];
+	"i" [label="i" shape=doubleoctagon  color=dodgerblue2 ];
+	"delta4" [label="delta4" shape=doubleoctagon  color=dodgerblue2 ];
+	"c101" [color=bisque4 shape=invtriangle label="0x58"];
+	"c99" [color=bisque4 shape=invtriangle label="0x1"];
+	"valpred3_if_lt_op_s_-32768" [label="valpred3_if_lt_op_s_-32768:<"  color=dodgerblue2 ];
+	"index" [label="index" shape=doubleoctagon  color=dodgerblue2 ];
+	"bufferstep_not_op" [label="bufferstep_not_op:!"  color=dodgerblue2 ];
+	"bufferstep_not_op_and_op_len_step_delay_op_14" [label="bufferstep_not_op_and_op_len_step_delay_op_14:&&"  color=dodgerblue2 ];
+	"bufferstep_and_op_len_step_delay_op_11" [label="bufferstep_and_op_len_step_delay_op_11:&&"  color=dodgerblue2 ];
+	"vpdiff2" [label="vpdiff2" shape=doubleoctagon  color=dodgerblue2 ];
+	"delta3" [label="delta3" shape=doubleoctagon  color=dodgerblue2 ];
+	"c129" [label="{|}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"c114" [label="{|||||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"valpred2" [label="valpred2" shape=doubleoctagon  color=dodgerblue2 ];
+	"diff2_if_ge_op_s_step" [label="diff2_if_ge_op_s_step:>="  color=dodgerblue2 ];
+	"val_sub_op_s_valpred" [label="val_sub_op_s_valpred:-"  color=dodgerblue2 ];
+	"sign" [label="sign" shape=doubleoctagon  color=dodgerblue2 ];
+	"c110" [label="{||||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"c108" [label="{||||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"diff_neg_op_s" [label="!"  color=dodgerblue2 ];
+	"bufferstep_not_op_and_op_len_step_delay_op_15" [label="bufferstep_not_op_and_op_len_step_delay_op_15:&&"  color=dodgerblue2 ];
+	"bufferstep_not_op_" [label="bufferstep_not_op_:!"  color=dodgerblue2 ];
+	"delta4_and_op_15" [label="delta4_and_op_15:&&"  color=dodgerblue2 ];
+	"valpred3" [label="valpred3" shape=doubleoctagon  color=dodgerblue2 ];
+	"delta4_shl_c_op_s_4_and_op_240" [label="delta4_shl_c_op_s_4_and_op_240:&&"  color=dodgerblue2 ];
+	"c127" [label="{|||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"diff2_if_ge_op_s_step__" [label="diff2_if_ge_op_s_step__:>="  color=dodgerblue2 ];
+	"c116" [label="{||||||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"c112" [label="{|||||||}" shape=record fillcolor=lightgray  color=dodgerblue2 ];
+	"diff4_if_ge_op_s_step3" [label="diff4_if_ge_op_s_step3:>="  color=dodgerblue2 ];
+	"diff3_sub_op_s_step2" [label="diff3_sub_op_s_step2:-"  color=dodgerblue2 ];
+	"c95" [color=bisque4 shape=invtriangle label="0x0"];
+	"c93" [color=bisque4 shape=invtriangle label="0x7fff"];
+	"c97" [color=bisque4 shape=invtriangle label="0xffffffffffff8000"];
+	"c91" [color=bisque4 shape=invtriangle label="0x0"];
+	"outputbuffer" [label="outputbuffer" shape=doubleoctagon  color=dodgerblue2 ];
+	"index2" [label="index2" shape=doubleoctagon  color=dodgerblue2 ];
+	"vpdiff" [label="vpdiff" shape=doubleoctagon  color=dodgerblue2 ];
+	"init" [color=bisque4 shape=invtriangle label="init"];
+
+	// Signals (Edges)
+	"c81" -> "len"
+	"c116" -> "delta3"
+	"vpdiff4" -> "valpred_add_op_s_vpdiff4"
+	"c91" -> "sign_if_ne_op_s_0_"
+	"c98" -> "valpred"
+	"c118" -> "vpdiff4"
+	"diff2_if_ge_op_s_step_" -> "diff3"
+	"step_shr_c_op_s_1" -> "step2"
+	"diff4_if_ge_op_s_step3" -> "delta3"
+	"bufferstep_not_op" -> "bufferstep_not_op_and_op_len_step_delay_op_14"
+	"c83" -> "diff_if_lt_op_s_0"
+	"step2" -> "diff3_if_ge_op_s_step2__"
+	"len" -> "c106":input
+	"index" -> "stepSizeTable" [style=dashed];
+	"diff" -> "diff_neg_op_s"
+	"len" -> "c108":input
+	"len" -> "c110":input
+	"bufferstep_and_op_len_step_delay_op_11" -> "outputbuffer"
+	"c94" -> "valpred3"
+	"len" -> "c125":input
+	"diff2" -> "diff2_if_ge_op_s_step__"
+	"step2" -> "diff3_sub_op_s_step2"
+	"sign_if_ne_op_s_0_" -> "c127":input
+	"outputbuffer" -> "delta4_and_op_15_or_op_outputbuffer"
+	"len_step_delay_op_15" -> "bufferstep_not_op_and_op_len_step_delay_op_15"
+	"delta3" -> "delta3_or_op_sign"
+	"step" -> "diff2_if_ge_op_s_step"
+	"diff2" -> "diff2_if_ge_op_s_step_"
+	"c114" -> "vpdiff2"
+	"index2" -> "index2_if_lt_op_s_0"
+	"c129" -> "diff2"
+	"index2" -> "index3"
+	"diff4" -> "diff4_if_ge_op_s_step3"
+	"vpdiff_add_op_s_step" -> "vpdiff2"
+	"outdata" -> "output"
+	"val" -> "val_sub_op_s_valpred"
+	"c82" -> "len"
+	"len" -> "c104":input
+	"len" -> "c121":input
+	"len" -> "len_step_delay_op_11":input
+	"i" -> "outdata"
+	"index3" -> "index3_if_gt_op_s_88"
+	"len" -> "c123":input
+	"delta" -> "delta2"
+	"delta" -> "delta_or_op_2"
+	"vpdiff2" -> "vpdiff3"
+	"index3" -> "index"
+	"sign_if_ne_op_s_0" -> "diff2"
+	"step3" -> "vpdiff3_add_op_s_step3"
+	"c110" -> "step2"
+	"c112" -> "delta2"
+	"c127" -> "valpred2"
+	"bufferstep" -> "bufferstep_not_op_" [style=dashed];
+	"step" -> "diff2_if_ge_op_s_step__"
+	"diff3_if_ge_op_s_step2_" -> "diff4"
+	"c125" -> "index"
+	"valpred2" -> "valpred3"
+	"valpred2" -> "valpred2_if_gt_op_s_32767"
+	"step" -> "diff2_if_ge_op_s_step_"
+	"valpred" -> "valpred_sub_op_s_vpdiff4" [style=dashed];
+	"len" -> "c115":input
+	"len" -> "c117":input
+	"delta4_and_op_15_or_op_outputbuffer" -> "outdata"
+	"valpred3" -> "valpred"
+	"len_step_delay_op_14" -> "bufferstep_not_op_and_op_len_step_delay_op_14"
+	"diff2_sub_op_s_step" -> "diff3"
+	"step" -> "step_shr_c_op_s_3"
+	"len" -> "c119":input
+	"stepSizeTable" -> "step"
+	"diff_if_lt_op_s_0" -> "sign"
+	"c108" -> "delta"
+	"bufferstep" -> "bufferstep_and_op_len_step_delay_op_11" [style=dashed];
+	"delta2_or_op_1" -> "delta3"
+	"vpdiff2" -> "vpdiff2_add_op_s_step2"
+	"c106" -> "step"
+	"delta4" -> "delta4_and_op_15"
+	"c89" -> "delta_or_op_2"
+	"diff3" -> "diff3_if_ge_op_s_step2_"
+	"c100" -> "index3_if_gt_op_s_88"
+	"c123" -> "index3"
+	"len" -> "c113":input
+	"diff2_if_ge_op_s_step" -> "delta"
+	"index" -> "index_add_op_s_indexTable_data_out" [style=dashed];
+	"diff4" -> "diff4_if_ge_op_s_step3_"
+	"diff4_if_ge_op_s_step3_" -> "vpdiff4"
+	"len" -> "c111":input
+	"len" -> "done"
+	"step3" -> "diff4_if_ge_op_s_step3"
+	"vpdiff" -> "vpdiff2"
+	"diff" -> "c130":input
+	"valpred3" -> "valpred3_if_lt_op_s_-32768"
+	"c95" -> "index2_if_lt_op_s_0"
+	"step_shr_c_op_s_3" -> "vpdiff"
+	"delta4" -> "delta4_shl_c_op_s_4"
+	"c119" -> "delta4"
+	"c121" -> "valpred3"
+	"valpred_sub_op_s_vpdiff4" -> "valpred2"
+	"c104" -> "diff"
+	"valpred" -> "val_sub_op_s_valpred" [style=dashed];
+	"init" -> "len"
+	"len" -> "c109":input
+	"len_step_delay_op_11" -> "bufferstep_and_op_len_step_delay_op_11"
+	"c84" -> "sign"
+	"sign" -> "sign_if_ne_op_s_0"
+	"c93" -> "valpred2_if_gt_op_s_32767"
+	"step2" -> "diff3_if_ge_op_s_step2_"
+	"len" -> "c126":input
+	"len" -> "c124":input
+	"bufferstep" -> "bufferstep_not_op" [style=dashed];
+	"i" -> "i" [style=dashed];
+	"len" -> "c107":input
+	"delta2" -> "delta3"
+	"step2" -> "vpdiff2_add_op_s_step2"
+	"vpdiff4" -> "valpred_sub_op_s_vpdiff4"
+	"c115" -> "step3"
+	"diff2" -> "diff2_sub_op_s_step"
+	"diff2" -> "diff3"
+	"c97" -> "valpred3_if_lt_op_s_-32768"
+	"c117" -> "vpdiff3"
+	"diff3_sub_op_s_step2" -> "diff4"
+	"vpdiff" -> "vpdiff_add_op_s_step"
+	"sign" -> "c128":input
+	"len" -> "len_step_delay_op_15":input
+	"bufferstep_not_op_and_op_len_step_delay_op_15" -> "outdata"
+	"delta3_or_op_sign" -> "delta4"
+	"delta4_shl_c_op_s_4" -> "delta4_shl_c_op_s_4_and_op_240"
+	"len" -> "c120":input
+	"diff3" -> "diff3_if_ge_op_s_step2"
+	"diff3_if_ge_op_s_step2" -> "delta2"
+	"c99" -> "i"
+	"len" -> "c122":input
+	"step2" -> "step2_shr_c_op_s_1"
+	"delta2" -> "delta2_or_op_1"
+	"len" -> "c103":input
+	"val_sub_op_s_valpred" -> "diff"
+	"len" -> "indata"
+	"len" -> "c105":input
+	"valpred_add_op_s_vpdiff4" -> "valpred2"
+	"c113" -> "diff4"
+	"indexTable" -> "index_add_op_s_indexTable_data_out"
+	"c87" -> "delta"
+	"index2_if_lt_op_s_0" -> "index3"
+	"step" -> "vpdiff_add_op_s_step"
+	"c130" -> "diff2"
+	"c128" -> "delta3_or_op_sign"
+	"index3_if_gt_op_s_88" -> "index"
+	"c102" -> "delta4_and_op_15"
+	"c111" -> "vpdiff"
+	"step3" -> "diff4_if_ge_op_s_step3_"
+	"vpdiff3_add_op_s_step3" -> "vpdiff4"
+	"c90" -> "delta2_or_op_1"
+	"len" -> "len_step_delay_op_14":input
+	"valpred3_if_lt_op_s_-32768" -> "valpred"
+	"len" -> "c118":input
+	"step" -> "diff2_sub_op_s_step"
+	"step" -> "step_shr_c_op_s_1"
+	"len" -> "c116":input
+	"sign" -> "sign_if_ne_op_s_0_"
+	"valpred" -> "valpred_add_op_s_vpdiff4" [style=dashed];
+	"bufferstep" -> "bufferstep_not_op__" [style=dashed];
+	"bufferstep_not_op_" -> "bufferstep_not_op_and_op_len_step_delay_op_15"
+	"diff3" -> "diff4"
+	"delta4_and_op_15" -> "delta4_and_op_15_or_op_outputbuffer"
+	"c126" -> "bufferstep"
+	"c124" -> "valpred"
+	"valpred2_if_gt_op_s_32767" -> "valpred3"
+	"diff3" -> "diff3_sub_op_s_step2"
+	"c86" -> "sign_if_ne_op_s_0"
+	"c85" -> "sign"
+	"c109" -> "diff3"
+	"delta4_shl_c_op_s_4_and_op_240" -> "outputbuffer"
+	"diff3_if_ge_op_s_step2__" -> "vpdiff3"
+	"diff3" -> "diff3_if_ge_op_s_step2__"
+	"c107" -> "diff2"
+	"bufferstep_not_op__" -> "bufferstep" [style=dashed];
+	"step2_shr_c_op_s_1" -> "step3"
+	"diff_neg_op_s" -> "c129":input
+	"c96" -> "index3"
+	"diff2_if_ge_op_s_step__" -> "vpdiff2"
+	"c88" -> "delta"
+	"diff2" -> "diff2_if_ge_op_s_step"
+	"len" -> "c114":input
+	"index_add_op_s_indexTable_data_out" -> "index2"
+	"vpdiff3" -> "vpdiff3_add_op_s_step3"
+	"vpdiff3" -> "vpdiff4"
+	"len" -> "c112":input
+	"vpdiff2_add_op_s_step2" -> "vpdiff3"
+	"c101" -> "index"
+	"bufferstep_not_op_and_op_len_step_delay_op_14" -> "i"
+	"c122" -> "index2"
+	"step2" -> "diff3_if_ge_op_s_step2"
+	"delta_or_op_2" -> "delta2"
+	"c120" -> "valpred2"
+	"delta4" -> "indexTable"
+	"c92" -> "delta4_shl_c_op_s_4_and_op_240"
+	"c105" -> "sign"
+	"diff" -> "diff_if_lt_op_s_0"
+	"c103" -> "val"
+	"indata" -> "val"
+}
