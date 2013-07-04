@@ -122,6 +122,37 @@ SgNode* Componente::getPai(){
     return this->nodoPai;
 }
 
+string Componente::getStringPortOUT(){
+    string res = "";
+    if(this->tipo_comp == "OPE"){
+        res = "O0";
+    }
+    if(this->tipo_comp == "REF"){
+        if(this->ref_var_tipo == "VET"){
+                res = "data_out";
+        }
+        if(this->ref_var_tipo == "VAR"){
+                res = "O0";
+        }
+    }
+    
+    return res;
+}
+string Componente::getStringPortIN(){
+    string res = "";
+    if(this->tipo_comp == "OPE"){
+        res = "I0";
+    }
+    if(this->tipo_comp == "REF"){
+        if(this->ref_var_tipo == "VET"){
+                res = "data_in";
+        }
+        if(this->ref_var_tipo == "VAR"){
+                res = "I0";
+        }
+    }
+    return res;
+}
 string Componente::imprimeDOT(){
     string res = "";
     if(this->tipo_comp == "CTD"){

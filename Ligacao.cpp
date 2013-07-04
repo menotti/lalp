@@ -20,13 +20,37 @@ Ligacao::Ligacao(class Componente* origem, class Componente* destino, const stri
 }
 
 string Ligacao::imprimeDot(){
-    string res = "";
-    res += "\""+this->origem->getName()+"\" -> \"" +this->destino->getName()+"\"[label=\"" +this->nome+  "\" color=red fontcolor=red]; \n";
+    string res      = "";
+    string inPorta   = "";
+    string outPorta  = "";
+    if(this->inPort != ""){
+        inPorta = ":"+this->inPort;
+    }
+    if(this->outPort != ""){
+        outPorta = ":"+this->outPort;
+    }
+    res             += "\""+this->origem->getName()+"\""+inPorta+" -> \"" +this->destino->getName()+"\""+outPorta+"[label=\"" +this->nome+  "\" color=red fontcolor=red]; \n";
     return res;
 }
 
 class Componente* Ligacao::getOrigem() {
     return this->origem;
+}
+
+void Ligacao::setDestPort(const string &porta){
+    this->outPort = porta;
+}
+
+void Ligacao::setOrigPort(const string &porta){
+    this->inPort = porta;
+}
+
+string Ligacao::getOrigPort(){
+    return this->inPort;
+}
+
+string Ligacao::getDestPort(){
+    return this->outPort;
 }
 
 string Ligacao::getNome(){
@@ -36,6 +60,7 @@ string Ligacao::getNome(){
 class Componente* Ligacao::getDestino() {
     return this->destino;
 }
+
 Ligacao::~Ligacao() {
 }
 

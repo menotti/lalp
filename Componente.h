@@ -29,6 +29,8 @@ class Componente {
 
         void    setName(const string &nome);
         void    imprimeLigacoes();
+        string  getStringPortIN();
+        string  getStringPortOUT();
         string  imprimeDOT();
         string  getName();
         //void    addLigacao();
