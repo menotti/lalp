@@ -19,6 +19,13 @@ Ligacao::Ligacao(class Componente* origem, class Componente* destino, const stri
     //cout<< "Ligacao: " << origem->node->class_name() << "--->" << destino->node->class_name() << endl;
 }
 
+void Ligacao::editOrig(class Componente* newOrig){
+    this->origem  = newOrig;
+}
+void Ligacao::editDest(class Componente* newDest){
+    this->destino = newDest;
+}
+
 string Ligacao::imprimeDot(){
     string res      = "";
     string inPorta   = "";

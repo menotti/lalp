@@ -78,6 +78,9 @@ Componente::Componente(SgNode* node/*=NULL*/, const string &aux/*=""*/){
     }else{
         //Caso Contrario sao nodos inferidos
         //nodos necessarios para o funcionamento correto. EX: DELAY
+        if(aux == "DLY"){
+            this->montaComponenteDelay();
+        }
     }
     
     /************************************************/
@@ -127,6 +130,9 @@ void Componente::limpaAtributos(){
     this->ref_var_nome  = "";
     this->ref_var_index = "";
     this->ref_var_tipo  = "";
+    
+    //Delay
+    this->delayVal      = 0;
 }
 
 void Componente::addLigacao(Ligacao* lig){
@@ -184,7 +190,10 @@ string Componente::imprimeDOT(){
         if(this->ref_var_tipo == "VAR"){
                 res += "\""+this->ref_var_nome+"\" [shape=record, fontcolor=blue, style=\"filled\", fillcolor=\"lightgray\", label=\"{{<I0>I0[32]|<clk>clk|<reset>reset|<we>we}|reg_op:"+this->ref_var_nome+"|{<O0>O0[32]}}\"]; \n";
         }
-    }
+    }else if(this->tipo_comp == "DLY"){
+        //this->delayVal 
+        res += "\""+this->nome+"\" [shape=record, fontcolor=blue, style=\"filled\", fillcolor=\"lightgray\", label=\"{{<a>a[1]|<clk>clk|<reset>reset}|delay_op:"+this->nome+"\\ndelay=0|{<a_delayed>a_delayed[1]}}\"]; \n";
+    }   
     return res;
 }
 
@@ -357,6 +366,10 @@ void Componente::montaComponenteOp(){
         //this->op_in_add2;     //Define entrada 1 da operacao ADD
         //this->op_out_add2;    //Define saida da operacao ADD
     }
+}
+
+void Componente::montaComponenteDelay(){
+        this->tipo_comp = "DLY";
 }
 
 void Componente::setName(const string &nome){

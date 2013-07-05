@@ -80,10 +80,13 @@ class Componente {
         string  for_cond_var;   //variavel de condicao - EX.: (i) => i < 10
         int     for_cond_val;   //valor de condicao - EX.: (10) => i < 10
         string  for_cond_op;    //operacao de controle do for - EX.: (<) => i < 10
-        string  for_incr_var;   //variavel incrementar for - EX.: (i) => i++;
+        string  for_incr_var;   //variavel incrementar for - EX.: (i) => i++;        //this->op_in_add1;     //Define entrada 1 da operacao ADD
+        //this->op_in_add2;     //Define entrada 1 da operacao ADD
+        //this->op_out_add2;    //Define saida da operacao ADD
         string  for_incr_op;    //incrementar for - EX.: (++) => i++;
         int     for_incr_val;   //valor incrementar for - EX.: 1
         //DELAY
+        int     delayVal;
         
         //Constante - Numero dentro da Expressao
         //string  cons_tipo;
@@ -94,6 +97,7 @@ class Componente {
         //string  ref_var_index;
         //string  ref_var_tipo;   //A referencia pode ser Vetor ou Variavel
         
+        void montaComponenteDelay();
         void montaComponenteVar();
         void montaComponenteLoop();
         void montaComponenteConst();
