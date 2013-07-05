@@ -602,7 +602,69 @@ void ListaComponente::FinalizaComponentes(){
         }
     }// </editor-fold>
     
-    
+    //Processo de Criacao de componentes de Delay
+    //inicialmente estes vao entrar nas ligacoes incidentes nos componentes 
+    //setados com WE
+    cout<< "-----------------------------------------------" <<endl;
+    cout<< "Processo de criacao de componentes de delay    " <<endl;
+    cout<< "Tam Lista Comp: "<<ListaComp.size()              <<endl;
+    cout<< "Tam Lista Liga: "<<ListaLiga.size()              <<endl;
+    cout<< "-----------------------------------------------" <<endl;
+    list<Componente*>   ListaCompAux;
+    list<Ligacao*>      ListaLigaAux;
+    int qtdComp = ListaComp.size();
+    for (i = this->ListaComp.begin(); i != this->ListaComp.end(); i++) {
+        if((*i)->writeEnable){
+            cout<< "Componente WE: " << (*i)->getName() <<endl;
+            for (k = this->ListaLiga.begin(); k != this->ListaLiga.end(); k++) {
+                //Componente* destino = (*k)->getDestino();
+                if ((*i)->node == (*k)->getDestino()->node) {
+                    //Nao pode ser a ligacao para a entrada da memoria
+                    if ((*k)->getDestPort() != (*i)->getStringPortIN()) {
+                        cout<< "Ligacao: " << (*k)->getNome() <<endl;
+                        //Aresta identificada
+                        
+                        std::string str = boost::lexical_cast<std::string>(qtdComp);
+
+                        Componente* comp = new Componente(NULL,"DLY");
+                        string nome = "c"+str;
+                        comp->setName(nome);
+                        
+                        ListaCompAux.push_back(comp);
+
+                        //CRIAR NOVA LIGACAO
+                        str = boost::lexical_cast<std::string>(qtdLig);
+                        Ligacao* newLig = new Ligacao(comp, (*i), "s" + str);
+                        newLig->setDestPort(((*k)->getDestPort()));
+                        newLig->setOrigPort("a_delayed");
+                        
+                        ListaLigaAux.push_back(newLig);
+
+                        //EDITAR PARAM LIGACAO ANTIGA 
+                        (*k)->editDest(comp);
+                        (*k)->setDestPort("a");
+                        
+                        qtdComp++;
+                        qtdLig++;
+                        cout<< "Novo Comp: " << comp->getName()  <<endl;
+                        cout<< "Nova Liga: " << newLig->getNome()  <<endl;
+                        cout<< "" << endl;
+                    }
+                }
+            }
+        }
+    }
+    for (i = ListaCompAux.begin(); i != ListaCompAux.end(); i++) {
+        this->ListaComp.push_back((*i));
+    }
+    for (k = ListaLigaAux.begin(); k != ListaLigaAux.end(); k++) {
+        this->ListaLiga.push_back((*k));
+    }
+    cout<< "-----------------------------------------------" <<endl;
+    cout<< "Tam Lista Comp: "<<ListaComp.size()              <<endl;
+    cout<< "Tam Lista Liga: "<<ListaLiga.size()              <<endl;
+    cout<< "-----------------------------------------------" <<endl;
+    cout<< "-----------------------------------------------" <<endl;
 }
 
 //Imprime componentes que serao utilizados no VHDL e todas as ligacoes geradas
@@ -631,9 +693,6 @@ void ListaComponente::geraArquivosDotHW(){
     ArquivosDotHW *dot = new ArquivosDotHW(this->ListaComp, this->ListaLiga);
     dot->imprimeHWDOT();
 }
-
-
-
 
 void ListaComponente::geraGrafo(){
 

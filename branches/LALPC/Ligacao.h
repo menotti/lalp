@@ -18,6 +18,8 @@ public:
     Ligacao(class Componente* origem, class Componente* destino,const string &nome = "");
     class       Componente* getOrigem();
     class       Componente* getDestino();
+    void        editOrig(class Componente* newOrig);
+    void        editDest(class Componente* newDest);
     void        setDestPort(const string &porta);
     void        setOrigPort(const string &porta);
     string      getDestPort();
