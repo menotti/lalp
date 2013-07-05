@@ -23,9 +23,10 @@ using namespace SageInterface;
 
 class Componente {  
     public:
-                Componente(SgNode* node);
+                Componente(SgNode* node = NULL, const string &aux = "");
         void    ligado_Em(SgNode* nodo);
         SgNode* getPai();
+        bool    writeEnable;
 
         void    setName(const string &nome);
         void    imprimeLigacoes();

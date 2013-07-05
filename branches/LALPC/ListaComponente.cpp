@@ -234,7 +234,7 @@ void ListaComponente::analisaExp(SgNode *nodoAtual, SgNode* pai, bool debug) {
                 cout << " ( " << filhoDir->class_name() << " , " << filhoEsq->class_name() << " ) " << endl;
                 cout << "-------------------------" << endl;
             }// </editor-fold>
-            Componente* comp = new Componente(filhoEsq);
+            Componente* comp = new Componente(filhoEsq, "WE");
             this->ListaComp.push_back(comp);
             analisaExp(filhoDir, filhoEsq, debug);
         }
@@ -538,6 +538,18 @@ void ListaComponente::FinalizaComponentes(){
                         (*i)->addLigacao(lig);
                         this->ListaLiga.push_back(lig);
                         qtdLig++;
+                        
+                        //Verificar se e de gravacao
+                        //caso verdadeiro tem que ligar o WE da memoria no STEP do contador
+                        if((*j)->writeEnable){
+                            std::string str = boost::lexical_cast<std::string>(qtdLig);
+                            lig = new Ligacao((*i), (*j), "s" + str);
+                            lig->setOrigPort("step");
+                            lig->setDestPort("we");
+                            (*i)->addLigacao(lig);
+                            this->ListaLiga.push_back(lig);
+                            qtdLig++;
+                        }
                     }
                 }
             }
@@ -589,7 +601,8 @@ void ListaComponente::FinalizaComponentes(){
             }
         }
     }// </editor-fold>
-
+    
+    
 }
 
 //Imprime componentes que serao utilizados no VHDL e todas as ligacoes geradas
@@ -623,51 +636,45 @@ void ListaComponente::geraArquivosDotHW(){
 
 
 void ListaComponente::geraGrafo(){
-    /**
-    //SgGraph* g = new SgGraph("Demo graph");
+
     SgGraph* g = new SgGraph("Demo graph");
     
     
     //Efetuar contagem de nodos importantes para a geracao dos grafos.
     //Nesse caso a declaracao de variaveis ou vetores e dispensavel, pois os 
     //mesmos sao acessados pelas REFERENCIAS nas expressoes.
-    list<Componente>::iterator i;
+    list<Componente*>::iterator i;
     int qtd = 0;
     string nome = "";
     for(i=this->ListaComp.begin(); i != this->ListaComp.end(); i++){
-        if ((*i).tipo_comp == "REG" || (*i).tipo_comp == "MEM" ) continue;
+        if ((*i)->tipo_comp == "REG" || (*i)->tipo_comp == "MEM" ) continue;
         
         qtd++;
     }
     
-    //CRIA ARQUIVO .DOT
-    //std::ofstream fout("comp->dot");
-    
-    //fout << "digraph diagram {\n";
 
     //CRIAR NODOS
     SgGraphNode* nodes[qtd];
     int pos = 0;
     for(i=this->ListaComp.begin(); i != this->ListaComp.end(); i++){
         //cout<< (*i).tipo_comp<< " - "<< cout<< (*i).node <<  endl;
-        if ((*i).tipo_comp == "REG" || (*i).tipo_comp == "MEM" ) continue;
+        if ((*i)->tipo_comp == "REG" || (*i)->tipo_comp == "MEM" ) continue;
         
-        if ((*i).tipo_comp == "CTD"){
-            nome = "CONTADOR: "+(*i).for_ctr_var;
-            //fout << (*i).imprimeDOT();
+        if ((*i)->tipo_comp == "CTD"){
+            nome = (*i)->getName();
         }
-        if ((*i).tipo_comp == "OPE"){
-            nome = "OPERACAO: "+(*i).tipo_comp;
+        if ((*i)->tipo_comp == "OPE"){
+            nome = (*i)->getName();
         }
-        if ((*i).tipo_comp == "CON"){
-            nome = "CONSTANTE: "+(*i).cons_tipo+" VALOR "+(*i).valor;
+        if ((*i)->tipo_comp == "CON"){
+            nome = (*i)->getName();
         }
-        if ((*i).tipo_comp == "REF"){
-            nome = "REFERENCIA: "+(*i).ref_var_nome;
+        if ((*i)->tipo_comp == "REF"){
+            nome = (*i)->getName();
         }
         
         //Criando Node
-        SgGraphNode* nodeGraph = g->addNode(nome, (*i).node);
+        SgGraphNode* nodeGraph = g->addNode(nome, (*i)->node);
         nodes[pos] = nodeGraph;
         pos++;
     }
@@ -689,10 +696,7 @@ void ListaComponente::geraGrafo(){
     //Graph
     
     cout<< "numerdo de NODOS   " << g->numberOfGraphNodes()<< endl;
-    cout<< "numerdo de ARESTAS " << g->numberOfGraphEdges()<< endl;
-    
-    */
-    
+    cout<< "numerdo de ARESTAS " << g->numberOfGraphEdges()<< endl;    
 }
 
 ListaComponente::~ListaComponente() {

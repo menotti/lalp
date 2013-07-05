@@ -20,50 +20,64 @@ using std::stringstream;
 using boost::lexical_cast;
 using std::string;
 
-Componente::Componente(SgNode* node){
+Componente::Componente(SgNode* node/*=NULL*/, const string &aux/*=""*/){
     this->limpaAtributos();
-    this->node = node;
     
-    /************************************************/
-    //DECLARACAO VARIAVEL-VETOR
-    SgInitializedName* nodo_var  = isSgInitializedName(this->node);
-    if(nodo_var != NULL){
-        this->montaComponenteVar();
-    }
-    /************************************************/
-    
-    /************************************************/
-    //LACO FOR
-    SgForStatement* nodo_for    = isSgForStatement(this->node);
-    if(nodo_for != NULL){
-        this->montaComponenteLoop();
-    }
-    /************************************************/
-    
-    /************************************************/
-    //OP ADD
-    SgAddOp* nodo_op_add = isSgAddOp(this->node);
-    if(nodo_op_add != NULL){
-        this->montaComponenteOp();
-    }
-    //TODO - Fazer para outras operacoes
-    /************************************************/
-    
-    /************************************************/
-    //CONSTANTE INTEIRA
-    SgIntVal* nodo_int  = isSgIntVal(this->node);
-    if(nodo_int != NULL){
-        this->montaComponenteConst();
-    }
-    //TODO - Fazer para outras constantes - float, char, etc
-    /************************************************/
-    
-    /************************************************/
-    //REFERENCIA DE VARIAVEL NA EXPRESSAO
-    SgVarRefExp* nodo_ref_var     = isSgVarRefExp(this->node);
-    SgPntrArrRefExp* nodo_ref_arr = isSgPntrArrRefExp(this->node);
-    if(nodo_ref_var != NULL || nodo_ref_arr != NULL){
-        this->montaComponenteRef();
+    //Criacao de componentes baseados na arvore AST Rose
+    if(node != NULL){
+        this->node = node;
+        
+        if(aux == "WE"){
+            //Significa que e um nodo que necessita de gravacao
+            //ou seja, este esta a esquerda de uma atribuicao
+            //permite setar um FLAG para criar uma ligacao para o Write Enable
+            this->writeEnable = true;
+        }
+
+        /************************************************/
+        //DECLARACAO VARIAVEL-VETOR
+        SgInitializedName* nodo_var  = isSgInitializedName(this->node);
+        if(nodo_var != NULL){
+            this->montaComponenteVar();
+        }
+        /************************************************/
+
+        /************************************************/
+        //LACO FOR
+        SgForStatement* nodo_for    = isSgForStatement(this->node);
+        if(nodo_for != NULL){
+            this->montaComponenteLoop();
+        }
+        /************************************************/
+
+        /************************************************/
+        //OP ADD
+        SgAddOp* nodo_op_add = isSgAddOp(this->node);
+        if(nodo_op_add != NULL){
+            this->montaComponenteOp();
+        }
+        //TODO - Fazer para outras operacoes
+        /************************************************/
+
+        /************************************************/
+        //CONSTANTE INTEIRA
+        SgIntVal* nodo_int  = isSgIntVal(this->node);
+        if(nodo_int != NULL){
+            this->montaComponenteConst();
+        }
+        //TODO - Fazer para outras constantes - float, char, etc
+        /************************************************/
+
+        /************************************************/
+        //REFERENCIA DE VARIAVEL NA EXPRESSAO
+        SgVarRefExp* nodo_ref_var     = isSgVarRefExp(this->node);
+        SgPntrArrRefExp* nodo_ref_arr = isSgPntrArrRefExp(this->node);
+        if(nodo_ref_var != NULL || nodo_ref_arr != NULL){
+            this->montaComponenteRef();
+        }
+    }else{
+        //Caso Contrario sao nodos inferidos
+        //nodos necessarios para o funcionamento correto. EX: DELAY
     }
     
     /************************************************/
@@ -81,6 +95,7 @@ void Componente::limpaAtributos(){
     this->eInicializado = false;  //Se a variavel foi inicializada
     this->nodoPai       = NULL;   //Informa o nodo Pai na expressao. 
     //this->out_comp      = NULL;
+    this->writeEnable   = false;
 
     //VAR
     this->tipo_var      = "";     //Int - Str - Flo

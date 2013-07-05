@@ -39,6 +39,7 @@ class ListaComponente {
 
     private:
         SgProject* project;
+        SgGraph* grafo;
         vector<string> split(const string& s, const string& delim);
 };
 
