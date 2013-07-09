@@ -508,8 +508,10 @@ void ListaComponente::FinalizaComponentes(){
                 Ligacao* lig = new Ligacao((*i), (*j), "s" + str);
                 lig->setDestPort((*j)->getStringPortIN());
                 lig->setOrigPort((*i)->getStringPortOUT());
+                lig->setSize((*i)->getStringPortOUTSize());
                 
                 (*i)->addLigacao(lig);
+                (*j)->addLigacao(lig);
                 //(*i)->imprimeLigacoes();
                 this->ListaLiga.push_back(lig);
                 qtdLig++;
@@ -533,9 +535,11 @@ void ListaComponente::FinalizaComponentes(){
                     if ((*j)->ref_var_index == (*i)->for_ctr_var) {
                         std::string str = boost::lexical_cast<std::string>(qtdLig);
                         Ligacao* lig = new Ligacao((*i), (*j), "s" + str);
-                        lig->setOrigPort("output");
+                        lig->setOrigPort((*i)->getStringPortOUT());
                         lig->setDestPort("address");
+                        lig->setSize((*i)->getStringPortOUTSize());
                         (*i)->addLigacao(lig);
+                        (*j)->addLigacao(lig);
                         this->ListaLiga.push_back(lig);
                         qtdLig++;
                         
@@ -543,11 +547,13 @@ void ListaComponente::FinalizaComponentes(){
                         //caso verdadeiro tem que ligar o WE da memoria no STEP do contador
                         if((*j)->writeEnable){
                             std::string str = boost::lexical_cast<std::string>(qtdLig);
-                            lig = new Ligacao((*i), (*j), "s" + str);
-                            lig->setOrigPort("step");
-                            lig->setDestPort("we");
-                            (*i)->addLigacao(lig);
-                            this->ListaLiga.push_back(lig);
+                            Ligacao* ligWE = new Ligacao((*i), (*j), "s" + str);
+                            ligWE->setOrigPort("step");
+                            ligWE->setDestPort("we");
+                            ligWE->setSize("1");
+                            (*i)->addLigacao(ligWE);
+                            (*j)->addLigacao(ligWE);
+                            this->ListaLiga.push_back(ligWE);
                             qtdLig++;
                         }
                     }
@@ -605,50 +611,63 @@ void ListaComponente::FinalizaComponentes(){
     //Processo de Criacao de componentes de Delay
     //inicialmente estes vao entrar nas ligacoes incidentes nos componentes 
     //setados com WE
-    cout<< "-----------------------------------------------" <<endl;
-    cout<< "Processo de criacao de componentes de delay    " <<endl;
-    cout<< "Tam Lista Comp: "<<ListaComp.size()              <<endl;
-    cout<< "Tam Lista Liga: "<<ListaLiga.size()              <<endl;
-    cout<< "-----------------------------------------------" <<endl;
-    list<Componente*>   ListaCompAux;
-    list<Ligacao*>      ListaLigaAux;
+    // <editor-fold defaultstate="collapsed" desc="Cria componentes de Delays">
+    //cout<< "-----------------------------------------------" <<endl;
+    //cout<< "Processo de criacao de componentes de delay    " <<endl;
+    //cout<< "Tam Lista Comp: "<<ListaComp.size()              <<endl;
+    //cout<< "Tam Lista Liga: "<<ListaLiga.size()              <<endl;
+    //cout<< "-----------------------------------------------" <<endl;
+    list<Componente*> ListaCompAux;
+    list<Ligacao*> ListaLigaAux;
     int qtdComp = ListaComp.size();
     for (i = this->ListaComp.begin(); i != this->ListaComp.end(); i++) {
-        if((*i)->writeEnable){
-            cout<< "Componente WE: " << (*i)->getName() <<endl;
+        if ((*i)->writeEnable) {
+            //cout<< "Componente WE: " << (*i)->getName() <<endl;
             for (k = this->ListaLiga.begin(); k != this->ListaLiga.end(); k++) {
                 //Componente* destino = (*k)->getDestino();
                 if ((*i)->node == (*k)->getDestino()->node) {
                     //Nao pode ser a ligacao para a entrada da memoria
                     if ((*k)->getDestPort() != (*i)->getStringPortIN()) {
-                        cout<< "Ligacao: " << (*k)->getNome() <<endl;
+                        //cout<< "Ligacao: " << (*k)->getNome() <<endl;
                         //Aresta identificada
-                        
+
                         std::string str = boost::lexical_cast<std::string>(qtdComp);
 
-                        Componente* comp = new Componente(NULL,"DLY");
-                        string nome = "c"+str;
+                        Componente* comp = new Componente(NULL, "DLY");
+                        string nome = "c" + str;
                         comp->setName(nome);
-                        
-                        ListaCompAux.push_back(comp);
 
+ 
                         //CRIAR NOVA LIGACAO
                         str = boost::lexical_cast<std::string>(qtdLig);
                         Ligacao* newLig = new Ligacao(comp, (*i), "s" + str);
                         newLig->setDestPort(((*k)->getDestPort()));
                         newLig->setOrigPort("a_delayed");
+                        newLig->setSize((*k)->getSize());
                         
+                        //Adicionando as novas ligacoes no Delay
+                        comp->addLigacao(newLig);
+                        comp->addLigacao((*k));
+                        
+                        //Inserindo na lista auxiliar
                         ListaLigaAux.push_back(newLig);
+                        ListaCompAux.push_back(comp);
 
-                        //EDITAR PARAM LIGACAO ANTIGA 
+                        //EDITAR PARAMETRO LIGACAO ANTIGA 
                         (*k)->editDest(comp);
                         (*k)->setDestPort("a");
                         
+                        //Excluir referencia da ligacao antiga
+                        (*i)->removeLigacao((*k));
+
                         qtdComp++;
                         qtdLig++;
-                        cout<< "Novo Comp: " << comp->getName()  <<endl;
-                        cout<< "Nova Liga: " << newLig->getNome()  <<endl;
-                        cout<< "" << endl;
+                        
+                        //(*k) -> comp -> (*i) 
+                        
+                        //cout<< "Novo Comp: " << comp->getName()  <<endl;
+                        //cout<< "Nova Liga: " << newLig->getNome()  <<endl;
+                        //cout<< "" << endl;
                     }
                 }
             }
@@ -660,11 +679,24 @@ void ListaComponente::FinalizaComponentes(){
     for (k = ListaLigaAux.begin(); k != ListaLigaAux.end(); k++) {
         this->ListaLiga.push_back((*k));
     }
-    cout<< "-----------------------------------------------" <<endl;
-    cout<< "Tam Lista Comp: "<<ListaComp.size()              <<endl;
-    cout<< "Tam Lista Liga: "<<ListaLiga.size()              <<endl;
-    cout<< "-----------------------------------------------" <<endl;
-    cout<< "-----------------------------------------------" <<endl;
+    //cout<< "-----------------------------------------------" <<endl;
+    //cout<< "Tam Lista Comp: "<<ListaComp.size()              <<endl;
+    //cout<< "Tam Lista Liga: "<<ListaLiga.size()              <<endl;
+    //cout<< "-----------------------------------------------" <<endl;
+    //cout<< "-----------------------------------------------" <<endl;// </editor-fold>
+    
+    //Passo que varre cada componente e todas suas ligacores para setar todas 
+    //as portas conforme modelo VHDL
+    // <editor-fold defaultstate="collapsed" desc="Percorre ligacoes e define as portas VHDL">
+    
+    for (i = this->ListaComp.begin(); i != this->ListaComp.end(); i++) {
+        if ((*i)->tipo_comp == "REG" || (*i)->tipo_comp == "MEM") continue;
+        
+
+        (*i)->finalizaPortasComp();
+    }// </editor-fold>
+    
+
 }
 
 //Imprime componentes que serao utilizados no VHDL e todas as ligacoes geradas
@@ -678,14 +710,15 @@ void ListaComponente::imprimeAll(){
         if ((*i)->tipo_comp == "REG" || (*i)->tipo_comp == "MEM" ) continue;
         
         //cout << (*i)->node->class_name() << " - " << (*i)->tipo_comp << endl;
-        cout << (*i)->getName() << " - " << (*i)->tipo_comp << " - " << (*i)->node->class_name() << endl;
+        //cout << (*i)->getName() << " - " << (*i)->tipo_comp << " - " << (*i)->node->class_name() << endl;
+        cout << (*i)->getName() << " - " << (*i)->tipo_comp  << endl;
     }
     cout<<"*********************************"<<endl;
     cout<<"*********************************"<<endl;
     cout<<"LIGACOES"<<endl;
     cout<<"Qtd: "<< this->ListaLiga.size() <<endl;
     for(k=this->ListaLiga.begin(); k != this->ListaLiga.end(); k++){
-        cout<< (*k)->getOrigem()->getName()<<":"<< (*k)->getOrigPort() << " -> "<< (*k)->getDestino()->getName()<<":"<< (*k)->getDestPort() <<endl;
+        cout<< (*k)->getNome() << " :: " << (*k)->getOrigem()->getName()<<":"<< (*k)->getOrigPort() << " -> "<< (*k)->getDestino()->getName()<<":"<< (*k)->getDestPort() <<endl;
     }
 }
 

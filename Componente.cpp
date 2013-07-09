@@ -139,6 +139,10 @@ void Componente::addLigacao(Ligacao* lig){
     this->ligacoes.push_back(lig);
 }
 
+void Componente::removeLigacao(Ligacao* lig){
+    this->ligacoes.remove(lig);
+}
+
 SgNode* Componente::getPai(){
     return this->nodoPai;
 }
@@ -147,6 +151,12 @@ string Componente::getStringPortOUT(){
     string res = "";
     if(this->tipo_comp == "OPE"){
         res = "O0";
+    }
+    if(this->tipo_comp == "CTD"){
+        res = "output";
+    }
+    if(this->tipo_comp == "DLY"){
+        res = "a_delayed";
     }
     if(this->tipo_comp == "REF"){
         if(this->ref_var_tipo == "VET"){
@@ -159,10 +169,36 @@ string Componente::getStringPortOUT(){
     
     return res;
 }
+
+string Componente::getStringPortOUTSize(){
+    string res = "";
+    if(this->tipo_comp == "OPE"){
+        res = "32";
+    }
+    if(this->tipo_comp == "CTD"){
+        res = "16";
+    }
+    if(this->tipo_comp == "DLY"){
+        res = "1";
+    }
+    if(this->tipo_comp == "REF"){
+        if(this->ref_var_tipo == "VET"){
+                res = "32";
+        }
+        if(this->ref_var_tipo == "VAR"){
+                res = "32";
+        }
+    }
+    return res;
+}
+
 string Componente::getStringPortIN(){
     string res = "";
     if(this->tipo_comp == "OPE"){
         res = "I0";
+    }
+    if(this->tipo_comp == "DLY"){
+        res = "a";
     }
     if(this->tipo_comp == "REF"){
         if(this->ref_var_tipo == "VET"){
@@ -174,6 +210,26 @@ string Componente::getStringPortIN(){
     }
     return res;
 }
+
+string Componente::getStringPortINSize(){
+    string res = "";
+    if(this->tipo_comp == "OPE"){
+        res = "32";
+    }
+    if(this->tipo_comp == "DLY"){
+        res = "1";
+    }
+    if(this->tipo_comp == "REF"){
+        if(this->ref_var_tipo == "VET"){
+                res = "32";
+        }
+        if(this->ref_var_tipo == "VAR"){
+                res = "32";
+        }
+    }
+    return res;
+}
+
 string Componente::imprimeDOT(){
     string res = "";
     if(this->tipo_comp == "CTD"){
@@ -193,6 +249,55 @@ string Componente::imprimeDOT(){
     }else if(this->tipo_comp == "DLY"){
         //this->delayVal 
         res += "\""+this->nome+"\" [shape=record, fontcolor=blue, style=\"filled\", fillcolor=\"lightgray\", label=\"{{<a>a[1]|<clk>clk|<reset>reset}|delay_op:"+this->nome+"\\ndelay=0|{<a_delayed>a_delayed[1]}}\"]; \n";
+    }   
+    return res;
+}
+
+string Componente::geraVHDLComp(){
+    string res = "";
+    if(this->tipo_comp == "CTD"){
+        res += "\\"+this->nome+"\\: counter \n";
+	res += "generic map ( \n";
+	res += "	bits => "+      this->counter_bits+", \n";
+	res += "	condition => "+ this->counter_condition+", \n";
+	res += "	down => "+      this->counter_down+", \n";
+	res += "	increment => "+ this->counter_increment+", \n";
+	res += "	steps => "+     this->counter_steps+" \n";
+	res += ") \n";
+	res += "port map ( \n";
+	res += "	clk => "+       this->counter_clk+", \n";
+	res += "	clk_en => "+    this->counter_clk_en+", \n";
+	res += "	done => "+      this->counter_done+", \n";
+	res += "	input => "+     this->counter_input+", \n";
+	res += "	output => "+    this->counter_output+", \n";
+	res += "	reset => "+     this->counter_reset+", \n";
+	res += "	step => "+      this->counter_step+", \n";
+	res += "	termination => "+this->counter_termination+" \n";
+	res += "); \n";
+    }else if(this->tipo_comp == "OPE"){  
+            res += "\""+this->nome+"\" [shape=record, fontcolor=blue, label=\"{{<I0>I0[32]|<I1>I1[32]}|add_op_s:"+this->nome+"|{<O0>O0[32]}}\"]; \n";
+            //res += "\"x_add_op_s_y\" [shape=record, fontcolor=blue, label=\"{{<I0>I0[32]|<I1>I1[32]}|add_op_s:x_add_op_s_y|{<O0>O0[32]}}\"]; \n";     
+    }else if(this->tipo_comp == "CON"){
+        
+    }else if(this->tipo_comp == "REF"){
+        if(this->ref_var_tipo == "VET"){
+                res += "\""+this->ref_var_nome+"\" [shape=record, fontcolor=blue, style=\"filled\", fillcolor=\"lightgray\", label=\"{{<address>address[11]|<clk>clk|<data_in>data_in[32]|<oe>oe|<we>we}|block_ram:"+this->ref_var_nome+"|{<data_out>data_out[32]}}\"]; \n";
+        }
+        if(this->ref_var_tipo == "VAR"){
+                res += "\""+this->ref_var_nome+"\" [shape=record, fontcolor=blue, style=\"filled\", fillcolor=\"lightgray\", label=\"{{<I0>I0[32]|<clk>clk|<reset>reset|<we>we}|reg_op:"+this->ref_var_nome+"|{<O0>O0[32]}}\"]; \n";
+        }
+    }else if(this->tipo_comp == "DLY"){
+        res += "\\"+this->nome+"\\: delay_op \n";
+	res += "generic map ( \n";
+	res += "	bits => "+      this->delay_bits+", \n";
+	res += "	delay => "+     this->delay_delay+" \n";                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     
+	res += ") \n"; 
+	res += "port map ( \n";
+            res += "	a => "+         this->delay_a+", \n";
+	res += "	a_delayed => "+ this->delay_a_delayed+", \n";
+	res += "	clk => "+       this->delay_clk+", \n";
+	res += "	reset => "+     this->delay_reset+" \n";
+	res += "); \n";
     }   
     return res;
 }
@@ -241,6 +346,50 @@ void Componente::imprime(){
     }
 }
 
+void Componente::finalizaPortasComp(){
+    list<Ligacao*>::iterator k;
+    cout<<"*********************************"<<endl;
+    cout<<"*********************************"<<endl;
+    cout<<"LIGACOES"<<endl;
+    cout<<"Qtd: "<< this->ligacoes.size() <<endl;
+    string res = "";
+    for(k=this->ligacoes.begin(); k != this->ligacoes.end(); k++){
+        cout<< (*k)->getNome() << " :: " << (*k)->getOrigem()->getName()<<":"<< (*k)->getOrigPort() << " -> "<< (*k)->getDestino()->getName()<<":"<< (*k)->getDestPort() <<endl;
+        if((*k)->getOrigem()->getName() == this->getName()){
+            res = (*k)->getOrigPort();
+        }else {
+            res = (*k)->getDestPort();
+        }
+        
+        //agora o proximo passo 'e verificar qual o componente e setar cada campo
+        if(this->tipo_comp == "CTD"){
+            if(res == "output" && this->counter_output == ""){
+                this->counter_output    = (*k)->getNome();
+            }
+            if(res == "done" && this->counter_done == ""){
+                this->counter_done      = (*k)->getNome();
+            }
+            if(res == "step" && this->counter_step == ""){
+                this->counter_step      = (*k)->getNome();
+            }
+            if(res == "clock_en" && this->counter_clk_en == ""){
+                this->counter_clk_en    = (*k)->getNome();
+            }
+            if(res == "clk" && this->counter_clk == ""){
+                this->counter_clk       = (*k)->getNome();
+            }
+            if(res == "termination" && this->counter_termination == ""){
+                this->counter_termination= (*k)->getNome();
+            }
+            if(res == "input" && this->counter_input == ""){
+                this->counter_input     = (*k)->getNome();
+            }
+            if(res == "reset" && this->counter_reset == ""){
+                this->counter_reset     = (*k)->getNome();
+            }  
+        }
+    }
+}
 void Componente::imprimeLigacoes(){
     list<Ligacao*>::iterator i;
     //cout<<"QTD ELEM: "<< this->ligacoes.size() << endl;
@@ -280,6 +429,25 @@ void Componente::montaComponenteLoop(){
     SgForStatement* cur_for = isSgForStatement(this->node);
     this->tipo_comp = "CTD";     
     if (cur_for != NULL){
+        
+        //Info necessarias para geracao do componente VHDL
+        this->counter_bits      = "16";
+        this->counter_condition = "0";
+        this->counter_down      = "1";
+        this->counter_increment = "1";
+        this->counter_steps     = "1";
+        
+        //port map
+        this->counter_clk       = "\\clk\\";
+        this->counter_clk_en    = "";
+        this->counter_done      = "";
+        this->counter_input     = "";
+        this->counter_output    = "";
+        this->counter_reset     = "\\reset\\";
+        this->counter_step      = "";
+        this->counter_termination= "";
+        
+        
         ROSE_ASSERT(cur_for);
 
         this->for_ctr_var = getLoopIndexVariable(this->node)->get_name().str();
@@ -369,7 +537,14 @@ void Componente::montaComponenteOp(){
 }
 
 void Componente::montaComponenteDelay(){
-        this->tipo_comp = "DLY";
+        this->tipo_comp         = "DLY";
+        
+        this->delay_bits        = "";
+	this->delay_delay       = "";                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     
+	this->delay_a           = "";
+	this->delay_a_delayed   = "";
+	this->delay_clk         = "\\clk\\";
+	this->delay_reset       = "\\reset\\";
 }
 
 void Componente::setName(const string &nome){
