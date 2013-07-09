@@ -22,6 +22,8 @@ public:
     void        editDest(class Componente* newDest);
     void        setDestPort(const string &porta);
     void        setOrigPort(const string &porta);
+    void        setSize(const string &size);
+    string      getSize();
     string      getDestPort();
     string      getOrigPort();
     string      imprimeDot();
@@ -31,7 +33,7 @@ private:
     class       Componente* origem;
     class       Componente* destino;
     string      nome;
-    int         tamBarramento;
+    string      tamBarramento;
     string      outPort;
     string      inPort;
     //Componente* origem;

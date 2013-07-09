@@ -29,14 +29,19 @@ class Componente {
         bool    writeEnable;
 
         void    setName(const string &nome);
+        void    finalizaPortasComp();
         void    imprimeLigacoes();
         string  getStringPortIN();
+        string  getStringPortINSize();
         string  getStringPortOUT();
+        string  getStringPortOUTSize();
+        string  geraVHDLComp();
         string  imprimeDOT();
         string  getName();
         //void    addLigacao();
         void    imprime();
         virtual ~Componente();
+        void    removeLigacao(Ligacao* lig);
         void    addLigacao(Ligacao* lig);
         string  tipo_comp; 
         SgNode* node;
@@ -74,6 +79,7 @@ class Componente {
         //Componente*  op_in_1;    //Define entrada 1
         //Componente*  op_in_2;    //Define entrada 2
         
+        /**************************************************************/
         //CONTADOR - EX.: for (i = 0, i < 10, i++)
         //string  for_ctr_var;    //Variavel de controle - EX.: (i) => for (i = 0, ....)
         int     for_ctr_val_ini;//Valor inicial da variavel de controle
@@ -87,6 +93,39 @@ class Componente {
         int     for_incr_val;   //valor incrementar for - EX.: 1
         //DELAY
         int     delayVal;
+        
+        //generic map
+        string counter_bits;
+        string counter_condition;
+        string counter_down;
+        string counter_increment;
+        string counter_steps;
+        
+        //port map
+        string counter_clk;
+        string counter_clk_en;
+        string counter_done;
+        string counter_input;
+        string counter_output;
+        string counter_reset;
+        string counter_step;
+        string counter_termination;
+        /**************************************************************/
+        
+        
+        /**************************************************************/
+        //Delay
+        //generic map
+	string delay_bits;
+	string delay_delay;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     
+
+	//port map
+	string delay_a;
+	string delay_a_delayed;
+	string delay_clk;
+	string delay_reset;
+        
+        /**************************************************************/
         
         //Constante - Numero dentro da Expressao
         //string  cons_tipo;
