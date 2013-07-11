@@ -19,14 +19,20 @@ using namespace std;
 class ArquivosDotHW {
 public:
     ArquivosDotHW(list<Componente*> listaComp, list<Ligacao*> listaLiga);
-    void imprimeVHDL();
-    void imprimeHWDOT();    
-    virtual ~ArquivosDotHW();
+    void                imprimeVHDL();
+    void                imprimeHWDOT();    
+    virtual             ~ArquivosDotHW();
 private:
     list<Componente*>   ListaComp;
     list<Ligacao*>      ListaLiga;
-    string getComponenteVHDL(Componente* comp);
-    string getEstruturaComponenteVHDL(Componente* comp);
+    vector<string>      ListaAux;
+    string              getComponenteVHDL(Componente* comp);
+    string              getEstruturaComponenteVHDL(Componente* comp);
+    void                GeraMemoryVHDL();
+    vector<string>      split(const string& s, const string& delim);
+    string              LPad(const string &val, int size);
+    string              ConvertDecToBin(const string &val);
+    bool                ExisteNaListaAux(const string &val);
 };
 
 #endif	/* GERADOT_H */

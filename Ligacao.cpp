@@ -27,19 +27,31 @@ void Ligacao::editDest(class Componente* newDest){
 }
 
 string Ligacao::imprimeDot(){
-    string res      = "";
+    string res       = "";
     string inPorta   = "";
     string outPorta  = "";
+    string size      = "";
     if(this->inPort != ""){
-        inPorta = ":"+this->inPort;
+        inPorta = ":"+this->getOrigPort();
+        //inPorta = ":"+this->inPort;
     }
     if(this->outPort != ""){
-        outPorta = ":"+this->outPort;
+        outPorta = ":"+this->getDestPort();
+        //outPorta = ":"+this->outPort;
     }
-    res             += "\""+this->origem->getName()+"\""+inPorta+" -> \"" +this->destino->getName()+"\""+outPorta+"[label=\"" +this->nome+  "\" color=red fontcolor=red]; \n";
+    if(this->tamBarramento != ""){
+        size = "["+this->tamBarramento+"]";
+    }
+    res             += "\""+this->origem->getName()+"\""+inPorta+" -> \"" +this->destino->getName()+"\""+outPorta+"[label=\"" +this->nome+size+  "\" color=red fontcolor=red]; \n";
     return res;
 }
 
+string Ligacao::getSize(){
+    return this->tamBarramento;
+}
+void Ligacao::setSize(const string &size){
+    this->tamBarramento = size;
+}
 class Componente* Ligacao::getOrigem() {
     return this->origem;
 }
