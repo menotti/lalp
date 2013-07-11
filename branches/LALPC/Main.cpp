@@ -394,10 +394,11 @@ int main(int argc, char * argv[]){
     listaCom.identificaFor();
     //listaCom.geraGrafo();
     listaCom.FinalizaComponentes();
-    listaCom.imprimeAll();
-    //listaCom.geraArquivosDotHW();
-    //listaCom.imprimeTodosComponentes();
+    //listaCom.imprimeAll();
+    listaCom.geraArquivosDotHW();
+    listaCom.imprimeTodosComponentes();
     cout<<"###############################################"<<endl;
+    
     
     
     

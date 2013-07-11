@@ -58,12 +58,15 @@ vector<string> ListaComponente::split(const string& s, const string& delim) {
 
 //Imprime todos os componentes operacoes referencias e declaracao de variaveis
 void ListaComponente::imprimeTodosComponentes() {
-    
+    cout<< "************************************************"<<  endl;
+    cout<< "IMPRESSAO TODOS OS COMPONENTES DA LISTA"<<  endl;
+    cout<< "************************************************"<<  endl;
     list<Componente*>::iterator i;
     for(i=this->ListaComp.begin(); i != this->ListaComp.end(); i++){
         //cout<< (*i).tipo_comp<< " - "<< cout<< (*i).node <<  endl;
         (*i)->imprime();
     }
+    cout<< "************************************************"<<  endl;
 }
 
 void ListaComponente::identificaVariaveis() {
@@ -587,7 +590,8 @@ void ListaComponente::FinalizaComponentes(){
                         } else if ((*i)->getName() == "") {
                             if (incr_nome < 1) {
                                 //TODO fazer os restantes das OPERACOES
-                                nome += aux + "_op_add_";
+                                //nome += aux + "_op_add_";
+                                nome = aux + (*i)->getTipoOpVHDL();
                                 (*k)->setDestPort("I0");
                                 incr_nome++;
                             } else {
@@ -648,6 +652,7 @@ void ListaComponente::FinalizaComponentes(){
                         //Adicionando as novas ligacoes no Delay
                         comp->addLigacao(newLig);
                         comp->addLigacao((*k));
+                        comp->setDelayBits((*k)->getSize());
                         
                         //Inserindo na lista auxiliar
                         ListaLigaAux.push_back(newLig);
@@ -694,6 +699,11 @@ void ListaComponente::FinalizaComponentes(){
         
 
         (*i)->finalizaPortasComp();
+        
+//        if ((*i)->tipo_comp == "CTD" || (*i)->tipo_comp == "DLY" || (*i)->tipo_comp == "OPE"){
+//            cout<< (*i)->geraVHDLComp()<< endl;
+//        }
+        
     }// </editor-fold>
     
 
@@ -725,6 +735,7 @@ void ListaComponente::imprimeAll(){
 void ListaComponente::geraArquivosDotHW(){
     ArquivosDotHW *dot = new ArquivosDotHW(this->ListaComp, this->ListaLiga);
     dot->imprimeHWDOT();
+    dot->imprimeVHDL();
 }
 
 void ListaComponente::geraGrafo(){

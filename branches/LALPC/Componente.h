@@ -28,6 +28,12 @@ class Componente {
         SgNode* getPai();
         bool    writeEnable;
 
+        bool    VetorTemValorInicial();
+        string  getTipoOpVHDL();
+        string  getDelayVal();
+        void    setDelayVal(const string &val);
+        string  getDelayBits();
+        void    setDelayBits(const string &bits);
         void    setName(const string &nome);
         void    finalizaPortasComp();
         void    imprimeLigacoes();
@@ -74,10 +80,21 @@ class Componente {
         bool    eVetor;
         int     qtd_ele_vet;    //quantidade de elementos dentro do vetor
         
+        
+        /**************************************************************/
         //OPERACAO
-        //string  op_tipo;        //Definir tipo de opercacao - soma, sub, mult, div, etc.
-        //Componente*  op_in_1;    //Define entrada 1
-        //Componente*  op_in_2;    //Define entrada 2
+        string op_tipo_comp_vhdl; //add_op_s
+	//generic map
+	string op_w_in1;
+	string op_w_in2;
+	string op_w_out;
+        
+	//port map
+	string op_I0;
+	string op_I1;
+	string op_O0;        
+        /**************************************************************/
+        
         
         /**************************************************************/
         //CONTADOR - EX.: for (i = 0, i < 10, i++)

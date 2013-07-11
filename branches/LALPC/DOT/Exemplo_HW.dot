@@ -2,15 +2,15 @@ digraph diagram {
 // Components (Nodes) 
 "i" [shape=record, fontcolor=blue, style="filled", fillcolor="lightgray", label="{{<clk>clk|<clk_en>clk_en|<input>input[16]|<load>load|<reset>reset|<termination>termination[16]}|counter:i\n\<\n+=1\nsteps=1|{<done>done|<output>output[16]|<step>step}}"]; 
 "res" [shape=record, fontcolor=blue, style="filled", fillcolor="lightgray", label="{{<address>address[11]|<clk>clk|<data_in>data_in[32]|<oe>oe|<we>we}|block_ram:res|{<data_out>data_out[32]}}"]; 
-"b_op_add_d" [shape=record, fontcolor=blue, label="{{<I0>I0[32]|<I1>I1[32]}|add_op_s:b_op_add_d|{<O0>O0[32]}}"]; 
+"bop_add_sd" [shape=record, fontcolor=blue, label="{{<I0>I0[32]|<I1>I1[32]}|add_op_s:bop_add_sd|{<O0>O0[32]}}"]; 
 "b" [shape=record, fontcolor=blue, style="filled", fillcolor="lightgray", label="{{<address>address[11]|<clk>clk|<data_in>data_in[32]|<oe>oe|<we>we}|block_ram:b|{<data_out>data_out[32]}}"]; 
 "d" [shape=record, fontcolor=blue, style="filled", fillcolor="lightgray", label="{{<address>address[11]|<clk>clk|<data_in>data_in[32]|<oe>oe|<we>we}|block_ram:d|{<data_out>data_out[32]}}"]; 
-"c9" [shape=record, fontcolor=blue, style="filled", fillcolor="lightgray", label="{{<a>a[1]|<clk>clk|<reset>reset}|delay_op:c9\ndelay=0|{<a_delayed>a_delayed[1]}}"]; 
+"c9" [shape=record, fontcolor=blue, style="filled", fillcolor="lightgray", label="{{<a>a[16]|<clk>clk|<reset>reset}|delay_op:c9\ndelay=0|{<a_delayed>a_delayed[16]}}"]; 
 "c10" [shape=record, fontcolor=blue, style="filled", fillcolor="lightgray", label="{{<a>a[1]|<clk>clk|<reset>reset}|delay_op:c10\ndelay=0|{<a_delayed>a_delayed[1]}}"]; 
 // Signals (Edges) 
-"b_op_add_d":O0 -> "res":data_in[label="s0[32]" color=red fontcolor=red]; 
-"b":data_out -> "b_op_add_d":I0[label="s1[32]" color=red fontcolor=red]; 
-"d":data_out -> "b_op_add_d":I1[label="s2[32]" color=red fontcolor=red]; 
+"bop_add_sd":O0 -> "res":data_in[label="s0[32]" color=red fontcolor=red]; 
+"b":data_out -> "bop_add_sd":I0[label="s1[32]" color=red fontcolor=red]; 
+"d":data_out -> "bop_add_sd":I1[label="s2[32]" color=red fontcolor=red]; 
 "i":output -> "c9":a[label="s3[16]" color=red fontcolor=red]; 
 "i":step -> "c10":a[label="s4[1]" color=red fontcolor=red]; 
 "i":output -> "b":address[label="s5[16]" color=red fontcolor=red]; 
