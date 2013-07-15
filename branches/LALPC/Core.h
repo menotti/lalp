@@ -4,27 +4,25 @@
  *
  * Created on 23 de Junho de 2013, 10:07
  */
+
+#ifndef CORE_H
+#define	CORE_H
 #include "rose.h"
 #include <string>
 #include <stdio.h>
-#ifndef LISTACOMPONENTE_H
-#define	LISTACOMPONENTE_H
-
 #include <sstream>
 #include <stdlib.h>
 #include "variables.h"
 #include <list>
-#include "Componente.h"
-
-
+#include "Componente/Componente.h"
 
 using namespace std;
 using namespace SageInterface;
 
-class ListaComponente {  
+class Core {  
     public:
-        ListaComponente(SgProject *project);
-        virtual ~ListaComponente();
+        Core(SgProject *project);
+        virtual ~Core();
         void identificaVariaveis();
         void FinalizaComponentes();
         void geraGrafo();
@@ -32,7 +30,7 @@ class ListaComponente {
         void geraHW();
         void imprimeAll();
         void identificaFor();
-        void analisaExp(SgNode *nodoAtual, SgNode* pai, bool debug);
+        void analisaExp(SgNode *nodoAtual, SgNode* pai = NULL, bool debug = false, const string& aux = "");
         void imprimeTodosComponentes();
         list<Componente*> ListaComp;
         list<Ligacao*> ListaLiga;
@@ -43,5 +41,5 @@ class ListaComponente {
         vector<string> split(const string& s, const string& delim);
 };
 
-#endif	/* COMPONENTE_H */
+#endif	/* CORE_H */
 

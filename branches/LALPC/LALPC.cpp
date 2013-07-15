@@ -25,8 +25,8 @@
 #include <algorithm>
 #include <map>
 #include "liveDeadVarAnalysis.h"
-//#include "Componente.h"
-#include "ListaComponente.h"
+
+#include "Core.h"
 #include <boost/lexical_cast.hpp>
 
 #include <boost/graph/adjacency_list.hpp>
@@ -44,7 +44,7 @@ using std::stringstream;
 using boost::lexical_cast;
 
 
-class Main : public AstSimpleProcessing
+class LALPC : public AstSimpleProcessing
 {
     protected: virtual void visit(SgNode* n);
     //public: string identificaNodo(SgNode* n){
@@ -56,7 +56,7 @@ class Main : public AstSimpleProcessing
     //public: virtual void teste(SgProject *project, const string& nome);
 };
 
-void Main::visit(SgNode* n){
+void LALPC::visit(SgNode* n){
     /*
     SgFunctionDefinition* nodo = isSgFunctionDefinition(n);
     if (nodo != NULL)
@@ -120,7 +120,7 @@ void Main::visit(SgNode* n){
      * */
 };
 
-void Main::geraGraficoFluxo(SgProject *project, const string& nome=""){
+void LALPC::geraGraficoFluxo(SgProject *project, const string& nome=""){
     
     Rose_STL_Container<SgNode*> functions = NodeQuery::querySubTree(project, V_SgFunctionDefinition);
 
@@ -135,7 +135,7 @@ void Main::geraGraficoFluxo(SgProject *project, const string& nome=""){
     }
 }
 
-void Main::geraGraficoDataFlow(SgProject *project, const string& nome=""){
+void LALPC::geraGraficoDataFlow(SgProject *project, const string& nome=""){
     DFAnalysis* defuse = new DefUseAnalysis(project);
     bool debug = false;
     defuse->run(debug);
@@ -153,7 +153,7 @@ void Main::geraGraficoDataFlow(SgProject *project, const string& nome=""){
     
 }
 
-void Main::geraGraficoDefuseAnalysis(SgProject *project, const string& nome=""){
+void LALPC::geraGraficoDefuseAnalysis(SgProject *project, const string& nome=""){
     // Call the Def-Use Analysis
     DFAnalysis* defuse = new DefUseAnalysis(project);
     bool debug = false;
@@ -188,7 +188,7 @@ void Main::geraGraficoDefuseAnalysis(SgProject *project, const string& nome=""){
     defuse->dfaToDOT();
 }
 
-void Main::analisaLoop(SgProject *project, bool OpenMP){
+void LALPC::analisaLoop(SgProject *project, bool OpenMP){
     // For each source file in the project
     ROSE_ASSERT (project != NULL);
     initialize_analysis (project,false);
@@ -302,7 +302,7 @@ void Main::analisaLoop(SgProject *project, bool OpenMP){
 }
 
 //FUNCAO SPLIT STRING
-vector<string> Main::split(const string& s, const string& delim) {
+vector<string> LALPC::split(const string& s, const string& delim) {
     vector<string> result;
     if (delim.empty()) {
         result.push_back(s);
@@ -326,7 +326,7 @@ vector<string> Main::split(const string& s, const string& delim) {
 int main(int argc, char * argv[]){
     SgProject *project = frontend (argc, argv);
     initAnalysis(project);
-    Main        	myvisitor;
+    LALPC        	myvisitor;
     bool OpenMP         = false;
     bool Redundancia    = false; 
     bool VarLiveDead    = false;
@@ -388,15 +388,21 @@ int main(int argc, char * argv[]){
     cout<<"###############################################"<<endl;
     cout<<"# Iniciando testes                            #"<<endl;
     //cout<<"  Total Comp: "<< componentes.size()<<endl;
-    ListaComponente listaCom(project);
+    Core listaCom(project);
+    cout<<"# Iniciando Identificando variaveis           #"<<endl;
     listaCom.identificaVariaveis();
+    cout<<"# Iniciando Identificando variaveis: OK       #"<<endl;
     //TODO Fazer Identificar Expressoes (fora do FOR)
+    cout<<"# Iniciando Identificando fors                #"<<endl;
     listaCom.identificaFor();
+    cout<<"# Iniciando Identificando fors: OK            #"<<endl;
     //listaCom.geraGrafo();
+    cout<<"# finalizando componentes                     #"<<endl;
     listaCom.FinalizaComponentes();
+    cout<<"# finalizando componentes: OK                 #"<<endl;
     //listaCom.imprimeAll();
     listaCom.geraArquivosDotHW();
-    listaCom.imprimeTodosComponentes();
+    //listaCom.imprimeTodosComponentes();
     cout<<"###############################################"<<endl;
     
     
