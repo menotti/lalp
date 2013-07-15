@@ -6,6 +6,7 @@
  */
 
 #include "ArquivosDotHW.h"
+#include "Componente/op_add_s.h"
 #include <boost/lexical_cast.hpp>
 #include <string>
 #include "stdlib.h"
@@ -36,8 +37,8 @@ void ArquivosDotHW::imprimeHWDOT() {
     for(i=this->ListaComp.begin(); i != this->ListaComp.end(); i++){
         if ((*i)->tipo_comp == "REG" || (*i)->tipo_comp == "MEM" ) continue;  
         
-        fout << (*i)->imprimeDOT();
-        cout << (*i)->imprimeDOT();
+        fout << (*i)->geraDOTComp();
+        cout << (*i)->geraDOTComp();
     }
     fout << "// Signals (Edges) \n";
     cout << "// Signals (Edges) \n";
@@ -80,7 +81,7 @@ void ArquivosDotHW::imprimeVHDL() {
     //COMPONENTES
     //Carrega as estruturas necessarias
     for(i=this->ListaComp.begin(); i != this->ListaComp.end(); i++){
-        fout << this->getEstruturaComponenteVHDL((*i));
+        //fout << this->getEstruturaComponenteVHDL((*i));
     }
     
     //SINAIS
@@ -112,121 +113,6 @@ void ArquivosDotHW::imprimeVHDL() {
     //cout<<"------------------------------------"<<endl;
 }
 
-string ArquivosDotHW::getEstruturaComponenteVHDL(Componente* comp){
-    string res = "";
-    
-    if(comp->tipo_comp == "DLY"){
-        if(ExisteNaListaAux("delay_op") == false){
-            res += "component delay_op \n";
-            res += "generic ( \n";
-            res += "        bits            : integer := 8; \n";
-            res += "        delay           : integer := 1 \n";
-            res += "); \n";
-            res += "port ( \n";
-            res += "        a		: in	std_logic_vector(bits-1 downto 0); \n";
-            res += "        clk		: in	std_logic; \n";
-            res += "        reset		: in	std_logic; \n";
-            res += "        a_delayed	: out	std_logic_vector(bits-1 downto 0) := (others=>'0') \n";
-            res += "); \n";
-            res += "end component; \n\n";
-            this->ListaAux.push_back("delay_op");
-        }
-    }
-    if(comp->tipo_comp == "CTD"){
-        if(ExisteNaListaAux("counter") == false){ 
-            res += "component counter \n";
-            res += "generic (\n";
-            res += "        bits		: integer := 8;\n";
-            res += "        steps		: integer := 1;\n";
-            res += "        increment	: integer := 1;\n";
-            res += "        down            : integer := 0;\n";
-            res += "        condition       : integer := 0\n";
-            res += ");\n";
-            res += "port (\n";
-            res += "        input		: in	std_logic_vector(bits-1 downto 0);\n";
-            res += "        termination	: in	std_logic_vector(bits-1 downto 0);\n";
-            res += "        clk		: in	std_logic;\n";
-            res += "        clk_en		: in	std_logic := '1';\n";
-            res += "        reset		: in	std_logic;\n";
-            res += "        load		: in	std_logic := '0';\n";
-            res += "        step		: out	std_logic;\n";
-            res += "        done		: out	std_logic;\n";
-            res += "        output		: out	std_logic_vector(bits-1 downto 0)\n";
-            res += "); \n";
-            res += "end component; \n\n";
-            this->ListaAux.push_back("counter");
-        }
-    }
-    if(comp->tipo_comp == "MEM"){
-        if(comp->VetorTemValorInicial() == true){
-            string name = "block_ram_"+comp->getName();
-            if(ExisteNaListaAux(name) == false){  
-                res += "component block_ram_"+comp->getName()+" \n";
-                res += "generic ( \n";
-                res += "        data_width	: integer := 8; \n";
-                res += "        address_width	: integer := 8 \n";
-                res += "); \n";
-                res += "port ( \n";
-                res += "        clk		: in	std_logic; \n";
-                res += "        we		: in	std_logic := '0'; \n";
-                res += "        oe		: in	std_logic := '1'; \n";
-                res += "        address		: in	std_logic_vector(address_width-1 downto 0); \n";
-                res += "        data_in		: in	std_logic_vector(data_width-1 downto 0) := (others => '0'); \n";
-                res += "        data_out	: out	std_logic_vector(data_width-1 downto 0) \n";
-                res += "); \n";
-                res += "end component; \n\n";
-                
-                this->ListaAux.push_back(name);
-            }
-        }else{
-            if(ExisteNaListaAux("block_ram") == false){
-                res += "component block_ram \n";
-                res += "generic ( \n";
-                res += "        data_width	: integer := 8; \n";
-                res += "        address_width	: integer := 8 \n";
-                res += "); \n";
-                res += "port ( \n";
-                res += "        clk		: in	std_logic; \n";
-                res += "        we		: in	std_logic := '0'; \n";
-                res += "        oe		: in	std_logic := '1'; \n";
-                res += "        address		: in	std_logic_vector(address_width-1 downto 0); \n";
-                res += "        data_in		: in	std_logic_vector(data_width-1 downto 0) := (others => '0'); \n";
-                res += "        data_out	: out	std_logic_vector(data_width-1 downto 0) \n";
-                res += "); \n";
-                res += "end component; \n\n";
-
-                this->ListaAux.push_back("block_ram");
-            }
-        }
-    }
-    if(comp->tipo_comp == "OPE"){
-        if(comp->op_tipo  == "ADD"){
-            if(ExisteNaListaAux(comp->getTipoOpVHDL()) == false){
-                res += "component add_op_s \n";
-                res += "generic ( \n";
-                res += "        w_in1	: integer := 8; \n";
-                res += "        w_in2	: integer := 8; \n";
-                res += "        w_out	: integer := 16 \n";
-                res += "); \n";
-                res += "port ( \n";
-                res += "        I0          : in	std_logic_vector(w_in1-1 downto 0); \n";
-                res += "        I1          : in	std_logic_vector(w_in2-1 downto 0); \n";
-                res += "        O0          : out	std_logic_vector(w_out-1 downto 0) \n";
-                res += "); \n";
-                res += "end component; \n\n";
-                this->ListaAux.push_back(comp->getTipoOpVHDL());
-            }
-        }
-        if(comp->op_tipo  == "SUB"){
-            
-        }
-        if(comp->op_tipo  == "MUL"){
-            
-        }
-    }
-    return res;
-}
-
 void ArquivosDotHW::GeraMemoryVHDL() {
     list<Componente*>::iterator i;
     std::ofstream fout("VHDL/memory.vhd");
@@ -239,7 +125,7 @@ void ArquivosDotHW::GeraMemoryVHDL() {
     for(i=this->ListaComp.begin(); i != this->ListaComp.end(); i++){
         if((*i)->tipo_comp != "MEM") continue;
         
-        if((*i)->VetorTemValorInicial() == true){
+        if((*i)->getEInicializado() == true){
             fout << "entity block_ram_"+(*i)->getName()+" is \n";
             fout << "generic( \n";
             fout << "        data_width : integer := 8; \n";

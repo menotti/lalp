@@ -5,7 +5,7 @@
  * Created on June 28, 2013, 8:51 AM
  */
 #include "Ligacao.h"
-#include "Componente.h"
+#include "Componente/Componente.h"
 #include <string>
 
 using namespace std;

@@ -11,7 +11,7 @@
 #include <string>
 #include <stdio.h>
 #include <list>
-#include "Componente.h"
+#include "Componente/Componente.h"
 #include <sstream>
 #include <stdlib.h>
 #include "variables.h"
@@ -26,8 +26,6 @@ private:
     list<Componente*>   ListaComp;
     list<Ligacao*>      ListaLiga;
     vector<string>      ListaAux;
-    string              getComponenteVHDL(Componente* comp);
-    string              getEstruturaComponenteVHDL(Componente* comp);
     void                GeraMemoryVHDL();
     vector<string>      split(const string& s, const string& delim);
     string              LPad(const string &val, int size);

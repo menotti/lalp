@@ -8,7 +8,7 @@
 #ifndef LIGACAO_H
 #define	LIGACAO_H
 
-//#include "Componente.h"
+
 #include <string>
 
 using namespace std;
