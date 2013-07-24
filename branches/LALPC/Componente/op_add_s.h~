@@ -1,0 +1,26 @@
+/* 
+ * File:   op_add.h
+ * Author: demo
+ *
+ * Created on July 11, 2013, 11:20 AM
+ */
+
+#ifndef OP_ADD_H
+#define	OP_ADD_H
+#include "rose.h"
+#include "Componente.h"
+#include <string>
+
+using namespace std;
+
+class op_add : public Componente {
+public:
+    op_add(SgNode* node);
+
+    virtual ~op_add();
+private:
+
+};
+
+#endif	/* OP_ADD_H */
+
