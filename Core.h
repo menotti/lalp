@@ -15,7 +15,12 @@
 #include <stdlib.h>
 #include <list>
 #include "Componente/Componente.h"
+#include "Componente/counter.h"
+#include "Componente/reg_op.h"
+#include "Componente/block_ram.h"
+#include "Componente/comp_ref.h"
 #include "Ligacao.h"
+
 
 using namespace std;
 
@@ -28,15 +33,19 @@ class Core {
         void identificaReturn();
         void analisaExp(SgNode *nodoAtual, SgNode* pai = NULL, bool debug = false, const string& aux = "");
         void FinalizaComponentes();
+        
         void geraArquivosDotHW();
-//        void geraHW();
         void imprimeAll();
-
-        list<Componente*> ListaComp;
-        list<Ligacao*> ListaLiga;
-
+        
     private:
-        SgProject* project;
+        list<Componente*>ListaComp;
+        list<Ligacao*>  ListaLiga;
+        string          compNameReturn;
+        void            updateCounter(SgNode* node, counter* comp);
+        void            updateRegister(SgNode* node, reg_op* comp);
+        void            updateBlockRam(SgNode* node, block_ram* comp);
+        void            updateCompRef(SgNode* node, comp_ref* comp);
+        SgProject*      project;
 };
 
 #endif	/* CORE_H */
