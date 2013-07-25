@@ -20,6 +20,7 @@
 #include "Componente/comp_ref.h"
 #include "Componente/reg_op.h"
 #include "Componente/delay_op.h"
+#include "Componente/comp_aux.h"
 #include "Aux/FuncoesAux.h"
 #include "ArquivosDotHW.h"
 #include <iostream>
@@ -32,7 +33,6 @@ using std::string;
 
 Core::Core(SgProject* project) {
     this->project = project;
-    cout<<"Entrou no construtor com sucesso"<<endl;
 }
 
 void Core::identificaReturn() {
@@ -76,8 +76,7 @@ void Core::identificaReturn() {
                 for (Rose_STL_Container<SgNode*>::iterator j = var2.begin(); j != var2.end(); j++ ) 
                 {
                     SgVarRefExp* decVar = isSgVarRefExp((*j));
-                    string varNome = decVar->get_symbol()->get_name().getString();
-                    cout<<"RETORNO "<< varNome << endl;
+                    this->compNameReturn = decVar->get_symbol()->get_name().getString();
                 }
             }
         }
@@ -124,9 +123,11 @@ void Core::identificaVariaveis() {
                     if(var.isArrayType()){
                         block_ram* mem = new block_ram(cur_var);
                         this->ListaComp.push_back(mem);
+                        this->updateBlockRam(cur_var, mem);
                     }else{
                         reg_op* reg = new reg_op(cur_var);
                         this->ListaComp.push_back(reg);
+                        this->updateRegister(cur_var, reg);
                     }
                 }         
             }
@@ -148,8 +149,7 @@ void Core::identificaFor() {
         ROSE_ASSERT(sfile);
         SgGlobal *root = sfile->get_globalScope();
         SgDeclarationStatementPtrList& declList = root->get_declarations ();
-        bool hasOpenMP= false; // flag to indicate if omp.h is needed in this file
-
+        
         //For each function body in the scope
         for (SgDeclarationStatementPtrList::iterator p = declList.begin(); p != declList.end(); ++p) 
         {
@@ -176,6 +176,8 @@ void Core::identificaFor() {
                     
                     counter* comp = new counter(cur_for);
                     this->ListaComp.push_back(comp);
+                    
+                    this->updateCounter(cur_for, comp);
                     
                     cout<<"#--Comp Counter: OK                           #"<<endl;
                     cout<<"# Iniciando processo expressao FOR            #"<<endl;
@@ -447,6 +449,7 @@ void Core::analisaExp(SgNode *nodoAtual, SgNode* pai, bool debug,  const string&
             comp_ref* comp = new comp_ref(decArr, aux);
             if(pai) comp->setPai(pai);
             this->ListaComp.push_back(comp);
+            this->updateCompRef(decArr, comp);
         }
     }// </editor-fold>
 
@@ -465,6 +468,7 @@ void Core::analisaExp(SgNode *nodoAtual, SgNode* pai, bool debug,  const string&
         comp_ref* comp = new comp_ref(decVar, aux);
         if(pai) comp->setPai(pai);
         this->ListaComp.push_back(comp);
+        this->updateCompRef(decVar, comp);
         // <editor-fold defaultstate="collapsed" desc="DEBUG">
         if (debug) {
             cout << "-------------------------------" << endl;
@@ -493,9 +497,6 @@ void Core::analisaExp(SgNode *nodoAtual, SgNode* pai, bool debug,  const string&
 
 }
 
-//Durante o processo de criacao dos componentes, estes armazenam informacoes 
-//de quem e o nodo PAI. Este passo vai preencher os atributos de ligacao dos 
-//componentes de acordo com o nodo pai.
 void Core::FinalizaComponentes(){
  
     list<Componente*>::iterator i;
@@ -570,13 +571,17 @@ void Core::FinalizaComponentes(){
     for (i = this->ListaComp.begin(); i != this->ListaComp.end(); i++) {
         if ((*i)->tipo_comp == CompType::REG || (*i)->tipo_comp == CompType::MEM) continue;
         if ((*i)->tipo_comp == CompType::CTD) {
-            
+            //Necessario para pegar funcao especifica do contador
+            counter* CompCounter = (counter*)(*i); 
             for (j = this->ListaComp.begin(); j != this->ListaComp.end(); j++) {
                 if ((*j)->tipo_comp == CompType::REG || (*j)->tipo_comp == CompType::MEM) continue;
                 if ((*i)->node == (*j)->node) continue;
                 
                 if ((*j)->tipo_comp == CompType::REF) {
-                    if ((*j)->ref_var_index == (*i)->for_ctr_var) {
+                    //Necessario para pegar funcao especifica do contador
+                    comp_ref* CompRef = (comp_ref*)(*j); 
+                                        
+                    if (CompRef->getNomeVarIndex() == CompCounter->getVarControlCont()) {
                         
                         //CRIAR NOVA LIGACAO
                         string str = FuncoesAux::IntToStr(qtdLig);
@@ -601,10 +606,10 @@ void Core::FinalizaComponentes(){
                         
                         //Verificar se e de gravacao
                         //caso verdadeiro tem que ligar o WE da memoria no STEP do contador
-                        if((*j)->writeEnable){
+                        if(CompRef->getWE()){
+                            cout<< "REF: " << CompRef->getNomeVarIndex() << "- CTD: " << CompCounter->getVarControlCont()<< endl;
 //                            //CRIAR NOVA LIGACAO
                             string str = FuncoesAux::IntToStr(qtdLig);
-//                            Ligacao* ligWE = new Ligacao((*i), (*j)->getComponenteRef(), "s" + str);
                             Ligacao* ligWE = new Ligacao((*i), (*j), "s" + str);
                             ligWE->setPortOrigem((*i)->getPortOther("step"));
                             ligWE->setPortDestino((*j)->getPortOther("we"));
@@ -689,7 +694,7 @@ void Core::FinalizaComponentes(){
     int qtdComp = ListaComp.size();
     for (i = this->ListaComp.begin(); i != this->ListaComp.end(); i++) {
         if ((*i)->tipo_comp == CompType::REG || (*i)->tipo_comp == CompType::MEM) continue;
-        if ((*i)->writeEnable) {
+        if ((*i)->getWE()) {
             for (k = this->ListaLiga.begin(); k != this->ListaLiga.end(); k++) {
                 
                 if ((*i) == (*k)->getDestino()) {
@@ -703,7 +708,8 @@ void Core::FinalizaComponentes(){
                         comp->setName(nome);
                         comp->getPortDataInOut("IN")->setWidth((*k)->getWidth());
                         comp->getPortDataInOut("OUT")->setWidth((*k)->getWidth());
- 
+                        comp->setDelayBits((*k)->getWidth());
+                        
                         //CRIAR NOVA LIGACAO
                         str = FuncoesAux::IntToStr(qtdLig);
                         Ligacao* newLig = new Ligacao(comp, (*i), "s" + str);
@@ -764,36 +770,447 @@ void Core::FinalizaComponentes(){
     }// </editor-fold>
     
     
-    //Criar Componentes AUX (INIT, DONE, ETC)
-//    for (i = this->ListaComp.begin(); i != this->ListaComp.end(); i++) {
-//        if ((*i)->tipo_comp == CompType::CTD){
-//            
-//            Componente* init = new Componente(NULL, "INIT");
-//            Ligacao* newLig = new Ligacao(init, (*i), "s" + FuncoesAux::IntToStr(this->ListaLiga.size()));
-//            newLig->setPortDestino(((*i)->getPortOther("clk_en")));
-//            newLig->setPortOrigem(init->getPortDataInOut("OUT"));
-//            newLig->setWidth((*k)->getWidth());
-//            
-//            //ADICIONAR NOME LIGACAO NA PORTA
-//            newLig->getPortDestino()->setLigacao(newLig->getNome());
-//            newLig->getPortOrigem()->setLigacao(newLig->getNome());
-//            
-//            //ADICIONAR LIGACAO NO COMPONENTE
-//            (*i)->addLigacao(newLig);
-//            init->addLigacao(newLig);
-//            
-////    Componente iput = new Componente(NULL, "INPUT");
-////    Componente term = new Componente(NULL, "TERMINATION");
-////    Componente done = new Componente(NULL, "DONE");
-////    Componente done = new Componente(NULL, "RESULT");
-//            break;
-//        }
-//    }
+    //Setar RETURN
+    // <editor-fold defaultstate="collapsed" desc="DEFINE RETURN">
+    for (i = this->ListaComp.begin(); i != this->ListaComp.end(); i++) {
+        if ((*i)->tipo_comp != CompType::REF) continue;
+        if ((*i)->getName() == this->compNameReturn){
+            comp_aux* comp_return = new comp_aux(NULL,"RESULT");
+            comp_return->setName("return");
+            
+            //LIGACAO
+            Ligacao* newLig = new Ligacao((*i), comp_return, "s" + FuncoesAux::IntToStr(this->ListaLiga.size()));
+            newLig->setPortDestino(comp_return->getPortDataInOut("IN"));
+            newLig->setPortOrigem((*i)->getPortDataInOut("OUT"));
+            newLig->setWidth((*i)->getPortDataInOut("OUT")->getWidth());
+            newLig->setTipo((*i)->getPortDataInOut("OUT")->getType());
+            
+            //ADICIONAR NOME LIGACAO NA PORTA
+            newLig->getPortDestino()->setLigacao(newLig->getNome());
+            newLig->getPortOrigem()->setLigacao(newLig->getNome());
+            
+            //ADICIONAR LIGACAO NO COMPONENTE
+            (*i)->addLigacao(newLig);
+            comp_return->addLigacao(newLig);
+            
+            //ADD LISTAS
+            this->ListaLiga.push_back(newLig);
+            this->ListaComp.push_back(comp_return);
+        }
+    }// </editor-fold>
     
+    //Setar INICIALIZACAO
+    // <editor-fold defaultstate="collapsed" desc="COMP INICIALIZACO">
+    for (i = this->ListaComp.begin(); i != this->ListaComp.end(); i++) {
+        if ((*i)->tipo_comp != CompType::CTD) continue;
+        counter* CompCounter = (counter*)(*i);
+        
+        //*********************************************************************
+        // <editor-fold defaultstate="collapsed" desc="INIT">
+        comp_aux* comp_init = new comp_aux(NULL,"INIT");
+        comp_init->setName("init");
+
+        //LIGACAO
+        Ligacao* newLig = new Ligacao(comp_init, (*i), "s" + FuncoesAux::IntToStr(this->ListaLiga.size()));
+        newLig->setPortDestino((*i)->getPortOther("clk_en"));
+        newLig->setPortOrigem(comp_init->getPortDataInOut("OUT"));
+        newLig->setWidth((*i)->getPortOther("clk_en")->getWidth());
+        newLig->setTipo((*i)->getPortOther("clk_en")->getType());
+
+        //ADICIONAR NOME LIGACAO NA PORTA
+        newLig->getPortDestino()->setLigacao(newLig->getNome());
+        newLig->getPortOrigem()->setLigacao(newLig->getNome());
+
+        //ADICIONAR LIGACAO NO COMPONENTE
+        (*i)->addLigacao(newLig);
+        comp_init->addLigacao(newLig);
+
+        //ADD LISTAS
+        this->ListaLiga.push_back(newLig);
+        this->ListaComp.push_back(comp_init); 
+        // </editor-fold>
+        //*********************************************************************
+        
+        
+        //*********************************************************************
+        // <editor-fold defaultstate="collapsed" desc="TERMINATION">
+        comp_aux* comp_term = new comp_aux(NULL, "TERMINATION");
+        comp_term->setName("c" + FuncoesAux::IntToStr(this->ListaComp.size()));
+        //Pegar valor do contator referente ao MAXIMO de INTERACOES
+        comp_term->setValAux(CompCounter->getVarControlValStop());
+        
+        //LIGACAO
+        Ligacao* newLig2 = new Ligacao(comp_term, (*i), "s" + FuncoesAux::IntToStr(this->ListaLiga.size()));
+        newLig2->setPortDestino((*i)->getPortOther("termination"));
+        newLig2->setPortOrigem(comp_term->getPortDataInOut("OUT"));
+        newLig2->setWidth((*i)->getPortOther("termination")->getWidth());
+        newLig2->setTipo((*i)->getPortOther("termination")->getType());
+
+        //ADICIONAR NOME LIGACAO NA PORTA
+        newLig2->getPortDestino()->setLigacao(newLig2->getNome());
+        newLig2->getPortOrigem()->setLigacao(newLig2->getNome());
+
+        //ADICIONAR LIGACAO NO COMPONENTE
+        (*i)->addLigacao(newLig2);
+        comp_term->addLigacao(newLig2);
+
+        //ADD LISTAS
+        this->ListaLiga.push_back(newLig2);
+        this->ListaComp.push_back(comp_term); 
+        // </editor-fold>
+        //*********************************************************************
+        
+        
+        //*********************************************************************
+        // <editor-fold defaultstate="collapsed" desc="INPUT">
+        comp_aux* comp_input = new comp_aux(NULL, "INPUT");
+        comp_input->setName("c" + FuncoesAux::IntToStr(this->ListaComp.size()));
+        //Pegar valor do contator referente ao MAXIMO de INTERACOES
+        comp_input->setValAux(CompCounter->getVarControlValIni());
+        
+        //LIGACAO
+        Ligacao* newLig3 = new Ligacao(comp_input, (*i), "s" + FuncoesAux::IntToStr(this->ListaLiga.size()));
+        newLig3->setPortDestino((*i)->getPortOther("input"));
+        newLig3->setPortOrigem(comp_input->getPortDataInOut("OUT"));
+        newLig3->setWidth((*i)->getPortOther("input")->getWidth());
+        newLig3->setTipo((*i)->getPortOther("input")->getType());
+
+        //ADICIONAR NOME LIGACAO NA PORTA
+        newLig3->getPortDestino()->setLigacao(newLig3->getNome());
+        newLig3->getPortOrigem()->setLigacao(newLig3->getNome());
+
+        //ADICIONAR LIGACAO NO COMPONENTE
+        (*i)->addLigacao(newLig3);
+        comp_input->addLigacao(newLig3);
+
+        //ADD LISTAS
+        this->ListaLiga.push_back(newLig3);
+        this->ListaComp.push_back(comp_input); 
+        // </editor-fold>
+        //*********************************************************************
+        
+        
+        //*********************************************************************
+        // <editor-fold defaultstate="collapsed" desc="DONE">
+        comp_aux* comp_done = new comp_aux(NULL, "DONE");
+        comp_done->setName("done");
+        this->ListaComp.push_back(comp_done); 
+        
+        delay_op* comp_dly = new delay_op(NULL);
+        comp_dly->setName("c"+FuncoesAux::IntToStr(this->ListaComp.size()));
+        comp_dly->getPortDataInOut("IN")->setWidth((*i)->getPortOther("done")->getWidth());
+        comp_dly->getPortDataInOut("OUT")->setWidth((*i)->getPortOther("done")->getWidth());
+        comp_dly->setDelayBits((*i)->getPortOther("done")->getWidth());
+        this->ListaComp.push_back(comp_dly); 
+        
+        ///////////////////////////////////////////////////////////////////////
+        //LIGACAO 1
+        Ligacao* newLig4 = new Ligacao((*i), comp_dly, "s" + FuncoesAux::IntToStr(this->ListaLiga.size()));
+        newLig4->setPortOrigem((*i)->getPortOther("done"));
+        newLig4->setPortDestino(comp_dly->getPortDataInOut("IN"));
+        newLig4->setWidth((*i)->getPortOther("done")->getWidth());
+        newLig4->setTipo((*i)->getPortOther("done")->getType());
+
+        //ADICIONAR NOME LIGACAO NA PORTA
+        newLig4->getPortDestino()->setLigacao(newLig4->getNome());
+        newLig4->getPortOrigem()->setLigacao(newLig4->getNome());
+
+        //ADICIONAR LIGACAO NO COMPONENTE
+        (*i)->addLigacao(newLig4);
+        comp_dly->addLigacao(newLig4);
+
+        //ADD LISTAS LIGACAO
+        this->ListaLiga.push_back(newLig4); 
+        
+        
+        ///////////////////////////////////////////////////////////////////////
+        //LIGACAO 2
+        Ligacao* newLig5 = new Ligacao(comp_dly, comp_done, "s" + FuncoesAux::IntToStr(this->ListaLiga.size()));
+        newLig5->setPortOrigem(comp_dly->getPortDataInOut("OUT"));
+        newLig5->setPortDestino(comp_done->getPortDataInOut("IN"));
+        newLig5->setWidth(comp_dly->getPortDataInOut("OUT")->getWidth());
+        newLig5->setTipo(comp_dly->getPortDataInOut("OUT")->getType());
+
+        //ADICIONAR NOME LIGACAO NA PORTA
+        newLig5->getPortDestino()->setLigacao(newLig5->getNome());
+        newLig5->getPortOrigem()->setLigacao(newLig5->getNome());
+
+        //ADICIONAR LIGACAO NO COMPONENTE
+        comp_done->addLigacao(newLig5);
+        comp_dly->addLigacao(newLig5);
+
+        //ADD LISTAS LIGACAO
+        this->ListaLiga.push_back(newLig5); 
+        
+        // </editor-fold>
+        //*********************************************************************
+    }
+    // </editor-fold>   
     
 }
 
-////Imprime componentes que serao utilizados no VHDL e todas as ligacoes geradas
+void Core::updateCompRef(SgNode* node, comp_ref* comp){
+    SgVarRefExp* nodo_ref_var     = isSgVarRefExp(node);
+    SgPntrArrRefExp* nodo_ref_arr = isSgPntrArrRefExp(node);
+    if(nodo_ref_var != NULL){
+        comp->setTipoVar("VAR");
+        comp->setNomeVarRef(nodo_ref_var->get_symbol()->get_name().getString());
+        comp->setName(nodo_ref_var->get_symbol()->get_name().getString());
+    }
+    if(nodo_ref_arr != NULL){
+        comp->setTipoVar("VET");
+        
+        string arrName  = "";
+        string arrPos   = ""; 
+        SgVarRefExp* fe = isSgVarRefExp( nodo_ref_arr->get_lhs_operand_i() );
+        SgVarRefExp* fd = isSgVarRefExp( nodo_ref_arr->get_rhs_operand_i() );
+        if ( fe != NULL &&  fd != NULL){
+            arrName     = fe->get_symbol()->get_name().getString();
+            arrPos      = fd->get_symbol()->get_name().getString();
+            
+            comp->setNomeVarRef(arrName);
+            comp->setName(arrName);
+            comp->setNomeVarIndex(arrPos);
+        }
+    }
+}
+
+void Core::updateCounter(SgNode* node, counter* comp){
+    SgForStatement* cur_for = isSgForStatement(node);
+    if (cur_for != NULL){
+        
+        ROSE_ASSERT(cur_for);
+
+        comp->setName(SageInterface::getLoopIndexVariable(node)->get_name().str());
+        comp->setVarControlCont(SageInterface::getLoopIndexVariable(node)->get_name().str());
+         /**********************************************************/
+        //Parte de pegar o padrao de inicio do FOR => EX.: int i = 0 
+        SgForInitStatement* stmt    = cur_for->get_for_init_stmt();
+        
+        Rose_STL_Container<SgNode*> NodosFor1 = NodeQuery::querySubTree(stmt,V_SgNode); 
+        for (Rose_STL_Container<SgNode*>::iterator for1 = NodosFor1.begin(); for1 != NodosFor1.end(); for1++ ) 
+        {
+            SgIntVal* valIni = isSgIntVal(*for1);
+            if(valIni != NULL){
+                comp->setVarControlValIni(FuncoesAux::IntToStr(valIni->get_value()));
+            }
+        }               
+        /**********************************************************/
+
+
+        /**********************************************************/
+        //Condicao de parada do FOR => EX.: i < 10
+//        this->for_cond_var = this->for_ctr_var;
+//        -- possible conditions are:
+//        -- 0	<
+//        -- 1	<=
+//        -- 2	>
+//        -- 3	>=
+//        -- 4  ==
+//        -- 5  !=
+        SgExpression* testExp       = cur_for->get_test_expr();
+        
+        Rose_STL_Container<SgNode*> NodosFor2 = NodeQuery::querySubTree(testExp,V_SgNode);
+        for (Rose_STL_Container<SgNode*>::iterator for2 = NodosFor2.begin(); for2 != NodosFor2.end(); for2++ ) 
+        {
+            SgLessThanOp* opMenorQue            = isSgLessThanOp(*for2);
+            SgLessOrEqualOp* opMenorIgual       = isSgLessOrEqualOp(*for2);
+            SgGreaterThanOp* opMaiorQue         = isSgGreaterThanOp(*for2);
+            SgGreaterOrEqualOp* opMaiorIgual    = isSgGreaterOrEqualOp(*for2);
+            SgEqualityOp* Igual                 = isSgEqualityOp(*for2);
+            
+            
+            if (opMenorQue != NULL){
+                comp->setGenericMapCondition("0");
+            }
+            if (opMenorIgual != NULL){
+                comp->setGenericMapCondition("1");
+            }
+            if (opMaiorQue != NULL){
+                comp->setGenericMapCondition("2");
+            }
+            if (opMaiorIgual != NULL){
+                comp->setGenericMapCondition("3");
+            }
+            if (Igual != NULL){
+                comp->setGenericMapCondition("4");
+            }
+            
+            //SgLessThanOp* opMenorQue= isSgLessThanOp(*for2);
+            SgIntVal* valPar        = isSgIntVal(*for2);
+            if (valPar != NULL){
+                comp->setVarControlValStop(FuncoesAux::IntToStr(valPar->get_value()));
+            }
+        }
+        /**********************************************************/
+
+
+        /**********************************************************/
+        //Parte que identifica o incremento do FOR => EX.: i++
+//        this->for_incr_var = this->for_ctr_var;
+        
+        SgExpression* increment     = cur_for->get_increment();
+        Rose_STL_Container<SgNode*> NodosFor3 = NodeQuery::querySubTree(increment,V_SgNode);
+        
+        for (Rose_STL_Container<SgNode*>::iterator for3 = NodosFor3.begin(); for3 != NodosFor3.end(); for3++ ) 
+        {
+            //SgNode* node = isSgNode(*for3);
+            SgPlusPlusOp*   opMaisMais    = isSgPlusPlusOp(*for3);
+            SgMinusMinusOp* opMenosMenos  = isSgMinusMinusOp(*for3);
+            //SgVarRefExp*  varIncr       = isSgVarRefExp(*for3);
+            if(opMaisMais != NULL){
+                comp->setGenericMapIncrements("1");
+                comp->setGenericMapDown("0");
+            }
+            if(opMenosMenos != NULL){
+                comp->setGenericMapIncrements("1");
+                comp->setGenericMapDown("1");
+            }
+        }
+        /**********************************************************/
+    }
+}
+
+void Core::updateBlockRam(SgNode* node, block_ram* comp){
+     SgInitializedName* cur_var          = isSgInitializedName(node);
+    SgVariableDeclaration* varDec       =  isSgVariableDeclaration(cur_var->get_parent());
+    
+    if (cur_var != NULL){
+        comp->setName(cur_var->get_name().getString());
+            
+        //Pegar tipo do vetor
+        string tipo = SageInterface::getArrayElementType(cur_var->get_type())->get_mangled().str();
+
+        //Tamanho do Vetor
+        const vector<string> words = FuncoesAux::split(varDec->get_mangled_name().getString(), "_");
+        comp->setQtdElementos(string(words[7].c_str()));
+        
+        //TODO - Ver como que vai ficar o esquema de tipo da variavel ou vetor
+        //Identificar o tipo da variavel/vetor
+        //if((tipo.compare("i")) == 1){
+        string tipo_var = "";
+        if(tipo=="i"){
+            tipo_var = "INT";
+        }
+        //if((tipo.compare("c")) == 1){
+        if(tipo=="c"){
+            tipo_var = "CHA";
+        }
+        //if((tipo.compare("f")) == 1){
+        if(tipo=="f"){
+            tipo_var = "FLO";
+        }
+        //if((tipo.compare("d")) == 1){
+        if(tipo=="d"){
+            tipo_var = "DOU";
+        }
+        comp->setTipo(tipo_var);
+        
+        /*
+         * abaixo verifica a subtree apartir do nodo isSgInitializedName
+         * sendo assim dentro desta sub-arvore temos todas as informacoes da
+         * variavel/vetor
+         */
+        string val = "";
+        Rose_STL_Container<SgNode*> var2 = NodeQuery::querySubTree(cur_var,V_SgAssignInitializer);
+        if(var2.size() > 0){
+            comp->setEInicializado(true);
+//            //Caso for vetor, pegar a quantidade de elementos dentro do mesmo
+//            this->qtd_ele_vet = var2.size();
+            
+            //Abaixo percorre cada posicao do vetor para pegar os valores
+            for (Rose_STL_Container<SgNode*>::iterator j = var2.begin(); j != var2.end(); j++ ) 
+            {
+                SgAssignInitializer* nodeINI   = isSgAssignInitializer(*j);
+         
+                Rose_STL_Container<SgNode*> var3 = NodeQuery::querySubTree(nodeINI,V_SgIntVal);
+                for (Rose_STL_Container<SgNode*>::iterator k = var3.begin(); k != var3.end(); k++ ) 
+                {
+                    SgIntVal* intVal = isSgIntVal(*k);
+                    string str = FuncoesAux::IntToStr(intVal->get_value());
+                    if(var2.size() < 2){
+                        val += ""+str;
+                    }else{
+                        val += ""+str+"|";
+                    }
+                }
+            }
+        }
+        comp->setValor(val);
+    }
+    
+    string nome_comp_vhdl = "block_ram";
+    if(comp->getEInicializado() == true){
+        nome_comp_vhdl += "_"+comp->getName();
+    }
+    comp->setNomeCompVHDL(nome_comp_vhdl);
+}
+
+void Core::updateRegister(SgNode* node, reg_op* comp){
+    SgInitializedName* cur_var          = isSgInitializedName(node);
+    SgVariableDeclaration* varDec       =  isSgVariableDeclaration(node->get_parent());
+    
+    if (cur_var != NULL){
+        varID var(isSgInitializedName(node));
+        
+        //Pegar nome
+        comp->setName(cur_var->get_name().getString());
+        
+        //Verificar se e vetor ou nao - isso vai empactar para definir hardware
+        //registrador (variavel) ou memoria (vetor)
+        string tipo="";
+
+        //Pegar tipo da variavel
+        tipo = cur_var->get_type()->get_mangled().str();
+        
+
+        //TODO - Ver como que vai ficar o esquema de tipo da variavel ou vetor
+        //Identificar o tipo da variavel/vetor
+        //if((tipo.compare("i")) == 1){
+        string tipo_var = "";
+        if(tipo=="i"){
+            tipo_var = "INT";
+        }
+        //if((tipo.compare("c")) == 1){
+        if(tipo=="c"){
+            tipo_var = "CHA";
+        }
+        //if((tipo.compare("f")) == 1){
+        if(tipo=="f"){
+            tipo_var = "FLO";
+        }
+        //if((tipo.compare("d")) == 1){
+        if(tipo=="d"){
+            tipo_var = "DOU";
+        }
+        comp->setTipo(tipo_var);
+        
+        /*
+         * abaixo verifica a subtree apartir do nodo isSgInitializedName
+         * sendo assim dentro desta sub-arvore temos todas as informacoes da
+         * variavel/vetor
+         */
+        Rose_STL_Container<SgNode*> var2 = NodeQuery::querySubTree(cur_var,V_SgAssignInitializer);
+        if(var2.size() > 0){
+            comp->setEInicializado(true);
+                                    
+            //Abaixo percorre cada posicao do vetor para pegar os valores
+            for (Rose_STL_Container<SgNode*>::iterator j = var2.begin(); j != var2.end(); j++ ) 
+            {
+                SgAssignInitializer* nodeINI   = isSgAssignInitializer(*j);
+         
+                Rose_STL_Container<SgNode*> var3 = NodeQuery::querySubTree(nodeINI,V_SgIntVal);
+                for (Rose_STL_Container<SgNode*>::iterator k = var3.begin(); k != var3.end(); k++ ) 
+                {
+                    SgIntVal* intVal = isSgIntVal(*k);
+                    string str = FuncoesAux::IntToStr(intVal->get_value());
+                    comp->setValor(str);
+                }
+            }
+        }
+    }
+}
+
 void Core::imprimeAll(){
     list<Componente*>::iterator i;
     list<Ligacao*>::iterator    k;
@@ -806,13 +1223,13 @@ void Core::imprimeAll(){
         cout<< "--------------------"<< endl;
         cout<< "COMP: " <<(*i)->getName()<< endl;
         cout<< "--------------------" << endl;
-        cout<< "## Portas" << endl;
-        cout<< (*i)->imprimePortas() << endl;
-        cout<< "" << endl;
-        cout<< "## Ligacões" << "QTD: "<< (*i)->getQtdLig() << endl;
-        cout<< (*i)->imprimeLigacoes() << endl;
-        cout<< "--------------------" << endl;
-        cout<< "--------------------" << endl;
+//        cout<< "## Portas" << endl;
+//        cout<< (*i)->imprimePortas() << endl;
+//        cout<< "" << endl;
+//        cout<< "## Ligacões" << "QTD: "<< (*i)->getQtdLig() << endl;
+//        cout<< (*i)->imprimeLigacoes() << endl;
+//        cout<< "--------------------" << endl;
+//        cout<< "--------------------" << endl;
         cout<< (*i)->geraCompVHDL() << endl;
         cout<< "--------------------" << endl;
     }
@@ -823,7 +1240,6 @@ void Core::geraArquivosDotHW(){
     dot->imprimeHWDOT();
     dot->imprimeVHDL();
 }
-
 
 Core::~Core() {
 }

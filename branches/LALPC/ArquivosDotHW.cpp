@@ -105,7 +105,7 @@ void ArquivosDotHW::imprimeVHDL() {
     
     fout << "\nbegin \n\n";
     for(i=this->ListaComp.begin(); i != this->ListaComp.end(); i++){       
-        fout << (*i)->geraVHDLComp();
+        //fout << (*i)->geraVHDLComp();
     }
     fout << "end behavior; ";
     

@@ -17,8 +17,8 @@ int main (int argc, char** argv)
     core->identificaFor();
     core->identificaReturn();
     core->FinalizaComponentes();
-    core->imprimeAll();
-    //core->geraArquivosDotHW();
+    //core->imprimeAll();
+    core->geraArquivosDotHW();
     //generateGraphOfAST(project,"DOT/AST");
     //generatePDF(project);
 }
