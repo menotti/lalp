@@ -13,12 +13,6 @@ using namespace std;
 delay_op::delay_op(SgNode* node) : Componente(node) {
     this->setNomeCompVHDL("delay_op");
     this->tipo_comp         = CompType::DLY;
-    this->delay_bits        = "";
-    this->delay_delay       = "0";                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     
-    this->delay_a           = "";
-    this->delay_a_delayed   = "";
-    this->delay_clk         = "\\clk\\";
-    this->delay_reset       = "\\reset\\";
     this->createAllPorts();
     this->createAllGeneric();
 }
@@ -57,38 +51,22 @@ string delay_op::getEstruturaComponenteVHDL(){
 
 string delay_op::geraDOTComp(){
     string res = "";
-    res += "\""+this->getName()+"\" [shape=record, fontcolor=blue, style=\"filled\", fillcolor=\"lightgray\", label=\"{{<a>a["+this->delay_bits+"]|<clk>clk|<reset>reset}|delay_op:"+this->getName()+"\\ndelay=0|{<a_delayed>a_delayed["+this->delay_bits+"]}}\"]; \n";
-    return res;
-}
-
-string delay_op::geraVHDLComp(){
-    string res = "";
-    res += "\\" + this->getName() + "\\: delay_op \n";
-    res += "generic map ( \n";
-    res += "	bits => " + this->delay_bits + ", \n";
-    res += "	delay => " + this->delay_delay + " \n";
-    res += ") \n";
-    res += "port map ( \n";
-    res += "	a => " + this->delay_a + ", \n";
-    res += "	a_delayed => " + this->delay_a_delayed + ", \n";
-    res += "	clk => " + this->delay_clk + ", \n";
-    res += "	reset => " + this->delay_reset + " \n";
-    res += "); \n\n";
+    res += "\""+this->getName()+"\" [shape=record, fontcolor=blue, style=\"filled\", fillcolor=\"lightgray\", label=\"{{<a>a["+this->getDelayBits()+"]|<clk>clk|<reset>reset}|delay_op:"+this->getName()+"\\ndelay="+this->getDelayVal()+"|{<a_delayed>a_delayed["+this->getDelayBits()+"]}}\"]; \n";
     return res;
 }
 
 void delay_op::setDelayBits(const string &bits){
-    this->delay_bits = bits;
+    this->setGenericMapVal("bits", "VAL", bits);
 }
 
 string delay_op::getDelayBits(){
-    return this->delay_bits;
+    return (this->getGenericMapVal("bits", "VAL"));
 }
 
 void delay_op::setDelayVal(const string &val){
-    this->delay_delay = val;
+    this->setGenericMapVal("delay", "VAL", val);
 }
 
 string delay_op::getDelayVal(){
-    return this->delay_delay;
+    return (this->getGenericMapVal("delay", "VAL"));
 }

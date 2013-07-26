@@ -17,13 +17,15 @@ public:
     block_ram(SgNode* node, const string &aux = "");
     virtual     ~block_ram();
     string      getEstruturaComponenteVHDL();
-    string      geraVHDLComp();
     string      geraDOTComp();
     void        createAllPorts();
     void        createAllGeneric();
     void        montaComponente();
+    void        setQtdElementos(const string &qtd);
+    void        setTipo(const string &tipo);
+    void        setValor(const string &valor);
 private:
-    int         qtd_ele_vet;
+    string      qtd_ele_vet;
     string      tipo_var;
     /**************************************************************/
     //generic map

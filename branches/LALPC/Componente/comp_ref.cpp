@@ -9,36 +9,7 @@
 #include "string"
 
 comp_ref::comp_ref(SgNode* node, const string &aux) : Componente(node, aux){
-    
     this->tipo_comp = CompType::REF;
-
-    SgVarRefExp* nodo_ref_var     = isSgVarRefExp(this->node);
-    SgPntrArrRefExp* nodo_ref_arr = isSgPntrArrRefExp(this->node);
-    if(nodo_ref_var != NULL){
-        this->ref_var_tipo  = "VAR";
-        this->ref_var_nome = nodo_ref_var->get_symbol()->get_name().getString();
-        this->nome = this->ref_var_nome;
-//        cout<< "TESTE: " << nodo_ref_var->get_symbol()->get_symbol_basis()<<endl;
-//        cout<< "TESTE: " << nodo_ref_var->get_symbol()->get_symbol_basis()->class_name()<<endl;
-    }
-    if(nodo_ref_arr != NULL){
-        this->ref_var_tipo  = "VET";
-        
-        string arrName  = "";
-        string arrPos   = ""; 
-        SgVarRefExp* fe = isSgVarRefExp( nodo_ref_arr->get_lhs_operand_i() );
-        SgVarRefExp* fd = isSgVarRefExp( nodo_ref_arr->get_rhs_operand_i() );
-        if ( fe != NULL &&  fd != NULL){
-            arrName     = fe->get_symbol()->get_name().getString();
-            //nodo_ref fe->get_symbol()->->get_symbol_basis();
-//            cout<< "TESTE: " << fe->get_symbol()->get_symbol_basis()<<endl;
-//            cout<< "TESTE: " << fe->get_symbol()->get_symbol_basis()->class_name()<<endl;
-            arrPos      = fd->get_symbol()->get_name().getString();
-            this->ref_var_nome = arrName;
-            this->ref_var_index= arrPos;
-            this->nome = this->ref_var_nome;
-        }
-    }
 }
 
 string comp_ref::imprimePortas(){
@@ -59,10 +30,6 @@ string comp_ref::getEstruturaComponenteVHDL(){
 
 string comp_ref::geraDOTComp(){
     return (this->getComponenteRef()->geraDOTComp());
-}
-
-string comp_ref::geraVHDLComp(){
-    return (this->getComponenteRef()->geraVHDLComp());
 }
 
 void comp_ref::createAllGeneric(){
@@ -99,17 +66,45 @@ string comp_ref::geraCompVHDL(){
     return (this->getComponenteRef()->geraCompVHDL());
 }
 
-void comp_ref::setWE(bool we){
-    this->getComponenteRef()->setWE(we);
+string comp_ref::getGenericMapVal(const string &map, const string &aux){
+    return (this->getComponenteRef()->getGenericMapVal(map, aux));
 }
+
+void comp_ref::setGenericMapVal(const string &map, const string &aux, const string &val){
+    this->getComponenteRef()->setGenericMapVal(map, aux, val);
+}    
     
-bool comp_ref::getWE(){
-    return (this->getComponenteRef()->getWE());
-}
+//void comp_ref::setWE(bool we){
+//    this->getComponenteRef()->setWE(we);
+//}
+//    
+//bool comp_ref::getWE(){
+//    return (this->getComponenteRef()->getWE());
+//}
 
 int comp_ref::getQtdPorts(){
    return (this->getComponenteRef()->getQtdPorts()); 
 }
+
+void comp_ref::setNomeVarIndex(const string &index){
+    this->ref_var_index = index;
+}
+
+string comp_ref::getNomeVarIndex(){
+    return this->ref_var_index;
+}
+
+void comp_ref::setNomeVarRef(const string &nome){
+    this->ref_var_nome = nome;
+}
+
+void comp_ref::setTipoVar(const string &tipo){
+    this->ref_var_tipo = tipo;
+}
+
+//list<Port*> comp_ref::getAllPorts(){
+//    return (this->getComponenteRef()->getAllPorts());
+//}
 
 comp_ref::~comp_ref() {
 }

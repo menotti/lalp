@@ -25,33 +25,9 @@ Componente::Componente(SgNode* node/*=NULL*/, const string &aux/*=""*/){
     if(node != NULL){
         this->node = node;
         this->writeEnable = false;
-        
-        if(aux == "WE"){
-            this->writeEnable = true;
-        }        
-        if(aux == "INIT"){
-            this->tipo_comp = CompType::AUX;
-            this->nome_comp_vhdl = "init";
-            this->addPort(new Port("out"    ,"out"   ,"std_logic"     ,"1", "OUT"));
-        }        
-        if(aux == "INPUT"){
-            this->tipo_comp = CompType::AUX;
-            this->addPort(new Port("out"    ,"out"   ,"std_logic_vector","1", "OUT"));
-        }        
-        if(aux == "TERMINATION"){
-            this->tipo_comp = CompType::AUX;
-            this->addPort(new Port("out"    ,"out"   ,"std_logic_vector","1", "OUT"));
-        }        
-        if(aux == "DONE"){
-            this->tipo_comp = CompType::AUX;
-            this->nome_comp_vhdl = "done";
-            this->addPort(new Port("in"    ,"in"   ,"std_logic"     ,"1", "IN"));
-        }        
-        if(aux == "RESULT"){
-            this->tipo_comp = CompType::AUX;
-            this->nome_comp_vhdl = "result";
-            this->addPort(new Port("in"    ,"in"   ,"std_logic_vector"     ,"1", "IN"));
-        }        
+    }
+    if(aux == "WE"){
+        this->writeEnable = true;
     }
 }
 
@@ -59,6 +35,45 @@ void Componente::setWE(bool val){
     this->writeEnable = val;
 }
 
+void Componente::setGenericMapVal(const string &map, const string &aux, const string &val){
+    list<GenericMap*>::iterator g;
+    for(g=this->genMap.begin(); g != this->genMap.end(); g++){
+        if((*g)->getNome() == map){
+            if(aux == "NOME"){
+                (*g)->setNome(val);
+            }
+            if(aux == "VAL"){
+                (*g)->setValor(val);
+            }
+            if(aux == "TIPO"){
+                (*g)->setTipo(val);
+            }
+        }
+    }
+}
+
+string Componente::getGenericMapVal(const string &nome, const string &aux){
+    string res = "";
+    list<GenericMap*>::iterator g;
+    for(g=this->genMap.begin(); g != this->genMap.end(); g++){
+        if((*g)->getNome() == nome){
+            if(aux == "NOME"){
+                res += (*g)->getNome();
+            }
+            if(aux == "VAL"){
+                res += (*g)->getValor();
+            }
+            if(aux == "TIPO"){
+                res += (*g)->getTipo();
+            }
+        }
+    }
+    return res;
+}
+
+//list<Port*> Componente::getAllPorts(){
+//    return this->portas;
+//}
 string Componente::geraCompVHDL(){
     string res = "";
     list<GenericMap*>::iterator g;
@@ -96,8 +111,6 @@ string Componente::geraCompVHDL(){
                 if((*p)->getWidth() == s->getWidth()){
                     res += "\t\t"+(*p)->getName()+" => "+(*p)->getLigacao();
                 }else{
-                    cout<< "PORTA" <<(*p)->getWidth() <<endl;
-                    cout<< "LIGA " << s->getWidth() <<endl;
                     int portaWidth = FuncoesAux::StrToInt((*p)->getWidth());
                     int LigacWidth = FuncoesAux::StrToInt(s->getWidth());
                     if(portaWidth < LigacWidth){

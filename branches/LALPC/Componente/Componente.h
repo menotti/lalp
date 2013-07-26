@@ -26,10 +26,9 @@ class Componente {
         CompType::TIPO_COMP tipo_comp;
         void            setPai(SgNode* nodo = NULL);
         Componente*     getComponenteRef();
+        virtual string  getGenericMapVal(const string &map, const string &aux);
+        virtual void    setGenericMapVal(const string &map, const string &aux, const string &val);
         void            setComponenteRef(Componente* comp);
-//        int             ConverteStrToInt(const string &aux);
-//        vector<string>  SplitStr(const string& s, const string& delim);
-//        string          ConverteIntToStr(int aux);
         SgNode*         getPai();
         bool            writeEnable;
         void            setNomeCompVHDL(const string &nome);
@@ -45,7 +44,6 @@ class Componente {
         void            setName(const string &nome);
         virtual string  imprimePortas();       
         virtual string  imprimeLigacoes();
-        virtual string  geraVHDLComp() = 0; //0
         virtual string  getEstruturaComponenteVHDL() = 0; //0
         string          getName();
         virtual string  geraDOTComp() = 0; //0
@@ -63,13 +61,14 @@ class Componente {
         virtual void    removeLigacao(Ligacao* lig);
         virtual void    addLigacao(Ligacao* lig);
         virtual void    addGenericMap(GenericMap* map);
+//        virtual list<Port*> getAllPorts();
         SgNode*         node;
         string          for_ctr_var;    //Variavel de controle - EX.: (i) => for (i = 0, ....)
-        string          op_tipo;        //Definir tipo de opercacao - soma, sub, mult, div, etc.
+//        string          op_tipo;        //Definir tipo de opercacao - soma, sub, mult, div, etc.
         string          valor;          //Valor da Variavel ou Todos os elementos do Vetor
-        string          ref_var_nome;
-        string          ref_var_index;
-        string          ref_var_tipo;   //A referencia pode ser Vetor ou Variavel
+//        string          ref_var_nome;
+//        string          ref_var_index;
+//        string          ref_var_tipo;   //A referencia pode ser Vetor ou Variavel
         string          cons_tipo;
         string          delayVal;
         string          nome;

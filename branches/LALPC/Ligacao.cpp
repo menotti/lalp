@@ -46,6 +46,9 @@ string Ligacao::getTipo(){
     return this->tipo;
 }
 
+void Ligacao::setName(const string &nome){
+    this->nome = nome;
+}
 void Ligacao::setTipo(const string &tipo){
     this->tipo = tipo;
 }

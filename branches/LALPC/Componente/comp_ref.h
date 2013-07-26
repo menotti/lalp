@@ -15,9 +15,10 @@ class comp_ref : public Componente{
 public:
     comp_ref(SgNode* node, const string &aux = "");
     string      getEstruturaComponenteVHDL();
-    string      geraVHDLComp();
     string      geraDOTComp();
     string      getNomeCompVHDL();
+    string      getGenericMapVal(const string &map, const string &aux);
+    void        setGenericMapVal(const string &map, const string &aux, const string &val);
     void        createAllGeneric();
     void        createAllPorts();
     void        montaComponente();
@@ -31,24 +32,23 @@ public:
     void        removeLigacao(Ligacao* lig);
     void        addLigacao(Ligacao* lig);
     void        addGenericMap(GenericMap* map);
-    bool        getWE();
-    void        setWE(bool we);
+//    list<Port*> getAllPorts();
+//    bool        getWE();
+//    void        setWE(bool we);
+    
+    void        setNomeVarIndex(const string &index);
+    string      getNomeVarIndex();
+    void        setNomeVarRef(const string &nome);
+    string      getNomeVarRef();
+    void        setTipoVar(const string &tipo);
+    string      getTipoVar();
+    
     virtual     ~comp_ref();
 private:
-    
-    /**************************************************************/
-    //OPERACAO
-    //generic map
-    string      ref_address_width;
-    string      ref_data_width;
+    string      ref_var_nome;
+    string      ref_var_index;
+    string      ref_var_tipo;   //A referencia pode ser Vetor ou Variavel
 
-    //port map
-    string      ref_address;
-    string      ref_clk;
-    string      ref_data_in;
-    string      ref_data_out;
-    string      ref_we;        
-    /**************************************************************/
 };
 
 #endif	/* COMP_REF_H */
