@@ -55,6 +55,8 @@ void ArquivosDotHW::imprimeVHDL() {
     
     list<Componente*>::iterator i;
     list<Ligacao*>::iterator    k;
+//    list<Port*>::iterator       p;
+    
     cout<<"------------------------------------"<<endl;
     cout<<"Processo criacao arquivo VHDL"<<endl;
     cout<<"Nome: example.vhd"<<endl;
@@ -79,33 +81,52 @@ void ArquivosDotHW::imprimeVHDL() {
     
     //COMPONENTES
     //Carrega as estruturas necessarias
+    this->ListaAux.clear();
     for(i=this->ListaComp.begin(); i != this->ListaComp.end(); i++){
-        //fout << this->getEstruturaComponenteVHDL((*i));
-    }
-    
-    //SINAIS
-    for(k=this->ListaLiga.begin(); k != this->ListaLiga.end(); k++){
-        string res = "";
-        res += "signal "+(*k)->getNome()+"       : std_logic";
-        if((*k)->getWidth() == ""){
-            res += "; \n";
-        }
-        if((*k)->getWidth() == "1"){
-            res += "_vector(0 downto 0); \n";
-        }
-        if((*k)->getWidth() == "16"){
-            res += "_vector(15 downto 0); \n";
-        }
-        if((*k)->getWidth() == "32"){
-            res += "_vector(31 downto 0); \n";
+        if ((*i)->tipo_comp == CompType::REG || (*i)->tipo_comp == CompType::MEM || (*i)->tipo_comp == CompType::AUX ) continue;
+        if(this->ExisteNaListaAux((*i)->getNomeCompVHDL()) == false){
+            fout << (*i)->getEstruturaComponenteVHDL();
+            this->ListaAux.push_back((*i)->getNomeCompVHDL());
         }
         
-        fout << res;
+    }
+    
+    //IGUAO OCORRE NO LALP UMA SAIDA TEM APENAS UM SINAL, ESTA PODE IR PARA 
+    //VARIAS ENTRADAS.
+    this->ListaAux.clear();
+    for(k=this->ListaLiga.begin(); k != this->ListaLiga.end(); k++){
+        if((*k)->getPortOrigem()->getLigacao() != (*k)->getNome()){            
+            (*k)->getPortDestino()->setLigacao((*k)->getPortOrigem()->getLigacao());
+            (*k)->setName((*k)->getPortOrigem()->getLigacao());
+//            this->ListaAux.push_back((*k)->getNome());
+        }
+    }
+
+    //SINAIS VALIDADOS NO PASSO ANTERIOR
+    for(k=this->ListaLiga.begin(); k != this->ListaLiga.end(); k++){
+        if(this->ExisteNaListaAux((*k)->getNome()) == false){
+            string res = "signal "+(*k)->getNome();
+            
+            if((*k)->getTipo() == "std_logic"){
+                res += "\t: std_logic; \n";
+            }
+            else{
+                int LigacWidth = FuncoesAux::StrToInt((*k)->getWidth());
+                res += "\t: "+(*k)->getTipo()+"("+FuncoesAux::IntToStr(LigacWidth-1)+" downto 0); \n";
+            }
+            fout << res;
+            this->ListaAux.push_back((*k)->getNome());
+        }
     }
     
     fout << "\nbegin \n\n";
-    for(i=this->ListaComp.begin(); i != this->ListaComp.end(); i++){       
-        //fout << (*i)->geraVHDLComp();
+    for(i=this->ListaComp.begin(); i != this->ListaComp.end(); i++){
+        if ((*i)->tipo_comp == CompType::REG || (*i)->tipo_comp == CompType::MEM || (*i)->tipo_comp == CompType::AUX ) continue;
+        fout << (*i)->geraCompVHDL();
+    }
+    for(i=this->ListaComp.begin(); i != this->ListaComp.end(); i++){
+        if ((*i)->tipo_comp != CompType::AUX ) continue;
+        fout << (*i)->geraCompVHDL();
     }
     fout << "end behavior; ";
     

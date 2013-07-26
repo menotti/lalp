@@ -18,22 +18,12 @@ public:
     virtual     ~op_simple();
     void        createAllGeneric();
     string      getEstruturaComponenteVHDL();
-    string      geraVHDLComp();
     string      geraDOTComp();
     void        createAllPorts();
     void        montaComponente();
+    string      op_tipo;        //Definir tipo de opercacao - soma, sub, mult, div, etc.
 private:
-    /**************************************************************/
-    //generic map
-    string op_w_in1;
-    string op_w_in2;
-    string op_w_out;
-
-    //port map
-    string op_I0;
-    string op_I1;
-    string op_O0;        
-    /**************************************************************/
+    
 };
 
 #endif	/* OP_SIMPLE_H */

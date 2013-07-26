@@ -21,81 +21,6 @@ block_ram::block_ram(SgNode* node, const string &aux) : Componente(node, aux) {
     this->ref_data_out  = "";
     this->ref_we        = "";
     
-    
-    SgInitializedName* cur_var          = isSgInitializedName(this->node);
-    SgVariableDeclaration* varDec       =  isSgVariableDeclaration(cur_var->get_parent());
-    
-    if (cur_var != NULL){
-        this->setName(cur_var->get_name().getString());
-        //this->eVetor        = true;
-        //this->tipo_comp     = "MEM";
-            
-        //Pegar tipo do vetor
-        string tipo = SageInterface::getArrayElementType(cur_var->get_type())->get_mangled().str();
-
-        //Tamanho do Vetor
-        const vector<string> words = FuncoesAux::split(varDec->get_mangled_name().getString(), "_");
-        this->qtd_ele_vet = FuncoesAux::StrToInt(string(words[7].c_str()));
-        
-        //TODO - Ver como que vai ficar o esquema de tipo da variavel ou vetor
-        //Identificar o tipo da variavel/vetor
-        //if((tipo.compare("i")) == 1){
-        if(tipo=="i"){
-            this->tipo_var = "INT";
-        }
-        //if((tipo.compare("c")) == 1){
-        if(tipo=="c"){
-            this->tipo_var = "CHA";
-        }
-        //if((tipo.compare("f")) == 1){
-        if(tipo=="f"){
-            this->tipo_var = "FLO";
-        }
-        //if((tipo.compare("d")) == 1){
-        if(tipo=="d"){
-            this->tipo_var = "DOU";
-        }
-        
-        
-        /*
-         * abaixo verifica a subtree apartir do nodo isSgInitializedName
-         * sendo assim dentro desta sub-arvore temos todas as informacoes da
-         * variavel/vetor
-         */
-        Rose_STL_Container<SgNode*> var2 = NodeQuery::querySubTree(cur_var,V_SgAssignInitializer);
-        if(var2.size() > 0){
-            this->setEInicializado(true);
-            //Caso for vetor, pegar a quantidade de elementos dentro do mesmo
-            this->qtd_ele_vet = var2.size();
-            
-            //Abaixo percorre cada posicao do vetor para pegar os valores
-            for (Rose_STL_Container<SgNode*>::iterator j = var2.begin(); j != var2.end(); j++ ) 
-            {
-                SgAssignInitializer* nodeINI   = isSgAssignInitializer(*j);
-         
-                Rose_STL_Container<SgNode*> var3 = NodeQuery::querySubTree(nodeINI,V_SgIntVal);
-                for (Rose_STL_Container<SgNode*>::iterator k = var3.begin(); k != var3.end(); k++ ) 
-                {
-                    SgIntVal* intVal = isSgIntVal(*k);
-                    string str = FuncoesAux::IntToStr(intVal->get_value());
-                    if(var2.size() < 2){
-                        this->valor = ""+str;
-                    }else{
-                        this->valor += ""+str+"|";
-                    }
-                }
-            }
-        }        
-    }
-    
-    string nome_comp_vhdl = "";
-    if(this->getEInicializado() == true){
-        nome_comp_vhdl += "block_ram_"+this->getName();
-    }else{
-        nome_comp_vhdl += "block_ram";
-    }
-    this->setNomeCompVHDL(nome_comp_vhdl);
-    
     this->createAllPorts();
     this->createAllGeneric();
 }
@@ -128,45 +53,20 @@ string block_ram::geraDOTComp(){
     return res;
 }
 
-string block_ram::geraVHDLComp(){
-    string res = "";
+void block_ram::setQtdElementos(const string &qtd){
+    this->qtd_ele_vet = qtd;
+}
 
-    int val_add_wid             = FuncoesAux::StrToInt(this->ref_address_width);
-    string val_add_wid_aux      = FuncoesAux::IntToStr(val_add_wid-1);
+void block_ram::setTipo(const string &tipo){
+    this->tipo_var = tipo;
+}
 
-    res += "\\" + this->getName() + "\\: "+this->getNomeCompVHDL()+" \n";
-
-    res += "generic map (\n";
-    res += "	address_width => "+this->ref_address_width+",\n";
-    res += "	data_width => "+this->ref_data_width+"\n";
-    res += ")\n";
-    res += "port map (\n";
-
-    res += "	address("+val_add_wid_aux+" downto 0) => "+this->ref_address+"("+val_add_wid_aux+" downto 0)";
-
-    if(this->ref_clk != ""){
-        res += ",\n";
-        res += "	clk => "+this->ref_clk;
-    }
-    if(this->ref_data_in != ""){
-         res += ",\n";
-         res += "	data_in => "+this->ref_data_in;
-    }
-    if(this->ref_data_out != ""){
-         res += ",\n";
-         res += "	data_out => "+this->ref_data_out;
-    }
-    if(this->ref_we != ""){
-        res += ",\n";
-        res += "	we => "+this->ref_we+"\n";
-    }
-    res += ");\n\n"; 
-
-    return res;
+void block_ram::setValor(const string &valor){
+    this->valor = valor;
 }
 
 void block_ram::createAllGeneric(){
-    this->addGenericMap(new GenericMap("data_width", "integer", "11"));
+    this->addGenericMap(new GenericMap("address_width", "integer", "11"));
     this->addGenericMap(new GenericMap("data_width", "integer", "32"));
 }
 

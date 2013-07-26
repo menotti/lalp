@@ -14,80 +14,8 @@ using namespace std;
 
 reg_op::reg_op(SgNode* node, const string &aux) : Componente(node, aux) {
     this->setNomeCompVHDL("reg_op");    
-    this->tipo_comp = CompType::REG;
-
-    this->w_in  = "";
-    this->initial;
+    this->tipo_comp = CompType::REG;    
     
-    //port
-    this->clk;	 
-    this->reset;	 
-    this->we;
-    this->I0;
-    this->O0; 
-    
-    
-    SgInitializedName* cur_var          = isSgInitializedName(this->node);
-    SgVariableDeclaration* varDec       =  isSgVariableDeclaration(cur_var->get_parent());
-    
-    if (cur_var != NULL){
-        varID var(isSgInitializedName(this->node));
-        
-        //Pegar nome
-        this->nome = cur_var->get_name().getString();
-        
-        //Verificar se e vetor ou nao - isso vai empactar para definir hardware
-        //registrador (variavel) ou memoria (vetor)
-        string tipo="";
-
-        //Pegar tipo da variavel
-        tipo = cur_var->get_type()->get_mangled().str();
-        
-
-        //TODO - Ver como que vai ficar o esquema de tipo da variavel ou vetor
-        //Identificar o tipo da variavel/vetor
-        //if((tipo.compare("i")) == 1){
-        if(tipo=="i"){
-            this->tipo_var = "INT";
-        }
-        //if((tipo.compare("c")) == 1){
-        if(tipo=="c"){
-            this->tipo_var = "CHA";
-        }
-        //if((tipo.compare("f")) == 1){
-        if(tipo=="f"){
-            this->tipo_var = "FLO";
-        }
-        //if((tipo.compare("d")) == 1){
-        if(tipo=="d"){
-            this->tipo_var = "DOU";
-        }
-        
-        
-        /*
-         * abaixo verifica a subtree apartir do nodo isSgInitializedName
-         * sendo assim dentro desta sub-arvore temos todas as informacoes da
-         * variavel/vetor
-         */
-        Rose_STL_Container<SgNode*> var2 = NodeQuery::querySubTree(cur_var,V_SgAssignInitializer);
-        if(var2.size() > 0){
-            this->setEInicializado(true);
-                                    
-            //Abaixo percorre cada posicao do vetor para pegar os valores
-            for (Rose_STL_Container<SgNode*>::iterator j = var2.begin(); j != var2.end(); j++ ) 
-            {
-                SgAssignInitializer* nodeINI   = isSgAssignInitializer(*j);
-         
-                Rose_STL_Container<SgNode*> var3 = NodeQuery::querySubTree(nodeINI,V_SgIntVal);
-                for (Rose_STL_Container<SgNode*>::iterator k = var3.begin(); k != var3.end(); k++ ) 
-                {
-                    SgIntVal* intVal = isSgIntVal(*k);
-                    string str = FuncoesAux::IntToStr(intVal->get_value());
-                    this->valor = ""+str;
-                }
-            }
-        }
-    }
     this->createAllPorts();
     this->createAllGeneric();
 }
@@ -128,14 +56,15 @@ string reg_op::getEstruturaComponenteVHDL(){
 
 string reg_op::geraDOTComp(){
     string res = "";
-    res += "\""+this->ref_var_nome+"\" [shape=record, fontcolor=blue, style=\"filled\", fillcolor=\"lightgray\", label=\"{{<I0>I0[32]|<clk>clk|<reset>reset|<we>we}|reg_op:"+this->ref_var_nome+"|{<O0>O0[32]}}\"]; \n";
+    res += "\""+this->getName()+"\" [shape=record, fontcolor=blue, style=\"filled\", fillcolor=\"lightgray\", label=\"{{<I0>I0[32]|<clk>clk|<reset>reset|<we>we}|reg_op:"+this->getName()+"|{<O0>O0[32]}}\"]; \n";
     return res;
 }
 
-string reg_op::geraVHDLComp(){
-    string res = "";
-
-    return res;
+void reg_op::setValor(const string &aux){
+    this->valor = aux;
 }
 
+void reg_op::setTipo(const string &aux){
+    this->tipo_var = aux;
+}
 

@@ -18,25 +18,14 @@ public:
     reg_op(SgNode* node, const string &aux = "");
     virtual     ~reg_op();
     string      getEstruturaComponenteVHDL();
-    string      geraVHDLComp();
     string      geraDOTComp();
     void        createAllPorts();
     void        createAllGeneric();
     void        montaComponente();
+    void        setValor(const string &aux);
+    void        setTipo(const string &aux);
 private:
     string      tipo_var;
-    /**************************************************************/
-    //generic
-    string      w_in;
-    string      initial;
-    
-    //port
-    string      clk;	 
-    string      reset;	 
-    string      we;
-    string      I0;
-    string      O0;    
-    /**************************************************************/
 };
 
 #endif	/* REG_OP_H */

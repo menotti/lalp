@@ -28,6 +28,15 @@ string GenericMap::getTipo(){
 string GenericMap::getValor(){
     return this->valor;
 }
+void GenericMap::setNome(const string& valor){
+    this->nome = valor;
+}
+void GenericMap::setTipo(const string& valor){
+    this->tipo = valor;
+}
+void GenericMap::setValor(const string& valor){
+    this->valor = valor;
+}
 
 GenericMap::~GenericMap() {
 }

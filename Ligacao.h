@@ -25,6 +25,7 @@ public:
     void        setPortDestino(class Port* porta);
     void        setPortOrigem(class Port* porta);
     void        setWidth(const string &size);
+    void        setName(const string &size);
     void        setTipo(const string &size);
     string      getWidth();
     string      getTipo();

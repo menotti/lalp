@@ -22,20 +22,11 @@ public:
     void        createAllGeneric();
     string      getDelayBits();
     string      getEstruturaComponenteVHDL();
-    string      geraVHDLComp();
     string      geraDOTComp();
     void        createAllPorts();
     void        montaComponente();
 private:
-    //generic map
-    string delay_bits;
-    string delay_delay;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     
 
-    //port map
-    string delay_a;
-    string delay_a_delayed;
-    string delay_clk;
-    string delay_reset;
 };
 
 #endif	/* OP_SIMPLE_H */
