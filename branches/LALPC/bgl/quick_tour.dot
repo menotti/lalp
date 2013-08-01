@@ -1,0 +1,19 @@
+digraph G {
+graph [
+rankdir=LR, ratio=fill, size="3,3"];
+node [
+shape=circle];
+0[label=A];
+1[label=B];
+2[label=C];
+3[label=D];
+4[label=E];
+0->1 [label=1.20000005];
+0->1 [label=4.5];
+0->3 [label=2.5999999];
+2->0 [label=0.400000006];
+3->2 [label=5.19999981];
+2->4 [label=1.79999995];
+1->3 [label=3.29999995];
+3->4 [label=9.10000038];
+}
