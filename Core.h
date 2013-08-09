@@ -33,8 +33,9 @@ class Core {
         void identificaReturn();
         void analisaExp(SgNode *nodoAtual, SgNode* pai = NULL, bool debug = false, const string& aux = "");
         void FinalizaComponentes();
-        
+        void grafo();
         void geraArquivosDotHW();
+        void insereDelay(Ligacao* lig, Componente* comp);
         void imprimeAll();
         
     private:

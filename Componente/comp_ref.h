@@ -22,6 +22,8 @@ public:
     void        createAllGeneric();
     void        createAllPorts();
     void        montaComponente();
+    void        setDelayValComp(const string &delayVal);
+    string      getDelayValComp();
     string      geraCompVHDL();
     string      imprimeLigacoes();
     string      imprimePortas();

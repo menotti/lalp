@@ -25,7 +25,13 @@ class Componente {
         //CompType* tipo_comp;
         CompType::TIPO_COMP tipo_comp;
         void            setPai(SgNode* nodo = NULL);
+        int             getNumLinha();
+        void            setNumLinha(int num = 0);
         Componente*     getComponenteRef();
+        virtual void    setDelayValComp(const string &delayVal);
+        void            setNumIdComp(const string &id);
+        string          getNumIdComp();
+        virtual string  getDelayValComp();
         virtual string  getGenericMapVal(const string &map, const string &aux);
         virtual void    setGenericMapVal(const string &map, const string &aux, const string &val);
         void            setComponenteRef(Componente* comp);
@@ -74,6 +80,9 @@ class Componente {
         string          nome;
         list<Ligacao*>  ligacoes;
     private:
+        int             numLinha;
+        string          idComp;
+        string          delayValComp;
         Componente*     refComp;
         list<Port*>     portas;
         list<GenericMap*> genMap;

@@ -27,18 +27,7 @@ public:
 private:
     string      qtd_ele_vet;
     string      tipo_var;
-    /**************************************************************/
-    //generic map
-    string      ref_address_width;
-    string      ref_data_width;
-
-    //port map
-    string      ref_address;
-    string      ref_clk;
-    string      ref_data_in;
-    string      ref_data_out;
-    string      ref_we;        
-    /**************************************************************/
+    
 };
 
 #endif	/* OP_SIMPLE_H */

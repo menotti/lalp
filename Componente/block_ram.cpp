@@ -13,14 +13,8 @@
 using namespace std;
 
 block_ram::block_ram(SgNode* node, const string &aux) : Componente(node, aux) {
-
-    this->tipo_comp = CompType::MEM;
-    this->ref_address   = "";
-    this->ref_clk       = "";
-    this->ref_data_in   = "";
-    this->ref_data_out  = "";
-    this->ref_we        = "";
-    
+    this->setDelayValComp("1");
+    this->tipo_comp = CompType::MEM;   
     this->createAllPorts();
     this->createAllGeneric();
 }

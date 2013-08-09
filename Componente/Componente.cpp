@@ -29,10 +29,35 @@ Componente::Componente(SgNode* node/*=NULL*/, const string &aux/*=""*/){
     if(aux == "WE"){
         this->writeEnable = true;
     }
+    setNumLinha(0);
+}
+
+void Componente::setNumLinha(int num){
+    this->numLinha = num;
+}
+
+int Componente::getNumLinha(){
+    return this->numLinha;
 }
 
 void Componente::setWE(bool val){
     this->writeEnable = val;
+}
+
+string Componente::getNumIdComp(){
+    return this->idComp;
+}
+
+void Componente::setNumIdComp(const string &id){
+    this->idComp = id;
+}
+
+string Componente::getDelayValComp(){
+    return this->delayValComp;
+}
+
+void Componente::setDelayValComp(const string &delayVal){
+    this->delayValComp = delayVal;
 }
 
 void Componente::setGenericMapVal(const string &map, const string &aux, const string &val){

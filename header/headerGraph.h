@@ -1,11 +1,6 @@
 #ifndef MEUHEADER_H
 #define	MEUHEADER_H
 
-#include "rose.h"
-#include "sage3basic.h"
-#include "variables.h"
-#include "boost/lexical_cast.hpp"
-#include "sageInterface.h"
 #include <vector>
 #include <string>
 #include <boost/graph/adjacency_list.hpp>

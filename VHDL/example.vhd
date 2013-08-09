@@ -36,7 +36,7 @@ port (
 ); 
 end component; 
 
-component block_ram 
+component block_ram_res 
 generic ( 
         data_width          : integer := 8; 
         address_width	: integer := 8 
@@ -94,32 +94,16 @@ port (
 ); 
 end component; 
 
-component delay_op 
-generic ( 
-        bits        : integer := 8; 
-        delay       : integer := 1 
-); 
-port ( 
-        a		: in	std_logic_vector(bits-1 downto 0); 
-        clk		: in	std_logic; 
-        reset	: in	std_logic; 
-        a_delayed	: out	std_logic_vector(bits-1 downto 0) := (others=>'0') 
-); 
-end component; 
-
 signal s0	: std_logic_vector(31 downto 0); 
 signal s1	: std_logic_vector(31 downto 0); 
 signal s2	: std_logic_vector(31 downto 0); 
 signal s6	: std_logic_vector(15 downto 0); 
 signal s4	: std_logic; 
-signal s7	: std_logic_vector(15 downto 0); 
-signal s8	: std_logic_vector(0 downto 0); 
-signal s9	: std_logic_vector(31 downto 0); 
+signal s7	: std_logic; 
+signal s8	: std_logic_vector(15 downto 0); 
+signal s9	: std_logic_vector(15 downto 0); 
 signal s10	: std_logic; 
-signal s11	: std_logic_vector(15 downto 0); 
-signal s12	: std_logic_vector(15 downto 0); 
-signal s13	: std_logic; 
-signal s14	: std_logic_vector(0 downto 0); 
+signal s11	: std_logic_vector(31 downto 0); 
 
 begin 
 
@@ -132,27 +116,27 @@ begin
 		steps => 0
 	)
 	port ( 
-		input => s12,
-		termination => s11,
+		input => s9,
+		termination => s8,
 		clk => \clk\,
-		clk_en => s10,
+		clk_en => s7,
 		reset => \reset\,
 		step => s4,
-		done => s13,
+		done => s10,
 		output => s6
 	);
 
-	\res\: block_ram
+	\res\: block_ram_res
 	generic map ( 
 		address_width => 11,
 		data_width => 32
 	)
 	port ( 
 		data_in => s0,
-		address(10 downto 0) => s7(10 downto 0),
-		we => s8(0),
+		address(10 downto 0) => s6(10 downto 0),
+		we => s4,
 		clk => \clk\,
-		data_out => s9
+		data_out => s11
 	);
 
 	\b_op_add_s_d\: op_add_s
@@ -189,43 +173,9 @@ begin
 		data_out => s2
 	);
 
-	\c9\: delay_op
-	generic map ( 
-		bits => 16,
-		delay => 0
-	)
-	port ( 
-		a => s6,
-		clk => \clk\,
-		reset => \reset\,
-		a_delayed => s7
-	);
-
-	\c10\: delay_op
-	generic map ( 
-		bits => 1,
-		delay => 0
-	)
-	port ( 
-		a(0) => s4,
-		clk => \clk\,
-		reset => \reset\,
-		a_delayed => s8
-	);
-
-	\c16\: delay_op
-	generic map ( 
-		bits => 1,
-		delay => 0
-	)
-	port ( 
-		a(0) => s13,
-		a_delayed => s14
-	);
-
-\return\ <= s9; 
-s10 <= \init\; 
-\s11\ <= conv_std_logic_vector(10, 16); 
-\s12\ <= conv_std_logic_vector(0, 16); 
-\done\ <= s14(0); 
+s7 <= \init\; 
+\s8\ <= conv_std_logic_vector(10, 16); 
+\s9\ <= conv_std_logic_vector(0, 16); 
+\done\ <= s10(0); 
+\return\ <= s11; 
 end behavior; 

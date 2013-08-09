@@ -5,23 +5,17 @@ digraph diagram {
 "b_op_add_s_d" [shape=record, fontcolor=blue, label="{{<I0>I0[32]|<I1>I1[32]}|add_op_s:b_op_add_s_d|{<O0>O0[32]}}"]; 
 "b" [shape=record, fontcolor=blue, style="filled", fillcolor="lightgray", label="{{<address>address[11]|<clk>clk|<data_in>data_in[32]|<oe>oe|<we>we}|block_ram:b|{<data_out>data_out[32]}}"]; 
 "d" [shape=record, fontcolor=blue, style="filled", fillcolor="lightgray", label="{{<address>address[11]|<clk>clk|<data_in>data_in[32]|<oe>oe|<we>we}|block_ram:d|{<data_out>data_out[32]}}"]; 
-"c9" [shape=record, fontcolor=blue, style="filled", fillcolor="lightgray", label="{{<a>a[16]|<clk>clk|<reset>reset}|delay_op:c9\ndelay=0|{<a_delayed>a_delayed[16]}}"]; 
-"c10" [shape=record, fontcolor=blue, style="filled", fillcolor="lightgray", label="{{<a>a[1]|<clk>clk|<reset>reset}|delay_op:c10\ndelay=0|{<a_delayed>a_delayed[1]}}"]; 
-"return" [shape=msquare fontcolor=red label="return"]"init" [shape=msquare fontcolor=red label="init"]"c13" [shape=msquare fontcolor=red label="c13"]"c14" [shape=msquare fontcolor=red label="c14"]"done" [shape=msquare fontcolor=red label="done"]"c16" [shape=record, fontcolor=blue, style="filled", fillcolor="lightgray", label="{{<a>a[1]|<clk>clk|<reset>reset}|delay_op:c16\ndelay=0|{<a_delayed>a_delayed[1]}}"]; 
-// Signals (Edges) 
+"init" [shape=msquare fontcolor=red label="init"]"c10" [shape=msquare fontcolor=red label="c10"]"c11" [shape=msquare fontcolor=red label="c11"]"done" [shape=msquare fontcolor=red label="done"]"return" [shape=msquare fontcolor=red label="return"]// Signals (Edges) 
 "b_op_add_s_d":O0 -> "res":data_in[label="s0[32]" color=red fontcolor=red]; 
 "b":data_out -> "b_op_add_s_d":I0[label="s1[32]" color=red fontcolor=red]; 
 "d":data_out -> "b_op_add_s_d":I1[label="s2[32]" color=red fontcolor=red]; 
-"i":output -> "c9":a[label="s3[16]" color=red fontcolor=red]; 
-"i":step -> "c10":a[label="s4[1]" color=red fontcolor=red]; 
+"i":output -> "res":address[label="s3[16]" color=red fontcolor=red]; 
+"i":step -> "res":we[label="s4[1]" color=red fontcolor=red]; 
 "i":output -> "b":address[label="s5[16]" color=red fontcolor=red]; 
 "i":output -> "d":address[label="s6[16]" color=red fontcolor=red]; 
-"c9":a_delayed -> "res":address[label="s7[16]" color=red fontcolor=red]; 
-"c10":a_delayed -> "res":we[label="s8[1]" color=red fontcolor=red]; 
-"res":data_out -> "return":in[label="s9[32]" color=red fontcolor=red]; 
-"init":out -> "i":clk_en[label="s10[1]" color=red fontcolor=red]; 
-"c13":out -> "i":termination[label="s11[16]" color=red fontcolor=red]; 
-"c14":out -> "i":input[label="s12[16]" color=red fontcolor=red]; 
-"i":done -> "c16":a[label="s13[1]" color=red fontcolor=red]; 
-"c16":a_delayed -> "done":in[label="s14[1]" color=red fontcolor=red]; 
+"init":out -> "i":clk_en[label="s7[1]" color=red fontcolor=red]; 
+"c10":out -> "i":termination[label="s8[16]" color=red fontcolor=red]; 
+"c11":out -> "i":input[label="s9[16]" color=red fontcolor=red]; 
+"i":done -> "done":in[label="s10[1]" color=red fontcolor=red]; 
+"res":data_out -> "return":in[label="s11[32]" color=red fontcolor=red]; 
 }
