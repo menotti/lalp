@@ -11,6 +11,7 @@
 using namespace std;
 
 delay_op::delay_op(SgNode* node) : Componente(node) {
+    this->setDelayValComp("1");
     this->setNomeCompVHDL("delay_op");
     this->tipo_comp         = CompType::DLY;
     this->createAllPorts();

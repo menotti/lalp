@@ -15,7 +15,7 @@ using namespace std;
 reg_op::reg_op(SgNode* node, const string &aux) : Componente(node, aux) {
     this->setNomeCompVHDL("reg_op");    
     this->tipo_comp = CompType::REG;    
-    
+    this->setDelayValComp("1");
     this->createAllPorts();
     this->createAllGeneric();
 }
@@ -33,22 +33,23 @@ void reg_op::createAllPorts(){
 }
 
 void reg_op::createAllGeneric(){
-    this->addGenericMap(new GenericMap("data_width", "integer", "11"));
-    this->addGenericMap(new GenericMap("data_width", "integer", "32"));
+    this->addGenericMap(new GenericMap("w_in", "integer", "16"));
+    this->addGenericMap(new GenericMap("initial", "integer", "0"));
 }
 
 string reg_op::getEstruturaComponenteVHDL(){
     string res = "";
     res += "component "+this->getNomeCompVHDL()+" \n";
     res += "generic ( \n";
-    res += "        w_in1	: integer := 8; \n";
-    res += "        w_in2	: integer := 8; \n";
-    res += "        w_out	: integer := 16 \n";
+    res += "        w_in	: integer := 16; \n";
+    res += "        initial	: integer := 0; \n";
     res += "); \n";
     res += "port ( \n";
-    res += "        I0          : in	std_logic_vector(w_in1-1 downto 0); \n";
-    res += "        I1          : in	std_logic_vector(w_in2-1 downto 0); \n";
-    res += "        O0          : out	std_logic_vector(w_out-1 downto 0) \n";
+    res += "        clk         : in	std_logic; \n";
+    res += "        reset       : in	std_logic; \n";
+    res += "        we          : in	std_logic := '1'; \n";
+    res += "        I0          : in	std_logic_vector(w_in-1 downto 0); \n";
+    res += "        O0          : out	std_logic_vector(w_in-1 downto 0) \n";
     res += "); \n";
     res += "end component; \n\n";
     return res;
@@ -60,8 +61,9 @@ string reg_op::geraDOTComp(){
     return res;
 }
 
-void reg_op::setValor(const string &aux){
-    this->valor = aux;
+void reg_op::setValor(const string &val){
+    this->valor = val;
+    this->setGenericMapVal("initial", "VAL", val);
 }
 
 void reg_op::setTipo(const string &aux){

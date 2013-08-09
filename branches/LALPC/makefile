@@ -23,7 +23,7 @@ COMPONENTES = $(FOLDER_COMP)/Componente.cpp $(FOLDER_COMP)/Port.cpp $(FOLDER_COM
 
 ## Your translator
 TRANSLATOR=LALPC
-TRANSLATOR_SOURCE=$(TRANSLATOR).cpp Core.cpp Ligacao.cpp CompType.cpp ArquivosDotHW.cpp $(AUX) $(COMPONENTES)
+TRANSLATOR_SOURCE=$(TRANSLATOR).cpp Core.cpp ProcessGraph.cpp Ligacao.cpp CompType.cpp ArquivosDotHW.cpp $(AUX) $(COMPONENTES)
 
 ## Input testcode for your translator
 TESTCODE=hello.c
@@ -49,3 +49,7 @@ clean:
 
 hd:
 	g++ -c -Wno-deprecated header/meuHeader.h -I/home/demo/opt/boost-1.40.0/include -I/home/demo/opt/rose-inst/include -o header/meuHeader.h.gch
+	
+	
+hd2:
+	g++ -c -Wno-deprecated header/headerGraph.h -I/home/demo/opt/boost-1.40.0/include -o header/headerGraph.h.gch

@@ -82,6 +82,15 @@ void comp_ref::setGenericMapVal(const string &map, const string &aux, const stri
 //    return (this->getComponenteRef()->getWE());
 //}
 
+
+string comp_ref::getDelayValComp(){
+    return (this->getComponenteRef()->getDelayValComp()); 
+}
+
+void comp_ref::setDelayValComp(const string &delayVal){
+    this->getComponenteRef()->setDelayValComp(delayVal);
+}
+
 int comp_ref::getQtdPorts(){
    return (this->getComponenteRef()->getQtdPorts()); 
 }

@@ -15,11 +15,12 @@ int main (int argc, char** argv)
     Core* core = new Core(project);
     core->identificaVariaveis();
     core->identificaFor();
-    core->identificaReturn();
     core->FinalizaComponentes();
-    //core->imprimeAll();
+    core->identificaReturn();
+    core->imprimeAll();
     core->geraArquivosDotHW();
-    //generateGraphOfAST(project,"DOT/AST");
-    //generatePDF(project);
+//    //generateGraphOfAST(project,"DOT/AST");
+//    //generatePDF(project);
+    core->grafo();
 }
 
