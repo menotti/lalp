@@ -25,14 +25,12 @@ COMPONENTES = $(FOLDER_COMP)/Componente.cpp $(FOLDER_COMP)/Port.cpp $(FOLDER_COM
 TRANSLATOR=LALPC
 TRANSLATOR_SOURCE=$(TRANSLATOR).cpp Core.cpp ProcessGraph.cpp Ligacao.cpp CompType.cpp ArquivosDotHW.cpp $(AUX) $(COMPONENTES)
 
-## Input testcode for your translator
-TESTCODE=hello.c
 
 #-------------------------------------------------------------
 # Makefile Targets
 #-------------------------------------------------------------
 
-all: $(TRANSLATOR) check #clean
+all: $(TRANSLATOR) 
 
 # compile the translator and generate an executable
 # -g is recommended to be used by default to enable debugging your code
@@ -40,16 +38,14 @@ all: $(TRANSLATOR) check #clean
 $(TRANSLATOR): $(TRANSLATOR_SOURCE)
 	g++ -Wno-deprecated $(TRANSLATOR_SOURCE) -L$(ROSE_INSTALL)/lib -lrose -o  $(TRANSLATOR)
 
-# test the translator
-check: $(TRANSLATOR)
-	./$(TRANSLATOR) -c -I. $(TESTCODE) 
-
 clean:
-	rm -rf $(TRANSLATOR) *.o rose_* *.dot
+	rm -rf $(TRANSLATOR) *.o 
 
-hd:
+rose-headers:
 	g++ -c -Wno-deprecated header/meuHeader.h -I/home/demo/opt/boost-1.40.0/include -I/home/demo/opt/rose-inst/include -o header/meuHeader.h.gch
 	
 	
-hd2:
+boost-headers:
 	g++ -c -Wno-deprecated header/headerGraph.h -I/home/demo/opt/boost-1.40.0/include -o header/headerGraph.h.gch
+
+headers: rose-headers boost-headers
