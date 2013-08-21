@@ -122,7 +122,7 @@ string Componente::geraCompVHDL(){
     
     //PORTS
     f = false;
-    res += "\tport ( \n";
+    res += "\tport map ( \n";
     list<Port*>::iterator p;
     for(p=this->portas.begin(); p != this->portas.end(); p++){
         Ligacao* s = this->getLigacaoByName((*p)->getLigacao());
