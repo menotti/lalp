@@ -36,6 +36,42 @@ int ProcessGraph::addVertice(const string& nome){
     return size;
 }
 
+void ProcessGraph::imprimeEdgesAdj(){
+    cout<<"*******************************************"<<endl;
+    cout<<"Arestas Adj"<<endl;
+    cout<<"*******************************************"<<endl;
+    for ( int v = 0; v  < num_vertices(this->graph) ; v++){
+        cout<<"Vertice: "<< this->graph[v].name <<endl;
+        graph_traits < Graph >::out_edge_iterator ei, ei_end;
+        for (boost::tie(ei, ei_end) = out_edges(v, this->graph); ei != ei_end; ++ei) {
+            graph_traits < Graph >::edge_descriptor e = *ei;
+            graph_traits < Graph >::vertex_descriptor u = source(e, this->graph), v = target(e, this->graph);
+
+            cout<< this->graph[e].name << ": ["<<this->graph[u].name<<"]"<<"("<<u<<")"<<" -> "<<"("<<v<<")"<<"["<<this->graph[v].name<<"]\n";
+        }
+        cout<<""<<endl;
+    }
+    cout<<"*******************************************"<<endl;
+}
+
+void ProcessGraph::imprimeEdgesInc(){
+     cout<<"*******************************************"<<endl;
+    cout<<"Arestas Inc"<<endl;
+    cout<<"*******************************************"<<endl;
+    for ( int v = 0; v  < num_vertices(this->graph) ; v++){
+        cout<<"Vertice: "<< this->graph[v].name <<endl;
+        graph_traits < Graph >::in_edge_iterator ei, ei_end;
+        for (boost::tie(ei, ei_end) = in_edges(v, this->graph); ei != ei_end; ++ei) {
+            graph_traits < Graph >::edge_descriptor e = *ei;
+            graph_traits < Graph >::vertex_descriptor u = source(e, this->graph), v = target(e, this->graph);
+            
+            cout<< this->graph[e].name << ": ["<<this->graph[u].name<<"]"<<"("<<u<<")"<<" -> "<<"("<<v<<")"<<"["<<this->graph[v].name<<"]\n";
+        }
+        cout<<""<<endl;
+    }
+    cout<<"*******************************************"<<endl;
+}
+
 void ProcessGraph::imprimeEdges(){
     graph_traits < Graph >::edge_iterator ei, ei_end;
     for (boost::tie(ei, ei_end) = edges(this->graph); ei != ei_end; ++ei) {
@@ -111,3 +147,12 @@ void ProcessGraph::addEdge(const string& orig, const string& dest, const string&
 ProcessGraph::~ProcessGraph() {
 }
 
+void ProcessGraph::imprimeTeste(){
+    if (is_adjacent(this->graph, 4, 1)){
+        cout<< "Is Adjacent 4 -> 1" << endl;
+    }
+    if (!is_adjacent(this->graph, 4, 0)){
+        cout<< "Not is Adjacent 4 -> 0" << endl;
+    }
+    
+}

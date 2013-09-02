@@ -27,17 +27,20 @@ public:
     void        setWidth(const string &size);
     void        setName(const string &size);
     void        setTipo(const string &size);
+    void        setBlackEdge(bool val);
+    bool        getBlackEdge();
     string      getWidth();
     string      getTipo();
     string      imprimeDot();
-    string      getNome();
+    const string&      getNome() const;
     virtual     ~Ligacao();
 private:
     class       Componente* origem;
     class       Componente* destino;
+    bool        BackEdge;
     string      nome;
     string      tipo;
-    string      tamBarramento;
+    string      width;
     string      outPort;
     string      inPort;
     class Port*       portOrigem;

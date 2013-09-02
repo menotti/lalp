@@ -35,17 +35,31 @@ class Core {
         void FinalizaComponentes();
         void grafo();
         void geraArquivosDotHW();
-        void insereDelay(Ligacao* lig, Componente* comp);
+        Componente* insereDelay(Ligacao* lig, int delay = 0, int asap = 0);
         void imprimeAll();
-        
+        int  getMaxSchedulingTime();
+        void setMaxSchedulingTime(int maxSchedulingTime);
     private:
+        int             maxSchedulingTime;
         list<Componente*>ListaComp;
         list<Ligacao*>  ListaLiga;
         string          compNameReturn;
+        bool            sync;
+        void            copySchedulingTimes();
         void            updateCounter(SgNode* node, counter* comp);
         void            updateRegister(SgNode* node, reg_op* comp);
         void            updateBlockRam(SgNode* node, block_ram* comp);
         void            updateCompRef(SgNode* node, comp_ref* comp);
+        void            detectBackwardEdges();
+        void            ALAP();
+        void            ASAP();
+        void            balanceAndSyncrhonize();
+        int             calculateASAP(Componente* comp);
+        void            addComponent(Componente* comp);
+        void            setSync(bool sync);
+        void            setClkReset();
+        bool            isSync();
+        Componente*     getComponent(const string& name);
         SgProject*      project;
 };
 

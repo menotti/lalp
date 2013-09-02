@@ -8,9 +8,9 @@
 #include "op_add_s.h"
 
 op_add_s::op_add_s(SgNode* node) : op_simple(node){
-    this->setDelayValComp("2");
     this->setNomeCompVHDL("op_add_s");
     this->op_tipo       = "ADD";
+    this->setSync(false);
 }
 
 op_add_s::~op_add_s() {

@@ -122,6 +122,8 @@ void ArquivosDotHW::imprimeVHDL() {
     fout << "\nbegin \n\n";
     for(i=this->ListaComp.begin(); i != this->ListaComp.end(); i++){
         if ((*i)->tipo_comp == CompType::REG || (*i)->tipo_comp == CompType::MEM || (*i)->tipo_comp == CompType::AUX ) continue;
+//        (*i)->printAllPortsAllLig();
+//        fout << (*i)->getLigacaoByName2();
         fout << (*i)->geraCompVHDL();
     }
     for(i=this->ListaComp.begin(); i != this->ListaComp.end(); i++){
@@ -139,15 +141,23 @@ void ArquivosDotHW::GeraMemoryVHDL() {
     std::ofstream fout("VHDL/memory.vhd");
     
     fout << "-- IEEE Libraries -- \n";
-    fout << "library IEEE; \n";
-    fout << "use IEEE.std_logic_1164.all; \n";
-    fout << "use IEEE.std_logic_arith.all; \n";
-    fout << "use IEEE.std_logic_unsigned.all; \n\n";
+    
+    
+    for(i=this->ListaComp.begin(); i != this->ListaComp.end(); i++){
+        if((*i)->tipo_comp != CompType::REF) continue;
+        (*i)->getComponenteRef()->setWE((*i)->getWE());
+    }
+    
     for(i=this->ListaComp.begin(); i != this->ListaComp.end(); i++){
         if((*i)->tipo_comp != CompType::MEM) continue;
-        
-        if((*i)->getEInicializado() == true){
-            fout << "entity block_ram_"+(*i)->getName()+" is \n";
+    
+        if( ((*i)->getEInicializado() == true) && ((*i)->getWE() == false) ){
+//            this->ListaAux.push_back((*i)->getName());
+            fout << "library IEEE; \n";
+            fout << "use IEEE.std_logic_1164.all; \n";
+            fout << "use IEEE.std_logic_arith.all; \n";
+            fout << "use IEEE.std_logic_unsigned.all; \n\n";
+            fout << "entity "+(*i)->getNomeCompVHDL()+" is \n";
             fout << "generic( \n";
             fout << "        data_width : integer := 8; \n";
             fout << "        address_width : integer := 8 \n";
@@ -159,9 +169,9 @@ void ArquivosDotHW::GeraMemoryVHDL() {
             fout << "        oe: in std_logic := '1'; \n";
             fout << "        clk : in std_logic; \n";
             fout << "        data_out : out std_logic_vector(data_width-1 downto 0)); \n";
-            fout << "end block_ram_"+(*i)->getName()+"; \n\n";
+            fout << "end "+(*i)->getNomeCompVHDL()+"; \n\n";
 
-            fout << "architecture rtl of block_ram_"+(*i)->getName()+" is \n\n";
+            fout << "architecture rtl of "+(*i)->getNomeCompVHDL()+" is \n\n";
 
             fout << "constant mem_depth : integer := 2**address_width; \n";
             fout << "type ram_type is array (mem_depth-1 downto 0) \n";
@@ -188,8 +198,7 @@ void ArquivosDotHW::GeraMemoryVHDL() {
                 }
             }
 
-
-            fout << "begin \n";
+            fout << "\nbegin \n";
             fout << "       process (clk) \n";
             fout << "       begin \n";
             fout << "              if (clk'event and clk = '1') then \n";
@@ -202,7 +211,7 @@ void ArquivosDotHW::GeraMemoryVHDL() {
             fout << "                  read_a <= address; \n";
             fout << "             end if; \n";
             fout << "       end process; \n";
-            fout << "end rtl; \n";
+            fout << "end rtl; \n\n";
         }
     }
 }
