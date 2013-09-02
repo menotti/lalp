@@ -24,7 +24,7 @@ public:
     string      getWidth();
     string      getAux();
 //    Ligacao*    getLigacao();
-    string      getLigacao();
+    const string&      getLigacao() const;
 //    void        setLigacao(Ligacao* lig);
     void        setLigacao(const string&  lig);
     void        setWidth(const string&  width);

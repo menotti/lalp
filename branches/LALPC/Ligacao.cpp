@@ -15,9 +15,19 @@ using std::string;
 using std::stringstream;
 
 Ligacao::Ligacao(class Componente* origem, class Componente* destino, const string& nome) {
-    this->origem  = origem;
-    this->destino = destino;
-    this->nome    = nome;
+    this->origem        = origem;
+    this->destino       = destino;
+    this->nome          = nome;
+    this->BackEdge      = false;
+    this->width         = "1";
+}
+
+void Ligacao::setBlackEdge(bool val){
+    this->BackEdge  = val;
+}
+
+bool Ligacao::getBlackEdge(){
+    return this->BackEdge;
 }
 
 void Ligacao::editOrig(class Componente* newOrig){
@@ -36,7 +46,7 @@ string Ligacao::imprimeDot(){
  
     inPorta = ":"+this->getPortOrigem()->getName();
     outPorta = ":"+this->getPortDestino()->getName();
-    size = "["+this->tamBarramento+"]";
+    size = "["+this->width+"]";
   
     res += "\""+this->origem->getName()+"\""+inPorta+" -> \"" +this->destino->getName()+"\""+outPorta+"[label=\"" +this->nome+size+  "\" color=red fontcolor=red]; \n";
     return res;
@@ -54,11 +64,11 @@ void Ligacao::setTipo(const string &tipo){
 }
 
 string Ligacao::getWidth(){
-    return this->tamBarramento;
+    return this->width;
 }
 
 void Ligacao::setWidth(const string &size){
-    this->tamBarramento = size;
+    this->width = size;
 }
 class Componente* Ligacao::getOrigem() {
     return this->origem;
@@ -80,7 +90,7 @@ Port* Ligacao::getPortOrigem(){
     return this->portOrigem;
 }
 
-string Ligacao::getNome(){
+const string& Ligacao::getNome()const{
     return this->nome;
 }
 

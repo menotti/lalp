@@ -21,6 +21,9 @@ public:
     void        addEdge(const string& orig, const string& dest, const string& nome = NULL);
     void        imprimeVertices();
     void        imprimeEdges();
+    void        imprimeEdgesAdj();
+    void        imprimeEdgesInc();
+    void        imprimeTeste();
     void        geraDot();
     virtual     ~ProcessGraph();
     void        updateVertex(const string& nome, int delay, int pos);
@@ -38,7 +41,7 @@ private:
     struct Edge{
         string name;
     };
-    typedef     adjacency_list<vecS, vecS, directedS, Vertex, Edge> Graph;
+    typedef     adjacency_list<vecS, vecS, bidirectionalS, Vertex, Edge> Graph;
 
     Graph       graph;
     map<string, int> vertMap;

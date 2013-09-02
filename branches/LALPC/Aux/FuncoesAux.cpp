@@ -20,11 +20,15 @@ FuncoesAux::FuncoesAux() {
 }
 
 int FuncoesAux::StrToInt(const string& val){
-    int res = lexical_cast<int>(val);
+//    cout<<"StrToInt:" << val <<endl;
+    int res = 0;
+    res = lexical_cast<int>(val);
     return(res);
 }
 string FuncoesAux::IntToStr(int val){
-    string res = lexical_cast<string>(val);
+//    cout<<"IntToStr:" << val <<endl;
+    string res = "0";
+    res = lexical_cast<string>(val);
     return(res);
 }
 

@@ -27,8 +27,8 @@ void counter::createAllGeneric(){
     this->addGenericMap(new GenericMap("bits"           , "integer", "16"));
     this->addGenericMap(new GenericMap("condition"      , "integer", "0"));
     this->addGenericMap(new GenericMap("down"           , "integer", "0"));
-    this->addGenericMap(new GenericMap("increment"      , "integer", "0"));
-    this->addGenericMap(new GenericMap("steps"          , "integer", "0"));
+    this->addGenericMap(new GenericMap("increment"      , "integer", "1"));
+    this->addGenericMap(new GenericMap("steps"          , "integer", "1"));
 }
 
 void counter::createAllPorts(){

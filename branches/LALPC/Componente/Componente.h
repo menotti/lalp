@@ -27,14 +27,13 @@ class Componente {
         void            setPai(SgNode* nodo = NULL);
         int             getNumLinha();
         void            setNumLinha(int num = 0);
-        Componente*     getComponenteRef();
-        virtual void    setDelayValComp(const string &delayVal);
+        Componente*     getComponenteRef();     
         void            setNumIdComp(const string &id);
         string          getNumIdComp();
-        virtual string  getDelayValComp();
         virtual string  getGenericMapVal(const string &map, const string &aux);
         virtual void    setGenericMapVal(const string &map, const string &aux, const string &val);
         void            setComponenteRef(Componente* comp);
+        bool            isSuccessorOf(Componente* comp);
         SgNode*         getPai();
         bool            writeEnable;
         void            setNomeCompVHDL(const string &nome);
@@ -43,8 +42,12 @@ class Componente {
         virtual void    setWE(bool we);
         void            setEInicializado(bool val);
         bool            getEInicializado();
+        
+        virtual void    setDelayValComp(const string &delayVal); //Referenciado a necessidade de delay do componente
+        virtual string  getDelayValComp();
+        void            setDelayVal(const string &val); //Referente ao VALOR dentro do DELAY (Generic Map)
         string          getDelayVal();
-        void            setDelayVal(const string &val);
+        
         string          getDelayBits();
         void            setDelayBits(const string &bits);
         void            setName(const string &nome);
@@ -64,6 +67,8 @@ class Componente {
         virtual Port*   getPortDataInOut(const string &nome);
         virtual Port*   getPortOther(const string &nome);
         virtual Ligacao*getLigacaoByName(const string &nome);
+        virtual Ligacao*getLigacaoOutDefault();
+        virtual Ligacao*getLigacaoInDefault();
         virtual void    removeLigacao(Ligacao* lig);
         virtual void    addLigacao(Ligacao* lig);
         virtual void    addGenericMap(GenericMap* map);
@@ -79,10 +84,27 @@ class Componente {
         string          delayVal;
         string          nome;
         list<Ligacao*>  ligacoes;
+        
+        int             getALAP();
+        int             getASAP();
+        void            setALAP(int val);
+        void            setASAP(int val);
+        list<GenericMap*> getGenericMap();
+        list<Port*>     getPorts();
+        void            updateCompRef();
+        int             getSuccessorsLine();
+        void            copySchedulingTimes();
+        CompType::TIPO_COMP  getTipoCompRef();
+        bool            getSync();
+        void            setSync(bool val);
+        void            printAllPortsAllLig();
     private:
+        int             alap;
+        int             asap;
+        bool            sync;
         int             numLinha;
         string          idComp;
-        string          delayValComp;
+        string          delayValComp; //Delay relacionado necessário na execucao em Hadware
         Componente*     refComp;
         list<Port*>     portas;
         list<GenericMap*> genMap;

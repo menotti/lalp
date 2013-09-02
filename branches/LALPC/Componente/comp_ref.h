@@ -16,28 +16,13 @@ public:
     comp_ref(SgNode* node, const string &aux = "");
     string      getEstruturaComponenteVHDL();
     string      geraDOTComp();
-    string      getNomeCompVHDL();
-    string      getGenericMapVal(const string &map, const string &aux);
-    void        setGenericMapVal(const string &map, const string &aux, const string &val);
     void        createAllGeneric();
     void        createAllPorts();
     void        montaComponente();
     void        setDelayValComp(const string &delayVal);
     string      getDelayValComp();
-    string      geraCompVHDL();
-    string      imprimeLigacoes();
-    string      imprimePortas();
-    int         getQtdPorts();
-    Port*       getPortDataInOut(const string &nome);
-    Port*       getPortOther(const string &nome);
-    Ligacao*    getLigacaoByName(const string &nome);
-    void        removeLigacao(Ligacao* lig);
-    void        addLigacao(Ligacao* lig);
-    void        addGenericMap(GenericMap* map);
-//    list<Port*> getAllPorts();
-//    bool        getWE();
-//    void        setWE(bool we);
-    
+
+    void        addGenericMap(GenericMap* map);    
     void        setNomeVarIndex(const string &index);
     string      getNomeVarIndex();
     void        setNomeVarRef(const string &nome);

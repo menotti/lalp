@@ -50,7 +50,7 @@ string  comp_aux::geraCompVHDL(){
         res = this->getPortDataInOut("OUT")->getLigacao()+" <= \\"+this->getName()+"\\; \n";
     }
     if(this->getNomeCompVHDL() == "termination" || this->getNomeCompVHDL() == "input"){
-        res = "\\"+this->getPortDataInOut("OUT")->getLigacao()+"\\ <= conv_std_logic_vector("+this->valAux+", 16); \n";
+        res = this->getPortDataInOut("OUT")->getLigacao()+" <= conv_std_logic_vector("+this->valAux+", 16); \n";
     }
     return res;
 }

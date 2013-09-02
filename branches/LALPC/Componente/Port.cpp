@@ -23,7 +23,7 @@ Port::Port(const string& name, const string& input, const string& type, const st
 }
 
 //Ligacao* Port::getLigacao(){
-string Port::getLigacao(){
+const string& Port::getLigacao() const{
     return this->ligacao;
 }
 
