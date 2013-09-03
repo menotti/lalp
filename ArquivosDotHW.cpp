@@ -122,8 +122,7 @@ void ArquivosDotHW::imprimeVHDL() {
     fout << "\nbegin \n\n";
     for(i=this->ListaComp.begin(); i != this->ListaComp.end(); i++){
         if ((*i)->tipo_comp == CompType::REG || (*i)->tipo_comp == CompType::MEM || (*i)->tipo_comp == CompType::AUX ) continue;
-//        (*i)->printAllPortsAllLig();
-//        fout << (*i)->getLigacaoByName2();
+        
         fout << (*i)->geraCompVHDL();
     }
     for(i=this->ListaComp.begin(); i != this->ListaComp.end(); i++){

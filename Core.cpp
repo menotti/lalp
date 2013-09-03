@@ -39,7 +39,7 @@ Core::Core(SgProject* project) {
     this->identificaVariaveis();
     this->identificaFor();
     this->FinalizaComponentes();
-    //this->identificaReturn();
+    this->identificaReturn();
     
     //Processo de Schedulling
     this->detectBackwardEdges();
@@ -50,6 +50,9 @@ Core::Core(SgProject* project) {
 }
 
 void Core::identificaReturn() {
+    cout<<"#--Ident Return:                              #"<<endl;
+    
+    
     SgProject *project = this->project;
     string varRetorno;
     int    numLinha = 0;
@@ -102,9 +105,9 @@ void Core::identificaReturn() {
         for (i = this->ListaComp.begin(); i != this->ListaComp.end(); i++) {
             if ((*i)->tipo_comp != CompType::REF) continue;
             if ((*i)->getName() == varRetorno){
-                cout<< (*i)->getName() << endl;
+                
                 comp_aux* comp_return = new comp_aux(NULL,"RESULT");
-                comp_return->setName("return");
+                comp_return->setName("result");
                 comp_return->setNumIdComp(FuncoesAux::IntToStr(this->ListaComp.size()));
                 comp_return->setNumLinha(numLinha);
 
@@ -127,13 +130,16 @@ void Core::identificaReturn() {
                 this->ListaLiga.push_back(newLig);
 //                this->ListaComp.push_back(comp_return);
                 this->addComponent(comp_return);
-                
+                cout<<"  Ident Return na linha: "<<numLinha<<endl;
             }
         }
     }
+    cout<<"#--Ident Return: OK                           #"<<endl;
 }
 
 void Core::identificaVariaveis() {
+    cout<<"#--Ident Variavei:                            #"<<endl;
+
     SgProject *project = this->project;
 
     // For each source file in the project
@@ -190,10 +196,11 @@ void Core::identificaVariaveis() {
             }
         }
     }
+    cout<<"#--Ident Variavei: OK                         #"<<endl;
 }
 
 void Core::identificaFor() {
-    
+    cout<<"#--Comp Counter:                              #"<<endl;
     SgProject *project = this->project;
     string nome = "";
     // For each source file in the project
@@ -516,7 +523,6 @@ void Core::analisaExp(SgNode *nodoAtual, SgNode* pai, bool debug,  const string&
                 }
                 cout << "-------------------------------" << endl;
             }// </editor-fold>
-            cout<< "-||||-- AUX: "<< aux << endl;
             comp_ref* comp = new comp_ref(decArr, aux);
             comp->setNumIdComp(FuncoesAux::IntToStr(this->ListaComp.size()));
             comp->setNumLinha(decArr->get_file_info()->get_line()); 

@@ -9,7 +9,7 @@
 
 op_sub_s::op_sub_s(SgNode* node) : op_simple(node){
     this->setDelayValComp("0");
-    this->setNomeCompVHDL("op_sub_s");
+    this->setNomeCompVHDL("sub_op_s");
     this->op_tipo       = "SUB";
     this->setSync(false);
 }
