@@ -45,6 +45,10 @@ public final class Parameters {
 	public static boolean debugOutputs = false;
 	public static boolean alpg = false;
 	public static boolean verbose = false;
+	public static boolean lalpFPComponents = false;
+	public static boolean useInputDir = false;
+	public static String inputFile = null;
+	
 	
 	public static int getDefaultAddressWidth() {
 		return defaultAddressWidth;

@@ -85,6 +85,8 @@ public class LangParser {
 			createOperations();
 			if(parser.design.isSync())
 			{
+				//FIXME: Is correct to add init?
+				//parser.design.addGlobalComponent(new input("\\init\\"));
 				parser.design.addGlobalComponent(new input("clk"));
 				parser.design.addGlobalComponent(new input("reset"));
 				parser.design.addGlobalComponent(new input("clear"));
@@ -202,7 +204,9 @@ public class LangParser {
 								ErrorToken("Duplicate use of variable "+name, a.getToken());
 							}
 
-							//FIXME: Tratar os outros tipos de dados							
+							//FIXME: Tratar os outros tipos de dados	
+							//FIXME: Tratar operadores relacionais
+							//FIXME: Não existem os operadores *=, /=, etc?
 							if(n.getVarType().getType()==VarType.Type.FLOAT)
 							{
 								compClass = sub_reg_op_fl.class;	
@@ -298,7 +302,8 @@ public class LangParser {
 			Class compClass = n.getComponentClass();
 			Component comp = null;
 			Integer width = operationWidth(n);
-			try {
+			try
+			{
 				if (n.id == ALPParserTreeConstants.JJTDELAYEXPRESSION) {
 					comp = new delay_op(name, width, (Integer)n.getStepDelay());
 				}
@@ -309,7 +314,7 @@ public class LangParser {
 					comp = (Component)compClass.getConstructor(String.class, int.class, int.class).newInstance(name, (Integer)n.getStepDelay(), width);						
 				}
 				else {
-					//TODO obviamente o trecho abaixo não funciona para todos os componentes
+					//TODO: obviamente o trecho abaixo não funciona para todos os componentes
 					comp = (Component)compClass.getConstructor(String.class, int.class).newInstance(name, width);
 					//inicialização não funciona para reg_mux_op pois o nó N não contem a declaração do valor inicial
 					if (n.jjtGetValue() != null) {

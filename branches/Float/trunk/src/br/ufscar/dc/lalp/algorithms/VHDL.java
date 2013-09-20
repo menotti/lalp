@@ -35,6 +35,7 @@ import br.ufscar.dc.lalp.core.Signal;
 import br.ufscar.dc.lalp.core.VHDLType;
 import br.ufscar.dc.lalp.parser.LangParser;
 import br.ufscar.dc.lalp.parser.lang.SimpleNode;
+import br.ufscar.dc.lalp.utils.LalpUtils;
 
 
 
@@ -67,6 +68,7 @@ public class VHDL {
 	public void generateVHDL(Design design) {
 		generateVHDL(design, DEFAULT_DIRECTORY);
 	}
+	
 	public void generateVHDL(Design design, String path) {
 		System.out.print("Generating VHDL...");
 		String fileName = design.getName(); 
@@ -84,7 +86,7 @@ public class VHDL {
 			System.exit(1);
 		}
 		System.out.println("Ok!");
-		System.out.println(path + System.getProperty("file.separator") + fileName + ".vhd");
+		System.out.println("VHDL file: "+path + System.getProperty("file.separator") + fileName + ".vhd");
 	}	
 	
     /**
@@ -303,34 +305,38 @@ public class VHDL {
 			System.exit(1);
 		}
 		System.out.println("Ok!");
+		System.out.println("Initialization file: "+path + System.getProperty("file.separator") + "memory.vhd");
+		
 	}	
+
 	/**
 	 * Generate the VHDL testbench file
 	 */
-        public void generateVHDLTestbench(LangParser lp)
-        {
-            generateVHDLTestbench(lp, DEFAULT_DIRECTORY);
-        }
-        
-        public void generateVHDLTestbench(LangParser lp, String path) {
-                Design design = lp.getDesign();
-                System.out.print("Generating VHDL testbench...");
-		String fileName = design.getName(); 
+	public void generateVHDLTestbench(LangParser lp) {
+		generateVHDLTestbench(lp, DEFAULT_DIRECTORY);
+	}
+
+	public void generateVHDLTestbench(LangParser lp, String path) {
+		Design design = lp.getDesign();
+		System.out.print("Generating VHDL testbench...");
+		String fileName = design.getName();
 		try {
-			//lp.getParser().allResults;
-			FileOutputStream outputFile = new FileOutputStream(path + System.getProperty("file.separator") + "t_" + fileName + ".vhd");
+			// lp.getParser().allResults;
+			FileOutputStream outputFile = new FileOutputStream(path
+					+ System.getProperty("file.separator") + "t_" + fileName
+					+ ".vhd");
 			DataOutputStream dataOut = new DataOutputStream(outputFile);
 			generateVHDLFileHeader(design, dataOut);
 			generateVHDLEntity(design, dataOut, true);
 			generateVHDLComponent(lp, dataOut);
 			dataOut.close();
-		}
-		catch(IOException e) {
+		} catch (IOException e) {
 			System.err.println("Problem creating file!");
 			e.printStackTrace();
 			System.exit(1);
 		}
 		System.out.println("Ok!");
+		System.out.println("Testbench file: "+path + System.getProperty("file.separator") + "t_" + fileName + ".vhd");
 	}
 	private void generateVHDLComponent(LangParser lp, DataOutputStream dos) throws IOException {
 		Design design = lp.getDesign();
@@ -432,18 +438,34 @@ public class VHDL {
 			{
 				dos.writeBytes("\n" +entry.getKey()+ "_atribution: process\n");
 				dos.writeBytes("begin\n");
+				
+				
+				
 				if(lp.getDesign().isSync())
 					dos.writeBytes("\n\twait until \\init\\ = '1';\n");
 				else
 					dos.writeBytes("\n\twait for 10 ns;\n");
-				for(int i = 0; i <  entry.getValue().getArraySize(); i++)
+				
+				if(entry.getValue().getArraySize()!= null)
 				{
+				  for(int i = 0; i <  entry.getValue().getArraySize(); i++)
+			 	  {
+					
 					dos.writeBytes("\n\twait for 10 ns;\n");
-					dos.writeBytes("\t\\" +entry.getKey()+ "\\ <= conv_std_logic_vector(" + entry.getValue().getInits().get(i) + "," + entry.getValue().getWidth() +");");
+					//dos.writeBytes("\t\\" +entry.getKey()+ "\\ <= conv_std_logic_vector(" + entry.getValue().getInits().get(i) + "," + entry.getValue().getWidth() +");");
+					dos.writeBytes("\t\\" +entry.getKey()+ "\\ <= conv_std_logic_vector(" + LalpUtils.parseValue(entry.getValue().getInits().get(i)) + "," + entry.getValue().getWidth() +");");
+				  }
 				}
-				dos.writeBytes("\n\twait for 10 ns;\n");
-				dos.writeBytes("\t\\" +entry.getKey()+ "\\ <= conv_std_logic_vector('X', "+entry.getValue().getWidth()+");");
-				dos.writeBytes("\nwait;");
+				else if(entry.getValue() !=null){
+					//FIXME: Verificar se linhas abaixo estão corretas. Usadas para corrigir quando inicialização não é um array.
+					dos.writeBytes("\n\twait for 10 ns;\n");
+					dos.writeBytes("\t\\" +entry.getKey()+ "\\ <= conv_std_logic_vector(" + entry.getValue().jjtGetValue() + "," + entry.getValue().getWidth() +");");
+					
+				}
+				//FIXME: Essas 3 linhas abaixo comentadas são úteis no testebench?
+				//dos.writeBytes("\n\twait for 10 ns;\n");
+				//dos.writeBytes("\t\\" +entry.getKey()+ "\\ <= conv_std_logic_vector('-', "+entry.getValue().getWidth()+");");
+				//dos.writeBytes("\nwait;");
 				dos.writeBytes("\nend process "+entry.getKey()+ "_atribution;\n");
 			}
 						
@@ -473,21 +495,34 @@ public class VHDL {
 					dos.writeBytes("\nprocess\n"); 
 					dos.writeBytes("\nbegin\n");
 					dos.writeBytes("\n\twait for 10 ns;\n");
-					for(int i =  0 ; i < result.getArraySize(); i++)
+					
+					if(result.getArraySize()!= null)
 					{
+					  for(int i =  0 ; i < result.getArraySize(); i++)
+					  {
+  
 						if(i ==0)
 						{
 							dos.writeBytes("\n\twait on \\" +conditionalSignal +"\\;\n");
-							dos.writeBytes("\tassert \\" +result.getIdentifier() + "\\ = " + "conv_std_logic_vector(" + result.getInits().get(i) + "," + result.getWidth() +")");
+							//dos.writeBytes("\tassert \\" +result.getIdentifier() + "\\ = " + "conv_std_logic_vector(" + result.getInits().get(i) + "," + result.getWidth() +")");
+							dos.writeBytes("\tassert \\" + result.getIdentifier() + "\\ = " + "conv_std_logic_vector(" + LalpUtils.parseValue(result.getInits().get(i)) + "," + result.getWidth() +")");
 							dos.writeBytes("\n\t\treport \"value different from the expected\" severity error;\n");
 						}
 						//In case of two or more equal results in sequence, just one assert will be generated to avoid errors
 						else if(result.getInits().get(i) != result.getInits().get(i-1))
 						{
 							dos.writeBytes("\n\twait on \\" +conditionalSignal +"\\;\n");
-							dos.writeBytes("\tassert \\" +result.getIdentifier() + "\\ = " + "conv_std_logic_vector(" + result.getInits().get(i) + "," + result.getWidth() +")");
+							//dos.writeBytes("\tassert \\" +result.getIdentifier() + "\\ = " + "conv_std_logic_vector(" + result.getInits().get(i) + "," + result.getWidth() +")");
+							dos.writeBytes("\tassert \\" +result.getIdentifier() + "\\ = " + "conv_std_logic_vector(" +  LalpUtils.parseValue(result.getInits().get(i)) + "," + result.getWidth() +")");
 							dos.writeBytes("\n\t\treport \"value different from the expected\" severity error;\n");
 						}
+					  }
+					}
+					else{
+						//FIXME: Verificar se linhas abaixo estão corretas. Usadas para corrigir quando inicialização não é um array.
+						dos.writeBytes("\n\twait on \\" +conditionalSignal +"\\;\n");
+						dos.writeBytes("\tassert \\" +result.getIdentifier() + "\\ = " + "conv_std_logic_vector(" + result.jjtGetValue() + "," + result.getWidth() +")");
+						dos.writeBytes("\n\t\treport \"value different from the expected\" severity error;\n");
 					}
 					dos.writeBytes("\n\tassert false report \"end of test of \\"+result.getIdentifier()+"\\\" severity note;");
 					dos.writeBytes("\n\nwait;\n");
@@ -523,7 +558,8 @@ public class VHDL {
 							else
 								dos.writeBytes("\n\twait for "+ process.getValue() +" ns;\n");
 						}
-						dos.writeBytes("\tassert \\" + result.getIdentifier() + "\\ = " + "conv_std_logic_vector(" + result.getInits().get(i) + "," + result.getWidth() +")");
+						//dos.writeBytes("\tassert \\" + result.getIdentifier() + "\\ = " + "conv_std_logic_vector(" + result.getInits().get(i) + "," + result.getWidth() +")");
+						dos.writeBytes("\tassert \\" + result.getIdentifier() + "\\ = " + "conv_std_logic_vector(" + LalpUtils.parseValue(result.getInits().get(i)) + "," + result.getWidth() +")");
 						dos.writeBytes("\n\t\treport \"value different from the expected\" severity error;\n");
 					}
 					dos.writeBytes("\n\tassert false report \"end of test of \\"+result.getIdentifier()+"\\\" severity note;");
@@ -540,7 +576,8 @@ public class VHDL {
 					dos.writeBytes("\n\twait until \\" +conditionalSignal+ "\\ = '" +process.getValue()+ "';\n");
 					for(int i =  0 ; i < result.getArraySize(); i++)
 					{
-						dos.writeBytes("\tassert \\" + result.getIdentifier() + "\\ = " + "conv_std_logic_vector(" + result.getInits().get(i) + "," + result.getWidth() +")");
+						//dos.writeBytes("\tassert \\" + result.getIdentifier() + "\\ = " + "conv_std_logic_vector(" + result.getInits().get(i) + "," + result.getWidth() +")");
+						dos.writeBytes("\tassert \\" + result.getIdentifier() + "\\ = " + "conv_std_logic_vector(" + LalpUtils.parseValue(result.getInits().get(i)) + "," + result.getWidth() +")");
 						dos.writeBytes("\n\t\treport \"value different from the expected\" severity error;\n");
 						if(i == 0)
 							dos.writeBytes("\n\twait for 12 ns;\n");

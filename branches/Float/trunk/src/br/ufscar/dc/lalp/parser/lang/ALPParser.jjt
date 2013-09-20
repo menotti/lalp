@@ -45,6 +45,7 @@ import java.util.*;
 import br.ufscar.dc.lalp.core.*;
 import br.ufscar.dc.lalp.core.Process;
 import br.ufscar.dc.lalp.components.*;
+import java.lang.StringBuilder;
 
 /**
  * @author <a href="mailto:ricardomenotti@acm.org">Ricardo Menotti</a>
@@ -57,6 +58,7 @@ import br.ufscar.dc.lalp.components.*;
 public class ALPParser {
 
 	public Design design;
+	public Hashtable<String, Module> allImports = new Hashtable<String, Module>();
 	public Hashtable<String, Integer> allConsts = new Hashtable<String, Integer>();
 	//public Hashtable<String, Integer> allTypedefs = new Hashtable<String, Integer>();
 	public Hashtable<String, VarType> allTypedefs = new Hashtable<String, VarType>();
@@ -142,6 +144,8 @@ TOKEN: {
 	| < AS: "as">
 	| < CLOCK: "clock">	
 	| < WAIT: "wait">
+	| < IMPORT: "import" >
+	| < MODULE: "module" >
  }
 
  
@@ -291,18 +295,20 @@ SimpleNode Start() : {
 	Token t;
 }
 {
+    (Import())*
  	(Const())* 
  	(Typedef())* 
- 	t=<IDENTIFIER>
+ 	 	t=<IDENTIFIER>
  	{
  		jjtThis.setIdentifier(t.image);
  	}
  	<LPAREN> (Pin() (<COMMA> Pin())*)? <RPAREN> 
  	<LBRACE> Statements() <RBRACE>
-            (Testbench())? 
+            (Testbench())?
 	{
  		return jjtThis;
  	}
+
 }
 
 void Testbench() : {
@@ -359,7 +365,7 @@ void Results(Process process) : {
 			}
 		}
 	}
-	Result(type.bitwidth, process) <SEMICOLON>
+	Result(type, process) <SEMICOLON>
 }
 
 void TestbenchEntries() : {
@@ -378,7 +384,7 @@ void TestbenchEntries() : {
 			}
 		}
 	}
-	TestbenchEntry(type.bitwidth) <SEMICOLON>
+	TestbenchEntry(type) <SEMICOLON>
 }
 
 
@@ -409,7 +415,7 @@ void Name() : {
 		
 	}
 }
-
+/*
 void Const() : {
 	Token constName, constVal;
 }
@@ -427,6 +433,89 @@ void Const() : {
 		//InfoToken("Const " + constName.image + " with value " + constVal.image + " found", constName);
 	}
 }
+*/
+
+
+void Const() : {
+    Token constName;
+    int constVal;
+}
+{
+    <CONST> constName=<IDENTIFIER> "=" constVal=ConstExpression()  <SEMICOLON>
+    {
+        if (allConsts.containsKey(constName.image)) {
+            ErrorToken("Redefinition of Const " + constName.image, constName);
+        }
+        allConsts.put(constName.image, constVal);
+        jjtThis.setIdentifier(constName.image);
+        jjtThis.jjtSetValue(constVal);
+        //jjtThis.setComponentClass(loop.components.const_op.class);
+        //DEBUG
+        //InfoToken("Const " + constName.image + " with value " + constVal.image + " found", constName);
+    }
+}
+
+void Import() #void:{
+  Token t = null;
+  Module m = null;}{
+  <IMPORT> t=<IDENTIFIER> <SEMICOLON >
+  {
+    if (allImports.containsKey(t.image))
+    {
+            Info("\nWarning: Module " + t.image + " already imported!\n");
+    }
+    else
+    {
+        //Info("\nImporting " + t.image + "\n");
+        m = new Module(t.image);
+        allImports.put(t.image, m);
+        //jjtThis.setIdentifier(constName.image);
+        //jjtThis.jjtSetValue(constVal);
+    }  }}
+
+/*
+int ConstPrimary() #void : {
+    int value = 0;
+}
+{
+   (value=Int()|value=Constant()|<LPAREN> value=ConstExpression() <RPAREN>)
+   {
+     return value;
+   } 
+}
+*/
+int ConstTerm() #void:
+{
+  int i ;
+  int value ;
+}
+{
+  value = ConstOrInt() 
+  (
+   <STAR>  i = ConstOrInt() { value = value * i ; }
+  |
+   <SLASH> i = ConstOrInt() { value = value / i ; }
+  |
+   <REM>   i = ConstOrInt() { value = value % i ; }
+  )*
+{ return value ; }
+}
+
+int ConstExpression() #void:
+{
+  int i;
+  int value ;
+}
+{
+  value = ConstTerm()
+  (
+    <PLUS>  i = ConstTerm() { value = value + i ; }
+  |
+    <MINUS> i = ConstTerm() { value = value - i ; }
+  )*
+  { return value ; }
+}
+
 
 void Typedef() : {
 	Token typedefName;
@@ -489,6 +578,8 @@ VarType TypeSFixed()#void :
       Error("Invalid value for typedef!!\n");
     }
     t.setType(VarType.Type.SFIXED);
+    t.int_width = a; 
+    t.frac_width = b;
     t.bitwidth = a+b;
     return t;
   }
@@ -496,7 +587,7 @@ VarType TypeSFixed()#void :
 
 VarType TypeUFixed()#void :
 {
-  int a=32,b=32;
+  int a=16,b=16;
   VarType t = new VarType();
 }
 {
@@ -508,6 +599,8 @@ VarType TypeUFixed()#void :
       Error("Invalid value for typedef!!\n");
     }
     t.setType(VarType.Type.UFIXED);
+    t.int_width = a; 
+    t.frac_width = b;
     t.bitwidth = a+b;
     return t;
   }
@@ -656,6 +749,7 @@ void Declaration() #void : {
 		if (varType != null) {
 			if (allTypedefs.containsKey(varType.image)) {
 				type=(VarType)(allTypedefs.get(varType.image));
+				System.out.println("FIXED " + type.toString());
 			}
 			else {
 				ErrorToken("Type " + varType.image + " NOT found!", varType);
@@ -706,7 +800,7 @@ void Variable(VarType type) : {
 	}
 }
 
-void Result(int varWidth, Process process) : {
+void Result(VarType type, Process process) : {
 	Token tName;
 	Integer size = null;
 	Long init = null;
@@ -724,10 +818,18 @@ void Result(int varWidth, Process process) : {
 		jjtThis.setArraySize(size);
 		jjtThis.jjtSetValue(init);
 		jjtThis.setInits(inits);
-		jjtThis.setWidth(varWidth);
+		jjtThis.setWidth(type.bitwidth);
 		jjtThis.setToken(tName);
 		allResults.put(tName.image, jjtThis);
 		process.addResult(jjtThis);
+
+        if(type.getType()== VarType.Type.FLOAT)
+        {
+          floatValue = false;
+          jjtThis.setFloatNumber(true);
+        }
+
+		
 		// comp = design.addComponent(comp);
 		// jjtThis.setComponent(comp);
 		// allComponents.put(tName.image, comp);
@@ -748,7 +850,7 @@ void Result(int varWidth, Process process) : {
 	}
 }
 
-void TestbenchEntry(int varWidth) : {
+void TestbenchEntry(VarType type) : {
 	Token tName;
 	Integer size = null;
 	Long init = null;
@@ -766,9 +868,17 @@ void TestbenchEntry(int varWidth) : {
 		jjtThis.setArraySize(size);
 		jjtThis.jjtSetValue(init);
 		jjtThis.setInits(inits);
-		jjtThis.setWidth(varWidth);
+		jjtThis.setWidth(type.bitwidth);
 		jjtThis.setToken(tName);
 		allTestbenchEntries.put(tName.image, jjtThis);
+
+        if(type.getType()== VarType.Type.FLOAT)
+        {
+          floatValue = false;
+          jjtThis.setFloatNumber(true);
+        }
+
+		
 		// comp = design.addComponent(comp);
 		// jjtThis.setComponent(comp);
 		// allComponents.put(tName.image, comp);
@@ -807,7 +917,7 @@ void Counter() : {
 	
 	Token tVarTerm, iTerm=null, vTerm=null;
 	String termCond;
-	
+	StringBuilder delayName = new StringBuilder();
 	Token tVarInc, tIncOper;
 	Integer steps = 1, increment = 1;
 	
@@ -858,10 +968,14 @@ void Counter() : {
 	
 	<SEMICOLON> 
 	
-	(tVarInc=<IDENTIFIER> (tIncOper="++" | tIncOper="--" | tIncOper="+=" increment=ConstOrInt() | tIncOper="-=" increment=ConstOrInt()) (<AT> steps=ConstOrInt())?)
+	//(tVarInc=<IDENTIFIER> (tIncOper="++" | tIncOper="--" | tIncOper="+=" increment=ConstOrInt() | tIncOper="-=" increment=ConstOrInt()) (<AT> steps=ConstOrInt())?)
+	(tVarInc=<IDENTIFIER> (tIncOper="++" | tIncOper="--" | tIncOper="+=" increment=ConstOrInt() | tIncOper="-=" increment=ConstOrInt()) (<AT> steps=Delay(delayName))?)
 	{
 		jjtThis.setIncOper(tIncOper.image);
 		jjtThis.setStepDelay(steps);
+		if(delayName.length() != 0){
+    		jjtThis.setNameDelay(delayName.toString());
+        }
 		jjtThis.setInc(increment);
 	}
 	
@@ -883,7 +997,7 @@ String CounterComp() #void : {
 	Token t;
 }
 {
-	(t="<" | t="<=" | t=">" | t=">=" | t="==" | t="!=")
+	(t=<LT> | t=<LE> | t=<GT> | t=<GE> | t=<EQ> | t=<NE>)
 	{
 		return t.image;
 	}
@@ -974,18 +1088,18 @@ String AssignmentOperator() #void : {
 	Token t;
 }
 {
-	( t="=" 
-	| t="*=" 
-	| t="/=" 
-	| t="%=" 
-	| t="+=" 
-	| t="-=" 
-	| t="<<=" 
-	| t=">>=" 
-	| t=">>>=" 
-	| t="&=" 
-	| t="^=" 
-	| t="|=")
+	( t=<ASSIGN> 
+	| t=<STARASSIGN> 
+	| t=<SLASHASSIGN> 
+	| t=<REMASSIGN> 
+	| t=<PLUSASSIGN> 
+	| t=<MINUSASSIGN> 
+	| t=<LSHIFTASSIGN> 
+	| t=<RSIGNEDSHIFTASSIGN> 
+	| t=<RUNSIGNEDSHIFTASSIGN> 
+	| t=<ANDASSIGN > 
+	| t=<XORASSIGN> 
+	| t=<ORASSIGN >)
 	{
 		return t.image;
 	}
@@ -1004,52 +1118,61 @@ void Expression() : {}
 void DelayExpression() : {
 	Integer amount = null;
 	Integer endAmount = null;
+	StringBuilder delayName = new StringBuilder();
 }
 {
 	ConditionalExpression() (
 	LOOKAHEAD(1) {jjtThis.setComponentClass(delay_op.class);} 
-	<AT> amount=ConstOrInt()(<HASH> endAmount=ConstOrInt(){jjtThis.setEndStepDelay(endAmount);})? {jjtThis.setStepDelay(amount);} 
+	//<AT> amount=ConstOrInt()(<HASH> endAmount=ConstOrInt(){jjtThis.setEndStepDelay(endAmount);})?
+	<AT> amount=Delay(delayName)(<HASH> endAmount=ConstOrInt(){jjtThis.setEndStepDelay(endAmount);})?
+	{
+	  jjtThis.setStepDelay(amount);
+	  if(delayName.length() != 0){
+        jjtThis.setNameDelay(delayName.toString());
+      }
+	}
+	  
 	)?
 }
 
 
 void ConditionalExpression() : {}
 {
-  ConditionalOrExpression() [ "?" {jjtThis.setComponentClass(reg_mux_op.class);} ConditionalOrExpression() ":" ConditionalOrExpression() ]
+  ConditionalOrExpression() [ <HOOK> {jjtThis.setComponentClass(reg_mux_op.class);} ConditionalOrExpression() <COLON> ConditionalOrExpression() ]
 }
 
 void ConditionalOrExpression() : {}
 {
-  ConditionalAndExpression() ( {jjtThis.setComponentClass(or_op.class);} "||" ConditionalAndExpression() )*
+  ConditionalAndExpression() ( {jjtThis.setComponentClass(or_op.class);} <SC_OR> ConditionalAndExpression() )*
 }
 
 void ConditionalAndExpression() : {}
 {
-  InclusiveOrExpression() ( {jjtThis.setComponentClass(and_op.class);} "&&" InclusiveOrExpression() )*
+  InclusiveOrExpression() ( {jjtThis.setComponentClass(and_op.class);} <SC_AND> InclusiveOrExpression() )*
 }
 
 void InclusiveOrExpression() : {}
 {
-  ExclusiveOrExpression() ( {jjtThis.setComponentClass(or_op.class);} "|" ExclusiveOrExpression() )*
+  ExclusiveOrExpression() ( {jjtThis.setComponentClass(or_op.class);} <BIT_OR> ExclusiveOrExpression() )*
 }
 
 void ExclusiveOrExpression() : {}
 {
-  AndExpression() ( {jjtThis.setComponentClass(xor_op.class);} "^" AndExpression() )*
+  AndExpression() ( {jjtThis.setComponentClass(xor_op.class);} <XOR> AndExpression() )*
 }
 
 void AndExpression() : {}
 {
  	EqualityExpression() 
- 	( {jjtThis.setComponentClass(and_op.class);} "&" EqualityExpression() )*
+ 	( {jjtThis.setComponentClass(and_op.class);} <BIT_AND> EqualityExpression() )*
 }
 
 void EqualityExpression() : {}
 {
 	RelationalExpression() 
 	( ( 
-	"==" {jjtThis.setComponentClass(if_eq_op_s.class);} | 
-	"!=" {jjtThis.setComponentClass(if_ne_op_s.class);}
+	<EQ> {jjtThis.setComponentClass(if_eq_op_s.class);} | //FIXME: Incluir operadores de ponto flutuante 
+	<NE> {jjtThis.setComponentClass(if_ne_op_s.class);}
 	) RelationalExpression() )*
 }
 
@@ -1057,21 +1180,22 @@ void RelationalExpression() : {}
 {
   ShiftExpression() 
   ( ( 
-  "<" {jjtThis.setComponentClass(if_lt_op_s.class);} | 
-  ">" {jjtThis.setComponentClass(if_gt_op_s.class);} | 
-  "<=" {jjtThis.setComponentClass(if_le_op_s.class);}| 
-  ">=" {jjtThis.setComponentClass(if_ge_op_s.class);}
+  <LT> {jjtThis.setComponentClass(if_lt_op_s.class);} | //FIXME: Incluir operadores de ponto flutuante
+  <GT> {jjtThis.setComponentClass(if_gt_op_s.class);} | 
+  <LE> {jjtThis.setComponentClass(if_le_op_s.class);}| 
+  <GE> {jjtThis.setComponentClass(if_ge_op_s.class);}
   ) ShiftExpression() )*
 }
+
 
 void ShiftExpression() : {
 	Integer amount = null;
 }
 {
   AdditiveExpression() ( ( 
-  "<<" {jjtThis.setComponentClass(shl_c_op_s.class);} | 
-  ">>" {jjtThis.setComponentClass(shr_c_op_s.class);} | 
-  ">>>" //TODO verificar qual dos dois shifts e o correto para a operação sem sinal que está no VHDL
+  <LSHIFT> {jjtThis.setComponentClass(shl_c_op_s.class);} | 
+  <RSIGNEDSHIFT> {jjtThis.setComponentClass(shr_c_op_s.class);} | 
+  <RUNSIGNEDSHIFT> //TODO: verificar qual dos dois shifts e o correto para a operação sem sinal que está no VHDL
   ) amount=ConstOrInt() {jjtThis.setStepDelay(amount);} )*
 }
 
@@ -1086,12 +1210,29 @@ void AdditiveExpression() : {}
 
 void MultiplicativeExpression() : {
 	Integer amount = null;
-	Integer endAmount = null;
+	//Integer endAmount = null;
+	StringBuilder delayName = new StringBuilder();
 }
 {
   UnaryExpression() ( ( 
   <STAR>     {jjtThis.setComponentClass(mult_op_s.class);} |
-  "*@" amount=ConstOrInt()(<HASH> endAmount=ConstOrInt())? {jjtThis.setStepDelay(amount);} {jjtThis.setComponentClass(mult_op_s_p.class);} | // pipelined multiply 
+  //"*@" amount=ConstOrInt()(<HASH> endAmount=ConstOrInt())? {jjtThis.setStepDelay(amount);} {jjtThis.setComponentClass(mult_op_s_p.class);} | // pipelined multiply
+  //"*@" amount=ConstOrInt()
+  "*@" amount=Delay(delayName)
+  {
+    if(amount==0)    {      jjtThis.setComponentClass(mult_op_s.class); //non-pipelined multiply
+    }
+    else
+    {      jjtThis.setStepDelay(amount);
+      jjtThis.setComponentClass(mult_op_s_p.class); // pipelined multiply
+    }
+
+    if(delayName.length() != 0){
+       jjtThis.setNameDelay(delayName.toString());
+    }
+  }
+  | 
+  //"*@" amount=ConstOrInt() {jjtThis.setStepDelay(amount);} {jjtThis.setComponentClass(mult_op_s_p.class);} | // pipelined multiply 
   <SLASH>    {jjtThis.setComponentClass(div_op_s.class);} |
   <REM>      {jjtThis.setComponentClass(mod_op_s.class);}
   ) UnaryExpression() )*
@@ -1126,8 +1267,8 @@ void PreDecrementExpression() : {}
 void UnaryExpressionNotPlusMinus() : {}
 {
   ( 
-  "~" {jjtThis.setComponentClass(not_op.class);} | 
-  "!" {jjtThis.setComponentClass(not_op.class);} 
+  <TILDE> {jjtThis.setComponentClass(not_op.class);} | 
+  <BANG> {jjtThis.setComponentClass(not_op.class);} 
   ) UnaryExpression()
 |
   PostfixExpression()
@@ -1174,11 +1315,40 @@ int Constant() #void :{
    }}
 
 
+
+Integer Delay(StringBuilder delayName) #void: {
+  Token t = null;
+  Integer step = null;
+}
+{
+  
+  (    step=Int()
+    |
+    (      t=<IDENTIFIER>
+      {
+        if (allConsts.containsKey(t.image)) {
+          step = allConsts.get(t.image);
+          delayName.append(t.image);
+        }
+        else {
+            ErrorToken("Const " + t.image + " NOT found!", t);
+        } 
+      }
+    )
+  )   
+   
+    {
+      //parent.setStepDelay(step);
+      return step;
+    } 
+}
+
+
 int ConstOrInt() #void : {
 	int value = 0;
 }
 {
-   (value=Int()|value=Constant())
+   (value=Int()|value=Constant()|<LPAREN> value=ConstExpression() <RPAREN>)
    {
      return value;   } 
 }

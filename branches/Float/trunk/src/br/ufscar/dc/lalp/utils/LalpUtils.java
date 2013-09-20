@@ -38,14 +38,14 @@ public class LalpUtils {
 	}
 	*/
 
-	private static Long toFixed(String s, int bits_before, int bits_after) {
+	public static Long toFixed(String s, int bits_before, int bits_after) {
 		long fx = (long)(Float.parseFloat(s)* Math.pow(2, bits_after));
 
 		fx = fx & ((long) Math.pow(2, bits_before + bits_after) - 1);
 		return fx;
 	}
 
-	private static Long toLong(String s) {
+	public static Long toLong(String s) {
 
 		if (s.length() > 1 && s.charAt(1) == 'x') {
 			return Long.parseLong(s.substring(2), 16);
@@ -55,7 +55,7 @@ public class LalpUtils {
         
 	}
 
-	private static Long floatToLong(String s) {
+	public static Long floatToLong(String s) {
 		int raw = Float.floatToIntBits((Float.parseFloat(s)));
 		return new Long(raw);
 	}
@@ -65,6 +65,20 @@ public class LalpUtils {
 
 		//FIXME: Incluir outros tipos e tamanhos
 		if(t.getType() == VarType.Type.FLOAT)
+			return floatToLong(s);
+		//FIXME: Diferenciar SFIXED de UFIXED
+		if((t.getType() == VarType.Type.UFIXED)||(t.getType() == VarType.Type.SFIXED))
+			return toFixed(s, t.getInt_width(), t.getFrac_width());
+		else
+			return toLong(s);
+		
+	}
+	
+	public static Long parseValue(String s){
+
+		//FIXME: Incluir outros tipos e tamanhos
+		//FIXME: Diferenciar SFIXED de UFIXED
+		if(s.contains("."))
 			return floatToLong(s);
 		else
 			return toLong(s);

@@ -21,70 +21,49 @@ import br.ufscar.dc.lalp.core.Port;
 import br.ufscar.dc.lalp.core.PortType;
 
 /**
- * registered sub with signed operands
+ * The MULT operation for Floating-Point (32-Bits IEEE 754).
  * 
- * @author <a href="http://menotti.pro.br/">Ricardo Menotti</a>
-
-
- * @author <a href="http://www.dc.ufscar.br/">DC/UFSCar</a>
- * @version September, 2007
+ * @author </a>
+ * @author </a>
+ * @version 
  */
-public class sub_reg_op_s extends IComponent {
-	private int initialValue = 0;
-	public sub_reg_op_s() {
+public class mult_op_fx_s extends IComponent {
+	public mult_op_fx_s() {
 		this(Parameters.getDefaultDataWidth());
 	}
-	public sub_reg_op_s(int width) {
+	public mult_op_fx_s(int width) {
 		super(width);
+		setSync(false);
 		Generic generic;
-		super.addPort(new Port("clk", PortType.INPUT));
-		super.addPort(new Port("reset", PortType.INPUT));
-		super.addPort(new Port("we", PortType.INPUT));
-		super.addPort(new Port("Sel1", PortType.INPUT, 1), true);
-		generic = new Generic("w_in1", "integer", 16);
+		generic = new Generic("w_in1", "integer", 32);
 		super.addGeneric(generic);
 		super.addPort(new Port("I0", PortType.INPUT, width, generic));
-		generic = new Generic("w_in2", "integer", 16);
+		generic = new Generic("w_in2", "integer", 32);
 		super.addGeneric(generic);
 		super.addPort(new Port("I1", PortType.INPUT, width, generic));
 		generic = new Generic("w_out", "integer", 32);
 		super.addGeneric(generic);
 		super.addPort(new Port("O0", PortType.OUTPUT, width, generic), true);
-		generic = new Generic("initial", "integer", 0);
-		super.addGeneric(generic);
 	}
-	public sub_reg_op_s(String name) {
+	public mult_op_fx_s(String name) {
 		this();
 		super.name = name;
 	}
-	public sub_reg_op_s(String name, int width) {
+	public mult_op_fx_s(String name, int width) {
 		this(width);
 		super.name = name;
 	}
-	
-	public sub_reg_op_s(long width) {
-		this((int)width);
-	}
-	
-	public sub_reg_op_s(String name, long width) {
-		this(width);
-		super.name = name;
-	}
-	
 	public String getVHDLDeclaration() {
 		String d = new String();
-		d += "component sub_reg_op_s\n";  
+		d += "component mult_op_fx_s\n";  
 		d += "generic (\n";
-		d += "	w_in1	: integer := 16;\n";
-		d += "	w_in2	: integer := 16;\n";
+		d += "	w_in1	: integer := 32;\n";
+		d += "	w_in2	: integer := 32;\n";
 		d += "	w_out	: integer := 32;\n";
-		d += "	initial	: integer := 0\n";
+        d += "  w_int   : integer := 16;\n" ;
+        d += "  w_dec   : integer := 16\n";
 		d += ");\n";
 		d += "port (\n";
-		d += "	clk	: in	std_logic;\n";
-		d += "	reset	: in	std_logic;\n";
-		d += "	we	: in	std_logic := '1';\n";
-		d += "	Sel1	: in	std_logic_vector(0 downto 0) := \"1\";\n";
 		d += "	I0	: in	std_logic_vector(w_in1-1 downto 0);\n";
 		d += "	I1	: in	std_logic_vector(w_in2-1 downto 0);\n";
 		d += "	O0	: out	std_logic_vector(w_out-1 downto 0)\n";
@@ -93,14 +72,7 @@ public class sub_reg_op_s extends IComponent {
 		d += "\n";
 		return d;
 	}
-	public void setInitialValue(int initialValue) {
-		this.initialValue = initialValue;
-		getGeneric("initial").setValue(initialValue);
+	public String getDotName() {
+		return super.name + ":*";
 	}
-	public int getInitialValue() {
-		return this.initialValue;
-	}
-//	public String getDotName() {
-//		return "-";
-//	}
 }

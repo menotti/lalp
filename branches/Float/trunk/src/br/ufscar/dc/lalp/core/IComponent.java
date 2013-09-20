@@ -116,10 +116,12 @@ public abstract class IComponent extends Component implements ComponentInterface
 		}
 		inst.append("\tport map (\n");
 		f = false;
+		
 		for (Port p : getPortsByName().values()) {
 			Signal s = p.getSignal();
+			
 			// port have an associated signal
-			if (s != null) {  
+			if (s != null) {
 				Signal alias = s.getSignal();
 				while (alias != null) {
 					s = alias;
