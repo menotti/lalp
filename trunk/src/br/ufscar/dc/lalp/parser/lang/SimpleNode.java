@@ -22,6 +22,7 @@ public class SimpleNode implements Node {
 	protected Integer arraySize = null; // Variable
 	protected Integer width = null; // Typedef/Pin/Variable
 	protected Integer stepDelay = null; // Counter/Delay
+	protected String nameDelay = null; // Counter/Delay
 	protected Integer endStepDelay = null;
 	@SuppressWarnings("rawtypes")
 	protected Class componentClass = null; // Pin/Expression(s)/LHS
@@ -151,6 +152,12 @@ public class SimpleNode implements Node {
 		if (getStepDelay() != null) {
 			sb.append("@" + getStepDelay());
 		}
+		
+		if (getNameDelay() != null) {
+			sb.append("<" + getNameDelay()+">");
+		}
+		
+		
 		
 		if(getVarType()!=null){ // FIXME: Debug
 			sb.append(getVarType());			
@@ -302,6 +309,14 @@ public class SimpleNode implements Node {
 		this.stepDelay = delay;
 	}
 
+	public String getNameDelay() {
+		return nameDelay;
+	}
+
+	public void setNameDelay(String nameDelay) {
+		this.nameDelay = nameDelay;
+	}
+
 	@SuppressWarnings("rawtypes")
 	public Class getComponentClass() {
 		return componentClass;
@@ -412,9 +427,10 @@ public class SimpleNode implements Node {
 
 	public void updateOperators() {
 		Integer n_children = jjtGetNumChildren();
-
+          
 		if (getComponentClass() != null) {
 
+			//TODO: Verificar se é preciso atualizar os operadores relacionais e de atribuição
 			if (this.floatNumber) {
 				System.out.println("\nFound a floating-point operation.");
 				System.out.println("Replacing " + getComponentClass());
@@ -424,9 +440,11 @@ public class SimpleNode implements Node {
 				} else if (getComponentClass() == sub_op_s.class) {
 					this.setComponentClass(sub_op_fl.class);
 				} else if (getComponentClass() == mult_op_s.class) {
-					this.setComponentClass(mult_op_fl.class);
+					  this.setComponentClass(mult_op_fl.class);
 				} else if (getComponentClass() == div_op_s.class) {
 					this.setComponentClass(div_op_fl.class);
+				} else if (getComponentClass() == mult_op_s_p.class) {
+					this.setComponentClass(mult_op_p_fl.class);
 				}
 			}
 		}
@@ -641,14 +659,28 @@ public class SimpleNode implements Node {
 		if (cFirst == null) {
 			cFirst = createConstant(getConnections().getFirst());
 		}
-		connectComponents(cFirst, cFirstPort, cTo, "I0");
+		//connectComponents(cFirst, cFirstPort, cTo, "I0"); //original line
+		
+		//FIXME: P.O.G detected!!!
+		/*if(Parameters.lalpFPComponents)
+			connectComponents(cFirst, cFirstPort, cTo, "\\I0\\");
+		else*/
+		    connectComponents(cFirst, cFirstPort, cTo, "I0");
+		
+		
 		if (getConnections().getSecond() != null) {
 			Component cSecond = getConnections().getSecond().getComponent();
 			String cSecondPort = getConnections().getSecond().getPort();
 			if (cSecond == null) {
 				cSecond = createConstant(getConnections().getSecond());
 			}
-			connectComponents(cSecond, cSecondPort, cTo, "I1");
+			//connectComponents(cSecond, cSecondPort, cTo, "I1"); //original line
+			//FIXME: P.O.G detected!!!
+			/*if(Parameters.lalpFPComponents)
+				connectComponents(cFirst, cSecondPort, cTo, "\\I1\\");//FIXME: Corrigir conexão de portas I0 e I1 em components lalp
+			else*/
+			    connectComponents(cSecond, cSecondPort, cTo, "I1");
+			
 		}
 		if (getConnections().getThird() != null) {
 			Component cCond = getConnections().getThird().getComponent();
@@ -790,14 +822,20 @@ public class SimpleNode implements Node {
 	private void connectComponents(Component cFrom, String cFromPort,
 			Component cTo, String cToPort) {
 		try {
-			if (cFromPort != null) {
-				if (cToPort != null) {
+			
+			if (cFromPort != null)
+			{
+				if (cToPort != null)
+				{
 					cFrom.connectComponent(cFromPort, cTo, cToPort);
 				} else {
 					cFrom.connectComponent(cFromPort, cTo);
 				}
-			} else {
-				if (cToPort != null) {
+			}
+			else
+			{
+				if (cToPort != null)
+				{
 					cFrom.connectComponent(cTo, cToPort);
 				} else {
 					cFrom.connectComponent(cTo);
@@ -805,7 +843,7 @@ public class SimpleNode implements Node {
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			// System.exit(1);
+			//System.exit(1);
 		}
 	}
 

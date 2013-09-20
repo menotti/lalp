@@ -59,7 +59,9 @@ public class div_op_fl extends IComponent {
 		d += "generic (\n";
 		d += "	w_in1	: integer := 32;\n";
 		d += "	w_in2	: integer := 32;\n";
-		d += "	w_out	: integer := 32\n";
+		d += "	w_out	: integer := 32;\n";
+        d += "  w_exp   : integer :=  8;\n" ;
+        d += "  w_man   : integer := 23\n";
 		d += ");\n";
 		d += "port (\n";
 		d += "	I0	: in	std_logic_vector(w_in1-1 downto 0);\n";

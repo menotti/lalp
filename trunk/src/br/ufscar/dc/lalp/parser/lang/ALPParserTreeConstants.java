@@ -10,8 +10,8 @@ public interface ALPParserTreeConstants
   public int JJTTESTBENCHENTRIES = 4;
   public int JJTNAME = 5;
   public int JJTCONST = 6;
-  public int JJTTYPEDEF = 7;
-  public int JJTVOID = 8;
+  public int JJTVOID = 7;
+  public int JJTTYPEDEF = 8;
   public int JJTPIN = 9;
   public int JJTVARIABLE = 10;
   public int JJTRESULT = 11;
@@ -53,8 +53,8 @@ public interface ALPParserTreeConstants
     "TestbenchEntries",
     "Name",
     "Const",
-    "Typedef",
     "void",
+    "Typedef",
     "Pin",
     "Variable",
     "Result",
@@ -88,4 +88,4 @@ public interface ALPParserTreeConstants
     "Literal",
   };
 }
-/* JavaCC - OriginalChecksum=22916a4c08d44ba0cf1b32c39f671ed5 (do not edit this line) */
+/* JavaCC - OriginalChecksum=baa37d36ddb55f3a203968a5ef386a9f (do not edit this line) */

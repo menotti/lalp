@@ -40,7 +40,7 @@ public class add_reg_op_fl extends IComponent {
 		super.addPort(new Port("clk", PortType.INPUT));
 		super.addPort(new Port("reset", PortType.INPUT));
 		super.addPort(new Port("we", PortType.INPUT));
-		super.addPort(new Port("Sel1", PortType.INPUT, 1), true);
+		//super.addPort(new Port("Sel1", PortType.INPUT, 1), true);
 		generic = new Generic("w_in1", "integer", 16);
 		super.addGeneric(generic);
 		super.addPort(new Port("I0", PortType.INPUT, width, generic));
@@ -81,7 +81,7 @@ public class add_reg_op_fl extends IComponent {
 		d += "	clk	: in	std_logic;\n";
 		d += "	reset	: in	std_logic;\n";
 		d += "	we	: in	std_logic := '1';\n";
-		d += "	Sel1	: in	std_logic_vector(0 downto 0) := \"1\";\n";
+		//d += "	Sel1	: in	std_logic_vector(0 downto 0) := \"1\";\n";
 		d += "	I0	: in	std_logic_vector(w_in1-1 downto 0);\n";
 		d += "	I1	: in	std_logic_vector(w_in2-1 downto 0);\n";
 		d += "	O0	: out	std_logic_vector(w_out-1 downto 0)\n";

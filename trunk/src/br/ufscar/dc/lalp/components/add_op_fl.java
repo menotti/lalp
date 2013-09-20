@@ -38,12 +38,23 @@ public class add_op_fl extends IComponent {
 		generic = new Generic("w_in1", "integer", 32);
 		super.addGeneric(generic);
 		super.addPort(new Port("I0", PortType.INPUT, width, generic));
+		
 		generic = new Generic("w_in2", "integer", 32);
 		super.addGeneric(generic);
 		super.addPort(new Port("I1", PortType.INPUT, width, generic));
+		
+		generic = new Generic("w_exp", "integer", 8); //FIXME: Corrigir generic port map
+		super.addGeneric(generic);
+		generic = new Generic("w_man", "integer", 23);
+		super.addGeneric(generic);
+		
+           
+		
 		generic = new Generic("w_out", "integer", 32);
 		super.addGeneric(generic);
 		super.addPort(new Port("O0", PortType.OUTPUT, width, generic), true);
+		
+		
 	}
 	public add_op_fl(String name) {
 		this();
@@ -59,7 +70,9 @@ public class add_op_fl extends IComponent {
 		d += "generic (\n";
 		d += "	w_in1	: integer := 32;\n";
 		d += "	w_in2	: integer := 32;\n";
-		d += "	w_out	: integer := 32\n";
+		d += "	w_out	: integer := 32;\n";
+        d += "  w_exp   : integer :=  8;\n" ;
+        d += "  w_man   : integer := 23\n";
 		d += ");\n";
 		d += "port (\n";
 		d += "	I0	: in	std_logic_vector(w_in1-1 downto 0);\n";

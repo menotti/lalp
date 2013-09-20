@@ -28,9 +28,9 @@ public class Configs {
 	//private static final String ZIP_PATH = "C:/Users/Tulio/workspace/.metadata/.plugins/org.eclipse.wst.server.core/tmp1/wtpwebapps/lalp/"; //tulio
 	
 	//caminho do server
-	private static final String SERVER_PATH= "http://projetos.ppgcc.dc.ufscar.br:9180/lalp/"; //server
+	//private static final String SERVER_PATH= "http://projetos.ppgcc.dc.ufscar.br:9180/lalp/"; //server
 	//private static final String SERVER_PATH= "http://lalp.dc.ufscar.br:8080/lalp/"; //server
-	//private static final String SERVER_PATH = "http://localhost:8080/lalp/"; //local
+	private static final String SERVER_PATH = "http://localhost/lalp/"; //local
 	
 	//caminho do Graphviz
 	public static final String DOT_COMMAND = "/usr/bin/dot"; //server

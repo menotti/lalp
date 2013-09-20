@@ -52,6 +52,7 @@ sobel(in bit init, out bit done, out int result) {
 	addr = ((i) + COLS) + COLS when i.step@5;
 	addr = (((i) + COLS) + COLS) + 1 when i.step@6;
 	addr = (((i) + COLS) + COLS) + 2 when i.step@7;
+
 	input.address = addr;
 	
 	i00 = input when i.step@2; 

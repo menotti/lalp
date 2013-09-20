@@ -3,8 +3,8 @@ package br.ufscar.dc.lalp.parser.lang;
 public class VarType {
 
 	public int bitwidth;   //numero total de bits
-	private int frac_width; //numero de bits da parte fracinaria
-	private int int_width;  //numero de bits da parte interica
+	public int frac_width; //numero de bits da parte fracinaria
+	public int int_width;  //numero de bits da parte interica
 	
     public enum Type{BIT, UNSIGNED, SIGNED, UFIXED, SFIXED, FLOAT};
     
@@ -12,6 +12,7 @@ public class VarType {
 	
 	VarType() {
 		super();
+		type = Type.UNSIGNED;
 		this.bitwidth = 32;
 		this.frac_width = 0;
 		this.int_width =0;

@@ -40,6 +40,7 @@ CREATE TABLE `userdata` (
 LOCK TABLES `userdata` WRITE;
 /*!40000 ALTER TABLE `userdata` DISABLE KEYS */;
 INSERT INTO `userdata` VALUES ('Tulio','Duarte','tuliojd@gmail.com','UFSCar','i dont know.'),('Ricardo','Menotti','menotti@gmail.com','Universidade Federal de São Carlos (UFSCar)','');
+INSERT INTO `userdata` VALUES ('Cristiano','Oliveira','cristianobac@gmail.com','Universidade de Sao Paulo (USP-ICMC)','');
 /*!40000 ALTER TABLE `userdata` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -66,6 +67,7 @@ LOCK TABLES `userrole` WRITE;
 /*!40000 ALTER TABLE `userrole` DISABLE KEYS */;
 INSERT INTO `userrole` VALUES ('tuliojd@gmail.com','use','true'),('menotti@gmail.com','use','true');
 INSERT INTO `userrole` VALUES ('tuliojd@gmail.com','admin','true'),('menotti@gmail.com','admin','true');
+INSERT INTO `userrole` VALUES ('cristianobac@gmail.com','use','true'),('cristianobac@gmail.com','admin','true');
 /*!40000 ALTER TABLE `userrole` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;

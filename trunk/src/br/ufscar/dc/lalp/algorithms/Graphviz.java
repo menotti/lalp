@@ -32,6 +32,7 @@ import br.ufscar.dc.lalp.components.delay_op;
 import br.ufscar.dc.lalp.core.Component;
 import br.ufscar.dc.lalp.core.Design;
 import br.ufscar.dc.lalp.core.IComponent;
+import br.ufscar.dc.lalp.core.Parameters;
 import br.ufscar.dc.lalp.core.Port;
 import br.ufscar.dc.lalp.core.PortType;
 import br.ufscar.dc.lalp.core.Signal;
@@ -217,9 +218,7 @@ public class Graphviz {
 	}
 	
 	public void generateHardwareVisualization(Design design, String path) {
-		System.out.print("\nGenerating Graphviz Hardware Representation...");
 		generateHardwareVisualization(design, path, null);
-		System.out.println("Ok!");
 	}
 	
 	   
@@ -243,6 +242,8 @@ public class Graphviz {
 			e.printStackTrace();
 		}		
 		System.out.println("Ok!");		
+		System.out.println("Hardware graph file: "+path + System.getProperty("file.separator") + fileName);
+		
 	}
 	////////////////
     
@@ -357,12 +358,11 @@ public class Graphviz {
 	}
 	
 	public void generateSoftwareVisualization(Design design, String path) {
-		System.out.print("\nGenerating Graphviz Software Representation...");
 		generateSoftwareVisualization(design, path, null);
-		System.out.println("Ok!");
 	}
 	
 	public void generateSoftwareVisualization(Design design, String path, Integer subgraph) {
+		System.out.print("Generating Graphviz Software Representation...");
 		if (subgraph == null)
 			fileName = design.getName() + "_sw.dot";
 		else
@@ -378,6 +378,8 @@ public class Graphviz {
 			System.out.println("Problem creating file!");
 			e.printStackTrace();
 		}		
+		System.out.println("Ok!");
+		System.out.println("Software graph file: "+path + System.getProperty("file.separator") + fileName);
 	}
 
 	public void generateSCCSubgraphs(Design design) {

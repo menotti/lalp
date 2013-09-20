@@ -61,9 +61,20 @@ public class sub_reg_op_fl extends IComponent {
 		this(width);
 		super.name = name;
 	}
+	
+	public sub_reg_op_fl(long width) {
+		this((int)width);
+	}
+	
+	public sub_reg_op_fl(String name, long width) {
+		this(width);
+		super.name = name;
+	}
+	
+	
 	public String getVHDLDeclaration() {
 		String d = new String();
-		d += "component sub_reg_op_s\n";  
+		d += "component sub_reg_op_fl\n";  
 		d += "generic (\n";
 		d += "	w_in1	: integer := 16;\n";
 		d += "	w_in2	: integer := 16;\n";
