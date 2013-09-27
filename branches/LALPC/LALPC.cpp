@@ -15,7 +15,7 @@ int main (int argc, char** argv)
     Core* core = new Core(project);
 //    core->imprimeAll();
     core->geraArquivosDotHW();
-//    //generateGraphOfAST(project,"DOT/AST");
+    generateGraphOfAST(project,"DOT/AST");
 //    //generatePDF(project);
 //    core->grafo();
 }

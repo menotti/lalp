@@ -15,8 +15,9 @@ using namespace std;
 block_ram::block_ram(SgNode* node, const string &aux) : Componente(node, aux) {
     this->setDelayValComp("2");
     this->tipo_comp = CompType::MEM;   
-    this->createAllPorts();
-    this->createAllGeneric();
+        
+    this->dataWidth     = 32;
+    this->addressWidth  = 8;
 }
 
 block_ram::~block_ram() {
@@ -49,6 +50,20 @@ string block_ram::geraDOTComp(){
 
 void block_ram::setQtdElementos(const string &qtd){
     this->qtd_ele_vet = qtd;
+    int index = FuncoesAux::StrToInt(qtd);
+    
+    double res = (log(index)/log(2));
+    if( (int)res < res){
+        this->addressWidth = (int)res+1;
+    }else{
+        this->addressWidth = (int)res;
+    }
+    this->createAllPorts();
+    this->createAllGeneric();
+}
+
+int block_ram::getAddressWidth(){
+    return this->addressWidth;
 }
 
 void block_ram::setTipo(const string &tipo){
@@ -60,15 +75,15 @@ void block_ram::setValor(const string &valor){
 }
 
 void block_ram::createAllGeneric(){
-    this->addGenericMap(new GenericMap("address_width", "integer", "11"));
-    this->addGenericMap(new GenericMap("data_width", "integer", "32"));
+    this->addGenericMap(new GenericMap("address_width", "integer", FuncoesAux::IntToStr(this->addressWidth)));
+    this->addGenericMap(new GenericMap("data_width", "integer", FuncoesAux::IntToStr(this->dataWidth)));
 }
 
 void block_ram::createAllPorts(){
-    this->addPort(new Port("data_in"    ,"in"   ,"std_logic_vector"     ,"32", "IN"));
-    this->addPort(new Port("address"    ,"in"   ,"std_logic_vector"     ,"11", ""));
-    this->addPort(new Port("we"         ,"in"   ,"std_logic"            ,"1", ""));
-    this->addPort(new Port("oe"         ,"in"   ,"std_logic"            ,"1", ""));
+    this->addPort(new Port("address"    ,"in"   ,"std_logic_vector"     ,FuncoesAux::IntToStr(this->addressWidth), ""));
     this->addPort(new Port("clk"        ,"in"   ,"std_logic"            ,"1", ""));
-    this->addPort(new Port("data_out"   ,"out"  ,"std_logic_vector"     ,"32", "OUT"));
+    this->addPort(new Port("data_in"    ,"in"   ,"std_logic_vector"     ,FuncoesAux::IntToStr(this->dataWidth), "IN"));
+    this->addPort(new Port("data_out"   ,"out"  ,"std_logic_vector"     ,FuncoesAux::IntToStr(this->dataWidth), "OUT"));
+    this->addPort(new Port("oe"         ,"in"   ,"std_logic"            ,"1", ""));
+    this->addPort(new Port("we"         ,"in"   ,"std_logic"            ,"1", "")); 
 }

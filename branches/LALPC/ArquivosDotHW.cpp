@@ -11,6 +11,8 @@
 #include "stdio.h"
 #include "CompType.h"
 #include "Aux/FuncoesAux.h"
+#include "Componente/counter.h"
+#include "Componente/block_ram.h"
 
 using namespace std;
 using std::string;
@@ -19,6 +21,8 @@ using std::stringstream;
 ArquivosDotHW::ArquivosDotHW(list<Componente*> listaComp, list<Ligacao*> listaLiga) {
     this->ListaComp = listaComp;
     this->ListaLiga = listaLiga;
+    this->organizaListaNome();
+    
 }
 
 void ArquivosDotHW::imprimeHWDOT() {
@@ -52,7 +56,7 @@ void ArquivosDotHW::imprimeHWDOT() {
 
 void ArquivosDotHW::imprimeVHDL() {
     GeraMemoryVHDL();
-    
+    map<string, Componente*> ::iterator m;
     list<Componente*>::iterator i;
     list<Ligacao*>::iterator    k;
 //    list<Port*>::iterator       p;
@@ -82,12 +86,18 @@ void ArquivosDotHW::imprimeVHDL() {
     //COMPONENTES
     //Carrega as estruturas necessarias
     this->ListaAux.clear();
-    for(i=this->ListaComp.begin(); i != this->ListaComp.end(); i++){
-        if ((*i)->tipo_comp == CompType::REG || (*i)->tipo_comp == CompType::MEM || (*i)->tipo_comp == CompType::AUX ) continue;
-        if(this->ExisteNaListaAux((*i)->getNomeCompVHDL()) == false){
-            fout << (*i)->getEstruturaComponenteVHDL();
-            this->ListaAux.push_back((*i)->getNomeCompVHDL());
-        }
+
+//    for(i=this->ListaComp.begin(); i != this->ListaComp.end(); i++){
+    for(m=this->CompMap.begin(); m != this->CompMap.end(); m++){
+//        cout<< "1 - " <<  (*m).first << " -- " << (*m).second->getName() <<endl;
+//        if ((*m).second->tipo_comp == CompType::REG || (*m).second->tipo_comp == CompType::MEM || (*m).second->tipo_comp == CompType::AUX ) continue;
+//        if ( (*m).second->tipo_comp == CompType::AUX ) continue;
+//        cout<< "2 - " <<  (*m).first << " -- " << (*m).second->getName() <<endl;
+//        if(this->ExisteNaListaAux((*m).first) == false){
+//            cout<< "3 - " <<  (*m).first << " -- " << (*m).second->getName() <<endl;
+            fout << (*m).second->getEstruturaComponenteVHDL();
+            this->ListaAux.push_back((*m).first);
+//        }
         
     }
     
@@ -149,8 +159,16 @@ void ArquivosDotHW::GeraMemoryVHDL() {
     
     for(i=this->ListaComp.begin(); i != this->ListaComp.end(); i++){
         if((*i)->tipo_comp != CompType::MEM) continue;
-    
+        block_ram* mem = (block_ram*)(*i); 
         if( ((*i)->getEInicializado() == true) && ((*i)->getWE() == false) ){
+            int dataSize = mem->getWidth();
+            int memoryWords =  (int) pow(mem->getAddressWidth(),2);
+            
+            
+            cout<< "ADDRES WIDTH: " << mem->getAddressWidth() <<endl;
+            cout<< "DATA SIZE: " << dataSize <<endl;
+            cout<< "memoryWords: " << memoryWords <<endl;
+            
 //            this->ListaAux.push_back((*i)->getName());
             fout << "library IEEE; \n";
             fout << "use IEEE.std_logic_1164.all; \n";
@@ -184,18 +202,49 @@ void ArquivosDotHW::GeraMemoryVHDL() {
     //        cout<< "-----------------------------------"<< endl;
             const vector<string> values = FuncoesAux::split((*i)->valor, "|");
             string valPos = "";
-            for (int c = values.size()-1; c >=0 ; c--){
-                string posVec = boost::lexical_cast<std::string>(c);
-                valPos = this->LPad(this->ConvertDecToBin(values[c]),32);
-                if(c > 0){
-                    //fout << "(\""+valPos+"\"),   --"+posVec+"         \n";
-                    fout << "(\""+valPos+"\"),   --"+posVec+"         "+string(values[c].c_str())+"\n";
-                    //cout << "(\""<<valPos<<"\"),   --"<<c<<"         "<<values[c]<<endl;
+            string posVec;
+            for (int c = memoryWords-1; c >= 0; c--){
+                posVec = boost::lexical_cast<std::string>(c);
+                int value;
+                string bin;
+                
+                if(c < values.size()){
+//                    value = this->LPad(this->ConvertDecToBin(values[c]),dataSize);
+                    value = FuncoesAux::StrToInt(string(values[c].c_str()));
                 }else{
-                    fout << "(\""+valPos+"\"));  --"+posVec+"         "+string(values[c].c_str())+"\n";
-                    //cout << "(\""<<valPos<<"\"),   --"<<c<<"         "<<values[c]<<endl;
+                    value = 0;
                 }
+                
+                bin = this->LPad(this->ConvertDecToBin(FuncoesAux::IntToStr(value)),dataSize);
+                
+                valPos += "\t (\""+bin+"\")";
+                if (c == 0){
+                    valPos += ");";
+                }else{
+                    valPos += ",";
+                }
+                
+                valPos += "\t -- "+posVec+"\t"+FuncoesAux::IntToStr(value)+"\n";
+                
             }
+            fout << valPos << endl;
+            
+//            for (int c = values.size()-1; c >=0 ; c--){
+//                string posVec = boost::lexical_cast<std::string>(c);
+//                valPos = this->LPad(this->ConvertDecToBin(values[c]),32);
+//                if((values.size()-1) == c){
+//                    string size1 = FuncoesAux::IntToStr(values.size());
+//                    fout << "(\"00000000000000000000000000000000\"),   --"+size1+"         0\n";
+//                }
+//                if(c > 0){
+//                    //fout << "(\""+valPos+"\"),   --"+posVec+"         \n";
+//                    fout << "(\""+valPos+"\"),   --"+posVec+"         "+string(values[c].c_str())+"\n";
+//                    //cout << "(\""<<valPos<<"\"),   --"<<c<<"         "<<values[c]<<endl;
+//                }else{
+//                    fout << "(\""+valPos+"\"));  --"+posVec+"         "+string(values[c].c_str())+"\n";
+//                    //cout << "(\""<<valPos<<"\"),   --"<<c<<"         "<<values[c]<<endl;
+//                }
+//            }
 
             fout << "\nbegin \n";
             fout << "       process (clk) \n";
@@ -214,7 +263,6 @@ void ArquivosDotHW::GeraMemoryVHDL() {
         }
     }
 }
-
 
 string ArquivosDotHW::ConvertDecToBin(const string &val){
     int dec = FuncoesAux::StrToInt(val);
@@ -239,6 +287,28 @@ bool ArquivosDotHW::ExisteNaListaAux(const string &val){
         }
     }
     return existe;
+}
+
+
+void ArquivosDotHW::organizaListaNome(){
+    list<Componente*>::iterator i;
+//    cout<<"#####################################"<<endl;
+    for(i=this->ListaComp.begin(); i != this->ListaComp.end(); i++){
+        if ((*i)->tipo_comp == CompType::REG || (*i)->tipo_comp == CompType::MEM || (*i)->tipo_comp == CompType::AUX ) continue;
+        
+//        cout<< (*i)->getNomeCompVHDL() << " -- " << (*i)->getName() << endl;
+        this->CompMap.insert(make_pair( (*i)->getNomeCompVHDL(), (*i)));
+    }
+    
+//    map<string, Componente*> ::iterator m;
+//    cout<<"#####################################"<<endl;
+//    cout<< "LISTA: " << this->ListaComp.size() <<endl;
+//    cout<< "MAPA:  " << this->CompMap.size() <<endl;
+//    cout<<"MAP"<<endl;
+//    for(m=this->CompMap.begin(); m != this->CompMap.end(); m++){
+//        cout<< (*m).first << " -- " << (*m).second->getName() <<endl;
+//    }
+//    cout<<"#####################################"<<endl;
 }
 
 string ArquivosDotHW::LPad(const string &val, int size){

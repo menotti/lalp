@@ -28,9 +28,9 @@ void delay_op::createAllGeneric(){
 
 void delay_op::createAllPorts(){
     this->addPort(new Port("a"          ,"in"   ,"std_logic_vector"     ,"0", "IN"));
+    this->addPort(new Port("a_delayed"  ,"out"  ,"std_logic_vector"     ,"0", "OUT"));
     this->addPort(new Port("clk"        ,"in"   ,"std_logic_vector"     ,"0", ""));
     this->addPort(new Port("reset"      ,"in"   ,"std_logic"            ,"0", ""));
-    this->addPort(new Port("a_delayed"  ,"out"  ,"std_logic_vector"     ,"0", "OUT"));
 }
 
 string delay_op::getEstruturaComponenteVHDL(){

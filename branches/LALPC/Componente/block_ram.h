@@ -24,9 +24,12 @@ public:
     void        setQtdElementos(const string &qtd);
     void        setTipo(const string &tipo);
     void        setValor(const string &valor);
+    int         getAddressWidth();
+    
 private:
     string      qtd_ele_vet;
     string      tipo_var;
+    int         addressWidth;
     
 };
 

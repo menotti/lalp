@@ -13,6 +13,7 @@
 #include "Core.h"
 #include "Componente/Componente.h"
 #include "Componente/op_sub_s.h"
+#include "Componente/op_mult_s.h"
 #include "Componente/op_add_s.h"
 #include "Componente/op_simple.h"
 #include "Componente/counter.h"
@@ -290,10 +291,10 @@ void Core::analisaExp(SgNode *nodoAtual, SgNode* pai, bool debug,  const string&
      *
      */
     // <editor-fold defaultstate="collapsed" desc="ATRIBUICAO">
-    SgAssignOp* expStmt = isSgAssignOp(nodoAtual);
-    if (expStmt != NULL) {
-        SgNode* filhoEsq = isSgNode(expStmt->get_lhs_operand_i());
-        SgNode* filhoDir = isSgNode(expStmt->get_rhs_operand_i());
+    SgAssignOp* sgAssignOp = isSgAssignOp(nodoAtual);
+    if (sgAssignOp != NULL) {
+        SgNode* filhoEsq = isSgNode(sgAssignOp->get_lhs_operand_i());
+        SgNode* filhoDir = isSgNode(sgAssignOp->get_rhs_operand_i());
 
         if (filhoEsq != NULL && filhoDir != NULL) {
             // <editor-fold defaultstate="collapsed" desc="DEBUG">
@@ -315,7 +316,18 @@ void Core::analisaExp(SgNode *nodoAtual, SgNode* pai, bool debug,  const string&
             analisaExp(filhoDir, filhoEsq, debug, aux);
         }
     }// </editor-fold>
-
+    
+    
+    /*
+     * Quando identificar MAIS ATRIBUICAO
+     *
+     */
+    // <editor-fold defaultstate="collapsed" desc="MAIS ATRIBUICAO">
+    SgPlusAssignOp* sgPlusAssignOp = isSgPlusAssignOp(nodoAtual);
+    if (sgPlusAssignOp != NULL) {
+        
+    }
+    // </editor-fold>
     
     /*
      * Quando identificar CAST_EXP
@@ -451,38 +463,39 @@ void Core::analisaExp(SgNode *nodoAtual, SgNode* pai, bool debug,  const string&
      * este nodo sempre chama rescursao pois o mesmo sempre se encontra no meio
      * da arvore.
      */
-    //     <editor-fold defaultstate="collapsed" desc="OP MULT">
-//    SgMultiplyOp* expMul = isSgMultiplyOp(nodoAtual);
-//    if (expMul != NULL) {
-//        SgNode* filhoEsq = isSgNode(expMul->get_lhs_operand_i());
-//        SgNode* filhoDir = isSgNode(expMul->get_rhs_operand_i());
-//        if (filhoEsq != NULL && filhoDir != NULL) {
-//            // <editor-fold defaultstate="collapsed" desc="DEBUG">
-//            if (debug) {
-//                cout << "-------------------------" << endl;
-//                cout << "      CHAMOU RECURSAO    " << endl;
-//                cout << "-------------------------" << endl;
-//                cout << " ( " << filhoEsq->class_name() << " , " << nodoAtual->class_name() << " ) " << endl;
-//                cout << "-------------------------" << endl;
-//
-//            }
-//            if (debug) {
-//                cout << "-------------------------" << endl;
-//                cout << "      CHAMOU RECURSAO    " << endl;
-//                cout << "-------------------------" << endl;
-//                cout << " ( " << filhoDir->class_name() << " , " << nodoAtual->class_name() << " ) " << endl;
-//                cout << "-------------------------" << endl;
-//            }// </editor-fold>
-//
-//            Componente* comp = new Componente(expMul);
-//            if(pai) comp->setPai(pai);
-//            comp->setNumIdComp(FuncoesAux::IntToStr(this->ListaComp.size()));
-////            this->ListaComp.push_back(comp);
-//            this->addComponent(comp);
-//            analisaExp(filhoEsq, nodoAtual, debug, aux);
-//            analisaExp(filhoDir, nodoAtual, debug, aux);
-//        }
-//    }
+//         <editor-fold defaultstate="collapsed" desc="OP MULT">
+    SgMultiplyOp* expMul = isSgMultiplyOp(nodoAtual);
+    if (expMul != NULL) {
+        SgNode* filhoEsq = isSgNode(expMul->get_lhs_operand_i());
+        SgNode* filhoDir = isSgNode(expMul->get_rhs_operand_i());
+        if (filhoEsq != NULL && filhoDir != NULL) {
+            // <editor-fold defaultstate="collapsed" desc="DEBUG">
+            if (debug) {
+                cout << "-------------------------" << endl;
+                cout << "      CHAMOU RECURSAO    " << endl;
+                cout << "-------------------------" << endl;
+                cout << " ( " << filhoEsq->class_name() << " , " << nodoAtual->class_name() << " ) " << endl;
+                cout << "-------------------------" << endl;
+
+            }
+            if (debug) {
+                cout << "-------------------------" << endl;
+                cout << "      CHAMOU RECURSAO    " << endl;
+                cout << "-------------------------" << endl;
+                cout << " ( " << filhoDir->class_name() << " , " << nodoAtual->class_name() << " ) " << endl;
+                cout << "-------------------------" << endl;
+            }// </editor-fold>
+
+            op_mult_s* comp = new op_mult_s(expMul);
+            if(pai) comp->setPai(pai);
+            comp->setNumIdComp(FuncoesAux::IntToStr(this->ListaComp.size()));
+            comp->setNumLinha(nodoAtual->get_file_info()->get_line()); 
+//            this->ListaComp.push_back(comp);
+            this->addComponent(comp);
+            analisaExp(filhoEsq, nodoAtual, debug, aux);
+            analisaExp(filhoDir, nodoAtual, debug, aux);
+        }
+    }
     // </editor-fold>
 
     
@@ -604,7 +617,6 @@ void Core::FinalizaComponentes(){
             for (j = this->ListaComp.begin(); j != this->ListaComp.end(); j++) {
                 if ((*j)->tipo_comp == CompType::REG || (*j)->tipo_comp == CompType::MEM) {
                     if ((*i)->getName() == (*j)->getName()) {
-//                        (*i)->setEInicializado((*j)->getEInicializado());
                         (*i)->setComponenteRef((*j));
                         (*i)->updateCompRef();                        
                     }

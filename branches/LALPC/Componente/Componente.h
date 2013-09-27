@@ -37,7 +37,7 @@ class Componente {
         SgNode*         getPai();
         bool            writeEnable;
         void            setNomeCompVHDL(const string &nome);
-        virtual string  getNomeCompVHDL();
+        string          getNomeCompVHDL();
         virtual bool    getWE();
         virtual void    setWE(bool we);
         void            setEInicializado(bool val);
@@ -84,7 +84,9 @@ class Componente {
         string          delayVal;
         string          nome;
         list<Ligacao*>  ligacoes;
-        
+        int             addressWidth;
+        int             dataWidth;
+        int             getWidth();
         int             getALAP();
         int             getASAP();
         void            setALAP(int val);

@@ -18,12 +18,14 @@ FOLDER_AUX  = Aux
 FOLDER_COMP = Componente
 
 #funcoes AUX
-AUX	    = $(FOLDER_AUX)/FuncoesAux.cpp
-COMPONENTES = $(FOLDER_COMP)/Componente.cpp $(FOLDER_COMP)/Port.cpp $(FOLDER_COMP)/GenericMap.cpp $(FOLDER_COMP)/comp_aux.cpp $(FOLDER_COMP)/op_simple.cpp $(FOLDER_COMP)/op_add_s.cpp $(FOLDER_COMP)/op_sub_s.cpp $(FOLDER_COMP)/counter.cpp $(FOLDER_COMP)/delay_op.cpp $(FOLDER_COMP)/block_ram.cpp $(FOLDER_COMP)/reg_op.cpp $(FOLDER_COMP)/comp_ref.cpp
+AUX	    = $(FOLDER_AUX)/*.cpp
+#AUX	    = $(FOLDER_AUX)/FuncoesAux.cpp
+COMPONENTES = $(FOLDER_COMP)/*.cpp
 
 ## Your translator
 TRANSLATOR=LALPC
-TRANSLATOR_SOURCE=$(TRANSLATOR).cpp Core.cpp ProcessGraph.cpp Ligacao.cpp CompType.cpp ArquivosDotHW.cpp $(AUX) $(COMPONENTES)
+TRANSLATOR_SOURCE=*.cpp $(AUX) $(COMPONENTES)
+#TRANSLATOR_SOURCE=$(TRANSLATOR).cpp Core.cpp ProcessGraph.cpp Ligacao.cpp CompType.cpp ArquivosDotHW.cpp $(AUX) $(COMPONENTES)
 
 
 #-------------------------------------------------------------

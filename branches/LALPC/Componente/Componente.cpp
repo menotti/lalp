@@ -30,10 +30,15 @@ Componente::Componente(SgNode* node/*=NULL*/, const string &aux/*=""*/){
         this->writeEnable = true;
     }
     this->sync = true;
+    this->addressWidth  = 2;
+    this->dataWidth     = 32;
     setALAP(0);
     setASAP(0);
     setNumLinha(0);
     this->setDelayValComp("1");
+}
+int Componente::getWidth(){
+    return this->dataWidth;
 }
 
 bool Componente::getSync(){
