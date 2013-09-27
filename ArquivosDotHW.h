@@ -32,6 +32,8 @@ private:
     string              LPad(const string &val, int size);
     string              ConvertDecToBin(const string &val);
     bool                ExisteNaListaAux(const string &val);
+    void                organizaListaNome();
+    map<string, Componente*>    CompMap;
 };
 
 #endif	/* GERADOT_H */

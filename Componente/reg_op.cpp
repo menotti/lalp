@@ -25,16 +25,15 @@ reg_op::~reg_op() {
 
 void reg_op::createAllPorts(){
     this->addPort(new Port("clk"        ,"in"   ,"std_logic"            ,"0", ""));
-    this->addPort(new Port("reset"      ,"in"   ,"std_logic"            ,"0", ""));
-    this->addPort(new Port("we"         ,"in"   ,"std_logic"            ,"0", ""));
     this->addPort(new Port("I0"         ,"in"   ,"std_logic_vector"     ,"0", "IN"));
     this->addPort(new Port("O0"         ,"out"  ,"std_logic_vector"     ,"0", "OUT"));
-
+    this->addPort(new Port("reset"      ,"in"   ,"std_logic"            ,"0", ""));
+    this->addPort(new Port("we"         ,"in"   ,"std_logic"            ,"0", ""));
 }
 
 void reg_op::createAllGeneric(){
-    this->addGenericMap(new GenericMap("w_in", "integer", "16"));
     this->addGenericMap(new GenericMap("initial", "integer", "0"));
+    this->addGenericMap(new GenericMap("w_in", "integer", "16"));
 }
 
 string reg_op::getEstruturaComponenteVHDL(){
