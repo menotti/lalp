@@ -13,9 +13,12 @@ int main (int argc, char** argv)
     // Build the AST used by ROSE
     SgProject* project = frontend(argc, argv);
     Core* core = new Core(project);
+    
 //    core->imprimeAll();
+    
     core->geraArquivosDotHW();
     generateGraphOfAST(project,"DOT/AST");
+    
 //    //generatePDF(project);
 //    core->grafo();
 }

@@ -415,6 +415,9 @@ void Componente::updateCompRef(){
 //            cout<<"----------NOME: "<< vhdlComp<<endl;
             this->setNomeCompVHDL(vhdlComp);
         }
+        if(this->getTipoCompRef() == CompType::REG){
+            this->setNomeCompVHDL(this->getComponenteRef()->getNomeCompVHDL());
+        }
     }
 }
 

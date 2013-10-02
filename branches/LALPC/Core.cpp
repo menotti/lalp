@@ -20,6 +20,7 @@
 #include "Componente/block_ram.h"
 #include "Componente/comp_ref.h"
 #include "Componente/reg_op.h"
+#include "Componente/add_reg_op_s.h"
 #include "Componente/delay_op.h"
 #include "Componente/comp_aux.h"
 #include "Aux/FuncoesAux.h"
@@ -34,6 +35,7 @@ using std::stringstream;
 using std::string;
 
 Core::Core(SgProject* project) {
+    this->debug = true;
     this->project = project;
     this->maxSchedulingTime = 0;
     
@@ -140,7 +142,7 @@ void Core::identificaReturn() {
 
 void Core::identificaVariaveis() {
     cout<<"#--Ident Variavei:                            #"<<endl;
-
+    
     SgProject *project = this->project;
 
     // For each source file in the project
@@ -184,7 +186,9 @@ void Core::identificaVariaveis() {
                         this->addComponent(mem);
                         this->updateBlockRam(cur_var, mem);
                         mem->setNumLinha(cur_var->get_file_info()->get_line());   
-                        
+                        if(this->debug){
+                            cout<<" - Array: "<<mem->getName()<<endl;
+                        }
                     }else{
                         reg_op* reg = new reg_op(cur_var);
                         reg->setNumIdComp(FuncoesAux::IntToStr(this->ListaComp.size()));
@@ -192,6 +196,9 @@ void Core::identificaVariaveis() {
                         this->addComponent(reg);
                         this->updateRegister(cur_var, reg);
                         reg->setNumLinha(cur_var->get_file_info()->get_line()); 
+                        if(this->debug){
+                            cout<<" - Var: "<<reg->getName()<<endl;
+                        }
                     }
                 }         
             }
@@ -257,9 +264,12 @@ void Core::identificaFor() {
                     
                     for (Rose_STL_Container<SgNode*>::iterator ilb = varLoopBody.begin(); ilb != varLoopBody.end(); ilb++ ) 
                     {
-                        SgAssignOp* expStmt = isSgAssignOp(*ilb);
+                        cout<<"buscando expressões internas no for"<<endl;
+//                        SgAssignOp* expStmt = isSgAssignOp(*ilb);
+                        SgExprStatement* expStmt = isSgExprStatement(*ilb);
                         if(expStmt != NULL){
-                            analisaExp(expStmt, NULL, false, "");
+                            cout<<"ACHOU expressões internas no for"<<endl;
+                            analisaExp(expStmt, NULL, "");
                         }
                     }
                     cout<<"# Iniciando processo expressao FOR: OK        #"<<endl;
@@ -269,10 +279,10 @@ void Core::identificaFor() {
     }    
 }
 
-void Core::analisaExp(SgNode *nodoAtual, SgNode* pai, bool debug,  const string& aux) {
+void Core::analisaExp(SgNode *nodoAtual, SgNode* pai, const string& aux) {
 
     // <editor-fold defaultstate="collapsed" desc="DEBUG">
-    if (debug) {
+    if (this->debug) {
         cout << "" << endl;
         cout << "-------------------------" << endl;
         cout << "         CHEGOU          " << endl;
@@ -285,7 +295,14 @@ void Core::analisaExp(SgNode *nodoAtual, SgNode* pai, bool debug,  const string&
         cout << "AUX: " << aux << endl;
         cout << "-------------------------" << endl;
     }// </editor-fold>
-
+    
+    SgExprStatement* sgExpEst =  isSgExprStatement(nodoAtual);
+    if (sgExpEst != NULL) {
+        SgNode* proxNodo = isSgNode(sgExpEst->get_expression());
+        analisaExp(proxNodo, pai, aux);
+    }
+    
+    
     /*
      * Quando identificar ATRIBUICAO
      *
@@ -299,11 +316,11 @@ void Core::analisaExp(SgNode *nodoAtual, SgNode* pai, bool debug,  const string&
         if (filhoEsq != NULL && filhoDir != NULL) {
             // <editor-fold defaultstate="collapsed" desc="DEBUG">
 
-            if (debug) {
+            if (this->debug) {
                 cout << "-------------------------" << endl;
                 cout << "      CHAMOU RECURSAO    " << endl;
                 cout << "-------------------------" << endl;
-                cout << " ( " << filhoEsq->class_name() << " , " << filhoEsq->class_name() << " ) " << endl;
+                cout << " ( " << filhoEsq->class_name() << " , " << " ) " << endl;
                 cout << "-------------------------" << endl;
                 cout << "-------------------------" << endl;
                 cout << "      CHAMOU RECURSAO    " << endl;
@@ -312,8 +329,8 @@ void Core::analisaExp(SgNode *nodoAtual, SgNode* pai, bool debug,  const string&
                 cout << "-------------------------" << endl;
             }// </editor-fold>
             
-            analisaExp(filhoEsq, NULL, debug, "WE");
-            analisaExp(filhoDir, filhoEsq, debug, aux);
+            analisaExp(filhoEsq, nodoAtual,"WE");
+            analisaExp(filhoDir, filhoEsq, aux);
         }
     }// </editor-fold>
     
@@ -325,7 +342,28 @@ void Core::analisaExp(SgNode *nodoAtual, SgNode* pai, bool debug,  const string&
     // <editor-fold defaultstate="collapsed" desc="MAIS ATRIBUICAO">
     SgPlusAssignOp* sgPlusAssignOp = isSgPlusAssignOp(nodoAtual);
     if (sgPlusAssignOp != NULL) {
-        
+        SgNode* filhoEsq = isSgNode(sgPlusAssignOp->get_lhs_operand_i());
+        SgNode* filhoDir = isSgNode(sgPlusAssignOp->get_rhs_operand_i());
+
+        if (filhoEsq != NULL && filhoDir != NULL) {
+            // <editor-fold defaultstate="collapsed" desc="DEBUG">
+
+            if (this->debug) {
+                cout << "-------------------------" << endl;
+                cout << "      CHAMOU RECURSAO    " << endl;
+                cout << "-------------------------" << endl;
+                cout << " ( " << filhoEsq->class_name() << " , " <<  " ) " << endl;
+                cout << "-------------------------" << endl;
+                cout << "-------------------------" << endl;
+                cout << "      CHAMOU RECURSAO    " << endl;
+                cout << "-------------------------" << endl;
+                cout << " ( " << filhoDir->class_name() << " , " << filhoEsq->class_name() << " ) " << endl;
+                cout << "-------------------------" << endl;
+            }// </editor-fold>
+            
+            analisaExp(filhoEsq, nodoAtual, "WE");
+            analisaExp(filhoDir, filhoEsq, aux);
+        }
     }
     // </editor-fold>
     
@@ -337,7 +375,7 @@ void Core::analisaExp(SgNode *nodoAtual, SgNode* pai, bool debug,  const string&
     SgCastExp* castExp = isSgCastExp(nodoAtual);
     if (castExp != NULL) {
         SgNode* proxNodo = isSgNode(castExp->get_operand_i());
-        analisaExp(proxNodo, pai, debug, aux);
+        analisaExp(proxNodo, pai, aux);
     }// </editor-fold>
 
     
@@ -353,7 +391,7 @@ void Core::analisaExp(SgNode *nodoAtual, SgNode* pai, bool debug,  const string&
         SgNode* filhoDir = isSgNode(expAdd->get_rhs_operand_i());
         if (filhoEsq != NULL && filhoDir != NULL) {
             // <editor-fold defaultstate="collapsed" desc="DEBUG">
-            if (debug) {
+            if (this->debug) {
                 cout << "-------------------------" << endl;
                 cout << "      CHAMOU RECURSAO    " << endl;
                 cout << "-------------------------" << endl;
@@ -372,8 +410,8 @@ void Core::analisaExp(SgNode *nodoAtual, SgNode* pai, bool debug,  const string&
             comp->setNumLinha(nodoAtual->get_file_info()->get_line()); 
 //            this->ListaComp.push_back(comp);
             this->addComponent(comp);
-            analisaExp(filhoEsq, nodoAtual, debug, aux);
-            analisaExp(filhoDir, nodoAtual, debug, aux);
+            analisaExp(filhoEsq, nodoAtual, aux);
+            analisaExp(filhoDir, nodoAtual, aux);
         }
     }// </editor-fold>
 
@@ -390,16 +428,12 @@ void Core::analisaExp(SgNode *nodoAtual, SgNode* pai, bool debug,  const string&
         SgNode* filhoDir = isSgNode(expSub->get_rhs_operand_i());
         if (filhoEsq != NULL && filhoDir != NULL) {
             // <editor-fold defaultstate="collapsed" desc="DEBUG">
-            if (debug) {
+            if (this->debug) {
                 cout << "-------------------------" << endl;
                 cout << "      CHAMOU RECURSAO    " << endl;
                 cout << "-------------------------" << endl;
                 cout << " ( " << filhoEsq->class_name() << " , " << nodoAtual->class_name() << " ) " << endl;
                 cout << "-------------------------" << endl;
-
-            }
-
-            if (debug) {
                 cout << "-------------------------" << endl;
                 cout << "      CHAMOU RECURSAO    " << endl;
                 cout << "-------------------------" << endl;
@@ -412,8 +446,8 @@ void Core::analisaExp(SgNode *nodoAtual, SgNode* pai, bool debug,  const string&
             if(pai) comp->setPai(pai);
 //            this->ListaComp.push_back(comp);
             this->addComponent(comp);
-            analisaExp(filhoEsq, nodoAtual, debug, aux);
-            analisaExp(filhoDir, nodoAtual, debug, aux);
+            analisaExp(filhoEsq, nodoAtual, aux);
+            analisaExp(filhoDir, nodoAtual, aux);
         }
     }// </editor-fold>
     
@@ -463,22 +497,19 @@ void Core::analisaExp(SgNode *nodoAtual, SgNode* pai, bool debug,  const string&
      * este nodo sempre chama rescursao pois o mesmo sempre se encontra no meio
      * da arvore.
      */
-//         <editor-fold defaultstate="collapsed" desc="OP MULT">
+    //<editor-fold defaultstate="collapsed" desc="OP MULT">
     SgMultiplyOp* expMul = isSgMultiplyOp(nodoAtual);
     if (expMul != NULL) {
         SgNode* filhoEsq = isSgNode(expMul->get_lhs_operand_i());
         SgNode* filhoDir = isSgNode(expMul->get_rhs_operand_i());
         if (filhoEsq != NULL && filhoDir != NULL) {
             // <editor-fold defaultstate="collapsed" desc="DEBUG">
-            if (debug) {
+            if (this->debug) {
                 cout << "-------------------------" << endl;
                 cout << "      CHAMOU RECURSAO    " << endl;
                 cout << "-------------------------" << endl;
                 cout << " ( " << filhoEsq->class_name() << " , " << nodoAtual->class_name() << " ) " << endl;
                 cout << "-------------------------" << endl;
-
-            }
-            if (debug) {
                 cout << "-------------------------" << endl;
                 cout << "      CHAMOU RECURSAO    " << endl;
                 cout << "-------------------------" << endl;
@@ -492,8 +523,8 @@ void Core::analisaExp(SgNode *nodoAtual, SgNode* pai, bool debug,  const string&
             comp->setNumLinha(nodoAtual->get_file_info()->get_line()); 
 //            this->ListaComp.push_back(comp);
             this->addComponent(comp);
-            analisaExp(filhoEsq, nodoAtual, debug, aux);
-            analisaExp(filhoDir, nodoAtual, debug, aux);
+            analisaExp(filhoEsq, nodoAtual, aux);
+            analisaExp(filhoDir, nodoAtual, aux);
         }
     }
     // </editor-fold>
@@ -520,7 +551,7 @@ void Core::analisaExp(SgNode *nodoAtual, SgNode* pai, bool debug,  const string&
             arrName = fe->get_symbol()->get_name().getString();
             arrPos = fd->get_symbol()->get_name().getString();
 
-            if (debug) {
+            if (this->debug) {
                 cout << "-------------------------------" << endl;
                 cout << "      DENTRO DO COMPONENTE     " << endl;
                 cout << "-------------------------------" << endl;
@@ -556,19 +587,20 @@ void Core::analisaExp(SgNode *nodoAtual, SgNode* pai, bool debug,  const string&
     SgVarRefExp* decVar = isSgVarRefExp(nodoAtual);
     if (decVar != NULL) {
         string varNome = "";
-        string arrPos = "";
         varNome = decVar->get_symbol()->get_name().getString();
         comp_ref* comp = new comp_ref(decVar, aux);
         comp->setNumIdComp(FuncoesAux::IntToStr(this->ListaComp.size()));
-        comp->setNumLinha(decVar->get_file_info()->get_line()); 
+        comp->setNumLinha(decVar->get_file_info()->get_line());
         if(pai) comp->setPai(pai);
-//        this->ListaComp.push_back(comp);
         this->addComponent(comp);
         this->updateCompRef(decVar, comp);
         // <editor-fold defaultstate="collapsed" desc="DEBUG">
-        if (debug) {
+        if (this->debug){
             cout << "-------------------------------" << endl;
-            cout << "VAR: " << varNome << " ---> " << pai->class_name() << endl;
+            cout << "VAR: " << varNome << " ---> " << endl;
+            if (pai){
+                cout << "PAI: " << pai->class_name() << endl;
+            }
             cout << "-------------------------------" << endl;
         }// </editor-fold>   
     }// </editor-fold>
@@ -588,7 +620,7 @@ void Core::analisaExp(SgNode *nodoAtual, SgNode* pai, bool debug,  const string&
         this->updateRegister(valInt, reg);
         if(pai) reg->setPai(pai);
         // <editor-fold defaultstate="collapsed" desc="DEBUG">
-        if (debug) {
+        if (this->debug) {
             cout << "-------------------------------" << endl;
             cout << "INT VALOR:    " << valInt->get_valueString() << " ---> " << pai->class_name() << endl;
             cout << "-------------------------------" << endl;
@@ -618,7 +650,7 @@ void Core::FinalizaComponentes(){
                 if ((*j)->tipo_comp == CompType::REG || (*j)->tipo_comp == CompType::MEM) {
                     if ((*i)->getName() == (*j)->getName()) {
                         (*i)->setComponenteRef((*j));
-                        (*i)->updateCompRef();                        
+                        (*i)->updateCompRef();
                     }
                 }
             }
@@ -627,6 +659,10 @@ void Core::FinalizaComponentes(){
     cout<<"--Finalizando comp REF: OK"<<endl;
     // </editor-fold>
     
+    for(i = this->ListaComp.begin(); i != this->ListaComp.end(); i++){
+//        if ((*i)->tipo_comp ==  CompType::REG || (*i)->tipo_comp == CompType::MEM) continue;
+        cout<< (*i)->getName()<< "-- "<< (*i)->getNomeCompVHDL() << " -- " << (*i)->node <<endl;
+    }
     
     //Processo de Ligacao SIMPLES (cria a ligacao disponivel na arvore AST gerada pelo ROSE)
     // <editor-fold defaultstate="collapsed" desc="Cria ligacoes conforme ROSE AST">
@@ -637,7 +673,7 @@ void Core::FinalizaComponentes(){
             if ((*i)->node == (*j)->node) continue;
 
             if ((*i)->getPai() == (*j)->node) {
-                string str = FuncoesAux::IntToStr(qtdLig);
+                string str = FuncoesAux::IntToStr(this->ListaLiga.size());
                 
                 //CRIAR LIGACAO
                 Ligacao* lig = new Ligacao((*i), (*j), "s" + str);
@@ -645,8 +681,9 @@ void Core::FinalizaComponentes(){
                 lig->setPortOrigem((*i)->getPortDataInOut("OUT"));
                 lig->setWidth((*i)->getPortDataInOut("OUT")->getWidth());
                 lig->setTipo((*i)->getPortDataInOut("OUT")->getType());
-                
+  
                 //INFORMAR CADA PORTA QUEM E SUA LIGACAO
+                cout<< (*j)->getName() << " - " << (*j)->getNomeCompVHDL() <<endl;
                 (*j)->getPortDataInOut("IN")->setLigacao(lig->getNome());
                 (*i)->getPortDataInOut("OUT")->setLigacao(lig->getNome());
                 
@@ -656,8 +693,6 @@ void Core::FinalizaComponentes(){
                 
                 //ADICIONAR NA LISTA DE LIGACOES A NOVA LIGACAO
                 this->ListaLiga.push_back(lig);
-
-                qtdLig++;
             }
         }
     }
@@ -685,7 +720,7 @@ void Core::FinalizaComponentes(){
                     if (CompRef->getNomeVarIndex() == CompCounter->getVarControlCont()) {
                         
                         //CRIAR NOVA LIGACAO
-                        string str = FuncoesAux::IntToStr(qtdLig);
+                        string str = FuncoesAux::IntToStr(this->ListaLiga.size());
 //                        Ligacao* lig = new Ligacao((*i), (*j)->getComponenteRef(), "s" + str);
                         Ligacao* lig = new Ligacao((*i), (*j), "s" + str);
                         lig->setPortOrigem((*i)->getPortDataInOut("OUT"));
@@ -703,8 +738,33 @@ void Core::FinalizaComponentes(){
 
                         //ADICIONAR NA LISTA DE LIGACOES A NOVA LIGACAO
                         this->ListaLiga.push_back(lig);
-                        qtdLig++;
                
+                    }else{
+                        if( CompRef->getWE() ){
+                            cout<< "## INSERINDO LIG WE: " << CompRef->nome << "CTD: " << (*i)->getName()<< " " << (*i)->getNomeCompVHDL() <<  endl;
+                            
+                            //CRIAR NOVA LIGACAO
+                            Ligacao* lig = new Ligacao((*i), (*j), "s" + FuncoesAux::IntToStr(this->ListaLiga.size()));
+                            lig->setPortOrigem((*i)->getPortOther("step"));
+                            lig->setPortDestino((*j)->getPortOther("we"));
+                            lig->setWidth((*i)->getPortOther("step")->getWidth());
+                            lig->setTipo((*i)->getPortOther("step")->getType());
+
+                            //ADICIONAR LIGACAO NA PORTA                        
+                            lig->getPortDestino()->setLigacao(lig->getNome());
+                            lig->getPortOrigem()->setLigacao(lig->getNome());
+
+                            //ADICIONAR LIGACAO AOS COMPONENTES
+                            (*i)->addLigacao(lig);
+                            (*j)->addLigacao(lig);
+
+                            //ADICIONAR NA LISTA DE LIGACOES A NOVA LIGACAO
+                            this->ListaLiga.push_back(lig);
+                            
+                            cout<< "LIG NEW: "<< lig->getNome() << endl;
+                            cout<< "ORIG: "<< lig->getOrigem()->getName() << " - " << lig->getPortOrigem()->getName() << endl;
+                            cout<< "DEST: "<< lig->getDestino()->getName() << " - " << lig->getPortDestino()->getName() << endl;
+                        }
                     }
                 }
             }
@@ -865,6 +925,44 @@ void Core::updateCompRef(SgNode* node, comp_ref* comp){
             comp->setNomeVarRef(arrName);
             comp->setName(arrName);
             comp->setNomeVarIndex(arrPos);
+        }
+    }
+    if(isSgPlusAssignOp(comp->getPai())){
+        list<Componente*>::iterator i;
+//        cout<<"-----ACHOU: "<< comp->getName() <<endl;
+        for (i = this->ListaComp.begin(); i != this->ListaComp.end(); i++) {
+//            cout<< (*i)->getName()<< "-- "<< (*i)->getNomeCompVHDL() << " -- " << (*i)->node <<endl;
+            if ((*i)->tipo_comp !=  CompType::REG) continue;
+            if ((*i)->getName() == comp->getName()){
+//                cout<< "---" << (*i)->getName()<< " -- "<< (*i)->getNomeCompVHDL() << " -- " << (*i)->node <<endl;
+                add_reg_op_s* add_reg = new add_reg_op_s((*i)->node);
+                add_reg->setName((*i)->getName());
+                add_reg->setValor( (*i)->getGenericMapVal("initial", "VAL") );
+//                this->ListaComp.remove((*i));
+//                this->addComponent(add_reg);
+                (*i) = add_reg;
+                
+                string str = FuncoesAux::IntToStr(this->ListaLiga.size());
+                
+                //CRIAR LIGACAO
+                Ligacao* lig = new Ligacao(add_reg, add_reg, "s" + str);
+                lig->setPortDestino(add_reg->getPortOther("I0"));
+                lig->setPortOrigem(add_reg->getPortDataInOut("OUT"));
+                lig->setWidth(add_reg->getPortDataInOut("OUT")->getWidth());
+                lig->setTipo(add_reg->getPortDataInOut("OUT")->getType());
+  
+                //INFORMAR CADA PORTA QUEM E SUA LIGACAO
+                add_reg->getPortDataInOut("IN")->setLigacao(lig->getNome());
+                add_reg->getPortDataInOut("OUT")->setLigacao(lig->getNome());
+                
+                //ADICIONAR EM CADA COMPONENTE ESTA LIGACAO
+                add_reg->addLigacao(lig);
+                
+                //ADICIONAR NA LISTA DE LIGACOES A NOVA LIGACAO
+                this->ListaLiga.push_back(lig);
+                
+                break;
+            }
         }
     }
 }
@@ -1151,9 +1249,7 @@ void Core::detectBackwardEdges(){
     cout<<"*********************************"<<endl;
     
     for(k=this->ListaLiga.begin(); k != this->ListaLiga.end(); k++){
-//         Componente origem  = (*k)->getOrigem();
-//         Componente destino = (*k)->getDestino();
-         
+
         //Self-connected component EX.: A->A
         if((*k)->getOrigem()->getName() == (*k)->getDestino()->getName()){
             (*k)->setBlackEdge(true);
@@ -1276,16 +1372,17 @@ void Core::balanceAndSyncrhonize(){
         }
         else if( (counter != NULL) && (c->getTipoCompRef() != CompType::MEM) ){
             if(c->getWE() == false) continue;
+            cout<< c->imprimeLigacoes() << endl;
             if(c->getPortOther("we")->getLigacao() != ""){
                 int distance = c->getASAP() - counter->getASAP();
+
                 if(distance > 1){
-                    Ligacao* s1 = c->getLigacaoByName("we");
+                    Ligacao* s1 = c->getLigacaoByName(c->getPortOther("we")->getLigacao());
                     string strAux = counter->getDelayValComp();
                     int dlyCtd = 0;
                     if(strAux != ""){
                         dlyCtd = FuncoesAux::StrToInt(counter->getDelayValComp());
                     }
-                    
                     Componente* dly3 = this->insereDelay(s1, distance-1, counter->getASAP() + dlyCtd);
                     this->addComponent(dly3);
                     ats++;
@@ -1632,7 +1729,12 @@ void Core::setClkReset(){
 }
 
 void Core::geraArquivosDotHW(){
-    ArquivosDotHW *dot = new ArquivosDotHW(this->ListaComp, this->ListaLiga);
+    string nameFilePath = this->project->get_file_info()->getFilenameFromID(0);
+    const vector<string> fileVec = FuncoesAux::split(nameFilePath, "/");
+    const vector<string> fileVec2= FuncoesAux::split(string(fileVec[fileVec.size()-1].c_str())  , ".");
+    string nome = string(fileVec2[0].c_str());
+
+    ArquivosDotHW *dot = new ArquivosDotHW(this->ListaComp, this->ListaLiga, nome);
     dot->imprimeHWDOT();
     dot->imprimeVHDL();
 }
