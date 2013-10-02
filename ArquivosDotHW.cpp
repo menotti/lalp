@@ -18,11 +18,11 @@ using namespace std;
 using std::string;
 using std::stringstream;
 
-ArquivosDotHW::ArquivosDotHW(list<Componente*> listaComp, list<Ligacao*> listaLiga) {
+ArquivosDotHW::ArquivosDotHW(list<Componente*> listaComp, list<Ligacao*> listaLiga, const string& nome) {
     this->ListaComp = listaComp;
     this->ListaLiga = listaLiga;
+    this->nomeArquivo = nome;
     this->organizaListaNome();
-    
 }
 
 void ArquivosDotHW::imprimeHWDOT() {
@@ -71,7 +71,7 @@ void ArquivosDotHW::imprimeVHDL() {
     fout << "use IEEE.std_logic_1164.all; \n";
     fout << "use IEEE.std_logic_arith.all; \n";
     fout << "use IEEE.std_logic_unsigned.all; \n";
-    fout << "entity vecsum is \n";
+    fout << "entity "+this->nomeArquivo+" is \n";
     fout << "   port ( \n";
     fout << "           \\clear\\  : in	 std_logic; \n";
     fout << "           \\clk\\    : in	 std_logic; \n";
@@ -80,8 +80,8 @@ void ArquivosDotHW::imprimeVHDL() {
     fout << "           \\reset\\  : in	 std_logic; \n";
     fout << "           \\result\\ : out std_logic_vector(31 downto 0) \n";
     fout << "); \n";
-    fout << "end vecsum; \n\n";
-    fout << "architecture behavior of vecsum is \n\n";
+    fout << "end "+this->nomeArquivo+"; \n\n";
+    fout << "architecture behavior of "+this->nomeArquivo+" is \n\n";
     
     //COMPONENTES
     //Carrega as estruturas necessarias
@@ -145,7 +145,7 @@ void ArquivosDotHW::imprimeVHDL() {
 }
 
 void ArquivosDotHW::GeraMemoryVHDL() {
-    cout<<"ENTROU MEMORIA"<<endl;
+    
     list<Componente*>::iterator i;
     std::ofstream fout("VHDL/memory.vhd");
     
@@ -163,11 +163,6 @@ void ArquivosDotHW::GeraMemoryVHDL() {
         if( ((*i)->getEInicializado() == true) && ((*i)->getWE() == false) ){
             int dataSize = mem->getWidth();
             int memoryWords =  (int) pow(mem->getAddressWidth(),2);
-            
-            
-            cout<< "ADDRES WIDTH: " << mem->getAddressWidth() <<endl;
-            cout<< "DATA SIZE: " << dataSize <<endl;
-            cout<< "memoryWords: " << memoryWords <<endl;
             
 //            this->ListaAux.push_back((*i)->getName());
             fout << "library IEEE; \n";
@@ -228,24 +223,7 @@ void ArquivosDotHW::GeraMemoryVHDL() {
                 
             }
             fout << valPos << endl;
-            
-//            for (int c = values.size()-1; c >=0 ; c--){
-//                string posVec = boost::lexical_cast<std::string>(c);
-//                valPos = this->LPad(this->ConvertDecToBin(values[c]),32);
-//                if((values.size()-1) == c){
-//                    string size1 = FuncoesAux::IntToStr(values.size());
-//                    fout << "(\"00000000000000000000000000000000\"),   --"+size1+"         0\n";
-//                }
-//                if(c > 0){
-//                    //fout << "(\""+valPos+"\"),   --"+posVec+"         \n";
-//                    fout << "(\""+valPos+"\"),   --"+posVec+"         "+string(values[c].c_str())+"\n";
-//                    //cout << "(\""<<valPos<<"\"),   --"<<c<<"         "<<values[c]<<endl;
-//                }else{
-//                    fout << "(\""+valPos+"\"));  --"+posVec+"         "+string(values[c].c_str())+"\n";
-//                    //cout << "(\""<<valPos<<"\"),   --"<<c<<"         "<<values[c]<<endl;
-//                }
-//            }
-
+           
             fout << "\nbegin \n";
             fout << "       process (clk) \n";
             fout << "       begin \n";

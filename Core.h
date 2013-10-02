@@ -31,7 +31,7 @@ class Core {
         void identificaVariaveis();
         void identificaFor();
         void identificaReturn();
-        void analisaExp(SgNode *nodoAtual, SgNode* pai = NULL, bool debug = false, const string& aux = "");
+        void analisaExp(SgNode *nodoAtual, SgNode* pai = NULL, const string& aux = "");
         void FinalizaComponentes();
         void grafo();
         void geraArquivosDotHW();
@@ -40,6 +40,7 @@ class Core {
         int  getMaxSchedulingTime();
         void setMaxSchedulingTime(int maxSchedulingTime);
     private:
+        bool            debug;
         int             maxSchedulingTime;
         list<Componente*>ListaComp;
         list<Ligacao*>  ListaLiga;

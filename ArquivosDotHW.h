@@ -18,7 +18,7 @@
 using namespace std;
 class ArquivosDotHW {
 public:
-    ArquivosDotHW(list<Componente*> listaComp, list<Ligacao*> listaLiga);
+    ArquivosDotHW(list<Componente*> listaComp, list<Ligacao*> listaLiga, const string& arquivo);
     CompType*           tipo_comp;
     void                imprimeVHDL();
     void                imprimeHWDOT();    
@@ -27,6 +27,7 @@ private:
     list<Componente*>   ListaComp;
     list<Ligacao*>      ListaLiga;
     vector<string>      ListaAux;
+    string              nomeArquivo;
     void                GeraMemoryVHDL();
     vector<string>      split(const string& s, const string& delim);
     string              LPad(const string &val, int size);

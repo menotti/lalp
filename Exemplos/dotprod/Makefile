@@ -3,7 +3,7 @@
 TRANSLATOR=../../LALPC
 
 ## Input testcode for your translator
-TESTCODE=template.c
+TESTCODE=dotprod.c
 
 #On Windows systems comment the line below and use: make TESTBENCH=t_<EntityName>
 DIR = $(shell basename ${PWD})

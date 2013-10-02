@@ -5,18 +5,18 @@
  * Created on July 12, 2013, 10:02 AM
  */
 
-#ifndef REG_OP_H
-#define	REG_OP_H
+#ifndef ADD_REG_OP_S_H
+#define	ADD_REG_OP_S_H
 
 #include "Componente.h"
 #include "string"
 
 using namespace std;
 
-class reg_op : public Componente {
+class add_reg_op_s : public Componente {
 public:
-    reg_op(SgNode* node, const string &aux = "");
-    virtual     ~reg_op();
+    add_reg_op_s(SgNode* node, const string &aux = "");
+    virtual     ~add_reg_op_s();
     string      getEstruturaComponenteVHDL();
     string      geraDOTComp();
     void        createAllPorts();
@@ -29,5 +29,5 @@ private:
     string      tipo_var;
 };
 
-#endif	/* REG_OP_H */
+#endif	/* ADD_REG_OP_S */
 
