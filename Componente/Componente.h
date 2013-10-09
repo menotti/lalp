@@ -72,6 +72,7 @@ class Componente {
         virtual void    removeLigacao(Ligacao* lig);
         virtual void    addLigacao(Ligacao* lig);
         virtual void    addGenericMap(GenericMap* map);
+        bool            temPorta(const string &nome);
 //        virtual list<Port*> getAllPorts();
         SgNode*         node;
         string          for_ctr_var;    //Variavel de controle - EX.: (i) => for (i = 0, ....)
