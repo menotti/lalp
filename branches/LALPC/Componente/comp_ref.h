@@ -13,7 +13,7 @@ using namespace std;
 
 class comp_ref : public Componente{
 public:
-    comp_ref(SgNode* node, const string &aux = "");
+    comp_ref(SgNode* node = NULL, const string &aux = "");
     string      getEstruturaComponenteVHDL();
     string      geraDOTComp();
     void        createAllGeneric();

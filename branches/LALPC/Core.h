@@ -36,6 +36,7 @@ class Core {
         void grafo();
         void geraArquivosDotHW();
         Componente* insereDelay(Ligacao* lig, int delay = 0, int asap = 0);
+        Componente* insereReg(Ligacao* lig);
         void imprimeAll();
         int  getMaxSchedulingTime();
         void setMaxSchedulingTime(int maxSchedulingTime);

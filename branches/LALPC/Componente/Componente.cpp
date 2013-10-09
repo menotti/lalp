@@ -338,6 +338,18 @@ string Componente::imprimePortas(){
       return res;
 }
 
+bool Componente::temPorta(const string &nome){
+    bool tem = false;
+    list<Port*>::iterator i;
+    for(i=this->portas.begin(); i != this->portas.end(); i++){
+        if ((*i)->getName() == nome){
+            tem = true;
+        }
+    }
+      return tem;
+}
+
+
 void Componente::setName(const string &nome){
     this->nome = nome;
 }

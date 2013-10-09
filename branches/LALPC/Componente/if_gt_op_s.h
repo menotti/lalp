@@ -5,18 +5,18 @@
  * Created on July 12, 2013, 10:02 AM
  */
 
-#ifndef REG_OP_H
-#define	REG_OP_H
+#ifndef IF_GT_OP_S_H
+#define	IF_GT_OP_S_H
 
 #include "Componente.h"
 #include "string"
 
 using namespace std;
 
-class reg_op : public Componente {
+class if_gt_op_s : public Componente {
 public:
-    reg_op(SgNode* node = NULL, const string &aux = "");
-    virtual     ~reg_op();
+    if_gt_op_s(SgNode* node);
+    virtual     ~if_gt_op_s();
     string      getEstruturaComponenteVHDL();
     string      geraDOTComp();
     void        createAllPorts();
@@ -24,10 +24,16 @@ public:
     void        montaComponente();
     void        setValor(const string &aux);
     void        setTipo(const string &aux);
+    void        setCondEsq(const string &aux);
+    void        setCondDir(const string &aux);
+    string      getCondEsq();
+    string      getCondDir();
     string      getTipo();
 private:
+    string      I0;
+    string      I1;
     string      tipo_var;
 };
 
-#endif	/* REG_OP_H */
+#endif	/* IF_GT_OP_S_H */
 

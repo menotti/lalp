@@ -24,7 +24,6 @@ string comp_ref::geraDOTComp(){
 }
 
 void comp_ref::createAllGeneric(){
-    
 }
 void comp_ref::createAllPorts(){
 }
