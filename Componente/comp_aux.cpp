@@ -24,7 +24,11 @@ comp_aux::comp_aux(SgNode* node,  const string& aux) : Componente(node, aux) {
     if(aux == "TERMINATION"){
         this->setNomeCompVHDL("termination");
         this->addPort(new Port("out","out"   ,"std_logic_vector","16", "OUT"));
-    }        
+    }
+    if(aux == "VALOR"){
+        this->setNomeCompVHDL("valor");
+        this->addPort(new Port("out","out"   ,"std_logic_vector","16", "OUT"));
+    }
     if(aux == "DONE"){
         this->setNomeCompVHDL("done");
         this->addPort(new Port("in" ,"in"   ,"std_logic"     ,"1", "IN"));
@@ -52,12 +56,19 @@ string  comp_aux::geraCompVHDL(){
     if(this->getNomeCompVHDL() == "termination" || this->getNomeCompVHDL() == "input"){
         res = this->getPortDataInOut("OUT")->getLigacao()+" <= conv_std_logic_vector("+this->valAux+", 16); \n";
     }
+    if(this->getNomeCompVHDL() == "valor"){
+        res = this->getPortDataInOut("OUT")->getLigacao()+" <= conv_std_logic_vector("+this->valAux+", 16); \n";
+    }
     return res;
 }
 string  comp_aux::getEstruturaComponenteVHDL(){}
 string  comp_aux::geraDOTComp(){
     string res = "";
-    res += "\""+this->getName()+"\" [shape=msquare fontcolor=red label=\""+this->getName()+"\"]";
+    if(this->getNomeCompVHDL() == "valor"){
+        res = "\""+this->getName()+"\" [fontcolor=b label=\""+this->getName()+"="+this->valAux+"\"]";
+    }else{
+        res = "\""+this->getName()+"\" [shape=msquare fontcolor=red label=\""+this->getName()+"\"]";
+    }
     return res;
 }
 void    comp_aux::createAllPorts(){}

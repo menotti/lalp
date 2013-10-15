@@ -63,8 +63,9 @@ void ArquivosDotHW::imprimeVHDL() {
     
     cout<<"------------------------------------"<<endl;
     cout<<"Processo criacao arquivo VHDL"<<endl;
-    cout<<"Nome: example.vhd"<<endl;
+    cout<<"Nome: "<<this->nomeArquivo<<".vhd"<<endl;
     cout<<"------------------------------------"<<endl;
+
     std::ofstream fout("VHDL/example.vhd");
     
     fout << "library IEEE; \n";
@@ -163,8 +164,10 @@ void ArquivosDotHW::GeraMemoryVHDL() {
         if( ((*i)->getEInicializado() == true) && ((*i)->getWE() == false) ){
             int dataSize = mem->getWidth();
             int memoryWords =  (int) pow(mem->getAddressWidth(),2);
-            
-//            this->ListaAux.push_back((*i)->getName());
+//            cout<< "-----------------------------------"<< endl;
+//            cout<< "Memory Width: "<<mem->getAddressWidth()<< endl;
+//            cout<< "memoryWords: "<<memoryWords << endl;
+//            cout<< "-----------------------------------"<< endl;
             fout << "library IEEE; \n";
             fout << "use IEEE.std_logic_1164.all; \n";
             fout << "use IEEE.std_logic_arith.all; \n";
@@ -191,13 +194,17 @@ void ArquivosDotHW::GeraMemoryVHDL() {
 
             fout << "signal read_a : std_logic_vector(address_width-1 downto 0); \n";
             fout << "signal RAM : ram_type := ram_type'( \n";
-    //        cout<< "-----------------------------------"<< endl;
-    //        cout<< "block_ram_"+(*i)->getName() << endl;
-    //        cout<< "VALOR COMPLETO: " << (*i)->valor << endl;
-    //        cout<< "-----------------------------------"<< endl;
+
+//            cout<< "-----------------------------------"<< endl;
+//            cout<< "block_ram_"+(*i)->getName() << endl;
+//            cout<< "VALOR COMPLETO: " << (*i)->valor << endl;
+//            cout<< "-----------------------------------"<< endl;
+
             const vector<string> values = FuncoesAux::split((*i)->valor, "|");
             string valPos = "";
             string posVec;
+//            cout<< "VALOR VETOR QTD: " << values.size() << endl;
+//            cout<< "-----------------------------------"<< endl;
             for (int c = memoryWords-1; c >= 0; c--){
                 posVec = boost::lexical_cast<std::string>(c);
                 int value;

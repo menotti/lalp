@@ -1,8 +1,8 @@
 int main() {
-  int v[8] = {1,2,3,4,5,6,7,8};
+  int v[3] = {70,1,800};
   int maxval = 0;
   int i;
-  for (i=0; i<8; i++)
+  for (i=0; i<3; i++)
     if (v[i] > maxval)
       maxval = v[i];
   return maxval;

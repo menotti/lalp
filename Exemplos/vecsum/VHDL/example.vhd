@@ -216,7 +216,7 @@ begin
 	\c16\: delay_op
 	generic map ( 
 		bits => 1,
-		delay => 5
+		delay => 3
 	)
 	port map ( 
 		a(0) => s13,
