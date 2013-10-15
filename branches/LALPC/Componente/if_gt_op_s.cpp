@@ -26,7 +26,7 @@ if_gt_op_s::~if_gt_op_s() {
 void if_gt_op_s::createAllPorts(){
     this->addPort(new Port("I0"         ,"in"   ,"std_logic_vector"     ,"32", ""));
     this->addPort(new Port("I1"         ,"in"   ,"std_logic_vector"     ,"32", "IN"));
-    this->addPort(new Port("O0"         ,"out"  ,"std_logic_vector"     ,"32", "OUT"));
+    this->addPort(new Port("O0"         ,"out"  ,"std_logic_vector"     ,"1", "OUT"));
 }
 
 void if_gt_op_s::createAllGeneric(){

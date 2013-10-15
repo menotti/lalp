@@ -1790,6 +1790,64 @@ begin
 
 end rtl;
 
+
+--######################## INTERNAL Dual BlockRam ###################
+--library ieee;
+--use ieee.std_logic_1164.all;
+--use ieee.std_logic_unsigned.all;
+--
+--entity dual_block_ram is
+	--generic(
+		--data_width : integer := 8;
+--		address_width : integer := 8
+	--);
+--	port(
+		--data_a		: in std_logic_vector(data_width-1 downto 0) := (others => '0');
+--		data_b		: in std_logic_vector(data_width-1 downto 0) := (others => '0');
+		--address_a	: in natural range 0 to 63;
+--		address_b	: in natural range 0 to 63;
+		--we_a		: in std_logic := '1';
+--		we_b		: in std_logic := '1';
+		--clk		: in std_logic;
+--		data_out_a	: out std_logic_vector(data_width-1 downto 0);
+		--data_out_b	: out std_logic_vector(data_width-1 downto 0));
+--
+--end dual_block_ram;
+--
+--architecture rtl of dual_block_ram is
+	---- Build a 2-D array type for the RAM
+--	subtype word_t is std_logic_vector(7 downto 0);
+	--type memory_t is array(63 downto 0) of word_t;
+--	
+	---- Declare the RAM
+--	shared variable ram : memory_t;  	
+--
+--begin
+	---- Port A
+--	process(clk)
+	--begin
+		--if(rising_edge(clk)) then 
+			--if(we_a = '1') then
+				--ram(address_a) := data_a;
+			--end if;
+--			data_out_a <= ram(address_a);
+		--end if;
+	--end process;
+--	
+	---- Port B
+--	process(clk)
+	--begin
+		--if(rising_edge(clk)) then
+			--if(we_b = '1') then
+				--ram(address_b) := data_b;
+			--end if;
+--			data_out_b <= ram(address_b);
+		--end if;
+	--end process;
+--end rtl;
+
+
+
 --######################## EXTERNAL SRAM ###################
 library IEEE;
 use IEEE.std_logic_1164.ALL;

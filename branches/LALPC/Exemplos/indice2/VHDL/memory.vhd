@@ -4,7 +4,7 @@ use IEEE.std_logic_1164.all;
 use IEEE.std_logic_arith.all; 
 use IEEE.std_logic_unsigned.all; 
 
-entity block_ram_v is 
+entity block_ram_a is 
 generic( 
         data_width : integer := 8; 
         address_width : integer := 8 
@@ -16,9 +16,9 @@ port(
         oe: in std_logic := '1'; 
         clk : in std_logic; 
         data_out : out std_logic_vector(data_width-1 downto 0)); 
-end block_ram_v; 
+end block_ram_a; 
 
-architecture rtl of block_ram_v is 
+architecture rtl of block_ram_a is 
 
 constant mem_depth : integer := 2**address_width; 
 type ram_type is array (mem_depth-1 downto 0) 
@@ -27,9 +27,9 @@ of std_logic_vector (data_width-1 downto 0);
 signal read_a : std_logic_vector(address_width-1 downto 0); 
 signal RAM : ram_type := ram_type'( 
 	 ("00000000000000000000000000000000"),	 -- 3	0
-	 ("00000000000000000000001100100000"),	 -- 2	800
-	 ("00000000000000000000000000000001"),	 -- 1	1
-	 ("00000000000000000000000001000110"));	 -- 0	70
+	 ("00000000000000000000000000000011"),	 -- 2	3
+	 ("00000000000000000000000000000010"),	 -- 1	2
+	 ("00000000000000000000000000000001"));	 -- 0	1
 
 
 begin 

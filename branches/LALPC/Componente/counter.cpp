@@ -70,7 +70,7 @@ string counter::getEstruturaComponenteVHDL(){
 
 string counter::geraDOTComp(){
     string res = "";
-    res += "\""+this->getName() +"\" [shape=record, fontcolor=blue, style=\"filled\", fillcolor=\"lightgray\", label=\"{{<clk>clk|<clk_en>clk_en|<input>input[16]|<load>load|<reset>reset|<termination>termination[16]}|counter:"+this->getName() +"\\n\\<\\n+=1\\nsteps=1|{<done>done|<output>output[16]|<step>step}}\"]; \n";   
+    res += "\""+this->getName() +"\" [shape=record, fontcolor=blue, style=\"filled\", fillcolor=\"lightgray\", label=\"{{<clk>clk|<clk_en>clk_en|<input>input[16]|<load>load|<reset>reset|<termination>termination[16]}|counter:"+this->getName() +"\\n\\<\\n+="+this->getGenericMapIncrements()+"\\nsteps="+this->getGenericMapSteps()+"|{<done>done|<output>output[16]|<step>step}}\"]; \n";   
     return res;
 }
 

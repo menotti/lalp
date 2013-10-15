@@ -32,6 +32,7 @@ Componente::Componente(SgNode* node/*=NULL*/, const string &aux/*=""*/){
     this->sync = true;
     this->addressWidth  = 2;
     this->dataWidth     = 32;
+    setEIndice(false);
     setALAP(0);
     setASAP(0);
     setNumLinha(0);
@@ -49,6 +50,14 @@ void Componente::setSync(bool sync){
     this->sync = sync;
     if(!this->sync)
         this->setDelayValComp("0");
+}
+
+void Componente::setEIndice(bool val){
+    this->isIndice = val;
+}
+
+bool Componente::getEIndice(){
+    return this->isIndice;
 }
 
 bool Componente::isSuccessorOf(Componente* comp){

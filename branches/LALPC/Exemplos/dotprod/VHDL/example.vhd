@@ -197,7 +197,7 @@ begin
 	\c14\: delay_op
 	generic map ( 
 		bits => 1,
-		delay => 4
+		delay => 2
 	)
 	port map ( 
 		a(0) => s4,
@@ -209,7 +209,7 @@ begin
 	\c15\: delay_op
 	generic map ( 
 		bits => 1,
-		delay => 5
+		delay => 3
 	)
 	port map ( 
 		a(0) => s12,

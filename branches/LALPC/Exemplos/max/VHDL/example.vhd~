@@ -93,10 +93,10 @@ end component;
 
 signal s3	: std_logic_vector(31 downto 0); 
 signal s7	: std_logic_vector(31 downto 0); 
-signal s2	: std_logic_vector(31 downto 0); 
-signal s4	: std_logic_vector(15 downto 0); 
-signal s5	: std_logic_vector(15 downto 0); 
-signal s6	: std_logic_vector(15 downto 0); 
+signal s2	: std_logic_vector(0 downto 0); 
+signal s4	: std_logic_vector(2 downto 0); 
+signal s5	: std_logic_vector(2 downto 0); 
+signal s6	: std_logic_vector(2 downto 0); 
 signal s8	: std_logic; 
 signal s9	: std_logic; 
 signal s10	: std_logic_vector(0 downto 0); 
@@ -105,7 +105,7 @@ begin
 
 	\i\: counter
 	generic map ( 
-		bits => 16,
+		bits => 3,
 		condition => 0,
 		down => 0,
 		increment => 1,
@@ -121,7 +121,7 @@ begin
 		termination => s5
 	);
 
-	\rv_if_gt_op_s_maxval\: if_gt_op_s
+	\v_if_gt_op_s_maxval\: if_gt_op_s
 	generic map ( 
 		w_in1 => 32,
 		w_in2 => 32,
@@ -171,7 +171,7 @@ begin
 
 s8 <= \init\; 
 \done\ <= s10(0); 
-s5 <= conv_std_logic_vector(8, 16); 
-s6 <= conv_std_logic_vector(0, 16); 
+s5 <= conv_std_logic_vector(8, 3); 
+s6 <= conv_std_logic_vector(0, 3); 
 \result\ <= s7; 
 end behavior; 

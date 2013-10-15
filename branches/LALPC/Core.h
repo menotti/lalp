@@ -31,7 +31,7 @@ class Core {
         void identificaVariaveis();
         void identificaFor();
         void identificaReturn();
-        void analisaExp(SgNode *nodoAtual, SgNode* pai = NULL, const string& aux = "");
+        Componente* analisaExp(SgNode *nodoAtual, SgNode* pai = NULL, const string& aux = "");
         void FinalizaComponentes();
         void grafo();
         void geraArquivosDotHW();
@@ -53,6 +53,7 @@ class Core {
         void            updateBlockRam(SgNode* node, block_ram* comp);
         void            updateCompRef(SgNode* node, comp_ref* comp);
         void            detectBackwardEdges();
+        bool            isIndiceVector(const string& name);
         void            ALAP();
         void            ASAP();
         void            balanceAndSyncrhonize();

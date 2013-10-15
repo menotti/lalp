@@ -73,6 +73,8 @@ class Componente {
         virtual void    addLigacao(Ligacao* lig);
         virtual void    addGenericMap(GenericMap* map);
         bool            temPorta(const string &nome);
+        void            setEIndice(bool val);
+        bool            getEIndice();
 //        virtual list<Port*> getAllPorts();
         SgNode*         node;
         string          for_ctr_var;    //Variavel de controle - EX.: (i) => for (i = 0, ....)
@@ -102,6 +104,7 @@ class Componente {
         void            setSync(bool val);
         void            printAllPortsAllLig();
     private:
+        bool            isIndice;
         int             alap;
         int             asap;
         bool            sync;
