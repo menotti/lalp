@@ -47,4 +47,4 @@ view :
 
 clean :
 	$(GHDL_CMD) --clean
-	$(REMOVE_CMD) *.vcd work-obj93.cf
+	$(REMOVE_CMD) *.vcd rose_*.c work-obj93.cf *.dot *.o
