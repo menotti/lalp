@@ -110,14 +110,14 @@ port (
 ); 
 end component; 
 
+signal s0	: std_logic_vector(31 downto 0); 
 signal s9	: std_logic_vector(31 downto 0); 
-signal s1	: std_logic_vector(31 downto 0); 
 signal s2	: std_logic_vector(31 downto 0); 
 signal s3	: std_logic_vector(31 downto 0); 
 signal s4	: std_logic; 
-signal s6	: std_logic_vector(15 downto 0); 
-signal s7	: std_logic_vector(15 downto 0); 
-signal s8	: std_logic_vector(15 downto 0); 
+signal s6	: std_logic_vector(31 downto 0); 
+signal s7	: std_logic_vector(31 downto 0); 
+signal s8	: std_logic_vector(31 downto 0); 
 signal s10	: std_logic_vector(0 downto 0); 
 signal s11	: std_logic; 
 signal s12	: std_logic; 
@@ -127,7 +127,7 @@ begin
 
 	\i\: counter
 	generic map ( 
-		bits => 16,
+		bits => 32,
 		condition => 0,
 		down => 0,
 		increment => 1,
@@ -153,7 +153,7 @@ begin
 	)
 	port map ( 
 		I0 => s9,
-		I1 => s1,
+		I1 => s0,
 		O0 => s9,
 		clk => \clk\,
 		reset => \reset\,
@@ -169,7 +169,7 @@ begin
 	port map ( 
 		I0 => s2,
 		I1 => s3,
-		O0 => s1
+		O0 => s0
 	);
 
 	\a\: block_ram_a
@@ -209,7 +209,7 @@ begin
 	\c15\: delay_op
 	generic map ( 
 		bits => 1,
-		delay => 3
+		delay => 5
 	)
 	port map ( 
 		a(0) => s12,
@@ -220,7 +220,7 @@ begin
 
 s11 <= \init\; 
 \done\ <= s13(0); 
-s7 <= conv_std_logic_vector(3, 16); 
-s8 <= conv_std_logic_vector(0, 16); 
+s7 <= conv_std_logic_vector(3, 32); 
+s8 <= conv_std_logic_vector(0, 32); 
 \result\ <= s9; 
 end behavior; 

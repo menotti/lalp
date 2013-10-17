@@ -1,7 +1,0 @@
-#ifndef MEUHEADER_H
-#define	MEUHEADER_H
-
-#include "rose.h"
-#include "../Core.h"
-
-#endif

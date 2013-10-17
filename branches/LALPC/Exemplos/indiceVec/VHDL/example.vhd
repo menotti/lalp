@@ -123,16 +123,16 @@ port (
 ); 
 end component; 
 
-signal s11	: std_logic_vector(31 downto 0); 
+signal s0	: std_logic_vector(31 downto 0); 
 signal s1	: std_logic_vector(31 downto 0); 
-signal s2	: std_logic_vector(31 downto 0); 
+signal s11	: std_logic_vector(31 downto 0); 
 signal s3	: std_logic_vector(31 downto 0); 
 signal s4	: std_logic_vector(31 downto 0); 
-signal s5	: std_logic_vector(15 downto 0); 
-signal s6	: std_logic_vector(15 downto 0); 
+signal s5	: std_logic_vector(31 downto 0); 
+signal s6	: std_logic_vector(31 downto 0); 
 signal s7	: std_logic; 
-signal s9	: std_logic_vector(15 downto 0); 
-signal s10	: std_logic_vector(15 downto 0); 
+signal s9	: std_logic_vector(31 downto 0); 
+signal s10	: std_logic_vector(31 downto 0); 
 signal s12	: std_logic_vector(0 downto 0); 
 signal s13	: std_logic; 
 signal s14	: std_logic; 
@@ -142,7 +142,7 @@ begin
 
 	\i\: counter
 	generic map ( 
-		bits => 16,
+		bits => 32,
 		condition => 0,
 		down => 0,
 		increment => 2,
@@ -168,7 +168,7 @@ begin
 	)
 	port map ( 
 		I0 => s11,
-		I1 => s2,
+		I1 => s1,
 		O0 => s11,
 		clk => \clk\,
 		reset => \reset\,
@@ -184,7 +184,7 @@ begin
 	port map ( 
 		I0 => s3,
 		I1 => s4,
-		O0 => s2
+		O0 => s1
 	);
 
 	\a\: block_ram_a
@@ -204,21 +204,21 @@ begin
 		data_width => 32
 	)
 	port map ( 
-		address(1 downto 0) => s1(1 downto 0),
+		address(1 downto 0) => s0(1 downto 0),
 		clk => \clk\,
 		data_out => s4
 	);
 
-	\i_sub_op_s_c11\: sub_op_s
+	\i_11_sub_op_s_c11\: sub_op_s
 	generic map ( 
 		w_in1 => 32,
 		w_in2 => 32,
 		w_out => 32
 	)
 	port map ( 
-		I0(15 downto 0) => s5(15 downto 0),
-		I1(15 downto 0) => s6(15 downto 0),
-		O0 => s1
+		I0 => s5,
+		I1 => s6,
+		O0 => s0
 	);
 
 	\c17\: delay_op
@@ -236,7 +236,7 @@ begin
 	\c18\: delay_op
 	generic map ( 
 		bits => 1,
-		delay => 3
+		delay => 5
 	)
 	port map ( 
 		a(0) => s14,
@@ -245,10 +245,10 @@ begin
 		reset => \reset\
 	);
 
-s6 <= conv_std_logic_vector(1, 16); 
+s6 <= conv_std_logic_vector(1, 32); 
 s13 <= \init\; 
 \done\ <= s15(0); 
-s9 <= conv_std_logic_vector(4, 16); 
-s10 <= conv_std_logic_vector(1, 16); 
+s9 <= conv_std_logic_vector(4, 32); 
+s10 <= conv_std_logic_vector(1, 32); 
 \result\ <= s11; 
 end behavior; 

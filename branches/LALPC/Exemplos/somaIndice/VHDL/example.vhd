@@ -2,7 +2,7 @@ library IEEE;
 use IEEE.std_logic_1164.all; 
 use IEEE.std_logic_arith.all; 
 use IEEE.std_logic_unsigned.all; 
-entity max is 
+entity soma is 
    port ( 
            \clear\  : in	 std_logic; 
            \clk\    : in	 std_logic; 
@@ -11,22 +11,20 @@ entity max is
            \reset\  : in	 std_logic; 
            \result\ : out std_logic_vector(31 downto 0) 
 ); 
-end max; 
+end soma; 
 
-architecture behavior of max is 
+architecture behavior of soma is 
 
-component block_ram_v 
+component add_op_s 
 generic ( 
-        data_width          : integer := 8; 
-        address_width	: integer := 8 
+        w_in1	: integer := 8; 
+        w_in2	: integer := 8; 
+        w_out	: integer := 16 
 ); 
 port ( 
-        clk                 : in	std_logic; 
-        we                  : in	std_logic := '0'; 
-        oe                  : in	std_logic := '1'; 
-        address             : in	std_logic_vector(address_width-1 downto 0); 
-        data_in             : in	std_logic_vector(data_width-1 downto 0) := (others => '0'); 
-        data_out            : out	std_logic_vector(data_width-1 downto 0) 
+        I0          : in	std_logic_vector(w_in1-1 downto 0); 
+        I1          : in	std_logic_vector(w_in2-1 downto 0); 
+        O0          : out	std_logic_vector(w_out-1 downto 0) 
 ); 
 end component; 
 
@@ -64,19 +62,6 @@ port (
 ); 
 end component; 
 
-component if_gt_op_s 
-generic ( 
-        w_in1	: integer := 16; 
-        w_in2	: integer := 16; 
-        w_out	: integer := 1 
-); 
-port ( 
-        I0          : in	std_logic_vector(w_in1-1 downto 0); 
-        I1          : in	std_logic_vector(w_in2-1 downto 0); 
-        O0          : out	std_logic_vector(w_out-1 downto 0) 
-); 
-end component; 
-
 component reg_op 
 generic ( 
         w_in	: integer := 16; 
@@ -91,87 +76,77 @@ port (
 ); 
 end component; 
 
-signal s3	: std_logic_vector(31 downto 0); 
-signal s7	: std_logic_vector(31 downto 0); 
-signal s2	: std_logic_vector(0 downto 0); 
-signal s4	: std_logic_vector(2 downto 0); 
-signal s5	: std_logic_vector(2 downto 0); 
-signal s6	: std_logic_vector(2 downto 0); 
+signal s0	: std_logic_vector(31 downto 0); 
+signal s2	: std_logic_vector(31 downto 0); 
+signal s3	: std_logic; 
+signal s4	: std_logic_vector(31 downto 0); 
+signal s5	: std_logic_vector(31 downto 0); 
+signal s6	: std_logic_vector(31 downto 0); 
+signal s7	: std_logic; 
 signal s8	: std_logic; 
-signal s9	: std_logic; 
-signal s10	: std_logic_vector(0 downto 0); 
+signal s9	: std_logic_vector(0 downto 0); 
 
 begin 
 
 	\i\: counter
 	generic map ( 
-		bits => 3,
-		condition => 0,
+		bits => 32,
+		condition => 1,
 		down => 0,
 		increment => 1,
 		steps => 1
 	)
 	port map ( 
 		clk => \clk\,
-		clk_en => s8,
-		done => s9,
-		input => s6,
-		output => s4,
+		clk_en => s7,
+		done => s8,
+		input => s5,
+		output => s2,
 		reset => \reset\,
-		termination => s5
+		step => s3,
+		termination => s4
 	);
 
-	\v_if_gt_op_s_maxval\: if_gt_op_s
-	generic map ( 
-		w_in1 => 32,
-		w_in2 => 32,
-		w_out => 1
-	)
-	port map ( 
-		I0 => s3,
-		I1 => s7,
-		O0 => s2
-	);
-
-	\maxval\: reg_op
+	\res\: reg_op
 	generic map ( 
 		initial => 0,
 		w_in => 32
 	)
 	port map ( 
 		clk => \clk\,
-		I0 => s3,
-		O0 => s7,
+		I0 => s0,
+		O0 => s6,
 		reset => \reset\,
-		we => s2(0)
+		we => s3
 	);
 
-	\v\: block_ram_v
+	\i_7_add_op_s_i_8\: add_op_s
 	generic map ( 
-		address_width => 3,
-		data_width => 32
+		w_in1 => 32,
+		w_in2 => 32,
+		w_out => 32
 	)
 	port map ( 
-		address(2 downto 0) => s4(2 downto 0),
-		clk => \clk\,
-		data_out => s3
+		I0 => s2,
+		I1 => s2,
+		O0 => s0
 	);
 
-	\c12\: delay_op
+	\c13\: delay_op
 	generic map ( 
 		bits => 1,
 		delay => 3
 	)
 	port map ( 
-		a(0) => s9,
-		a_delayed => s10,
+		a(0) => s8,
+		a_delayed => s9,
 		clk => \clk\,
 		reset => \reset\
 	);
 
-s8 <= \init\; 
-\done\ <= s10(0); 
-s5 <= conv_std_logic_vector(8, 3); 
-s6 <= conv_std_logic_vector(0, 3); 
-\result\ <= s7; 
+s7 <= \init\; 
+\done\ <= s9(0); 
+s4 <= conv_std_logic_vector(1, 32); 
+s5 <= conv_std_logic_vector(0, 32); 
+\result\ <= s6; 
 end behavior; 

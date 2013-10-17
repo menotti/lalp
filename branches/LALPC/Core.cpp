@@ -35,17 +35,18 @@ using namespace boost;
 using std::stringstream;
 using std::string;
 
-Core::Core(SgProject* project) {
+Core::Core(SgProject* project, list<SgNode*> lista) {
     this->debug = true;
     this->project = project;
     this->maxSchedulingTime = 0;
+    this->ListaForParall = lista;
     
     this->identificaVariaveis();
     this->identificaFor();
     this->FinalizaComponentes();
     this->identificaReturn();
     
-    //Processo de Schedulling
+    
     this->detectBackwardEdges();
     this->ALAP();
     this->balanceAndSyncrhonize();
@@ -210,7 +211,11 @@ void Core::identificaVariaveis() {
 
 void Core::identificaFor() {
     cout<<"#--Comp Counter:                              #"<<endl;
+    
     SgProject *project = this->project;
+    bool hadForParallel = false;
+    
+    
     string nome = "";
     // For each source file in the project
     ROSE_ASSERT (project != NULL);
@@ -240,13 +245,19 @@ void Core::identificaFor() {
             Rose_STL_Container<SgNode*> var = NodeQuery::querySubTree(defn,V_SgForStatement); 
             if (var.size()==0) continue;
             
+            
+            cout<< "+++++QTD ELEMENTOS: " << this->ListaForParall.size() <<endl;
+            if (this->ListaForParall.size() > 0){
+                hadForParallel = true;
+            }
+            
             for (Rose_STL_Container<SgNode*>::iterator i = var.begin(); i != var.end(); i++ ) 
             {
                 SgForStatement* cur_for = isSgForStatement(*i);
                 
                 if (cur_for != NULL){
                     ROSE_ASSERT(cur_for);
-
+                    
                     counter* comp = new counter(cur_for);
                     comp->setNumIdComp(FuncoesAux::IntToStr(this->ListaComp.size()));
 //                    this->ListaComp.push_back(comp);                    
@@ -254,28 +265,42 @@ void Core::identificaFor() {
                     this->updateCounter(cur_for, comp);
                     comp->setNumLinha(cur_for->get_file_info()->get_line());
                     
-                    cout<<"#--Comp Counter: OK                           #"<<endl;
-                    cout<<"# Iniciando processo expressao FOR            #"<<endl;
-                    
-                    //Corpo do Loop com as operacoes
-                    SgStatement* loopBody       = cur_for->get_loop_body();                    
-                    
-                    Rose_STL_Container<SgNode*> varLoopBody = NodeQuery::querySubTree(loopBody,V_SgNode); 
-                    if (varLoopBody.size()==0) continue;
-                    cout<<"buscando expressões internas no for"<<endl;
-                    for (Rose_STL_Container<SgNode*>::iterator ilb = varLoopBody.begin(); ilb != varLoopBody.end(); ilb++ ) 
-                    {
-                        if(isSgExprStatement(*ilb)||isSgBasicBlock(*ilb)||isSgVarRefExp(*ilb)||isSgMultiplyOp(*ilb)||isSgPntrArrRefExp(*ilb)||isSgAddOp(*ilb)) continue;
-
-                        SgNode* expStmt = isSgNode(*ilb);
-                        cout<< "NODOS INTERNOS BODY FOR: "<< expStmt->class_name() << endl;
-                        if(expStmt != NULL){
-                            
-                            analisaExp(expStmt, NULL, "");
-                            break;
+                    if(hadForParallel){
+                        list<SgNode*>::iterator i;
+                        for (i = this->ListaForParall.begin(); i != this->ListaForParall.end(); i++) {
+                            SgNode* nodo_a = isSgNode(cur_for);
+                            SgNode* nodo_b = isSgNode((*i));
+                            if(nodo_a == nodo_b){
+                                cout<<"ACHEI O NODO FOR "<<endl;
+                                cout<<"NODO LINHA: "<< cur_for->get_file_info()->get_line() <<endl;
+                            }
                         }
+                    }else{
+                        
+
+                        cout<<"#--Comp Counter: OK                           #"<<endl;
+                        cout<<"# Iniciando processo expressao FOR            #"<<endl;
+
+                        //Corpo do Loop com as operacoes
+                        SgStatement* loopBody       = cur_for->get_loop_body();                    
+
+                        Rose_STL_Container<SgNode*> varLoopBody = NodeQuery::querySubTree(loopBody,V_SgNode); 
+                        if (varLoopBody.size()==0) continue;
+                        cout<<"buscando expressões internas no for"<<endl;
+                        for (Rose_STL_Container<SgNode*>::iterator ilb = varLoopBody.begin(); ilb != varLoopBody.end(); ilb++ ) 
+                        {
+                            if(isSgExprStatement(*ilb)||isSgBasicBlock(*ilb)||isSgVarRefExp(*ilb)||isSgMultiplyOp(*ilb)||isSgPntrArrRefExp(*ilb)||isSgAddOp(*ilb)) continue;
+
+                            SgNode* expStmt = isSgNode(*ilb);
+                            cout<< "NODOS INTERNOS BODY FOR: "<< expStmt->class_name() << endl;
+                            if(expStmt != NULL){
+
+                                analisaExp(expStmt, NULL, "");
+                                break;
+                            }
+                        }
+                        cout<<"# Iniciando processo expressao FOR: OK        #"<<endl;
                     }
-                    cout<<"# Iniciando processo expressao FOR: OK        #"<<endl;
                 }         
             }
         }
@@ -594,10 +619,22 @@ Componente* Core::analisaExp(SgNode *nodoAtual, SgNode* pai, const string& aux) 
             }
         }
         if(tBody != NULL){
-            analisaExp(tBody, NULL, "");
+            Rose_STL_Container<SgNode*> var = NodeQuery::querySubTree(tBody,V_SgNode);             
+            for (Rose_STL_Container<SgNode*>::iterator i = var.begin(); i != var.end(); i++ ) 
+            {
+                if(isSgExprStatement((*i))){
+                    analisaExp((*i), NULL, "");
+                }
+            }
         }
         if(fBody != NULL){
-            analisaExp(fBody, NULL, "");
+            Rose_STL_Container<SgNode*> var = NodeQuery::querySubTree(fBody,V_SgNode);             
+            for (Rose_STL_Container<SgNode*>::iterator i = var.begin(); i != var.end(); i++ ) 
+            {
+                if(isSgExprStatement((*i))){
+                    analisaExp((*i), NULL, "");
+                }
+            }
         }
     }
     // </editor-fold>
@@ -667,8 +704,8 @@ Componente* Core::analisaExp(SgNode *nodoAtual, SgNode* pai, const string& aux) 
         comp->setNumLinha(decVar->get_file_info()->get_line());
         if(pai) comp->setPai(pai);
         this->addComponent(comp);
-        compReturn = comp;
         this->updateCompRef(decVar, comp);
+        compReturn = comp;
         // <editor-fold defaultstate="collapsed" desc="DEBUG">
         if (this->debug){
             cout << "-------------------------------" << endl;
@@ -731,35 +768,7 @@ void Core::FinalizaComponentes(){
     list<Componente*>ListaCompAux;
     //Ligacao* reset = new 
     int qtdLig = 0;
-
-    //Passo para informar as referencias se durante o processo de criacao de 
-    //variaveis tem valor inicial
-    // <editor-fold defaultstate="collapsed" desc="Informacao Complementar REF">
-//    cout<<"--------------------------"<<endl;
-//    cout<<"IDENTIFICACAO DOS COMP REF"<<endl;
-//    cout<<"--------------------------"<<endl;
-    cout<<"--Finalizando comp REF"<<endl;
-//    for (i = this->ListaComp.begin(); i != this->ListaComp.end(); i++) {
-//        if ((*i)->tipo_comp == CompType::REF) {
-//            for (j = this->ListaComp.begin(); j != this->ListaComp.end(); j++) {
-//                if ((*j)->tipo_comp == CompType::REG || (*j)->tipo_comp == CompType::MEM) {
-//                    if ((*i)->getName() == (*j)->getName()) {
-//                        (*i)->setComponenteRef((*j));
-//                        (*i)->updateCompRef();
-//                        if(isIndiceVector((*i)->getName())){
-//                            (*i)->setEIndice(true);
-//                            (*i)->setName("indice_"+(*i)->getName());
-//                            (*i)->getComponenteRef()->setName((*i)->getName());
-//                            (*i)->getComponenteRef()->setEIndice(true);
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//    }
-    cout<<"--Finalizando comp REF: OK"<<endl;
-    // </editor-fold>
-    
+        
     //Processo de Ligacao SIMPLES (cria a ligacao disponivel na arvore AST gerada pelo ROSE)
     // <editor-fold defaultstate="collapsed" desc="Cria ligacoes conforme ROSE AST">
     cout<<"--Criando ligacoes basicas"<<endl;
@@ -767,29 +776,64 @@ void Core::FinalizaComponentes(){
         for (j = this->ListaComp.begin(); j != this->ListaComp.end(); j++) {
             if ((*i)->tipo_comp ==  CompType::REG || (*i)->tipo_comp == CompType::MEM || (*j)->tipo_comp == CompType::REG || (*j)->tipo_comp == CompType::MEM) continue;
             if ((*i)->node == (*j)->node) continue;
-
+            
             if ((*i)->getPai() == (*j)->node) {
-                if( (*i)->getPortDataInOut("OUT")->getLigacao() == "" ){
                 
-                    string str = FuncoesAux::IntToStr(this->ListaLiga.size());
-
-                    //CRIAR LIGACAO
+                if( (*i)->getPortDataInOut("OUT")->getLigacao() == "" ){
+                    string str = FuncoesAux::IntToStr(this->ListaLiga.size());                   
+                    string portIn = "IN";
                     Ligacao* lig = new Ligacao((*i), (*j), "s" + str);
-                    lig->setPortDestino((*j)->getPortDataInOut("IN"));
+                    if( (*j)->tipo_comp == CompType::OPE){
+                        string nome = "";
+                        if((*j)->getPortOther("I0")->getLigacao() == ""){
+                            portIn = "I0";
+                            nome = (*i)->getName()+"_"+(*j)->getNomeCompVHDL();
+                        }else{
+                            portIn = "I1";
+                            nome = (*j)->getName()+"_"+(*i)->getName();   
+                        }
+                        (*j)->setName(nome);                       
+                    }
+                    if(portIn == "IN"){
+                        lig->setPortDestino((*j)->getPortDataInOut("IN"));
+                    }else{
+                        lig->setPortDestino((*j)->getPortOther(portIn));
+                    }
+
                     lig->setPortOrigem((*i)->getPortDataInOut("OUT"));
                     lig->setWidth((*i)->getPortDataInOut("OUT")->getWidth());
                     lig->setTipo((*i)->getPortDataInOut("OUT")->getType());
-
+                    
                     //INFORMAR CADA PORTA QUEM E SUA LIGACAO
-                    (*j)->getPortDataInOut("IN")->setLigacao(lig->getNome());
                     (*i)->getPortDataInOut("OUT")->setLigacao(lig->getNome());
+                    if(portIn == "IN"){
+                        (*j)->getPortDataInOut("IN")->setLigacao(lig->getNome());
+                    }else{
+                        (*j)->getPortOther(portIn)->setLigacao(lig->getNome());
+                    }
 
                     //ADICIONAR EM CADA COMPONENTE ESTA LIGACAO
                     (*i)->addLigacao(lig);
                     (*j)->addLigacao(lig);
-
                     //ADICIONAR NA LISTA DE LIGACOES A NOVA LIGACAO
                     this->ListaLiga.push_back(lig);
+                    
+                    if((*j)->getNomeCompVHDL() == "add_reg_op_s"){
+                        if((*j)->getPortOther("I0")->getLigacao() == ""){
+                            Ligacao* lig1 = new Ligacao((*j), (*j), "s" + FuncoesAux::IntToStr(this->ListaLiga.size()));
+                            
+                            lig1->setPortOrigem((*j)->getPortDataInOut("OUT"));
+                            lig1->setPortDestino((*j)->getPortOther("I0"));
+                            lig1->setWidth((*j)->getPortDataInOut("OUT")->getWidth());
+                            lig1->setTipo((*j)->getPortDataInOut("OUT")->getType());
+                            
+                            (*j)->getPortDataInOut("OUT")->setLigacao(lig1->getNome());
+                            (*j)->getPortOther("I0")->setLigacao(lig1->getNome());
+                            
+                            (*j)->addLigacao(lig1);
+                            this->ListaLiga.push_back(lig1);
+                        }
+                    }
                 }
             }
         }
@@ -812,14 +856,14 @@ void Core::FinalizaComponentes(){
                 nameDir = cond->getCondDir();
                 name    = (*i)->getNomeCompVHDL();
             }
-             
+            cout<<"COMPOENENTE: "<< (*i)->getName() << " - "<<  (*i)->getNomeCompVHDL() <<endl;
             for (j = this->ListaComp.begin(); j != this->ListaComp.end(); j++) {
                 if ((*j)->tipo_comp != CompType::REF) continue;
                 
                 if ((*j)->tipo_comp == CompType::REF) {
                     //Necessario para pegar funcao especifica do contador
                     comp_ref* CompRef = (comp_ref*)(*j); 
-                                        
+                    cout<<"ref: "<< CompRef->getName() <<endl;
                     if (nameEsq == (*j)->getName() || nameDir == (*j)->getName()) {
                         string porta ="";
                         Componente* comp = (*j);
@@ -831,6 +875,7 @@ void Core::FinalizaComponentes(){
                             porta = "I1";
                             name += "_"+(*j)->getName();
                             (*i)->setName(name);
+                            cout<<"COMPOENENTE: "<< (*i)->getName() << " - "<<  (*i)->getNomeCompVHDL() <<endl;
                         }
 
 //                        if(CompRef->getTipoCompRef() == CompType::MEM){
@@ -974,71 +1019,10 @@ void Core::FinalizaComponentes(){
             }
         }
     }
-//    cout<< "@@@@ REMOVER DA LISTA AUX" <<endl;
-//    for (i = ListaCompAux.begin(); i != ListaCompAux.end(); i++) {
-//        for (j = this->ListaComp.begin(); j != this->ListaComp.end(); j++) {
-//            if((*i)->getName() == (*j)->getName()){
-//                if( (*j)->tipo_comp == CompType::REF){
-//                    cout<< " (i): " <<(*i)->getName()<<endl;
-//                    cout<< " (j): " <<(*j)->getName()<<endl;
-//                    Componente comp = (*j);
-//                    cout<<"11"<<endl;
-//                    this->ListaComp.remove(&comp);
-//                }
-//            }
-//        }
-//    }
-//    ListaCompAux.clear();
     cout<<"--Criando novas ligacoes do Contador: OK"<<endl;
     // </editor-fold> 
-    
-    //Processo responsavel por criar nomes dos componentes similar ao proposto
-    //no LALP (VAR_op_add_VAR) isso ajuda a diferenciar cada ligacao
-    // <editor-fold defaultstate="collapsed" desc="Criar nome componente OP">
-    bool sair = false;
-    while (sair == false) {
-        sair = true;
-        for (i = this->ListaComp.begin(); i != this->ListaComp.end(); i++) {
-            
-            if ((*i)->tipo_comp == CompType::REG || (*i)->tipo_comp == CompType::MEM) continue;
-            if ((*i)->tipo_comp == CompType::OPE) {
-                
-                string nome, aux = "";
-                int incr_nome = 0;
-                for (k = this->ListaLiga.begin(); k != this->ListaLiga.end(); k++) {
-                    Componente* destino = (*k)->getDestino();
-                    
-                    if ((*i)->node == destino->node) {
-                        aux = (*k)->getOrigem()->getName();
+   
 
-                        if (aux == "") {
-                            sair = false;
-                        } else if ((*i)->getName() == "") {
-                            
-                            op_add_s* node_op = (op_add_s*)(*i);
-                            
-                            if (incr_nome < 1) {
-                                nome = aux +"_"+ node_op->getNomeCompVHDL();
-                                (*k)->setPortDestino((*i)->getPortOther("I0"));
-                                
-                                //ADICIONAR NOME LIGACAO NA PORTA
-                                (*k)->getPortDestino()->setLigacao((*k)->getNome());
-                                incr_nome++;
-                            } else {
-                                nome += "_"+aux;
-                                (*i)->setName(nome);
-                                (*k)->setPortDestino((*i)->getPortOther("I1"));
-                                
-                                //ADICIONAR NOME  LIGACAO NA PORTA
-                                (*k)->getPortDestino()->setLigacao((*k)->getNome());
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }// </editor-fold>
-    
     //Setar INICIALIZACAO
     comp_aux* comp_init = new comp_aux(NULL,"INIT");
     comp_init->setName("init");
@@ -1161,31 +1145,8 @@ void Core::updateCompRef(SgNode* node, comp_ref* comp){
 //                cout<< "---" << (*i)->getName()<< " -- "<< (*i)->getNomeCompVHDL() << " -- " << (*i)->node <<endl;
                 add_reg_op_s* add_reg = new add_reg_op_s((*i)->node);
                 add_reg->setName((*i)->getName());
-                add_reg->setValor( (*i)->getGenericMapVal("initial", "VAL") );
-//                this->ListaComp.remove((*i));
-//                this->addComponent(add_reg);
-                (*i) = add_reg;
-                
-                string str = FuncoesAux::IntToStr(this->ListaLiga.size());
-                
-                //CRIAR LIGACAO
-                Ligacao* lig = new Ligacao(add_reg, add_reg, "s" + str);
-                lig->setPortDestino(add_reg->getPortOther("I0"));
-                lig->setPortOrigem(add_reg->getPortDataInOut("OUT"));
-                lig->setWidth(add_reg->getPortDataInOut("OUT")->getWidth());
-                lig->setTipo(add_reg->getPortDataInOut("OUT")->getType());
-  
-                //INFORMAR CADA PORTA QUEM E SUA LIGACAO
-                add_reg->getPortDataInOut("IN")->setLigacao(lig->getNome());
-                add_reg->getPortDataInOut("OUT")->setLigacao(lig->getNome());
-                
-                //ADICIONAR EM CADA COMPONENTE ESTA LIGACAO
-                add_reg->addLigacao(lig);
-                
-                //ADICIONAR NA LISTA DE LIGACOES A NOVA LIGACAO
-                this->ListaLiga.push_back(lig);
-                
-                break;
+                add_reg->setValor((*i)->getGenericMapVal("initial", "VAL"));
+                (*i) = add_reg;                
             }
         }
     }
@@ -1193,14 +1154,19 @@ void Core::updateCompRef(SgNode* node, comp_ref* comp){
     list<Componente*>::iterator j;
     for (j = this->ListaComp.begin(); j != this->ListaComp.end(); j++) {
         if ((*j)->tipo_comp == CompType::REG || (*j)->tipo_comp == CompType::MEM) {
+            
             if (comp->getName() == (*j)->getName()) {
                 comp->setComponenteRef((*j));
                 comp->updateCompRef();
                 if(isIndiceVector(comp->getName())){
                     comp->setEIndice(true);
-                    comp->setName("indice_"+comp->getName());
-                    comp->getComponenteRef()->setName(comp->getName());
+                    comp->setName(comp->getName()+"_"+FuncoesAux::IntToStr(this->ListaComp.size()));
+//                    comp->getComponenteRef()->setName(comp->getName());
                     comp->getComponenteRef()->setEIndice(true);
+                    
+                    cout<<comp->getName()<<endl;
+                    cout<<comp->imprimePortas()<< endl;
+                    
                 }
             }
         }
@@ -1263,6 +1229,7 @@ void Core::updateCounter(SgNode* node, counter* comp){
 //        -- 4  ==
 //        -- 5  !=
         SgExpression* testExp       = cur_for->get_test_expr();
+//        SgNode* nodeCond = NULL;
         
         Rose_STL_Container<SgNode*> NodosFor2 = NodeQuery::querySubTree(testExp,V_SgNode);
         for (Rose_STL_Container<SgNode*>::iterator for2 = NodosFor2.begin(); for2 != NodosFor2.end(); for2++ ) 
@@ -1279,6 +1246,7 @@ void Core::updateCounter(SgNode* node, counter* comp){
             }
             if (opMenorIgual != NULL){
                 comp->setGenericMapCondition("1");
+//                varID var = SgExpr2Var(opMenorIgual->get_rhs_operand_i());
             }
             if (opMaiorQue != NULL){
                 comp->setGenericMapCondition("2");
@@ -1554,7 +1522,6 @@ void Core::detectBackwardEdges(){
                     (*k)->setBlackEdge(true);
                     if(debug)
                         cout<< "signal \"" << (*k)->getOrigem()->getName() << "\" -> \"" <<  (*k)->getDestino()->getName() << "\" marked as backedge (source defined after destination in source code)" << endl;
-        
                 }
             }
         }
@@ -1746,7 +1713,7 @@ void Core::balanceAndSyncrhonize(){
             dlyCtd = FuncoesAux::StrToInt(counter->getDelayValComp());
         }
         
-        Componente* dly4 = this->insereDelay(newLig4, amount, counter->getASAP() + dlyCtd);
+        Componente* dly4 = this->insereDelay(newLig4, amount+2, counter->getASAP() + dlyCtd);
         this->addComponent(dly4); 
         if(debug){
             cout<< "inserting " << amount << " delay(s) on signal "<< counter->getName()<< "->" << comp_done->getName() <<" (termination)" << endl;

@@ -22,7 +22,7 @@ delay_op::~delay_op() {
 }
 
 void delay_op::createAllGeneric(){
-    this->addGenericMap(new GenericMap("bits"   , "integer", "16"));
+    this->addGenericMap(new GenericMap("bits"   , "integer", "32"));
     this->addGenericMap(new GenericMap("delay"  , "integer", "0"));
 }
 

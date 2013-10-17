@@ -8,14 +8,17 @@
 //#include "rose.h"
 #include "header/meuHeader.h"
 #include "Core.h"
+#include "Aux/starParalel.h"
+//#include "Aux/autoParSupport.h"
+
 int main (int argc, char** argv)
 {
     // Build the AST used by ROSE
+    list<SgNode*>listaForParall;
+    
     SgProject* project = frontend(argc, argv);
-    Core* core = new Core(project);
-    
-//    core->imprimeAll();
-    
+    starParalel* para  = new starParalel(project, listaForParall);
+    Core* core = new Core(project, listaForParall);    
     core->geraArquivosDotHW();
     generateGraphOfAST(project,"DOT/AST");
     

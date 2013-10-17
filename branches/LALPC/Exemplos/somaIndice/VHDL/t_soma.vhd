@@ -12,7 +12,7 @@
 -- SUFFERED BY LICENSEE AS A RESULT OF USING, MODIFYING OR DISTRIBUTING THIS
 -- SOFTWARE OR ITS DERIVATIVES.
 --
--- Generated at Tue Dec 11 15:01:25 BRST 2012
+-- Generated at Thu Oct 10 19:06:16 BRT 2013
 --
 
 -- IEEE Libraries --
@@ -20,19 +20,19 @@ library IEEE;
 use IEEE.std_logic_1164.all;
 use IEEE.std_logic_arith.all;
 use IEEE.std_logic_unsigned.all;
-entity t_max is
-end t_max;
+entity t_soma is
+end t_soma;
 
-architecture behavior of t_max is
+architecture behavior of t_soma is
 
-component max
+component soma
 	port (
 		\clear\	: in	std_logic;
 		\clk\	: in	std_logic;
 		\done\	: out	std_logic;
 		\init\	: in	std_logic;
 		\reset\	: in	std_logic;
-		\result\: out	std_logic_vector(31 downto 0)
+		\result\	: out	std_logic_vector(31 downto 0)
 	);
 end component;
 
@@ -45,7 +45,7 @@ signal \result\	: std_logic_vector(31 downto 0)	:= (others => '0');
 
 begin
 
-uut: max
+uut: soma
 port map (
 	\clear\ => \clear\,
 	\clk\ => \clk\,
@@ -75,11 +75,11 @@ process
 
 begin
 
-	wait until \done\ = '1';
-	assert \result\ = conv_std_logic_vector(800,32)
-		report "value different from the expected" severity error;
+	wait for 10 ns;
 
-	wait for 12 ns;
+	wait on \result\;
+	assert \result\ = conv_std_logic_vector(2,32)
+		report "value different from the expected" severity error;
 
 	assert false report "end of test of \result\" severity note;
 

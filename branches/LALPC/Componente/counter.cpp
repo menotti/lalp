@@ -24,7 +24,7 @@ counter::~counter() {
 }
 
 void counter::createAllGeneric(){
-    this->addGenericMap(new GenericMap("bits"           , "integer", "16"));
+    this->addGenericMap(new GenericMap("bits"           , "integer", "32"));
     this->addGenericMap(new GenericMap("condition"      , "integer", "0"));
     this->addGenericMap(new GenericMap("down"           , "integer", "0"));
     this->addGenericMap(new GenericMap("increment"      , "integer", "1"));
@@ -35,12 +35,12 @@ void counter::createAllPorts(){
     this->addPort(new Port("clk"        ,"in"   ,"std_logic"            ,"1", ""));
     this->addPort(new Port("clk_en"     ,"in"   ,"std_logic"            ,"1", ""));
     this->addPort(new Port("done"       ,"out"  ,"std_logic"            ,"1", ""));
-    this->addPort(new Port("input"      ,"in"   ,"std_logic_vector"     ,"16", "IN"));
+    this->addPort(new Port("input"      ,"in"   ,"std_logic_vector"     ,"32", "IN"));
     this->addPort(new Port("load"       ,"in"   ,"std_logic"            ,"1", ""));
-    this->addPort(new Port("output"     ,"out"  ,"std_logic_vector"     ,"16", "OUT"));
+    this->addPort(new Port("output"     ,"out"  ,"std_logic_vector"     ,"32", "OUT"));
     this->addPort(new Port("reset"      ,"in"   ,"std_logic"            ,"1", ""));
     this->addPort(new Port("step"       ,"out"  ,"std_logic"            ,"1", ""));
-    this->addPort(new Port("termination","in"   ,"std_logic_vector"     ,"16", "")); 
+    this->addPort(new Port("termination","in"   ,"std_logic_vector"     ,"32", "")); 
 }
 
 string counter::getEstruturaComponenteVHDL(){
