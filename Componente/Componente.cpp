@@ -426,6 +426,7 @@ void Componente::updateCompRef(){
     if (this->tipo_comp == CompType::REF){      
         this->genMap = this->getComponenteRef()->getGenericMap();
         this->portas = this->getComponenteRef()->getPorts();
+        this->copyAllPortsAndGM();
         if(this->getTipoCompRef() == CompType::MEM){
             string vhdlComp = "block_ram";
             if(!this->getWE()){
@@ -440,6 +441,30 @@ void Componente::updateCompRef(){
             this->setNomeCompVHDL(this->getComponenteRef()->getNomeCompVHDL());
         }
     }
+}
+
+void Componente::copyAllPortsAndGM(){
+    list<Port*>::iterator p;
+    list<GenericMap*>::iterator g;
+    list<Port*>         newPortas;
+    list<GenericMap*>   newGenMap;
+    for(p=this->portas.begin(); p != this->portas.end(); p++){
+        string nome     = (*p)->getName();
+        string input    = (*p)->getInput();
+        string tipo     = (*p)->getType();
+        string widt     = (*p)->getWidth();
+        string aux      = (*p)->getAux();
+        newPortas.push_back(new Port(nome ,input ,tipo ,widt, aux));
+    }
+    this->portas = newPortas;
+        
+    for(g=this->genMap.begin(); g != this->genMap.end(); g++){
+        string nome     = (*g)->getNome();
+        string tipo     = (*g)->getTipo();
+        string valor    = (*g)->getValor();
+        newGenMap.push_back(new GenericMap(nome , tipo, valor));
+    }
+    this->genMap = newGenMap;
 }
 
 CompType::TIPO_COMP Componente::getTipoCompRef(){

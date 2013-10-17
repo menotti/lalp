@@ -11,7 +11,7 @@
 #include <stdlib.h>
 #include <string>
 #include <vector>
-
+#include "FuncoesAux.h"
 using namespace std;
 using boost::lexical_cast;
 

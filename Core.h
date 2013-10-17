@@ -26,7 +26,7 @@ using namespace std;
 
 class Core {  
     public:
-        Core(SgProject* project);
+        Core(SgProject* project, list<SgNode*> lista);
         virtual ~Core();        
         void identificaVariaveis();
         void identificaFor();
@@ -45,6 +45,7 @@ class Core {
         int             maxSchedulingTime;
         list<Componente*>ListaComp;
         list<Ligacao*>  ListaLiga;
+        list<SgNode*>   ListaForParall;
         string          compNameReturn;
         bool            sync;
         void            copySchedulingTimes();

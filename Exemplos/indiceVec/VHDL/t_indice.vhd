@@ -20,19 +20,19 @@ library IEEE;
 use IEEE.std_logic_1164.all;
 use IEEE.std_logic_arith.all;
 use IEEE.std_logic_unsigned.all;
-entity t_dotprod is
-end t_dotprod;
+entity t_indice is
+end t_indice;
 
-architecture behavior of t_dotprod is
+architecture behavior of t_indice is
 
-component dotprod
+component indice
 	port (
 		\clear\	: in	std_logic;
 		\clk\	: in	std_logic;
 		\done\	: out	std_logic;
 		\init\	: in	std_logic;
 		\reset\	: in	std_logic;
-		\sum\	: out	std_logic_vector(31 downto 0)
+		\result\	: out	std_logic_vector(31 downto 0)
 	);
 end component;
 
@@ -41,18 +41,18 @@ signal \clk\	: std_logic	:= '0';
 signal \done\	: std_logic	:= '0';
 signal \init\	: std_logic	:= '0';
 signal \reset\	: std_logic	:= '0';
-signal \sum\	: std_logic_vector(31 downto 0)	:= (others => '0');
+signal \result\	: std_logic_vector(31 downto 0)	:= (others => '0');
 
 begin
 
-uut: dotprod
+uut: indice
 port map (
 	\clear\ => \clear\,
 	\clk\ => \clk\,
 	\done\ => \done\,
 	\init\ => \init\,
 	\reset\ => \reset\,
-	\sum\ => \sum\
+	\result\ => \result\
 );
 
 clock: process
@@ -77,19 +77,19 @@ begin
 
 	wait for 10 ns;
 
-	wait on \sum\;
-	assert \sum\ = conv_std_logic_vector(4,32)
+	wait on \result\;
+	assert \result\ = conv_std_logic_vector(4,32)
 		report "value different from the expected" severity error;
 
-	wait on \sum\;
-	assert \sum\ = conv_std_logic_vector(14,32)
+	wait on \result\;
+	assert \result\ = conv_std_logic_vector(14,32)
 		report "value different from the expected" severity error;
 
-	wait on \sum\;
-	assert \sum\ = conv_std_logic_vector(32,32)
+	wait on \result\;
+	assert \result\ = conv_std_logic_vector(32,32)
 		report "value different from the expected" severity error;
 
-	assert false report "end of test of \sum\" severity note;
+	assert false report "end of test of \result\" severity note;
 
 wait;
 end process;
@@ -99,12 +99,12 @@ process
 begin
 
 	wait until \done\ = '1';
-	assert \sum\ = conv_std_logic_vector(32,32)
+	assert \result\ = conv_std_logic_vector(32,32)
 		report "value different from the expected" severity error;
 
 	wait for 12 ns;
 
-	assert false report "end of test of \sum\" severity note;
+	assert false report "end of test of \result\" severity note;
 
 wait;
 end process;
@@ -115,15 +115,15 @@ begin
 
 	wait for 10 ns;
 
-	wait on \sum\;
-	assert \sum\ = conv_std_logic_vector(4,32)
+	wait on \result\;
+	assert \result\ = conv_std_logic_vector(4,32)
 		report "value different from the expected" severity error;
 
 	wait for 22 ns;
-	assert \sum\ = conv_std_logic_vector(32,32)
+	assert \result\ = conv_std_logic_vector(32,32)
 		report "value different from the expected" severity error;
 
-	assert false report "end of test of \sum\" severity note;
+	assert false report "end of test of \result\" severity note;
 
 wait;
 end process;

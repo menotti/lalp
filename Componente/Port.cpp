@@ -44,16 +44,16 @@ string Port::getType(){
     return this->type;
 }
 
-void Port::setWidth(const string&  width){
-    this->width = width;
-}
-
 string Port::getWidth(){
     return this->width;
 }
 
 string Port::getAux(){
     return this->aux;
+}
+
+void Port::setWidth(const string&  width){
+    this->width = width;
 }
 
 Port::~Port() {

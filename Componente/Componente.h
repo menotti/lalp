@@ -103,6 +103,7 @@ class Componente {
         bool            getSync();
         void            setSync(bool val);
         void            printAllPortsAllLig();
+        void            copyAllPortsAndGM();
     private:
         bool            isIndice;
         int             alap;

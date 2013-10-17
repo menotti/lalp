@@ -15,19 +15,19 @@ comp_aux::comp_aux(SgNode* node,  const string& aux) : Componente(node, aux) {
     this->tipo_comp = CompType::AUX;     
     if(aux == "INIT"){
         this->setNomeCompVHDL("init");
-        this->addPort(new Port("out","out"   ,"std_logic"     ,"16", "OUT"));
+        this->addPort(new Port("out","out"   ,"std_logic"     ,"32", "OUT"));
     }        
     if(aux == "INPUT"){
         this->setNomeCompVHDL("input");
-        this->addPort(new Port("out","out"   ,"std_logic_vector","16", "OUT"));
+        this->addPort(new Port("out","out"   ,"std_logic_vector","32", "OUT"));
     }        
     if(aux == "TERMINATION"){
         this->setNomeCompVHDL("termination");
-        this->addPort(new Port("out","out"   ,"std_logic_vector","16", "OUT"));
+        this->addPort(new Port("out","out"   ,"std_logic_vector","32", "OUT"));
     }
     if(aux == "VALOR"){
         this->setNomeCompVHDL("valor");
-        this->addPort(new Port("out","out"   ,"std_logic_vector","16", "OUT"));
+        this->addPort(new Port("out","out"   ,"std_logic_vector","32", "OUT"));
     }
     if(aux == "DONE"){
         this->setNomeCompVHDL("done");
@@ -54,10 +54,10 @@ string  comp_aux::geraCompVHDL(){
         res = this->getPortDataInOut("OUT")->getLigacao()+" <= \\"+this->getName()+"\\; \n";
     }
     if(this->getNomeCompVHDL() == "termination" || this->getNomeCompVHDL() == "input"){
-        res = this->getPortDataInOut("OUT")->getLigacao()+" <= conv_std_logic_vector("+this->valAux+", 16); \n";
+        res = this->getPortDataInOut("OUT")->getLigacao()+" <= conv_std_logic_vector("+this->valAux+", 32); \n";
     }
     if(this->getNomeCompVHDL() == "valor"){
-        res = this->getPortDataInOut("OUT")->getLigacao()+" <= conv_std_logic_vector("+this->valAux+", 16); \n";
+        res = this->getPortDataInOut("OUT")->getLigacao()+" <= conv_std_logic_vector("+this->valAux+", 32); \n";
     }
     return res;
 }

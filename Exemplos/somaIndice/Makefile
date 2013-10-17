@@ -3,11 +3,11 @@
 TRANSLATOR=../../LALPC
 
 ## Input testcode for your translator
-TESTCODE=template.c
+TESTCODE=soma.c
 
 #On Windows systems comment the line below and use: make TESTBENCH=t_<EntityName>
 DIR = $(shell basename ${PWD})
-TESTBENCH = `cd src; ls -1 t_*.vhd | sed 's/\(.*\)\..*/\1/'`
+TESTBENCH = `cd VHDL; ls -1 t_*.vhd | sed 's/\(.*\)\..*/\1/'`
 
 LALP_CMD = lalp
 LALP_FLAGS = -gv -gs -vh -vi -vt -aa -at -ab -as -ad -ao -verbose

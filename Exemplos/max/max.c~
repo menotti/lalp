@@ -1,9 +1,0 @@
-int main() {
-  int v[3] = {70,1,800};
-  int maxval = 0;
-  int i;
-  for (i=0; i<7; i++)
-    if (v[i] > maxval)
-      maxval = v[i];
-  return maxval;
-}
