@@ -10,7 +10,7 @@
 
 comp_ref::comp_ref(SgNode* node, const string &aux) : Componente(node, aux){
     this->tipo_comp = CompType::REF;
-    if(aux == "WE"){
+    if(aux == "WE"){ 
         this->setWE(true);
     }
 }
@@ -45,12 +45,15 @@ string comp_ref::getNomeVarIndex(){
     return this->ref_var_index;
 }
 
-void comp_ref::setNomeVarRef(const string &nome){
-    this->ref_var_nome = nome;
-}
-
 void comp_ref::setTipoVar(const string &tipo){
     this->ref_var_tipo = tipo;
 }
+
+ string comp_ref::getTipoVar(){
+     string res = "";
+     res = this->ref_var_tipo;
+     return res;
+ }
+
 comp_ref::~comp_ref() {
 }

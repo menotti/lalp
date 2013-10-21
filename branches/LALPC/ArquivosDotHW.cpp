@@ -46,6 +46,7 @@ void ArquivosDotHW::imprimeHWDOT() {
     fout << "// Signals (Edges) \n";
     cout << "// Signals (Edges) \n";
     for(k=this->ListaLiga.begin(); k != this->ListaLiga.end(); k++){
+        if((*k)->getAtivo() == false ) continue;
         fout << (*k)->imprimeDot();
         cout << (*k)->imprimeDot();
     }
@@ -106,6 +107,7 @@ void ArquivosDotHW::imprimeVHDL() {
     //VARIAS ENTRADAS.
     this->ListaAux.clear();
     for(k=this->ListaLiga.begin(); k != this->ListaLiga.end(); k++){
+        if((*k)->getAtivo() == false ) continue;
         if((*k)->getPortOrigem()->getLigacao() != (*k)->getNome()){            
             (*k)->getPortDestino()->setLigacao((*k)->getPortOrigem()->getLigacao());
             (*k)->setName((*k)->getPortOrigem()->getLigacao());
@@ -115,6 +117,7 @@ void ArquivosDotHW::imprimeVHDL() {
 
     //SINAIS VALIDADOS NO PASSO ANTERIOR
     for(k=this->ListaLiga.begin(); k != this->ListaLiga.end(); k++){
+        if((*k)->getAtivo() == false ) continue;
         if(this->ExisteNaListaAux((*k)->getNome()) == false){
             string res = "signal "+(*k)->getNome();
             

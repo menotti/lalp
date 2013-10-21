@@ -18,6 +18,7 @@ class starParalel {
 public:
     starParalel(SgProject* project, list<SgNode*> listFor);
     virtual ~starParalel();
+    list<SgNode*> getListaComp();
 private:
     void          removeRedundance(SgProject* project);
     void          verifyLiveDeadVar(SgProject* project);

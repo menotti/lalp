@@ -91,46 +91,48 @@ port (
 ); 
 end component; 
 
-signal s3	: std_logic_vector(31 downto 0); 
-signal s7	: std_logic_vector(31 downto 0); 
-signal s2	: std_logic_vector(0 downto 0); 
 signal s4	: std_logic_vector(31 downto 0); 
-signal s5	: std_logic_vector(31 downto 0); 
-signal s6	: std_logic_vector(31 downto 0); 
-signal s8	: std_logic; 
-signal s9	: std_logic; 
-signal s10	: std_logic_vector(0 downto 0); 
+signal s7	: std_logic_vector(31 downto 0); 
+signal s12	: std_logic_vector(31 downto 0); 
+signal s6	: std_logic_vector(0 downto 0); 
+signal s13	: std_logic_vector(31 downto 0); 
+signal s9	: std_logic_vector(31 downto 0); 
+signal s10	: std_logic_vector(31 downto 0); 
+signal s11	: std_logic_vector(31 downto 0); 
+signal s14	: std_logic; 
+signal s15	: std_logic; 
+signal s16	: std_logic_vector(0 downto 0); 
 
 begin 
 
 	\i\: counter
 	generic map ( 
 		bits => 32,
-		condition => 1,
+		condition => 0,
 		down => 0,
 		increment => 1,
 		steps => 1
 	)
 	port map ( 
 		clk => \clk\,
-		clk_en => s8,
-		done => s9,
-		input => s6,
-		output => s4,
+		clk_en => s14,
+		done => s15,
+		input => s11,
+		output => s9,
 		reset => \reset\,
-		termination => s5
+		termination => s10
 	);
 
-	\v_if_gt_op_s_maxval\: if_gt_op_s
+	\v_v_if_gt_op_s_maxval_maxval\: if_gt_op_s
 	generic map ( 
 		w_in1 => 32,
 		w_in2 => 32,
 		w_out => 1
 	)
 	port map ( 
-		I0 => s3,
-		I1 => s7,
-		O0 => s2
+		I0 => s7,
+		I1 => s13,
+		O0 => s6
 	);
 
 	\maxval\: reg_op
@@ -140,10 +142,10 @@ begin
 	)
 	port map ( 
 		clk => \clk\,
-		I0 => s3,
-		O0 => s7,
+		I0 => s7,
+		O0 => s12,
 		reset => \reset\,
-		we => s2(0)
+		we => s6(0)
 	);
 
 	\v\: block_ram_v
@@ -152,26 +154,50 @@ begin
 		data_width => 32
 	)
 	port map ( 
-		address(3 downto 0) => s4(3 downto 0),
+		address(3 downto 0) => s9(3 downto 0),
 		clk => \clk\,
-		data_out => s3
+		data_out => s4
 	);
 
-	\c12\: delay_op
+	\maxval\: reg_op
+	generic map ( 
+		initial => 0,
+		w_in => 32
+	)
+	port map ( 
+		clk => \clk\,
+		O0 => s13,
+		reset => \reset\,
+		we => s6(0)
+	);
+
+	\v\: block_ram_v
+	generic map ( 
+		address_width => 4,
+		data_width => 32
+	)
+	port map ( 
+		address(3 downto 0) => s9(3 downto 0),
+		clk => \clk\,
+		data_out => s7
+	);
+
+	\c15\: delay_op
 	generic map ( 
 		bits => 1,
 		delay => 5
 	)
 	port map ( 
-		a(0) => s9,
-		a_delayed => s10,
+		a(0) => s15,
+		a_delayed => s16,
 		clk => \clk\,
 		reset => \reset\
 	);
 
-s8 <= \init\; 
-\done\ <= s10(0); 
-s5 <= conv_std_logic_vector(1, 32); 
-s6 <= conv_std_logic_vector(0, 32); 
-\result\ <= s7; 
+s14 <= \init\; 
+\done\ <= s16(0); 
+s10 <= conv_std_logic_vector(10, 32); 
+s11 <= conv_std_logic_vector(0, 32); 
+\result\ <= s12; 
+\result\ <= s13; 
 end behavior; 

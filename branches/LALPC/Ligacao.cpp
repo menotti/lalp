@@ -20,6 +20,7 @@ Ligacao::Ligacao(class Componente* origem, class Componente* destino, const stri
     this->nome          = nome;
     this->BackEdge      = false;
     this->width         = "1";
+    this->ativo         = true;
 }
 
 void Ligacao::setBlackEdge(bool val){
@@ -28,6 +29,14 @@ void Ligacao::setBlackEdge(bool val){
 
 bool Ligacao::getBlackEdge(){
     return this->BackEdge;
+}
+
+void Ligacao::setAtivo(bool status){
+    this->ativo  = status;
+}
+
+bool Ligacao::getAtivo(){
+    return this->ativo;
 }
 
 void Ligacao::editOrig(class Componente* newOrig){

@@ -29,12 +29,15 @@ public:
     void        setTipo(const string &size);
     void        setBlackEdge(bool val);
     bool        getBlackEdge();
+    bool        getAtivo();
+    void        setAtivo(bool status);
     string      getWidth();
     string      getTipo();
     string      imprimeDot();
     const string&      getNome() const;
     virtual     ~Ligacao();
 private:
+    bool        ativo;
     class       Componente* origem;
     class       Componente* destino;
     bool        BackEdge;

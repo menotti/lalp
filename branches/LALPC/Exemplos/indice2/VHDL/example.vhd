@@ -95,16 +95,14 @@ end component;
 signal s0	: std_logic_vector(31 downto 0); 
 signal s1	: std_logic_vector(31 downto 0); 
 signal s2	: std_logic_vector(31 downto 0); 
+signal s4	: std_logic_vector(31 downto 0); 
 signal s5	: std_logic_vector(31 downto 0); 
 signal s6	: std_logic_vector(31 downto 0); 
 signal s7	: std_logic_vector(31 downto 0); 
-signal s8	: std_logic_vector(31 downto 0); 
+signal s8	: std_logic; 
 signal s9	: std_logic; 
 signal s10	: std_logic_vector(0 downto 0); 
-signal s11	: std_logic; 
-signal s12	: std_logic; 
-signal s13	: std_logic_vector(0 downto 0); 
-signal s14	: std_logic_vector(31 downto 0); 
+signal s13	: std_logic_vector(31 downto 0); 
 
 begin 
 
@@ -118,12 +116,11 @@ begin
 	)
 	port map ( 
 		clk => \clk\,
-		clk_en => s11,
-		done => s12,
+		clk_en => s8,
+		done => s9,
 		input => s6,
-		output => s2,
+		output => s4,
 		reset => \reset\,
-		step => s9,
 		termination => s5
 	);
 
@@ -133,11 +130,10 @@ begin
 		data_width => 32
 	)
 	port map ( 
-		address(1 downto 0) => s8(1 downto 0),
+		address(1 downto 0) => s13(1 downto 0),
 		clk => \clk\,
 		data_in => s0,
-		data_out => s7,
-		we => s10(0)
+		data_out => s7
 	);
 
 	\a_add_op_s_i_8\: add_op_s
@@ -148,7 +144,7 @@ begin
 	)
 	port map ( 
 		I0 => s1,
-		I1 => s14,
+		I1 => s13,
 		O0 => s0
 	);
 
@@ -158,27 +154,15 @@ begin
 		data_width => 32
 	)
 	port map ( 
-		address(1 downto 0) => s2(1 downto 0),
+		address(1 downto 0) => s4(1 downto 0),
 		clk => \clk\,
 		data_out => s1
 	);
 
 	\c13\: delay_op
 	generic map ( 
-		bits => 32,
-		delay => 2
-	)
-	port map ( 
-		a => s2,
-		a_delayed => s8,
-		clk => \clk\,
-		reset => \reset\
-	);
-
-	\c14\: delay_op
-	generic map ( 
 		bits => 1,
-		delay => 2
+		delay => 5
 	)
 	port map ( 
 		a(0) => s9,
@@ -187,32 +171,20 @@ begin
 		reset => \reset\
 	);
 
-	\c15\: delay_op
+	\c14\: delay_op
 	generic map ( 
-		bits => 1,
-		delay => 5
+		bits => 32,
+		delay => 3
 	)
 	port map ( 
-		a(0) => s12,
+		a => s2,
 		a_delayed => s13,
 		clk => \clk\,
 		reset => \reset\
 	);
 
-	\c16\: delay_op
-	generic map ( 
-		bits => 32,
-		delay => 2
-	)
-	port map ( 
-		a => s2,
-		a_delayed => s14,
-		clk => \clk\,
-		reset => \reset\
-	);
-
-s11 <= \init\; 
-\done\ <= s13(0); 
+s8 <= \init\; 
+\done\ <= s10(0); 
 s5 <= conv_std_logic_vector(3, 32); 
 s6 <= conv_std_logic_vector(0, 32); 
 \result\ <= s7; 

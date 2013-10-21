@@ -42,6 +42,14 @@ int Componente::getWidth(){
     return this->dataWidth;
 }
 
+void Componente::setNomeVarRef(const string &nome){
+    this->ref_var_nome = nome;
+}
+
+string Componente::getNomeVarRef(){
+    return this->ref_var_nome;
+}
+
 bool Componente::getSync(){
     return this->sync;
 }
@@ -50,6 +58,16 @@ void Componente::setSync(bool sync){
     this->sync = sync;
     if(!this->sync)
         this->setDelayValComp("0");
+}
+
+void Componente::setNumParalelLina(const string &id){
+    this->numParallelLine = id;
+}
+
+string Componente::getNumParalelLina(){
+    string res = "";
+    res += this->numParallelLine;
+    return res;
 }
 
 void Componente::setEIndice(bool val){
@@ -64,6 +82,7 @@ bool Componente::isSuccessorOf(Componente* comp){
     bool aux = false;
     list<Ligacao*>::iterator i;
     for(i=this->ligacoes.begin(); i != this->ligacoes.end(); i++){
+        if((*i)->getAtivo() == false ) continue;
         if((*i)->getDestino()->getName() == this->getName()){
             if((*i)->getOrigem()->getName() == comp->getName()){
                 aux = true;
@@ -227,6 +246,7 @@ Ligacao* Componente::getLigacaoByName(const string &nome){
     
     
     for(i=this->ligacoes.begin(); i != this->ligacoes.end(); i++){
+        if((*i)->getAtivo() == false ) continue;
         str += (*i)->getNome() + "\n";                
         if((*i)->getNome() == nome){
             aux = (*i);
@@ -330,6 +350,7 @@ string Componente::imprimeLigacoes(){
     string res ="";
     list<Ligacao*>::iterator i;
     for(i=this->ligacoes.begin(); i != this->ligacoes.end(); i++){
+        if((*i)->getAtivo() == false ) continue;
 //        res += (*i)->getNome()+":( "+ (*i)->getWidth() +" ):"+(*i)->getOrigem()->getName()+" ("+(*i)->getPortOrigem()->getName()+") -> ("+(*i)->getPortDestino()->getName()+") "+(*i)->getDestino()->getName()+"\n";
         res += " LIGACAO  ("+(*i)->getNome()+")  WIDTH: "+ (*i)->getWidth() +" TIPO: "+(*i)->getTipo()+"\n"; 
         res += " Origem:  ("+(*i)->getPortOrigem()->getName()+ ")  WIDTH: "+ (*i)->getPortOrigem()->getWidth() + " TIPO: "+ (*i)->getPortOrigem()->getType()  +"\n";
@@ -406,6 +427,7 @@ list<GenericMap*> Componente::getGenericMap(){
 int Componente::getSuccessorsLine(){
     list<Ligacao*>::iterator i;
     for(i=this->ligacoes.begin(); i != this->ligacoes.end(); i++){
+        if((*i)->getAtivo() == false ) continue;
         if((*i)->getBlackEdge()) continue;
         if((*i)->getOrigem()->getName() != this->getName()) continue;
         
@@ -483,6 +505,7 @@ void Componente::printAllPortsAllLig() {
     cout<< "##LIG:" << endl;
     cout << "#### QTD3 " << this->ligacoes.size() <<endl;
     for(l=this->ligacoes.begin(); l != this->ligacoes.end(); l++){
+        if((*l)->getAtivo() == false ) continue;
         cout<< (*l)->getNome() << "("<<(*l)->getOrigem()->getName()<<") ["<<(*l)->getPortOrigem()->getName()<<"] -> ["<<(*l)->getPortDestino()->getName()<< "] (" << (*l)->getDestino()->getName()<< ")" << endl;
     }
     
