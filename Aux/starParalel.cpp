@@ -16,6 +16,7 @@ using boost::lexical_cast;
 starParalel::starParalel(SgProject* project, list<SgNode*> listFor) {
     
 //    this->project = project;
+    this->listFor = listFor;
     cout<<"###############################################"<<endl;
     cout<<"#               DESENROLAR LOOP               #"<<endl;
 
@@ -103,6 +104,9 @@ void starParalel::tryParallelLoop(SgProject* project, list<SgNode*> listFor){
                     }
                 }
             }
+            if(listaPragma == ""){
+                continue;
+            }
            
             // X. Replace operators with their equivalent counterparts defined 
             // in "inline" annotations
@@ -121,7 +125,7 @@ void starParalel::tryParallelLoop(SgProject* project, list<SgNode*> listFor){
             LoopTransformInterface::set_aliasInfo(&array_interface);
 
             // X. Loop normalization for all loops within body
-//            NormalizeForLoop(fa_body, AstNodePtrImpl(body));
+            NormalizeForLoop(fa_body, AstNodePtrImpl(body));
             
             const vector<string> words = FuncoesAux::split(listaPragma, "-");
             int i = 0;
@@ -176,7 +180,12 @@ void starParalel::tryParallelLoop(SgProject* project, list<SgNode*> listFor){
         if (enable_diff)
                 diffUserDefinedAndCompilerGeneratedOpenMP(sfile); 
     } //end for-loop of files
+    this->listFor = listFor;
     cout<<"# - paralelizar loops: OK                     #"<<endl;
+}
+
+list<SgNode*> starParalel::getListaComp(){
+    return this->listFor;
 }
 
 starParalel::~starParalel() {

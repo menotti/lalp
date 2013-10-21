@@ -3,10 +3,11 @@ int main() {
   int b[3] = {1,2,3};
   int i;
   int sum = 0;
-
-  //#pragma unroll 3
+  int x = 0;
+  #pragma unroll 3
   for (i=0; i<3; i++){
-    sum += a[i] * b[i];
+    x = i;
+    sum += a[x] * b[x];
   }
   return sum;
 }

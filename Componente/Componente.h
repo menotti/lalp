@@ -29,6 +29,8 @@ class Componente {
         void            setNumLinha(int num = 0);
         Componente*     getComponenteRef();     
         void            setNumIdComp(const string &id);
+        void            setNumParalelLina(const string &id);
+        string          getNumParalelLina();
         string          getNumIdComp();
         virtual string  getGenericMapVal(const string &map, const string &aux);
         virtual void    setGenericMapVal(const string &map, const string &aux, const string &val);
@@ -75,6 +77,8 @@ class Componente {
         bool            temPorta(const string &nome);
         void            setEIndice(bool val);
         bool            getEIndice();
+        void            setNomeVarRef(const string &nome);
+        string          getNomeVarRef();
 //        virtual list<Port*> getAllPorts();
         SgNode*         node;
         string          for_ctr_var;    //Variavel de controle - EX.: (i) => for (i = 0, ....)
@@ -104,12 +108,16 @@ class Componente {
         void            setSync(bool val);
         void            printAllPortsAllLig();
         void            copyAllPortsAndGM();
+        
     private:
+        
+        string          ref_var_nome;
         bool            isIndice;
         int             alap;
         int             asap;
         bool            sync;
         int             numLinha;
+        string          numParallelLine;
         string          idComp;
         string          delayValComp; //Delay relacionado necessário na execucao em Hadware
         Componente*     refComp;

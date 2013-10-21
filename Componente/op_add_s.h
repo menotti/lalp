@@ -14,7 +14,7 @@ using namespace std;
 
 class op_add_s : public op_simple {
 public:
-    op_add_s(SgNode* node);
+    op_add_s(SgNode* node = NULL);
     virtual ~op_add_s();
 private:
 

@@ -31,7 +31,7 @@ class Core {
         void identificaVariaveis();
         void identificaFor();
         void identificaReturn();
-        Componente* analisaExp(SgNode *nodoAtual, SgNode* pai = NULL, const string& aux = "");
+        Componente* analisaExp(SgNode *nodoAtual, SgNode* pai = NULL, const string& aux = "", const string& linhaParal = "");
         void FinalizaComponentes();
         void grafo();
         void geraArquivosDotHW();
@@ -42,6 +42,7 @@ class Core {
         void setMaxSchedulingTime(int maxSchedulingTime);
     private:
         bool            debug;
+        bool            isParallel;
         int             maxSchedulingTime;
         list<Componente*>ListaComp;
         list<Ligacao*>  ListaLiga;
@@ -49,17 +50,23 @@ class Core {
         string          compNameReturn;
         bool            sync;
         void            copySchedulingTimes();
+        void            existeVarRef(const string& name);
+        void            deletaLigacao(const string& name);
         void            updateCounter(SgNode* node, counter* comp);
         void            updateRegister(SgNode* node, reg_op* comp);
         void            updateBlockRam(SgNode* node, block_ram* comp);
         void            updateCompRef(SgNode* node, comp_ref* comp);
         void            detectBackwardEdges();
+        void            preIdentificacaoCompParalelizados();
         bool            isIndiceVector(const string& name);
         void            ALAP();
         void            ASAP();
         void            balanceAndSyncrhonize();
         int             calculateASAP(Componente* comp);
         void            addComponent(Componente* comp);
+        void            substiuiComRecorente(Componente* origem, Componente* destino);
+        void            removeComReg(Componente* origem);
+        void            retirarCompDelayRedundante();
         void            setSync(bool sync);
         void            setClkReset();
         bool            isSync();

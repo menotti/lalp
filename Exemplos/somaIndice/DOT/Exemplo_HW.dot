@@ -2,17 +2,21 @@ digraph diagram {
 // Components (Nodes) 
 "i" [shape=record, fontcolor=blue, style="filled", fillcolor="lightgray", label="{{<clk>clk|<clk_en>clk_en|<input>input[16]|<load>load|<reset>reset|<termination>termination[16]}|counter:i\n\<\n+=1\nsteps=1|{<done>done|<output>output[16]|<step>step}}"]; 
 "res" [shape=record, fontcolor=blue, style="filled", fillcolor="lightgray", label="{{<I0>I0[32]|<clk>clk|<reset>reset|<we>we}|reg_op:res|{<O0>O0[32]}}"]; 
-"i_7_add_op_s_i_8" [shape=record, fontcolor=blue, label="{{<I0>I0[32]|<I1>I1[32]}|add_op_s:i_7_add_op_s_i_8|{<O0>O0[32]}}"]; 
-"init" [shape=msquare fontcolor=red label="init"]"done" [shape=msquare fontcolor=red label="done"]"c10" [fontcolor=b label="c10=1"]"c11" [fontcolor=b label="c11=0"]"result" [shape=msquare fontcolor=red label="result"]"c13" [shape=record, fontcolor=blue, style="filled", fillcolor="lightgray", label="{{<a>a[1]|<clk>clk|<reset>reset}|delay_op:c13\ndelay=3|{<a_delayed>a_delayed[1]}}"]; 
+"c6_add_op_s_a" [shape=record, fontcolor=blue, label="{{<I0>I0[32]|<I1>I1[32]}|add_op_s:c6_add_op_s_a|{<O0>O0[32]}}"]; 
+"c6" [fontcolor=b label="c6=1"]"a" [shape=record, fontcolor=blue, style="filled", fillcolor="lightgray", label="{{<address>address[11]|<clk>clk|<data_in>data_in[32]|<oe>oe|<we>we}|block_ram:a|{<data_out>data_out[32]}}"]; 
+"init" [shape=msquare fontcolor=red label="init"]"done" [shape=msquare fontcolor=red label="done"]"c10" [fontcolor=b label="c10=1"]"c11" [fontcolor=b label="c11=0"]"result" [shape=msquare fontcolor=red label="result"]"c13" [shape=record, fontcolor=blue, style="filled", fillcolor="lightgray", label="{{<a>a[1]|<clk>clk|<reset>reset}|delay_op:c13\ndelay=2|{<a_delayed>a_delayed[1]}}"]; 
+"c14" [shape=record, fontcolor=blue, style="filled", fillcolor="lightgray", label="{{<a>a[1]|<clk>clk|<reset>reset}|delay_op:c14\ndelay=5|{<a_delayed>a_delayed[1]}}"]; 
 // Signals (Edges) 
-"i_7_add_op_s_i_8":O0 -> "res":I0[label="s0[32]" color=red fontcolor=red]; 
-"i":output -> "i_7_add_op_s_i_8":I0[label="s1[32]" color=red fontcolor=red]; 
-"i":output -> "i_7_add_op_s_i_8":I1[label="s2[32]" color=red fontcolor=red]; 
-"i":step -> "res":we[label="s3[1]" color=red fontcolor=red]; 
-"c10":out -> "i":termination[label="s4[32]" color=red fontcolor=red]; 
-"c11":out -> "i":input[label="s5[32]" color=red fontcolor=red]; 
-"res":O0 -> "result":in[label="s6[32]" color=red fontcolor=red]; 
-"init":out -> "i":clk_en[label="s7[1]" color=red fontcolor=red]; 
-"i":done -> "c13":a[label="s8[1]" color=red fontcolor=red]; 
-"c13":a_delayed -> "done":in[label="s9[1]" color=red fontcolor=red]; 
+"c6_add_op_s_a":O0 -> "res":I0[label="s0[32]" color=red fontcolor=red]; 
+"c6":out -> "c6_add_op_s_a":I0[label="s1[32]" color=red fontcolor=red]; 
+"a":data_out -> "c6_add_op_s_a":I1[label="s2[32]" color=red fontcolor=red]; 
+"i":step -> "c13":a[label="s3[1]" color=red fontcolor=red]; 
+"i":output -> "a":address[label="s4[32]" color=red fontcolor=red]; 
+"c10":out -> "i":termination[label="s5[32]" color=red fontcolor=red]; 
+"c11":out -> "i":input[label="s6[32]" color=red fontcolor=red]; 
+"res":O0 -> "result":in[label="s7[32]" color=red fontcolor=red]; 
+"c13":a_delayed -> "res":we[label="s8[1]" color=red fontcolor=red]; 
+"init":out -> "i":clk_en[label="s9[1]" color=red fontcolor=red]; 
+"i":done -> "c14":a[label="s10[1]" color=red fontcolor=red]; 
+"c14":a_delayed -> "done":in[label="s11[1]" color=red fontcolor=red]; 
 }

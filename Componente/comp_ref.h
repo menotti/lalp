@@ -9,7 +9,7 @@
 #define	COMP_REF_H
 #include "Componente.h"
 #include "string"
-using namespace std;
+using namespace std; 
 
 class comp_ref : public Componente{
 public:
@@ -25,8 +25,6 @@ public:
     void        addGenericMap(GenericMap* map);    
     void        setNomeVarIndex(const string &index);
     string      getNomeVarIndex();
-    void        setNomeVarRef(const string &nome);
-    string      getNomeVarRef();
     void        setTipoVar(const string &tipo);
     string      getTipoVar();
     

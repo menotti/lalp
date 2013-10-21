@@ -14,7 +14,7 @@ using namespace std;
 
 class op_simple : public Componente {
 public:
-    op_simple(SgNode* node);
+    op_simple(SgNode* node = NULL);
     virtual     ~op_simple();
     void        createAllGeneric();
     string      getEstruturaComponenteVHDL();
