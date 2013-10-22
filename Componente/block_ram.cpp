@@ -70,8 +70,7 @@ void block_ram::setTipo(const string &tipo){
     this->tipo_var = tipo;
 }
 
-void block_ram::setValor(const string &valor){
-    this->valor = valor;
+void block_ram::setValor(){
 }
 
 void block_ram::createAllGeneric(){
