@@ -84,6 +84,7 @@ class Componente {
         string          for_ctr_var;    //Variavel de controle - EX.: (i) => for (i = 0, ....)
 //        string          op_tipo;        //Definir tipo de opercacao - soma, sub, mult, div, etc.
         string          valor;          //Valor da Variavel ou Todos os elementos do Vetor
+        list<int>       valores;
 //        string          ref_var_nome;
 //        string          ref_var_index;
 //        string          ref_var_tipo;   //A referencia pode ser Vetor ou Variavel

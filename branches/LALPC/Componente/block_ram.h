@@ -23,9 +23,9 @@ public:
     void        montaComponente();
     void        setQtdElementos(const string &qtd);
     void        setTipo(const string &tipo);
-    void        setValor(const string &valor);
+    void        setValor();
     int         getAddressWidth();
-    
+    int         qtd_elem_vet;
 private:
     string      qtd_ele_vet;
     string      tipo_var;

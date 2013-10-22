@@ -164,7 +164,6 @@ void Core::identificaReturn() {
                             CompRefI1 = (comp_ref*)(*i);
                             CompRefLas= NULL;
                             cout<< "--- I1: " << CompRefI1->getName()<< endl;
-                            continue;
                         }
                         if (CompRefI0 != NULL && CompRefI1 != NULL) {
                             cout<< "--- CRIANDO LIGACAO I0 + I1: " << endl;
@@ -210,11 +209,24 @@ void Core::identificaReturn() {
 
                             //ADD LISTAS
                             this->ListaLiga.push_back(newLig2);
+			    cout<< "NEW ADD: "<< addComp->getName()<<endl;
+			    cout<< "IO : "<< CompRefI0->getName()<<endl;
+                            cout<< "I1 : "<< CompRefI1->getName()<<endl;
+                            cout<< " "<< endl;
+
                             CompRefI0 = NULL;
                             CompRefI1 = NULL;
+			    CompRefLas= NULL;
                         }
                     }
-                }cout<< "- Criacao de ADD com base em comp REF OK"<< endl;
+                }
+		if(CompRefLas != NULL){
+                	cout<< "CL : "<< CompRefLas->getName()<<endl;
+                }else{
+			cout<< "CL : "<<endl;
+		}
+		cout<< "-----------------------------"<<endl;
+                cout<< "- Criacao de ADD com base em comp REF OK"<< endl;
                 // </editor-fold>
 
                 op_add_s* addOpI0  = NULL;
@@ -235,7 +247,6 @@ void Core::identificaReturn() {
                         if (addOpI1 == NULL) {
                             addOpI1 = (op_add_s*)(*i);
                             addOpLas= NULL;
-                            continue;
                         }
                         if (addOpI0 != NULL && addOpI1 != NULL) {
                             op_add_s* addComp = new  op_add_s();
@@ -280,12 +291,22 @@ void Core::identificaReturn() {
 
                             //ADD LISTAS
                             this->ListaLiga.push_back(newLig2);
+			    cout<< "NEW ADD: "<< addComp->getName()<<endl;
+			    cout<< "IO : "<< addOpI0->getName()<<endl;
+                            cout<< "I1 : "<< addOpI1->getName()<<endl;
+                            cout<< " "<< endl;
                             addOpI0 = NULL;
                             addOpI1 = NULL;
-                            continue;
+                            addOpLas= NULL;
                         }
                     }
                 }// </editor-fold>
+                if(addOpLas != NULL){
+			cout<< "LS : "<< addOpLas->getName()<<endl;
+		}else{
+			cout<< "LS : "<<endl;
+		}
+		cout<< "----------------------------"<<endl;
                 cout<< "- Criacao de ADD com base em comp ADD OK"<< endl;
                 
                 cout<< "- Ligar o ultimo ADD ao ultimo REF"<< endl;
@@ -346,18 +367,18 @@ void Core::identificaReturn() {
                 comp_return->setName("result");
                 comp_return->setNumIdComp(FuncoesAux::IntToStr(this->ListaComp.size()));
                 comp_return->setNumLinha(1000);
-
+		cout<< "- 1"<< endl;
                 //LIGACAO
                 Ligacao* newLig3 = new Ligacao(CompResult, comp_return, "s" + FuncoesAux::IntToStr(this->ListaLiga.size()));
                 newLig3->setPortDestino(comp_return->getPortDataInOut("IN"));
                 newLig3->setPortOrigem(CompResult->getPortDataInOut("OUT"));
                 newLig3->setWidth(CompResult->getPortDataInOut("OUT")->getWidth());
                 newLig3->setTipo(CompResult->getPortDataInOut("OUT")->getType());
-
+		cout<< "- 2"<< endl;
                 //ADICIONAR NOME LIGACAO NA PORTA
                 newLig3->getPortDestino()->setLigacao(newLig3->getNome());
                 newLig3->getPortOrigem()->setLigacao(newLig3->getNome());
-
+		cout<< "- 3"<< endl;
                 //ADICIONAR LIGACAO NO COMPONENTE
                 CompResult->addLigacao(newLig3);
                 comp_return->addLigacao(newLig3);
@@ -2033,6 +2054,7 @@ void Core::updateBlockRam(SgNode* node, block_ram* comp){
         //Tamanho do Vetor
         const vector<string> words = FuncoesAux::split(varDec->get_mangled_name().getString(), "_");
         comp->setQtdElementos(string(words[7].c_str()));
+        comp->qtd_elem_vet = FuncoesAux::StrToInt(string(words[7].c_str()));
         
         //TODO - Ver como que vai ficar o esquema de tipo da variavel ou vetor
         //Identificar o tipo da variavel/vetor
@@ -2063,10 +2085,11 @@ void Core::updateBlockRam(SgNode* node, block_ram* comp){
         string val = "";
         Rose_STL_Container<SgNode*> var2 = NodeQuery::querySubTree(cur_var,V_SgAssignInitializer);
         if(var2.size() > 0){
+
             comp->setEInicializado(true);
 //            //Caso for vetor, pegar a quantidade de elementos dentro do mesmo
 //            this->qtd_ele_vet = var2.size();
-            
+            int id = 0;
             //Abaixo percorre cada posicao do vetor para pegar os valores
             for (Rose_STL_Container<SgNode*>::iterator j = var2.begin(); j != var2.end(); j++ ) 
             {
@@ -2077,6 +2100,8 @@ void Core::updateBlockRam(SgNode* node, block_ram* comp){
                 {
                     SgIntVal* intVal = isSgIntVal(*k);
                     string str = FuncoesAux::IntToStr(intVal->get_value());
+                    comp->valores.push_back(intVal->get_value());
+
                     if(var2.size() < 2){
                         val += ""+str;
                     }else{
@@ -2084,8 +2109,9 @@ void Core::updateBlockRam(SgNode* node, block_ram* comp){
                     }
                 }
             }
+            //comp->setValor(valores);
         }
-        comp->setValor(val);
+        
     }
     
     string nome_comp_vhdl = "block_ram";
