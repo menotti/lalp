@@ -576,7 +576,7 @@ void Core::identificaFor() {
                                             {
                                                 
                                                 if(isSgExprStatement(*ilb)||isSgVarRefExp(*ilb)||isSgMultiplyOp(*ilb)||isSgPntrArrRefExp(*ilb)||isSgAddOp(*ilb)) continue;                                                
-                                                if(isSgIntVal(*ilb)) continue;
+                                                if(isSgIntVal(*ilb) || isSgSubtractOp(*ilb))continue;
                                                 if(isSgBasicBlock(*ilb)){
                                                     aux++;
                                                 }
@@ -600,7 +600,7 @@ void Core::identificaFor() {
                                             for (Rose_STL_Container<SgNode*>::iterator ilb = varLoopBody.begin(); ilb != varLoopBody.end(); ilb++ ) 
                                             {
                                                 if(isSgExprStatement(*ilb)||isSgBasicBlock(*ilb)||isSgVarRefExp(*ilb)||isSgMultiplyOp(*ilb)||isSgPntrArrRefExp(*ilb)||isSgAddOp(*ilb)) continue;
-                                                if(isSgIntVal(*ilb))continue;
+                                                if(isSgIntVal(*ilb) || isSgSubtractOp(*ilb))continue;
                                                 
                                                 SgNode* expStmt = isSgNode(*ilb);
 
@@ -631,7 +631,7 @@ void Core::identificaFor() {
                         for (Rose_STL_Container<SgNode*>::iterator ilb = varLoopBody.begin(); ilb != varLoopBody.end(); ilb++ ) 
                         {
                             if(isSgExprStatement(*ilb)||isSgBasicBlock(*ilb)||isSgVarRefExp(*ilb)||isSgMultiplyOp(*ilb)||isSgPntrArrRefExp(*ilb)||isSgAddOp(*ilb)) continue;
-                            if(isSgIntVal(*ilb))continue;
+                            if(isSgIntVal(*ilb) || isSgSubtractOp(*ilb))continue;
 
                             SgNode* expStmt = isSgNode(*ilb);
                             cout<< "NODOS INTERNOS BODY FOR: "<< expStmt->class_name() << endl;
@@ -1019,6 +1019,8 @@ Componente* Core::analisaExp(SgNode *nodoAtual, SgNode* pai, const string& aux, 
         compReturn = comp;
         this->updateCompRef(decArr, comp);
         
+        //analisaExp(decArr->get_rhs_operand_i(), decArr, comp->getName(), lineParal);
+        
         // <editor-fold defaultstate="collapsed" desc="DEBUG">
         if (this->debug) {
             cout << "-------------------------------" << endl;
@@ -1101,6 +1103,7 @@ void Core::preIdentificacaoCompParalelizados(){
     for (i = this->ListaComp.begin(); i != this->ListaComp.end(); i++) {
         if ((*i)->tipo_comp !=  CompType::REF) continue;
         if ((*i)->getEIndice() == true) continue;
+        if (this->isIndiceVector((*i)->getNomeVarRef()) == true) continue;
         comp_ref* CompRefI = (comp_ref*) (*i);
         int numP = FuncoesAux::StrToInt(CompRefI->getNumParalelLina());
         if(numP > 1 ){
@@ -1697,9 +1700,6 @@ void Core::FinalizaComponentes(){
     cout<<"--Criando novas ligacoes do Contador: OK"<<endl;
     // </editor-fold> 
    
-    
-    
-
     //Setar INICIALIZACAO
     comp_aux* comp_init = new comp_aux(NULL,"INIT");
     comp_init->setName("init");
@@ -1781,137 +1781,183 @@ void Core::FinalizaComponentes(){
     
 }
 
+bool Core::existeSgNode(SgNode* node){
+    cout<<" -- Verificando se existe este nodo na lista: "<< endl;
+     list<Componente*>::iterator i;
+     bool existe = false;
+     for (i = this->ListaComp.begin(); i != this->ListaComp.end(); i++) {
+        if ((*i)->tipo_comp == CompType::REG || (*i)->tipo_comp == CompType::MEM || (*i)->tipo_comp == CompType::CTD  ) continue;
+        cout<<" COMP: "<< (*i)->getName() <<  " - " << (*i)->node << " - nodo to find: " << node << endl;
+        if ((*i)->node == node){
+            existe = true;
+            cout<<" Achou: " << (*i)->getName() << (*i)->getNomeCompVHDL() << endl;
+        }
+     }
+     cout<<" -- Verificando se existe este nodo na lista: OK"<< endl;
+     return existe;
+}
+
+Componente* Core::getCompBySgNode(SgNode* node){
+     list<Componente*>::iterator i;
+     cout<<" -- Retornando o nodo da Lista: "<< endl;
+     Componente* comp = NULL;
+     for (i = this->ListaComp.begin(); i != this->ListaComp.end(); i++) {
+        if ((*i)->tipo_comp == CompType::REG || (*i)->tipo_comp == CompType::MEM || (*i)->tipo_comp == CompType::CTD  ) continue;
+        cout<<" COMP: "<< (*i)->getName() <<  " - " << (*i)->node << " - nodo to find: " << node << endl;
+        if ((*i)->node == node){
+              comp = (*i);
+              cout<<" Achou: " << (*i)->getName() << (*i)->getNomeCompVHDL() << endl;
+          }
+     }
+     cout<<" -- Retornando o nodo da Lista: OK"<< endl;
+     return comp;
+}
+
+string Core::getNomeCompRef(const string& name){
+    list<Componente*>::iterator i;
+    int aux = 0;
+    string newName= "";
+    string nameReturn = name;
+    for (i = this->ListaComp.begin(); i != this->ListaComp.end(); i++) {
+        if ((*i)->tipo_comp == CompType::REG || (*i)->tipo_comp == CompType::MEM ) continue;
+        comp_ref* CompRef = (comp_ref*)(*i);
+        if(CompRef->getNomeVarRef() == name){
+            newName = CompRef->getNomeVarRef()+"_"+FuncoesAux::IntToStr(this->ListaComp.size());
+            aux++;
+        }
+    }
+    if(aux > 1){
+        nameReturn = newName;
+    }
+    return nameReturn;
+}
+
 void Core::updateCompRef(SgNode* node, comp_ref* comp){
         
     SgVarRefExp* nodo_ref_var     = isSgVarRefExp(node);
     SgPntrArrRefExp* nodo_ref_arr = isSgPntrArrRefExp(node);
-    bool expIndVec                = false;
-    string name= "";
-    if(nodo_ref_var != NULL){
+    // <editor-fold defaultstate="collapsed" desc="E ARRAY">
+    bool expIndVec = false;
+    string name = "";
+    if (nodo_ref_var != NULL) {
         comp->setTipoVar("VAR");
         comp->setNomeVarRef(nodo_ref_var->get_symbol()->get_name().getString());
-       
-//        if(comp->getNumParalelLina() == ""){
-            name = nodo_ref_var->get_symbol()->get_name().getString();
-//        }else{
-//            name = nodo_ref_var->get_symbol()->get_name().getString()+comp->getNumParalelLina();
-//        }
+        name = nodo_ref_var->get_symbol()->get_name().getString();
+        name = this->getNomeCompRef(name);
         comp->setName(name);
-        comp->setNomeVarRef(name);
-    }
-    if(nodo_ref_arr != NULL){
+//        cout<<" chegou a variavel: " << comp->getName()<< endl;
+        //        comp->setNomeVarRef(name);
+    }// </editor-fold>
+     cout<<" 1 " << endl;
+    // <editor-fold defaultstate="collapsed" desc="E VETOR">
+    if (nodo_ref_arr != NULL) {
         comp->setTipoVar("VET");
-        string arrName  = "";
-        string arrPos   = ""; 
-        SgVarRefExp* fe = isSgVarRefExp( nodo_ref_arr->get_lhs_operand_i() );
-        SgVarRefExp* fd = isSgVarRefExp( nodo_ref_arr->get_rhs_operand_i() );
-        if (fe != NULL){
-            arrName     = fe->get_symbol()->get_name().getString();
-            if(fd != NULL){
-                arrPos      = fd->get_symbol()->get_name().getString();
-            }else{
+        string arrName = "";
+        string arrPos = "";
+        SgVarRefExp* fe = isSgVarRefExp(nodo_ref_arr->get_lhs_operand_i());
+        SgVarRefExp* fd = isSgVarRefExp(nodo_ref_arr->get_rhs_operand_i());
+        if (fe != NULL) {
+            arrName = fe->get_symbol()->get_name().getString();
+            if (fd != NULL) {
+                arrPos = fd->get_symbol()->get_name().getString();
+            } else {
                 expIndVec = true;
             }
             comp->setNomeVarRef(arrName);
-            
-//            if(comp->getNumParalelLina() == ""){
-            name = arrName;
-//            }else{
-//                nome = arrName+comp->getNumParalelLina();
-//            }
+            name = this->getNomeCompRef(arrName);
             comp->setName(name);
-            comp->setNomeVarIndex(arrPos);            
+            comp->setNomeVarIndex(arrPos);
+
         }
-        
-    }
-    
-    //VERIFICAR A EXISTENCIA DE OUTRO COMPONENTE COM O MESMO NOME
-    list<Componente*>::iterator i;
-    for (i = this->ListaComp.begin(); i != this->ListaComp.end(); i++) {
-        if ((*i)->tipo_comp != CompType::REF) continue;
-        if ((*i)->tipo_comp == CompType::REF){
-            comp_ref* CompRef = (comp_ref*)(*i);
-            if(CompRef->getName() == comp->getNomeVarRef()  && CompRef->node != comp->node){
-//                    cout<< " ##################### " << endl;
-//                    cout<< " COMP REF: " << CompRef->getName() << endl;
-//                    cout<< " COMP    : " << comp->getNomeVarRef() << endl;
-//                    cout<< " ##################### " << endl;
-//                    if(comp->getNumParalelLina() == ""){
-                    name = comp->getNomeVarRef()+"_"+FuncoesAux::IntToStr(this->ListaComp.size());
-//                    }else{
-//                        nome = comp->getNomeVarRef()+comp->getNumParalelLina()+"_"+FuncoesAux::IntToStr(this->ListaComp.size());
-//                    }
-                comp->setName(name);
-            }
-        }
-    }
-    
+    }// </editor-fold>   
+//    cout<<" 2 " << endl;
     //PASSO PARA VERIFICAR A EXISTENCIA OPERADOR += 
     //NESTE CASO O COMPONENTE E' OUTRO
-    if(isSgPlusAssignOp(comp->getPai())){
-        list<Componente*>::iterator i;
-//        cout<<"-----ACHOU: "<< comp->getName() <<endl;
-        for (i = this->ListaComp.begin(); i != this->ListaComp.end(); i++) {
-//            cout<< (*i)->getName()<< "-- "<< (*i)->getNomeCompVHDL() << " -- " << (*i)->node <<endl;
-            if ((*i)->tipo_comp !=  CompType::REG) continue;
-            if ((*i)->getName() == comp->getName()){
-//                cout<< "---" << (*i)->getName()<< " -- "<< (*i)->getNomeCompVHDL() << " -- " << (*i)->node <<endl;
-                add_reg_op_s* add_reg = new add_reg_op_s((*i)->node, "WE");
-//                if(comp->getNumParalelLina() == ""){
-                        name = (*i)->getName();
-//                }else{
-//                    nome = (*i)->getName()+comp->getNumParalelLina();
-//                }
-                add_reg->setName(name);
-                add_reg->setNomeVarRef(name);
-                add_reg->setNumIdComp((*i)->getNumIdComp());
-                add_reg->setValor((*i)->getGenericMapVal("initial", "VAL"));
-                (*i) = add_reg;                
-            }
-        }
-    }
-    
-    //MODIFICANDO E IDENTIFICANDO VARIAVEIS DO TIPO INDICES
-    list<Componente*>::iterator j;
-    for (j = this->ListaComp.begin(); j != this->ListaComp.end(); j++) {
-        if ((*j)->tipo_comp == CompType::REG || (*j)->tipo_comp == CompType::MEM) {
-            
-            if (comp->getName() == (*j)->getName() || comp->getNomeVarRef() == (*j)->getName() ) {
-                comp->setComponenteRef((*j));
-                comp->updateCompRef();
-                if(isIndiceVector(comp->getName())){
-                    comp->setEIndice(true);
-                    name = comp->getName()+"_"+FuncoesAux::IntToStr(this->ListaComp.size());
-                    comp->setName(name);
-                    comp->getComponenteRef()->setEIndice(true);
-//                    cout<<comp->getName()<<endl;
-//                    cout<<comp->imprimePortas()<< endl;
+    // <editor-fold defaultstate="collapsed" desc="Componente ACC">
+    if(comp->getPai() != NULL ){
+        SgNode* nodePA = isSgPlusAssignOp(comp->getPai());
+        if (nodePA != NULL) {
+            list<Componente*>::iterator i;
+                    cout<<"-----ACHOU: "<< comp->getName() <<endl;
+            for (i = this->ListaComp.begin(); i != this->ListaComp.end(); i++) {
+                //            cout<< (*i)->getName()<< "-- "<< (*i)->getNomeCompVHDL() << " -- " << (*i)->node <<endl;
+                if ((*i)->tipo_comp != CompType::REG) continue;
+                if ((*i)->getName() == comp->getName()) {
+                    //                cout<< "---" << (*i)->getName()<< " -- "<< (*i)->getNomeCompVHDL() << " -- " << (*i)->node <<endl;
+                    add_reg_op_s* add_reg = new add_reg_op_s((*i)->node, "WE");
+                    //                if(comp->getNumParalelLina() == ""){
+                    name = (*i)->getName();
+
+                    add_reg->setName(name);
+                    add_reg->setNomeVarRef(name);
+                    add_reg->setNumIdComp((*i)->getNumIdComp());
+                    add_reg->setValor((*i)->getGenericMapVal("initial", "VAL"));
+                    (*i) = add_reg;
                 }
             }
         }
-    }
-    
-    if(expIndVec == true && nodo_ref_arr != NULL){
-        SgNode* expInd = isSgNode( nodo_ref_arr->get_rhs_operand_i() );
-        Componente* compExp = analisaExp(expInd, NULL, "", comp->getNumParalelLina());
+    }// </editor-fold>
+//    cout<<" 3 " << endl;
+    //MODIFICANDO E IDENTIFICANDO VARIAVEIS DO TIPO INDICES
+    // <editor-fold defaultstate="collapsed" desc="VERIFICAR SE INDICE DO VET">
+    list<Componente*>::iterator j;
+//    cout<<" verificando se e' indice: " << comp->getName() << " - "<< comp->getNomeVarRef()   << endl;
+    for (j = this->ListaComp.begin(); j != this->ListaComp.end(); j++) {
+        if ((*j)->tipo_comp == CompType::REG || (*j)->tipo_comp == CompType::MEM) {
+
+            if (comp->getName() == (*j)->getName() || comp->getNomeVarRef() == (*j)->getName()) {
+                comp->setComponenteRef((*j));
+                comp->updateCompRef();
+                if (isIndiceVector(comp->getNomeVarRef())) {
+                    comp->setEIndice(true);
+//                    name = comp->getName() + "_" + FuncoesAux::IntToStr(this->ListaComp.size());
+//                    comp->setName(name);
+                    comp->getComponenteRef()->setEIndice(true);
+//                    cout<<comp->getName()<<endl;
+                }
+            }
+        }
+    }// </editor-fold>
+//    cout<<" 4 " << endl;
+    if(comp->getTipoVar()== "VET" && nodo_ref_arr != NULL){
+//        cout<< "CRIANDO LIGACAO COM O INDICE DO VETOR: " << endl;
+//        
+//        cout<< " VETOR " << comp->getName() << endl;
         
-        Ligacao* lig = new Ligacao(compExp, comp, "s" + FuncoesAux::IntToStr(this->ListaLiga.size()));
-        lig->setPortDestino(comp->getPortOther("address"));
-        lig->setPortOrigem(compExp->getPortDataInOut("OUT"));
-        lig->setWidth(compExp->getPortDataInOut("OUT")->getWidth());
-        lig->setTipo(compExp->getPortDataInOut("OUT")->getType());
+        SgNode* expInd = isSgNode( nodo_ref_arr->get_rhs_operand_i() );
+        Componente* compExp = NULL;
+        if(this->existeSgNode(nodo_ref_arr->get_rhs_operand_i()) == true){
+            compExp = this->getCompBySgNode(expInd);
+        }
+        if(this->getCompBySgNode(nodo_ref_arr->get_rhs_operand_i()) == NULL){
+//            cout<< " cricando o indice" << endl;
+            compExp = analisaExp(expInd, NULL, "", comp->getNumParalelLina());
+//            cout<< " cricou a variavel :" << compExp->getName() << endl;
+            comp->setNomeVarIndex(compExp->getName());
+            compExp->setEIndice(true);
+        }
+//        cout<< " POS INDICE E: " << compExp->getName() << " - "<< compExp->getNomeCompVHDL() << endl;
+        if(compExp != NULL){        
+            Ligacao* lig = new Ligacao(compExp, comp, "s" + FuncoesAux::IntToStr(this->ListaLiga.size()));
+            lig->setPortDestino(comp->getPortOther("address"));
+            lig->setPortOrigem(compExp->getPortDataInOut("OUT"));
+            lig->setWidth(compExp->getPortDataInOut("OUT")->getWidth());
+            lig->setTipo(compExp->getPortDataInOut("OUT")->getType());
 
-        //INFORMAR CADA PORTA QUEM E SUA LIGACAO
-        compExp->getPortDataInOut("OUT")->setLigacao(lig->getNome());
-        comp->getPortOther("address")->setLigacao(lig->getNome());
+            //INFORMAR CADA PORTA QUEM E SUA LIGACAO
+            compExp->getPortDataInOut("OUT")->setLigacao(lig->getNome());
+            comp->getPortOther("address")->setLigacao(lig->getNome());
 
-        //ADICIONAR EM CADA COMPONENTE ESTA LIGACAO
-        compExp->addLigacao(lig);
-        comp->addLigacao(lig);
+            //ADICIONAR EM CADA COMPONENTE ESTA LIGACAO
+            compExp->addLigacao(lig);
+            comp->addLigacao(lig);
 
-        //ADICIONAR NA LISTA DE LIGACOES A NOVA LIGACAO
-        this->ListaLiga.push_back(lig);
+            //ADICIONAR NA LISTA DE LIGACOES A NOVA LIGACAO
+            this->ListaLiga.push_back(lig);
+        }
+//        cout<< "CRIANDO LIGACAO COM O INDICE DO VETOR: OK" << endl;
     }
+//    cout<<" 5 " << endl;
 }
 
 void Core::updateCounter(SgNode* node, counter* comp){
@@ -1920,7 +1966,8 @@ void Core::updateCounter(SgNode* node, counter* comp){
         
         ROSE_ASSERT(cur_for);
 
-        comp->setName(SageInterface::getLoopIndexVariable(node)->get_name().str());
+//        comp->setName(SageInterface::getLoopIndexVariable(node)->get_name().str());
+        comp->setName("CTD_"+FuncoesAux::IntToStr(this->ListaComp.size()));
         comp->setVarControlCont(SageInterface::getLoopIndexVariable(node)->get_name().str());
          /**********************************************************/
         //Parte de pegar o padrao de inicio do FOR => EX.: int i = 0 

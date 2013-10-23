@@ -41,6 +41,8 @@ class Core {
         int  getMaxSchedulingTime();
         void setMaxSchedulingTime(int maxSchedulingTime);
     private:
+        bool            existeSgNode(SgNode* node);
+        Componente*     getCompBySgNode(SgNode* node);
         bool            debug;
         bool            isParallel;
         int             maxSchedulingTime;
@@ -48,6 +50,7 @@ class Core {
         list<Ligacao*>  ListaLiga;
         list<SgNode*>   ListaForParall;
         string          compNameReturn;
+        string          getNomeCompRef(const string& name);
         bool            sync;
         void            copySchedulingTimes();
         void            existeVarRef(const string& name);
