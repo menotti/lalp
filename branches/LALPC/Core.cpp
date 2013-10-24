@@ -18,6 +18,7 @@
 #include "Componente/op_simple.h"
 #include "Componente/counter.h"
 #include "Componente/block_ram.h"
+#include "Componente/block_ram_dual.h"
 #include "Componente/comp_ref.h"
 #include "Componente/reg_op.h"
 #include "Componente/add_reg_op_s.h"
@@ -52,13 +53,17 @@ Core::Core(SgProject* project, list<SgNode*> lista) {
     }
     
     this->FinalizaComponentes();
-    this->identificaReturn();
+    
     
     this->detectBackwardEdges();
     this->ALAP();
     this->balanceAndSyncrhonize();
     
     this->retirarCompDelayRedundante();
+    this->identificaReturn();
+     if(this->isParallel){
+        this->analiseMemoriaDualPort();
+    }
     
     this->setClkReset();
     
@@ -1700,6 +1705,8 @@ void Core::FinalizaComponentes(){
     cout<<"--Criando novas ligacoes do Contador: OK"<<endl;
     // </editor-fold> 
    
+    
+    
     //Setar INICIALIZACAO
     comp_aux* comp_init = new comp_aux(NULL,"INIT");
     comp_init->setName("init");
@@ -1782,34 +1789,34 @@ void Core::FinalizaComponentes(){
 }
 
 bool Core::existeSgNode(SgNode* node){
-    cout<<" -- Verificando se existe este nodo na lista: "<< endl;
+//    cout<<" -- Verificando se existe este nodo na lista: "<< endl;
      list<Componente*>::iterator i;
      bool existe = false;
      for (i = this->ListaComp.begin(); i != this->ListaComp.end(); i++) {
         if ((*i)->tipo_comp == CompType::REG || (*i)->tipo_comp == CompType::MEM || (*i)->tipo_comp == CompType::CTD  ) continue;
-        cout<<" COMP: "<< (*i)->getName() <<  " - " << (*i)->node << " - nodo to find: " << node << endl;
+//        cout<<" COMP: "<< (*i)->getName() <<  " - " << (*i)->node << " - nodo to find: " << node << endl;
         if ((*i)->node == node){
             existe = true;
             cout<<" Achou: " << (*i)->getName() << (*i)->getNomeCompVHDL() << endl;
         }
      }
-     cout<<" -- Verificando se existe este nodo na lista: OK"<< endl;
+//     cout<<" -- Verificando se existe este nodo na lista: OK"<< endl;
      return existe;
 }
 
 Componente* Core::getCompBySgNode(SgNode* node){
      list<Componente*>::iterator i;
-     cout<<" -- Retornando o nodo da Lista: "<< endl;
+//     cout<<" -- Retornando o nodo da Lista: "<< endl;
      Componente* comp = NULL;
      for (i = this->ListaComp.begin(); i != this->ListaComp.end(); i++) {
         if ((*i)->tipo_comp == CompType::REG || (*i)->tipo_comp == CompType::MEM || (*i)->tipo_comp == CompType::CTD  ) continue;
-        cout<<" COMP: "<< (*i)->getName() <<  " - " << (*i)->node << " - nodo to find: " << node << endl;
+//        cout<<" COMP: "<< (*i)->getName() <<  " - " << (*i)->node << " - nodo to find: " << node << endl;
         if ((*i)->node == node){
               comp = (*i);
-              cout<<" Achou: " << (*i)->getName() << (*i)->getNomeCompVHDL() << endl;
+//              cout<<" Achou: " << (*i)->getName() << (*i)->getNomeCompVHDL() << endl;
           }
      }
-     cout<<" -- Retornando o nodo da Lista: OK"<< endl;
+//     cout<<" -- Retornando o nodo da Lista: OK"<< endl;
      return comp;
 }
 
@@ -1845,7 +1852,7 @@ void Core::updateCompRef(SgNode* node, comp_ref* comp){
         name = nodo_ref_var->get_symbol()->get_name().getString();
         name = this->getNomeCompRef(name);
         comp->setName(name);
-//        cout<<" chegou a variavel: " << comp->getName()<< endl;
+        //cout<<" chegou a variavel: " << comp->getName()<< endl;
         //        comp->setNomeVarRef(name);
     }// </editor-fold>
      cout<<" 1 " << endl;
@@ -1919,25 +1926,27 @@ void Core::updateCompRef(SgNode* node, comp_ref* comp){
         }
     }// </editor-fold>
 //    cout<<" 4 " << endl;
-    if(comp->getTipoVar()== "VET" && nodo_ref_arr != NULL){
-//        cout<< "CRIANDO LIGACAO COM O INDICE DO VETOR: " << endl;
-//        
-//        cout<< " VETOR " << comp->getName() << endl;
-        
-        SgNode* expInd = isSgNode( nodo_ref_arr->get_rhs_operand_i() );
+    
+    // <editor-fold defaultstate="collapsed" desc="Gerando ligacao com Exp ou indice do vetor">
+    if (comp->getTipoVar() == "VET" && nodo_ref_arr != NULL) {
+        //        cout<< "CRIANDO LIGACAO COM O INDICE DO VETOR: " << endl;
+        //        
+        //        cout<< " VETOR " << comp->getName() << endl;
+
+        SgNode* expInd = isSgNode(nodo_ref_arr->get_rhs_operand_i());
         Componente* compExp = NULL;
-        if(this->existeSgNode(nodo_ref_arr->get_rhs_operand_i()) == true){
+        if (this->existeSgNode(nodo_ref_arr->get_rhs_operand_i()) == true) {
             compExp = this->getCompBySgNode(expInd);
         }
-        if(this->getCompBySgNode(nodo_ref_arr->get_rhs_operand_i()) == NULL){
-//            cout<< " cricando o indice" << endl;
+        if (this->getCompBySgNode(nodo_ref_arr->get_rhs_operand_i()) == NULL) {
+            //            cout<< " cricando o indice" << endl;
             compExp = analisaExp(expInd, NULL, "", comp->getNumParalelLina());
-//            cout<< " cricou a variavel :" << compExp->getName() << endl;
+            //            cout<< " cricou a variavel :" << compExp->getName() << endl;
             comp->setNomeVarIndex(compExp->getName());
             compExp->setEIndice(true);
         }
-//        cout<< " POS INDICE E: " << compExp->getName() << " - "<< compExp->getNomeCompVHDL() << endl;
-        if(compExp != NULL){        
+        //        cout<< " POS INDICE E: " << compExp->getName() << " - "<< compExp->getNomeCompVHDL() << endl;
+        if (compExp != NULL) {
             Ligacao* lig = new Ligacao(compExp, comp, "s" + FuncoesAux::IntToStr(this->ListaLiga.size()));
             lig->setPortDestino(comp->getPortOther("address"));
             lig->setPortOrigem(compExp->getPortDataInOut("OUT"));
@@ -1955,8 +1964,9 @@ void Core::updateCompRef(SgNode* node, comp_ref* comp){
             //ADICIONAR NA LISTA DE LIGACOES A NOVA LIGACAO
             this->ListaLiga.push_back(lig);
         }
-//        cout<< "CRIANDO LIGACAO COM O INDICE DO VETOR: OK" << endl;
-    }
+        //        cout<< "CRIANDO LIGACAO COM O INDICE DO VETOR: OK" << endl;
+    }// </editor-fold>
+
 //    cout<<" 5 " << endl;
 }
 
@@ -2133,7 +2143,7 @@ void Core::updateBlockRam(SgNode* node, block_ram* comp){
         Rose_STL_Container<SgNode*> var2 = NodeQuery::querySubTree(cur_var,V_SgAssignInitializer);
         if(var2.size() > 0){
 
-            comp->setEInicializado(true);
+            
 //            //Caso for vetor, pegar a quantidade de elementos dentro do mesmo
 //            this->qtd_ele_vet = var2.size();
             int id = 0;
@@ -2158,12 +2168,15 @@ void Core::updateBlockRam(SgNode* node, block_ram* comp){
             }
             //comp->setValor(valores);
         }
+        if(comp->valores.size() > 0){
+            comp->setEInicializado(true);
+        }
         
     }
     
-    string nome_comp_vhdl = "block_ram";
-    nome_comp_vhdl += "_"+comp->getName();
-    comp->setNomeCompVHDL(nome_comp_vhdl);
+//    string nome_comp_vhdl = "block_ram";
+//    nome_comp_vhdl += "_"+comp->getName();
+//    comp->setNomeCompVHDL(nome_comp_vhdl);
 }
 
 void Core::updateRegister(SgNode* node, reg_op* comp){
@@ -2865,6 +2878,139 @@ void Core::geraArquivosDotHW(){
     dot->imprimeHWDOT();
     dot->imprimeVHDL();
 }
+
+void Core::analiseDividirMemoria(){
+    
+    //Verificar se existe vetor WE
+}
+
+void Core::analiseMemoriaDualPort(){
+    list<Componente*>::iterator i;
+    list<Componente*>::iterator j;
+    list<Ligacao*>::iterator k;
+    //Processo de verificacao se existe duas memorias iguais do processo de paralelizacao
+    //neste caso se existir apenas 2 estas vao ser substituidas por uma memoria DUAL
+    // <editor-fold defaultstate="collapsed" desc="Inserir Dual Port">
+
+    Componente* compAux=NULL;
+    int aux = 0;
+    cout<<"--Processo de insercao memoria dual port: "<<endl;
+    for (i = this->ListaComp.begin(); i != this->ListaComp.end(); i++) {
+        if ((*i)->tipo_comp != CompType::REF) continue;
+        if ((*i)->tipo_comp == CompType::REF){
+            comp_ref* CompRefi = (comp_ref*)(*i);
+            compAux = NULL;
+            aux = 0;
+            if(CompRefi->getTipoVar() != "VET") continue;
+            for (j = this->ListaComp.begin(); j != this->ListaComp.end(); j++) {
+                if ((*j)->tipo_comp != CompType::REF) continue;
+                if ((*j)->tipo_comp == CompType::REF){
+                    comp_ref* CompRefj = (comp_ref*)(*j);
+                    if(CompRefj->getTipoVar() != "VET") continue;
+//                        if(CompRefi->getNomeVarRef() != CompRefj->getNomeVarRef()) aux++;
+                    if(CompRefi->getNomeVarRef() == CompRefj->getNomeVarRef()) {
+                        aux++;
+                        compAux = CompRefj;
+                    }                        
+                }
+            }
+
+            if(aux == 2 && compAux != NULL){
+                if((*i)->getComponenteRef()->tipo_comp == CompType::MEM){
+                    //Criar novo componente referencia
+                    comp_ref* comp = new comp_ref();
+                    comp->setNumIdComp(FuncoesAux::IntToStr(this->ListaComp.size()));
+                    comp->setNumLinha((*i)->getNumLinha());
+                    comp->setNumParalelLina("");
+                    comp->setName((*i)->getNomeVarRef());
+                    comp->setEInicializado((*i)->getEInicializado());
+                    this->addComponent(comp);
+
+                    block_ram* mem = (block_ram*)(*i)->getComponenteRef();
+
+                   //Criar novo componente dual port
+                    block_ram_dual* comp_dbr = new block_ram_dual();
+
+                    comp_dbr->setName((*i)->getNomeVarRef());
+                    this->addComponent(comp_dbr);
+
+                    if(mem->getEInicializado() == true){
+                        comp_dbr->setEInicializado(true);
+                    }
+
+                    //Varrer a memoria original e colocar os dados dentro
+                    //da memoria dual
+                    comp_dbr->valores = mem->valores;
+                    comp_dbr->setQtdElementos(FuncoesAux::IntToStr(mem->qtd_elem_vet));
+
+                    comp->setComponenteRef(comp_dbr);
+                    comp->updateCompRef();
+
+                    //APAGANDO COMP ANTIGOS
+                    (*i)->tipo_comp = CompType::REG; 
+                    compAux->tipo_comp = CompType::REG;
+                    compAux->getComponenteRef()->tipo_comp = CompType::REG;
+                    mem->tipo_comp = CompType::REG;
+                    
+//                    cout<< " COMP: ANTES " << comp->getName() << endl;
+//                    cout<< " -------------------------- " << endl;
+//                    cout<< comp->imprimePortas()<< endl;
+//                    cout<< " -------------------------- " << endl;                    
+                    //pegar todoas as ligacoes de (*i) e setar nas portas 0
+                    for (k = this->ListaLiga.begin(); k != this->ListaLiga.end(); k++) {
+                         if((*k)->getAtivo() == false) continue;
+                         if((*k)->getOrigem() == (*i)){                                                          
+                             Port* pOrig = comp->getPortOther((*k)->getPortOrigem()->getName()+"_0");
+                             (*k)->setPortOrigem(pOrig);
+                             pOrig->setLigacao((*k)->getNome());
+                             (*k)->editOrig(comp);
+                             (*i)->removeLigacao((*k));
+                             comp->addLigacao((*k));
+                         }
+                         if((*k)->getDestino() == (*i)){                            
+                             Port* pDest = comp->getPortOther((*k)->getPortDestino()->getName()+"_0");
+                             (*k)->setPortDestino(pDest);
+                             pDest->setLigacao((*k)->getNome());
+                             (*k)->editDest(comp);
+                             (*i)->removeLigacao((*k));
+                             comp->addLigacao((*k));                         
+                         }
+                    }
+
+                    //pegar todoas as ligacoes de compAux e setar nas portas 1
+                    for (k = this->ListaLiga.begin(); k != this->ListaLiga.end(); k++) {
+                        if((*k)->getAtivo() == false) continue;
+                        if((*k)->getOrigem() == compAux){
+                            Port* pOrig = comp->getPortOther((*k)->getPortOrigem()->getName()+"_1");
+                            pOrig->setLigacao((*k)->getNome());
+                            (*k)->setPortOrigem(pOrig);
+                            (*k)->editOrig(comp);
+                            compAux->removeLigacao((*k));
+                            comp->addLigacao((*k));
+                        }
+                        if((*k)->getDestino() == compAux){
+                            Port* pDest = comp->getPortOther((*k)->getPortDestino()->getName()+"_1");
+                            (*k)->setPortDestino(pDest);
+                            pDest->setLigacao((*k)->getNome());
+                            (*k)->editDest(comp);
+                            compAux->removeLigacao((*k));
+                            comp->addLigacao((*k));
+                       }
+                    }
+//                     cout<< " COMP: DEPOIS " << comp->getName() << endl;
+//                    cout<< " -------------------------- " << endl;
+//                    cout<< comp->imprimePortas()<< endl;
+//                    cout<< " -------------------------- " << endl;
+//                    cout<< comp->imprimeLigacoes()<< endl;
+//                    cout<< " -------------------------- " << endl;
+                }                  
+            }
+        }
+    }
+    cout<<"--Processo de insercao memoria dual port: OK"<<endl;
+}
+// </editor-fold>
+
 
 Core::~Core() {
 }

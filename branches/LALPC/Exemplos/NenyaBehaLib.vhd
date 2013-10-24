@@ -1791,101 +1791,64 @@ begin
 end rtl;
 
 
---######################## INTERNAL Dual BlockRam2 ###################
-
--------------------------------------------------------
--- Design Name : ram_dp_ar_aw
--- File Name   : ram_dp_ar_aw.vhd
--- Function    : Asynchronous read write RAM
--- Coder       : Deepak Kumar Tala (Verilog)
--- Translator  : Alexander H Pham (VHDL)
--- link: http://www.asic-world.com/code/vhdl_examples/ram_dp_ar_aw.vhd
--------------------------------------------------------
+--######################## INTERNAL BlockRam DUAL ###################
 library ieee;
-    use ieee.std_logic_1164.all;
-    use ieee.std_logic_unsigned.all;
+use ieee.std_logic_1164.all;
+use ieee.std_logic_unsigned.all;
 
-entity ram_dp_ar_aw is
-    generic (
-        DATA_WIDTH :integer := 8;
-        ADDR_WIDTH :integer := 8
-    );
-    port (
-        address_0 :in    std_logic_vector (ADDR_WIDTH-1 downto 0);  -- address_0 Input
-        data_0    :inout std_logic_vector (DATA_WIDTH-1 downto 0);  -- data_0 bi-directional
-        --cs_0      :in    std_logic;                                 -- Chip Select
-        we_0      :in    std_logic;                                 -- Write Enable/Read Enable
-        oe_0      :in    std_logic;                                 -- Output Enable
-        address_1 :in    std_logic_vector (ADDR_WIDTH-1 downto 0);  -- address_1 Input
-        data_1    :inout std_logic_vector (DATA_WIDTH-1 downto 0);  -- data_1 bi-directional
-        --cs_1      :in    std_logic;                                 -- Chip Select
-        we_1      :in    std_logic;                                 -- Write Enable/Read Enable
-        oe_1      :in    std_logic                                  -- Output Enable
-    );
-end entity;
-architecture rtl of ram_dp_ar_aw is
-    ----------------Internal variables----------------
+entity block_ram_dual is
+	generic(
+		data_width : integer := 8;
+		address_width : integer := 8
+	);
+	port(
+		data_in_0 : in std_logic_vector(data_width-1 downto 0) := (others => '0');
+		address_0 : in std_logic_vector(address_width-1 downto 0);
+		we_0: in std_logic := '0';
+		oe_0: in std_logic := '1';
+		data_out_0 : out std_logic_vector(data_width-1 downto 0);
+		data_in_1 : in std_logic_vector(data_width-1 downto 0) := (others => '0');
+		address_1 : in std_logic_vector(address_width-1 downto 0);
+		we_1: in std_logic := '0';
+		oe_1: in std_logic := '1';
+		data_out_1 : out std_logic_vector(data_width-1 downto 0);
+		clk : in std_logic);
+		
+end block_ram_dual;
 
-    constant RAM_DEPTH :integer := 2**ADDR_WIDTH;
-    
-    signal data_0_out :std_logic_vector (DATA_WIDTH-1 downto 0);
-    signal data_1_out :std_logic_vector (DATA_WIDTH-1 downto 0);
+architecture rtl of block_ram_dual is
+  
+	constant mem_depth : integer := 2**address_width;
+  	type ram_type is array (mem_depth-1 downto 0)
+    of std_logic_vector (data_width-1 downto 0);
 
-    type RAM is array (integer range <>)of std_logic_vector (DATA_WIDTH-1 downto 0);
-    --signal read_a : std_logic_vector(ADDR_WIDTH-1 downto 0)
-    signal mem : RAM (0 to RAM_DEPTH-1);
+  	signal read_a : std_logic_vector(address_width-1 downto 0);
+	signal read_b : std_logic_vector(address_width-1 downto 0);
+ 	signal RAM : ram_type;
+
 begin
-
-    ----------------Code Starts Here------------------
-    -- Memory Write Block
-    -- Write Operation : When we_0 = 1, cs_0 = 1
-    MEM_WRITE:
-    --process (address_0, cs_0, we_0, data_0, address_1, cs_1, we_1, data_1) begin
-    process (address_0, we_0, data_0, address_1, we_1, data_1) begin
-      --if (cs_0 = '1' and we_0 = '1') then
+  process (clk)
+  begin
+    
+    if (clk'event and clk = '1') then
       if (we_0 = '1') then
-         mem(conv_integer(address_0)) <= data_0;
-	    data_0 <= data_0_out;
-      --elsif  (cs_1 = '1' and we_1 = '1') then
-      elsif  (we_1 = '1') then
-         mem(conv_integer(address_1)) <= data_1;
-	    data_1 <= data_1_out;
+        RAM(conv_integer(address_0)) <= data_in_0;
+    		data_out_0 <= RAM(conv_integer(read_a));          
+      elsif (oe_0 = '1') then
+    		data_out_0 <= RAM(conv_integer(read_a));          
       end if;
-    end process;
-
-    -- Tri-State Buffer control
-    --data_0 <= data_0_out when (cs_0 = '1' and oe_0 = '1' and we_0 = '0') else (others=>'Z');
-    data_0 <= data_0_out when (oe_0 = '1');
-
-    -- Memory Read Block
-    MEM_READ_0:
-    --process (address_0, cs_0, we_0, oe_0, mem) begin
-    process (address_0, we_0, oe_0, mem) begin
-      --if (cs_0 = '1' and we_0 = '0' and oe_0 = '1') then
-      if (oe_0 = '1') then
-        data_0_out <= mem(conv_integer(address_0));
-      --else
-        --data_0_out <= (others=>'0');
+      if (we_1 = '1') then
+        RAM(conv_integer(address_1)) <= data_in_1;
+    		data_out_1 <= RAM(conv_integer(read_b));          
+      elsif (oe_1 = '1') then
+    		data_out_1 <= RAM(conv_integer(read_b));          
       end if;
-    end process;
+      read_a <= address_0;
+      read_b <= address_1;
+    end if;
+  end process;
 
-    -- Second Port of RAM
-    -- Tri-State Buffer control
-    --data_1 <= data_1_out when (cs_1 = '1' and oe_1 = '1' and we_1 = '0') else (others=>'Z');
-    data_1 <= data_1_out when (oe_1 = '1');
-    -- Memory Read Block 1
-    MEM_READ_1:
-    --process (address_1, cs_1, we_1, oe_1, mem) begin
-    process (address_1, we_1, oe_1, mem) begin
-        --if (cs_1 = '1' and we_1 = '0' and oe_1 = '1') then
-        if (oe_1 = '1') then
-            data_1_out <= mem(conv_integer(address_1));
-        --else
-            --data_1_out <= (others=>'0');
-        end if;
-    end process;
-
-end architecture;
+end rtl;
 
 
 --######################## EXTERNAL SRAM ###################

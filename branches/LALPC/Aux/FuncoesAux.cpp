@@ -53,6 +53,30 @@ vector<string> FuncoesAux::split(const string& s, const string& delim) {
     return result;
 }
 
+string FuncoesAux::LPad(const string &val, int size){
+    string res ="";
+    string res2 ="";
+    while((val.size() + res.size()) < size){
+        res.push_back('0');
+    }
+    res2 = string(res.c_str())+val;
+    return res2;
+}
+
+string FuncoesAux::ConvertDecToBin(const string &val){
+    int dec = FuncoesAux::StrToInt(val);
+    int rem,i=1,sum=0;
+    do
+    {
+        rem=dec%2;
+        sum=sum + (i*rem);
+        dec=dec/2;
+        i=i*10;
+    }while(dec>0);
+    string res = FuncoesAux::IntToStr(sum);
+    return res;
+}
+
 FuncoesAux::~FuncoesAux() {
 }
 

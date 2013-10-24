@@ -64,6 +64,8 @@ class Core {
         bool            isIndiceVector(const string& name);
         void            ALAP();
         void            ASAP();
+        void            analiseMemoriaDualPort();
+        void            analiseDividirMemoria();
         void            balanceAndSyncrhonize();
         int             calculateASAP(Componente* comp);
         void            addComponent(Componente* comp);

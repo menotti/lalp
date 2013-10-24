@@ -49,7 +49,8 @@ class Componente {
         virtual string  getDelayValComp();
         void            setDelayVal(const string &val); //Referente ao VALOR dentro do DELAY (Generic Map)
         string          getDelayVal();
-        
+        virtual string  getMemoriaVHDLCab();
+        virtual string  getMemoriaVHDLRod();
         string          getDelayBits();
         void            setDelayBits(const string &bits);
         void            setName(const string &nome);
@@ -74,6 +75,7 @@ class Componente {
         virtual void    removeLigacao(Ligacao* lig);
         virtual void    addLigacao(Ligacao* lig);
         virtual void    addGenericMap(GenericMap* map);
+        int             getAddressWidth();
         bool            temPorta(const string &nome);
         void            setEIndice(bool val);
         bool            getEIndice();
@@ -85,6 +87,7 @@ class Componente {
 //        string          op_tipo;        //Definir tipo de opercacao - soma, sub, mult, div, etc.
         string          valor;          //Valor da Variavel ou Todos os elementos do Vetor
         list<int>       valores;
+        int             qtd_elem_vet;
 //        string          ref_var_nome;
 //        string          ref_var_index;
 //        string          ref_var_tipo;   //A referencia pode ser Vetor ou Variavel
