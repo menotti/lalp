@@ -26,10 +26,11 @@ public:
     void        setValor();
     int         getAddressWidth();
     int         qtd_elem_vet;
+    string      getMemoriaVHDLCab();
+    string      getMemoriaVHDLRod();
 private:
-    string      qtd_ele_vet;
+//    string      qtd_ele_vet;
     string      tipo_var;
-    int         addressWidth;
     
 };
 

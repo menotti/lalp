@@ -29,15 +29,29 @@ Componente::Componente(SgNode* node/*=NULL*/, const string &aux/*=""*/){
     if(aux == "WE"){
         this->writeEnable = true;
     }
+    this->nodoPai = NULL;
     this->sync = true;
     this->addressWidth  = 2;
     this->dataWidth     = 32;
+    this->eInicializado = false;
     setEIndice(false);
     setALAP(0);
     setASAP(0);
     setNumLinha(0);
     this->setDelayValComp("1");
 }
+
+string Componente::getMemoriaVHDLCab(){
+}
+
+string Componente::getMemoriaVHDLRod(){
+}
+
+
+int Componente::getAddressWidth(){
+    return this->addressWidth;
+}
+
 int Componente::getWidth(){
     return this->dataWidth;
 }
@@ -450,14 +464,12 @@ void Componente::updateCompRef(){
         this->portas = this->getComponenteRef()->getPorts();
         this->copyAllPortsAndGM();
         if(this->getTipoCompRef() == CompType::MEM){
-            string vhdlComp = "block_ram";
-            if(!this->getWE()){
+            string vhdlComp =  this->getComponenteRef()->getNomeCompVHDL();
+            if(this->getComponenteRef()->getEInicializado() == true){
                 vhdlComp += "_"+this->getName();
-            }else{
-                this->getComponenteRef()->setNomeCompVHDL(vhdlComp);
             }
-//            cout<<"----------NOME: "<< vhdlComp<<endl;
             this->setNomeCompVHDL(vhdlComp);
+            this->getComponenteRef()->setNomeCompVHDL(vhdlComp);
         }
         if(this->getTipoCompRef() == CompType::REG){
             this->setNomeCompVHDL(this->getComponenteRef()->getNomeCompVHDL());

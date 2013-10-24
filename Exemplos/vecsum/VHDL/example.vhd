@@ -28,48 +28,63 @@ port (
 ); 
 end component; 
 
-component block_ram 
+component block_ram_dual 
 generic ( 
         data_width          : integer := 8; 
         address_width	: integer := 8 
 ); 
 port ( 
-        clk                 : in	std_logic; 
-        we                  : in	std_logic := '0'; 
-        oe                  : in	std_logic := '1'; 
-        address             : in	std_logic_vector(address_width-1 downto 0); 
-        data_in             : in	std_logic_vector(data_width-1 downto 0) := (others => '0'); 
-        data_out            : out	std_logic_vector(data_width-1 downto 0) 
+        address_0           :in     std_logic_vector (address_width-1 downto 0); 
+        data_in_0           :in     std_logic_vector (data_width-1 downto 0) := (others => '0'); 
+        data_out_0          :out    std_logic_vector (data_width-1 downto 0); 
+        we_0                :in     std_logic := '0'; 
+        oe_0                :in     std_logic := '1'; 
+        address_1           :in     std_logic_vector (address_width-1 downto 0); 
+        data_in_1           :in     std_logic_vector (data_width-1 downto 0) := (others => '0'); 
+        data_out_1          :out    std_logic_vector (data_width-1 downto 0); 
+        we_1                :in     std_logic := '0'; 
+        oe_1                :in     std_logic := '1'; 
+        clk                 :       in std_logic 
 ); 
 end component; 
 
-component block_ram_x 
+component block_ram_dual_x 
 generic ( 
         data_width          : integer := 8; 
         address_width	: integer := 8 
 ); 
 port ( 
-        clk                 : in	std_logic; 
-        we                  : in	std_logic := '0'; 
-        oe                  : in	std_logic := '1'; 
-        address             : in	std_logic_vector(address_width-1 downto 0); 
-        data_in             : in	std_logic_vector(data_width-1 downto 0) := (others => '0'); 
-        data_out            : out	std_logic_vector(data_width-1 downto 0) 
+        address_0           :in     std_logic_vector (address_width-1 downto 0); 
+        data_in_0           :in     std_logic_vector (data_width-1 downto 0) := (others => '0'); 
+        data_out_0          :out    std_logic_vector (data_width-1 downto 0); 
+        we_0                :in     std_logic := '0'; 
+        oe_0                :in     std_logic := '1'; 
+        address_1           :in     std_logic_vector (address_width-1 downto 0); 
+        data_in_1           :in     std_logic_vector (data_width-1 downto 0) := (others => '0'); 
+        data_out_1          :out    std_logic_vector (data_width-1 downto 0); 
+        we_1                :in     std_logic := '0'; 
+        oe_1                :in     std_logic := '1'; 
+        clk                 :       in std_logic 
 ); 
 end component; 
 
-component block_ram_y 
+component block_ram_dual_y 
 generic ( 
         data_width          : integer := 8; 
         address_width	: integer := 8 
 ); 
 port ( 
-        clk                 : in	std_logic; 
-        we                  : in	std_logic := '0'; 
-        oe                  : in	std_logic := '1'; 
-        address             : in	std_logic_vector(address_width-1 downto 0); 
-        data_in             : in	std_logic_vector(data_width-1 downto 0) := (others => '0'); 
-        data_out            : out	std_logic_vector(data_width-1 downto 0) 
+        address_0           :in     std_logic_vector (address_width-1 downto 0); 
+        data_in_0           :in     std_logic_vector (data_width-1 downto 0) := (others => '0'); 
+        data_out_0          :out    std_logic_vector (data_width-1 downto 0); 
+        we_0                :in     std_logic := '0'; 
+        oe_0                :in     std_logic := '1'; 
+        address_1           :in     std_logic_vector (address_width-1 downto 0); 
+        data_in_1           :in     std_logic_vector (data_width-1 downto 0) := (others => '0'); 
+        data_out_1          :out    std_logic_vector (data_width-1 downto 0); 
+        we_1                :in     std_logic := '0'; 
+        oe_1                :in     std_logic := '1'; 
+        clk                 :       in std_logic 
 ); 
 end component; 
 
@@ -107,52 +122,44 @@ port (
 ); 
 end component; 
 
-signal s0	: std_logic_vector(31 downto 0); 
-signal s1	: std_logic_vector(31 downto 0); 
-signal s2	: std_logic_vector(31 downto 0); 
+signal s9	: std_logic_vector(31 downto 0); 
 signal s5	: std_logic_vector(31 downto 0); 
 signal s6	: std_logic_vector(31 downto 0); 
 signal s7	: std_logic_vector(31 downto 0); 
 signal s8	: std_logic_vector(31 downto 0); 
-signal s9	: std_logic_vector(31 downto 0); 
-signal s10	: std_logic; 
-signal s11	: std_logic_vector(0 downto 0); 
-signal s12	: std_logic; 
-signal s13	: std_logic; 
-signal s14	: std_logic_vector(0 downto 0); 
+signal s10	: std_logic_vector(31 downto 0); 
+signal s11	: std_logic_vector(31 downto 0); 
+signal s12	: std_logic_vector(31 downto 0); 
+signal s13	: std_logic_vector(31 downto 0); 
+signal s15	: std_logic_vector(31 downto 0); 
+signal s16	: std_logic_vector(31 downto 0); 
+signal s17	: std_logic_vector(31 downto 0); 
+signal s18	: std_logic; 
+signal s25	: std_logic_vector(0 downto 0); 
+signal s20	: std_logic; 
+signal s21	: std_logic; 
+signal s22	: std_logic_vector(0 downto 0); 
+signal s23	: std_logic_vector(31 downto 0); 
 
 begin 
 
-	\i\: counter
+	\CTD_5\: counter
 	generic map ( 
 		bits => 32,
-		condition => 0,
+		condition => 1,
 		down => 0,
-		increment => 1,
+		increment => 2,
 		steps => 1
 	)
 	port map ( 
 		clk => \clk\,
-		clk_en => s12,
-		done => s13,
-		input => s7,
-		output => s5,
+		clk_en => s20,
+		done => s21,
+		input => s16,
+		output => s9,
 		reset => \reset\,
-		step => s10,
-		termination => s6
-	);
-
-	\z\: block_ram
-	generic map ( 
-		address_width => 2,
-		data_width => 32
-	)
-	port map ( 
-		address(1 downto 0) => s9(1 downto 0),
-		clk => \clk\,
-		data_in => s0,
-		data_out => s8,
-		we => s11(0)
+		step => s18,
+		termination => s15
 	);
 
 	\x_add_op_s_y\: add_op_s
@@ -162,72 +169,127 @@ begin
 		w_out => 32
 	)
 	port map ( 
-		I0 => s1,
-		I1 => s2,
-		O0 => s0
+		I0 => s7,
+		I1 => s8,
+		O0 => s6
 	);
 
-	\x\: block_ram_x
+	\i_15_add_op_s_c15\: add_op_s
 	generic map ( 
-		address_width => 2,
-		data_width => 32
+		w_in1 => 32,
+		w_in2 => 32,
+		w_out => 32
 	)
 	port map ( 
-		address(1 downto 0) => s5(1 downto 0),
-		clk => \clk\,
-		data_out => s1
+		I0 => s9,
+		I1 => s10,
+		O0 => s5
 	);
 
-	\y\: block_ram_y
+	\x_18_add_op_s_y_19\: add_op_s
 	generic map ( 
-		address_width => 2,
-		data_width => 32
+		w_in1 => 32,
+		w_in2 => 32,
+		w_out => 32
 	)
 	port map ( 
-		address(1 downto 0) => s5(1 downto 0),
-		clk => \clk\,
-		data_out => s2
+		I0 => s12,
+		I1 => s13,
+		O0 => s11
 	);
 
-	\c14\: delay_op
+	\c26\: delay_op
+	generic map ( 
+		bits => 32,
+		delay => 2
+	)
+	port map ( 
+		a => s9,
+		a_delayed => s17,
+		clk => \clk\,
+		reset => \reset\
+	);
+
+	\c27\: delay_op
+	generic map ( 
+		bits => 1,
+		delay => 2
+	)
+	port map ( 
+		a(0) => s18,
+		a_delayed => s25,
+		clk => \clk\,
+		reset => \reset\
+	);
+
+	\c28\: delay_op
+	generic map ( 
+		bits => 1,
+		delay => 5
+	)
+	port map ( 
+		a(0) => s21,
+		a_delayed => s22,
+		clk => \clk\,
+		reset => \reset\
+	);
+
+	\c29\: delay_op
 	generic map ( 
 		bits => 32,
 		delay => 2
 	)
 	port map ( 
 		a => s5,
-		a_delayed => s9,
+		a_delayed => s23,
 		clk => \clk\,
 		reset => \reset\
 	);
 
-	\c15\: delay_op
+	\z\: block_ram_dual
 	generic map ( 
-		bits => 1,
-		delay => 2
+		address_width => 11,
+		data_width => 32
 	)
 	port map ( 
-		a(0) => s10,
-		a_delayed => s11,
-		clk => \clk\,
-		reset => \reset\
+		address_0(10 downto 0) => s17(10 downto 0),
+		data_in_0 => s6,
+		we_0 => s25(0),
+		address_1(10 downto 0) => s23(10 downto 0),
+		data_in_1 => s11,
+		we_1 => s25(0),
+		clk => \clk\
 	);
 
-	\c16\: delay_op
+	\x\: block_ram_dual_x
 	generic map ( 
-		bits => 1,
-		delay => 5
+		address_width => 11,
+		data_width => 32
 	)
 	port map ( 
-		a(0) => s13,
-		a_delayed => s14,
-		clk => \clk\,
-		reset => \reset\
+		address_0(10 downto 0) => s9(10 downto 0),
+		data_out_0 => s7,
+		address_1(10 downto 0) => s5(10 downto 0),
+		data_out_1 => s12,
+		clk => \clk\
 	);
 
-s12 <= \init\; 
-\done\ <= s14(0); 
-s6 <= conv_std_logic_vector(3, 32); 
-s7 <= conv_std_logic_vector(0, 32); 
-\result\ <= s8; 
+	\y\: block_ram_dual_y
+	generic map ( 
+		address_width => 11,
+		data_width => 32
+	)
+	port map ( 
+		address_0(10 downto 0) => s9(10 downto 0),
+		data_out_0 => s8,
+		address_1(10 downto 0) => s5(10 downto 0),
+		data_out_1 => s13,
+		clk => \clk\
+	);
+
+s10 <= conv_std_logic_vector(1, 32); 
+s20 <= \init\; 
+\done\ <= s22(0); 
+s15 <= conv_std_logic_vector(2047, 32); 
+s16 <= conv_std_logic_vector(0, 32); 
 end behavior; 

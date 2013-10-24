@@ -23,6 +23,8 @@ public:
     static vector<string> split(const string& s, const string& delim);
     static int StrToInt(const string& val);
     static string IntToStr(int val);
+    static string LPad(const string &val, int size);
+    static string ConvertDecToBin(const string &val);
 private:
 
 };

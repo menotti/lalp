@@ -164,67 +164,37 @@ void ArquivosDotHW::GeraMemoryVHDL() {
     
     for(i=this->ListaComp.begin(); i != this->ListaComp.end(); i++){
         if((*i)->tipo_comp != CompType::MEM) continue;
-        block_ram* mem = (block_ram*)(*i); 
+//        block_ram* mem = (block_ram*)(*i); 
         if( ((*i)->getEInicializado() == true) && ((*i)->getWE() == false) ){
-            int dataSize = mem->getWidth();
-            int memoryWords =  (int) pow(2,mem->getAddressWidth());
-//            cout<< "-----------------------------------"<< endl;
-//            cout<< "Memory Width: "<<mem->getAddressWidth()<< endl;
-//            cout<< "memoryWords: "<<memoryWords << endl;
-//            cout<< "-----------------------------------"<< endl;
-            fout << "library IEEE; \n";
-            fout << "use IEEE.std_logic_1164.all; \n";
-            fout << "use IEEE.std_logic_arith.all; \n";
-            fout << "use IEEE.std_logic_unsigned.all; \n\n";
-            fout << "entity "+(*i)->getNomeCompVHDL()+" is \n";
-            fout << "generic( \n";
-            fout << "        data_width : integer := 8; \n";
-            fout << "        address_width : integer := 8 \n";
-            fout << "); \n";
-            fout << "port( \n";
-            fout << "        data_in : in std_logic_vector(data_width-1 downto 0) := (others => '0'); \n";
-            fout << "        address : in std_logic_vector(address_width-1 downto 0); \n";
-            fout << "        we: in std_logic := '0'; \n";
-            fout << "        oe: in std_logic := '1'; \n";
-            fout << "        clk : in std_logic; \n";
-            fout << "        data_out : out std_logic_vector(data_width-1 downto 0)); \n";
-            fout << "end "+(*i)->getNomeCompVHDL()+"; \n\n";
+            int dataSize = (*i)->getWidth();
+            int memoryWords =  (int) pow(2,(*i)->getAddressWidth());
 
-            fout << "architecture rtl of "+(*i)->getNomeCompVHDL()+" is \n\n";
-
-            fout << "constant mem_depth : integer := 2**address_width; \n";
-            fout << "type ram_type is array (mem_depth-1 downto 0) \n";
-            fout << "of std_logic_vector (data_width-1 downto 0); \n\n";
-
-            fout << "signal read_a : std_logic_vector(address_width-1 downto 0); \n";
-            fout << "signal RAM : ram_type := ram_type'( \n";
-
-            //cout<< "-----------------------------------"<< endl;
-            //cout<< "block_ram_"+(*i)->getName() << endl;
-            //cout<< "VALOR COMPLETO: " << endl;
-            //cout<< "-----------------------------------"<< endl;
-
-            //const vector<string> values = FuncoesAux::split((*i)->valor, "|");
-            int   intValues[mem->qtd_elem_vet];
+            fout << (*i)->getMemoriaVHDLCab() ;
+            
+            int   intValues[(*i)->valores.size()];
 	    int aux1 = 0;
-            for(val=mem->valores.begin(); val != mem->valores.end(); val++){
+//            cout<< " -------------------------- "<<endl;
+//            cout<< (*i)->getName() << " - " << (*i)->getNomeCompVHDL() <<endl;
+//            cout<< " -------------------------- "<<endl;
+            for(val=(*i)->valores.begin(); val != (*i)->valores.end(); val++){
+                cout<< "["<< aux1 <<"] = " << (*val) <<endl;
 		intValues[aux1] = (*val);
 		aux1++;
             }
             string valPos = "";
             string posVec;
-            //cout<< "VALOR VETOR QTD: " << mem->qtd_elem_vet << endl;
-            //cout<< "LIST SIZE : " << mem->valores.size() << endl;
-            //cout<< "DATA SIZE : " << dataSize << endl;
-            //cout<< "ADDRES WI : " << mem->getAddressWidth() << endl;
-            //cout<< "MEMORY WORD : " << memoryWords << endl;
-            //cout<< "-----------------------------------"<< endl;
+//            cout<< "VALOR VETOR QTD: " << (*i)->qtd_elem_vet << endl;
+//            cout<< "LIST SIZE : " << (*i)->valores.size() << endl;
+//            cout<< "DATA SIZE : " << dataSize << endl;
+//            cout<< "ADDRES WI : " << (*i)->getAddressWidth() << endl;
+//            cout<< "MEMORY WORD : " << memoryWords << endl;
+//            cout<< "-----------------------------------"<< endl;
             for (int c = memoryWords-1; c >= 0; c--){
                 posVec = boost::lexical_cast<std::string>(c);
                 int value;
                 string bin;
                 
-                if(c < mem->qtd_elem_vet){
+                if(c < (*i)->valores.size()){
 //                    value = this->LPad(this->ConvertDecToBin(values[c]),dataSize);
 //                    value = FuncoesAux::StrToInt(string(values[c].c_str()));
                     value = intValues[c];
@@ -232,7 +202,7 @@ void ArquivosDotHW::GeraMemoryVHDL() {
                     value = 0;
                 }
                 
-                bin = this->LPad(this->ConvertDecToBin(FuncoesAux::IntToStr(value)),dataSize);
+                bin = FuncoesAux::LPad(FuncoesAux::ConvertDecToBin(FuncoesAux::IntToStr(value)),dataSize);
                 
                 valPos += "\t (\""+bin+"\")";
                 if (c == 0){
@@ -246,36 +216,9 @@ void ArquivosDotHW::GeraMemoryVHDL() {
             }
             fout << valPos << endl;
            
-            fout << "\nbegin \n";
-            fout << "       process (clk) \n";
-            fout << "       begin \n";
-            fout << "              if (clk'event and clk = '1') then \n";
-            fout << "                  if (we = '1') then \n";
-            fout << "                        RAM(conv_integer(address)) <= data_in; \n";
-            fout << "                        data_out <= RAM(conv_integer(read_a)); \n";
-            fout << "                  elsif (oe = '1') then \n";
-            fout << "                        data_out <= RAM(conv_integer(read_a)); \n";
-            fout << "                  end if; \n";
-            fout << "                  read_a <= address; \n";
-            fout << "             end if; \n";
-            fout << "       end process; \n";
-            fout << "end rtl; \n\n";
+            fout << (*i)->getMemoriaVHDLRod();
         }
     }
-}
-
-string ArquivosDotHW::ConvertDecToBin(const string &val){
-    int dec = FuncoesAux::StrToInt(val);
-    int rem,i=1,sum=0;
-    do
-    {
-        rem=dec%2;
-        sum=sum + (i*rem);
-        dec=dec/2;
-        i=i*10;
-    }while(dec>0);
-    string res = FuncoesAux::IntToStr(sum);
-    return res;
 }
 
 bool ArquivosDotHW::ExisteNaListaAux(const string &val){
@@ -299,27 +242,9 @@ void ArquivosDotHW::organizaListaNome(){
 //        cout<< (*i)->getNomeCompVHDL() << " -- " << (*i)->getName() << endl;
         this->CompMap.insert(make_pair( (*i)->getNomeCompVHDL(), (*i)));
     }
-    
-//    map<string, Componente*> ::iterator m;
-//    cout<<"#####################################"<<endl;
-//    cout<< "LISTA: " << this->ListaComp.size() <<endl;
-//    cout<< "MAPA:  " << this->CompMap.size() <<endl;
-//    cout<<"MAP"<<endl;
-//    for(m=this->CompMap.begin(); m != this->CompMap.end(); m++){
-//        cout<< (*m).first << " -- " << (*m).second->getName() <<endl;
-//    }
-//    cout<<"#####################################"<<endl;
 }
 
-string ArquivosDotHW::LPad(const string &val, int size){
-    string res ="";
-    string res2 ="";
-    while((val.size() + res.size()) < size){
-        res.push_back('0');
-    }
-    res2 = string(res.c_str())+val;
-    return res2;
-}
+
 
 ArquivosDotHW::~ArquivosDotHW() {
 }
