@@ -1837,16 +1837,24 @@ begin
       elsif (oe_0 = '1') then
     		data_out_0 <= RAM(conv_integer(read_a));          
       end if;
+      read_a <= address_0;
+    end if;
+  end process;
+  
+  process (clk)
+  begin
+    
+    if (clk'event and clk = '1') then
       if (we_1 = '1') then
         RAM(conv_integer(address_1)) <= data_in_1;
     		data_out_1 <= RAM(conv_integer(read_b));          
       elsif (oe_1 = '1') then
     		data_out_1 <= RAM(conv_integer(read_b));          
       end if;
-      read_a <= address_0;
       read_b <= address_1;
     end if;
   end process;
+
 
 end rtl;
 
