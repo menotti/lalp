@@ -5,17 +5,17 @@
  * Created on July 12, 2013, 10:02 AM
  */
 
-#ifndef BLOCK_RAM_H
-#define	BLOCK_RAM_H
+#ifndef BLOCK_RAM_DUAL_H
+#define	BLOCK_RAM_DUAL_H
 #include "Componente.h"
 #include "string"
 
 using namespace std;
 
-class block_ram : public Componente {
+class block_ram_dual : public Componente {
 public:
-    block_ram(SgNode* node=NULL, const string &aux = "");
-    virtual     ~block_ram();
+    block_ram_dual(SgNode* node=NULL, const string &aux = "");
+    virtual     ~block_ram_dual();
     string      getEstruturaComponenteVHDL();
     string      geraDOTComp();
     void        createAllPorts();
@@ -25,14 +25,11 @@ public:
     void        setTipo(const string &tipo);
     void        setValor();
     int         getAddressWidth();
-    int         qtd_elem_vet;
     string      getMemoriaVHDLCab();
     string      getMemoriaVHDLRod();
     void        editQtdElementos(const string &qtd);
 private:
-//    string      qtd_ele_vet;
     string      tipo_var;
-    
 };
 
 #endif	/* OP_SIMPLE_H */

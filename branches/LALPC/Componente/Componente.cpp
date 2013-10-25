@@ -463,17 +463,17 @@ void Componente::updateCompRef(){
         this->genMap = this->getComponenteRef()->getGenericMap();
         this->portas = this->getComponenteRef()->getPorts();
         this->copyAllPortsAndGM();
-        if(this->getTipoCompRef() == CompType::MEM){
-            string vhdlComp =  this->getComponenteRef()->getNomeCompVHDL();
-            if(this->getComponenteRef()->getEInicializado() == true){
-                vhdlComp += "_"+this->getName();
-            }
-            this->setNomeCompVHDL(vhdlComp);
-            this->getComponenteRef()->setNomeCompVHDL(vhdlComp);
-        }
-        if(this->getTipoCompRef() == CompType::REG){
+//        if(this->getTipoCompRef() == CompType::MEM){
+//            string vhdlComp =  this->getComponenteRef()->getNomeCompVHDL();
+//            if(this->getComponenteRef()->getEInicializado() == true){
+//                vhdlComp += "_"+this->getName();
+//            }
+//            this->setNomeCompVHDL(vhdlComp);
+//            this->getComponenteRef()->setNomeCompVHDL(vhdlComp);
+//        }
+//        if(this->getTipoCompRef() == CompType::REG){
             this->setNomeCompVHDL(this->getComponenteRef()->getNomeCompVHDL());
-        }
+//        }
     }
 }
 
