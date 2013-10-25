@@ -74,6 +74,18 @@ void block_ram::setTipo(const string &tipo){
     this->tipo_var = tipo;    
 }
 
+void block_ram::editQtdElementos(const string &qtd){
+    int index = FuncoesAux::StrToInt(qtd);
+    double res = (log(index)/log(2));
+    if( (int)res < res){
+        this->addressWidth = (int)res+1;
+    }else{
+        this->addressWidth = (int)res;
+    }
+    
+    this->getPortOther("address")->setWidth(FuncoesAux::IntToStr(this->addressWidth));
+}
+
 void block_ram::setValor(){
 }
 
