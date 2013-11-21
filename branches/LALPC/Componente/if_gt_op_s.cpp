@@ -5,14 +5,14 @@
  * Created on July 12, 2013, 10:02 AM
  */
 //#include "rose.h"
-#include "../header/meuHeader.h"
+//#include "../header/meuHeader.h"
 #include "if_gt_op_s.h"
 #include "string"
 #include "../Aux/FuncoesAux.h"
 
 using namespace std;
 
-if_gt_op_s::if_gt_op_s(SgNode* node) : Componente(node) {
+if_gt_op_s::if_gt_op_s(void*node) : Componente(node) {
     this->setNomeCompVHDL("if_gt_op_s");
     this->setSync(false);
     this->tipo_comp = CompType::CND;  

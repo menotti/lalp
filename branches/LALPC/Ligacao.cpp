@@ -4,7 +4,7 @@
  * 
  * Created on June 28, 2013, 8:51 AM
  */
-#include "header/meuHeader.h"
+//#include "header/meuHeader.h"
 #include "Ligacao.h"
 #include "Componente/Componente.h"
 #include <string>

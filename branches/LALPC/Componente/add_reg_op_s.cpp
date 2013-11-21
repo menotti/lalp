@@ -5,14 +5,14 @@
  * Created on July 12, 2013, 10:02 AM
  */
 //#include "rose.h"
-#include "../header/meuHeader.h"
+//#include "../header/meuHeader.h"
 #include "add_reg_op_s.h"
 #include "string"
 #include "../Aux/FuncoesAux.h"
 
 using namespace std;
 
-add_reg_op_s::add_reg_op_s(SgNode* node, const string &aux) : Componente(node, aux) {
+add_reg_op_s::add_reg_op_s(void*node, const string &aux) : Componente(node, aux) {
     this->setNomeCompVHDL("add_reg_op_s");    
     this->tipo_comp = CompType::REG;    
     this->createAllPorts();

@@ -11,10 +11,8 @@
 #include <stdlib.h>
 #include <string>
 #include <vector>
-#include "FuncoesAux.h"
 using namespace std;
 using boost::lexical_cast;
-
 
 FuncoesAux::FuncoesAux() {
 }
@@ -76,6 +74,8 @@ string FuncoesAux::ConvertDecToBin(const string &val){
     string res = FuncoesAux::IntToStr(sum);
     return res;
 }
+
+
 
 FuncoesAux::~FuncoesAux() {
 }

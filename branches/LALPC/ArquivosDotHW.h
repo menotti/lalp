@@ -11,17 +11,20 @@
 #include <string>
 #include <stdio.h>
 #include <list>
+#include <iostream>
 #include "Componente/Componente.h"
 #include <sstream>
 #include <stdlib.h>
+#include <vector>
+#include <map>
 
 using namespace std;
 class ArquivosDotHW {
 public:
-    ArquivosDotHW(list<Componente*> listaComp, list<Ligacao*> listaLiga, const string& arquivo);
+    ArquivosDotHW();
     CompType*           tipo_comp;
-    void                imprimeVHDL();
-    void                imprimeHWDOT();    
+    void                imprimeVHDL(list<Componente*> listaComp, list<Ligacao*> listaLiga, const string& arquivo = "");
+    void                imprimeHWDOT(list<Componente*> listaComp, list<Ligacao*> listaLiga, const string& arquivo = "", bool debug = false);    
     virtual             ~ArquivosDotHW();
 private:
     list<Componente*>   ListaComp;

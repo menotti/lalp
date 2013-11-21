@@ -19,6 +19,7 @@
 #include "Componente/reg_op.h"
 #include "Componente/block_ram.h"
 #include "Componente/comp_ref.h"
+#include "ArquivosDotHW.h"
 #include "Ligacao.h"
 
 
@@ -40,10 +41,12 @@ class Core {
         void imprimeAll();
         int  getMaxSchedulingTime();
         void setMaxSchedulingTime(int maxSchedulingTime);
+        void* GetStrPointerAdd(SgNode* nodo);
     private:
         bool            existeSgNode(SgNode* node);
         Componente*     getCompBySgNode(SgNode* node);
         bool            debug;
+        bool            gerarDual;
         bool            isParallel;
         int             maxSchedulingTime;
         list<Componente*>ListaComp;
@@ -70,13 +73,15 @@ class Core {
         int             calculateASAP(Componente* comp);
         void            addComponent(Componente* comp);
         void            substiuiComRecorente(Componente* origem, Componente* destino);
-        void            removeComReg(Componente* origem);
+        void            removeComponente(Componente* origem, Componente* naoRemover = NULL);
         void            retirarCompDelayRedundante();
+        bool            insereLigacao(Componente* origem, Componente* destino, const string& portaOrigem = "", const string& portaDestino = "");
         void            setSync(bool sync);
         void            setClkReset();
         bool            isSync();
         Componente*     getComponent(const string& name);
         SgProject*      project;
+        ArquivosDotHW*  dot;
 };
 
 #endif	/* CORE_H */

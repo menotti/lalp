@@ -14,7 +14,7 @@ using namespace std;
 
 class block_ram_dual : public Componente {
 public:
-    block_ram_dual(SgNode* node=NULL, const string &aux = "");
+    block_ram_dual(void*node=NULL, const string &aux = "");
     virtual     ~block_ram_dual();
     string      getEstruturaComponenteVHDL();
     string      geraDOTComp();

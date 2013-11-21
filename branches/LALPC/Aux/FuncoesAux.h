@@ -12,6 +12,7 @@
 #include <stdio.h>
 #include <sstream>
 #include <stdlib.h>
+#include <vector>
 using namespace std;
 using std::string;
 using std::vector;
@@ -25,6 +26,7 @@ public:
     static string IntToStr(int val);
     static string LPad(const string &val, int size);
     static string ConvertDecToBin(const string &val);
+
 private:
 
 };

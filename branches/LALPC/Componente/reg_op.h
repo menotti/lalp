@@ -15,7 +15,7 @@ using namespace std;
 
 class reg_op : public Componente {
 public:
-    reg_op(SgNode* node = NULL, const string &aux = "");
+    reg_op(void* node = NULL, const string &aux = "");
     virtual     ~reg_op();
     string      getEstruturaComponenteVHDL();
     string      geraDOTComp();

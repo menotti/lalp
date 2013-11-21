@@ -14,7 +14,7 @@ using namespace std;
 
 class comp_aux : public Componente  {
 public:
-    comp_aux(SgNode* node = NULL,  const string& aux = NULL);
+    comp_aux(void*node = NULL,  const string& aux = NULL);
     string  getEstruturaComponenteVHDL();
     string  geraDOTComp();
     void    createAllPorts(); //0

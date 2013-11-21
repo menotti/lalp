@@ -14,7 +14,7 @@ using namespace std;
 
 class op_sub_s : public op_simple {
 public:
-    op_sub_s(SgNode* node);
+    op_sub_s(void* node);
     virtual ~op_sub_s();
 private:
 

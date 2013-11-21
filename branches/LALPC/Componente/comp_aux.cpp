@@ -4,13 +4,13 @@
  * 
  * Created on July 25, 2013, 1:35 PM
  */
-#include "../header/meuHeader.h"
+//#include "../header/meuHeader.h"
 #include "comp_aux.h"
 #include "string"
 
 using namespace std;
 //Componente voltado para criacao dos pinos de entrada
-comp_aux::comp_aux(SgNode* node,  const string& aux) : Componente(node, aux) {
+comp_aux::comp_aux(void*node,  const string& aux) : Componente(node, aux) {
     this->setDelayValComp("1");
     this->tipo_comp = CompType::AUX;     
     if(aux == "INIT"){
