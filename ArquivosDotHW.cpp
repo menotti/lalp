@@ -4,58 +4,80 @@
  * 
  * Created on July 4, 2013, 5:13 PM
  */
-#include "header/meuHeader.h"
+//#include "header/meuHeader.h"
 #include "ArquivosDotHW.h"
 #include <string>
 #include "stdlib.h"
 #include "stdio.h"
+#include <iostream>
+#include <fstream>
 #include "CompType.h"
 #include "Aux/FuncoesAux.h"
 #include "Componente/counter.h"
 #include "Componente/block_ram.h"
+#include <vector>
+#include <math.h>
 
 using namespace std;
 using std::string;
 using std::stringstream;
 
-ArquivosDotHW::ArquivosDotHW(list<Componente*> listaComp, list<Ligacao*> listaLiga, const string& nome) {
-    this->ListaComp = listaComp;
-    this->ListaLiga = listaLiga;
-    this->nomeArquivo = nome;
-    this->organizaListaNome();
+ArquivosDotHW::ArquivosDotHW(){
 }
 
-void ArquivosDotHW::imprimeHWDOT() {
+void ArquivosDotHW::imprimeHWDOT(list<Componente*> listaComp, list<Ligacao*> listaLiga, const string& arquivo, bool debug) {
+    this->ListaComp = listaComp;
+    this->ListaLiga = listaLiga;
+    if(arquivo != ""){
+        this->nomeArquivo = arquivo;
+    }
+    
     list<Componente*>::iterator i;
     list<Ligacao*>::iterator    k;
-    cout<<"------------------------------------"<<endl;
-    cout<<"Conteudo Arquivo DOT"<<endl;
-    cout<<"Nome: _HW.dot"<<endl;
-    cout<<"------------------------------------"<<endl;
-    std::ofstream fout("DOT/Exemplo_HW.dot");
+    
+    if(debug){
+        cout<<"------------------------------------"<<endl;
+        cout<<"Conteudo Arquivo DOT"<<endl;
+        cout<<"Nome: _HW.dot"<<endl;
+        cout<<"------------------------------------"<<endl;
+    }
+    const char * c = arquivo.c_str();
+    std::ofstream fout;
+    fout.open(c);
     fout << "digraph diagram {\n";
     fout << "// Components (Nodes) \n";
-    cout << "digraph diagram {\n";
-    cout << "// Components (Nodes) \n";
+    
+    if(debug){
+        cout << "digraph diagram {\n";
+        cout << "// Components (Nodes) \n";
+    }
+    
     for(i=this->ListaComp.begin(); i != this->ListaComp.end(); i++){
-        if ((*i)->tipo_comp == CompType::REG || (*i)->tipo_comp == CompType::MEM ) continue;  
+        if ((*i)->tipo_comp == CompType::REG || (*i)->tipo_comp == CompType::MEM || (*i)->tipo_comp == CompType::DEL ) continue;  
         
         fout << (*i)->geraDOTComp();
-        cout << (*i)->geraDOTComp();
+        if(debug) cout << (*i)->geraDOTComp();
     }
     fout << "// Signals (Edges) \n";
-    cout << "// Signals (Edges) \n";
+    
+    if(debug) cout << "// Signals (Edges) \n";
     for(k=this->ListaLiga.begin(); k != this->ListaLiga.end(); k++){
         if((*k)->getAtivo() == false ) continue;
         fout << (*k)->imprimeDot();
-        cout << (*k)->imprimeDot();
+        if(debug) cout << (*k)->imprimeDot();
     }
     fout << "}\n";
-    cout << "}\n";
-    cout<<"------------------------------------"<<endl;
+    if(debug) cout << "}\n";
+    if(debug) cout<<"------------------------------------"<<endl;
 }
 
-void ArquivosDotHW::imprimeVHDL() {
+void ArquivosDotHW::imprimeVHDL(list<Componente*> listaComp, list<Ligacao*> listaLiga, const string& arquivo){
+    this->ListaComp = listaComp;
+    this->ListaLiga = listaLiga;  
+    if(arquivo != ""){
+        this->nomeArquivo = arquivo;
+    }
+    this->organizaListaNome();
     GeraMemoryVHDL();
     map<string, Componente*> ::iterator m;
     list<Componente*>::iterator i;
@@ -66,8 +88,11 @@ void ArquivosDotHW::imprimeVHDL() {
     cout<<"Processo criacao arquivo VHDL"<<endl;
     cout<<"Nome: "<<this->nomeArquivo<<".vhd"<<endl;
     cout<<"------------------------------------"<<endl;
-
-    std::ofstream fout("VHDL/example.vhd");
+    
+    const string& end_arquivo = "VHDL/"+arquivo+".vhd";
+    const char * c = end_arquivo.c_str();
+    
+    std::ofstream fout(c);
     
     fout << "library IEEE; \n";
     fout << "use IEEE.std_logic_1164.all; \n";
@@ -135,7 +160,7 @@ void ArquivosDotHW::imprimeVHDL() {
     
     fout << "\nbegin \n\n";
     for(i=this->ListaComp.begin(); i != this->ListaComp.end(); i++){
-        if ((*i)->tipo_comp == CompType::REG || (*i)->tipo_comp == CompType::MEM || (*i)->tipo_comp == CompType::AUX ) continue;
+        if ((*i)->tipo_comp == CompType::REG || (*i)->tipo_comp == CompType::MEM || (*i)->tipo_comp == CompType::AUX || (*i)->tipo_comp == CompType::DEL  ) continue;
         
         fout << (*i)->geraCompVHDL();
     }
@@ -177,7 +202,7 @@ void ArquivosDotHW::GeraMemoryVHDL() {
 //            cout<< (*i)->getName() << " - " << (*i)->getNomeCompVHDL() <<endl;
 //            cout<< " -------------------------- "<<endl;
             for(val=(*i)->valores.begin(); val != (*i)->valores.end(); val++){
-                cout<< "["<< aux1 <<"] = " << (*val) <<endl;
+//                cout<< "["<< aux1 <<"] = " << (*val) <<endl;
 		intValues[aux1] = (*val);
 		aux1++;
             }
@@ -190,7 +215,7 @@ void ArquivosDotHW::GeraMemoryVHDL() {
 //            cout<< "MEMORY WORD : " << memoryWords << endl;
 //            cout<< "-----------------------------------"<< endl;
             for (int c = memoryWords-1; c >= 0; c--){
-                posVec = boost::lexical_cast<std::string>(c);
+                posVec = FuncoesAux::IntToStr(c);
                 int value;
                 string bin;
                 
@@ -232,19 +257,17 @@ bool ArquivosDotHW::ExisteNaListaAux(const string &val){
     return existe;
 }
 
-
 void ArquivosDotHW::organizaListaNome(){
     list<Componente*>::iterator i;
+    this->CompMap.clear();
 //    cout<<"#####################################"<<endl;
     for(i=this->ListaComp.begin(); i != this->ListaComp.end(); i++){
-        if ((*i)->tipo_comp == CompType::REG || (*i)->tipo_comp == CompType::MEM || (*i)->tipo_comp == CompType::AUX ) continue;
+        if ((*i)->tipo_comp == CompType::REG || (*i)->tipo_comp == CompType::MEM || (*i)->tipo_comp == CompType::AUX || (*i)->tipo_comp == CompType::DEL ) continue;
         
 //        cout<< (*i)->getNomeCompVHDL() << " -- " << (*i)->getName() << endl;
         this->CompMap.insert(make_pair( (*i)->getNomeCompVHDL(), (*i)));
     }
 }
-
-
 
 ArquivosDotHW::~ArquivosDotHW() {
 }

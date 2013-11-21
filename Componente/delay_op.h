@@ -14,7 +14,7 @@ using namespace std;
 
 class delay_op : public Componente {
 public:
-    delay_op(SgNode* node = NULL);
+    delay_op(void*node = NULL);
     virtual     ~delay_op();
     void        setDelayVal(const string &val);
     void        setDelayBits(const string &bits);

@@ -4,11 +4,11 @@
  * 
  * Created on July 15, 2013, 10:18 AM
  */
-#include "../header/meuHeader.h"
+//#include "../header/meuHeader.h"
 #include "comp_ref.h"
 #include "string"
 
-comp_ref::comp_ref(SgNode* node, const string &aux) : Componente(node, aux){
+comp_ref::comp_ref(void*node, const string &aux) : Componente(node, aux){
     this->tipo_comp = CompType::REF;
     if(aux == "WE"){ 
         this->setWE(true);

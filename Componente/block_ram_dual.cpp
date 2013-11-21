@@ -5,14 +5,15 @@
  * 
  * Created on July 12, 2013, 10:02 AM
  */
-#include "../header/meuHeader.h"
+//#include "../header/meuHeader.h"
 #include "block_ram_dual.h"
 #include "string"
+#include <math.h>
 #include "../Aux/FuncoesAux.h"
 
 using namespace std;
 
-block_ram_dual::block_ram_dual(SgNode* node, const string &aux) : Componente(node, aux) {
+block_ram_dual::block_ram_dual(void*node, const string &aux) : Componente(node, aux) {
     this->setDelayValComp("2");
     this->tipo_comp = CompType::MEM;   
     this->setNomeCompVHDL("block_ram_dual"); 

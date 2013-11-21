@@ -4,15 +4,15 @@
  * 
  * Created on July 12, 2013, 2:35 PM
  */
-#include "../header/meuHeader.h"
+//#include "../header/meuHeader.h"
 #include "counter.h"
 #include "string"
 
 using namespace std;
 
-counter::counter(SgNode* node) : Componente(node) {
+counter::counter(void*node) : Componente(node) {
     this->setDelayValComp("1");
-    SgForStatement* cur_for = isSgForStatement(this->node);
+//    SgForStatement* cur_for = isSgForStatement(this->node);
     this->setNomeCompVHDL("counter");
     this->tipo_comp = CompType::CTD;     
     

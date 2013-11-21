@@ -15,7 +15,7 @@ using namespace std;
 
 class if_gt_op_s : public Componente {
 public:
-    if_gt_op_s(SgNode* node);
+    if_gt_op_s(void* node);
     virtual     ~if_gt_op_s();
     string      getEstruturaComponenteVHDL();
     string      geraDOTComp();

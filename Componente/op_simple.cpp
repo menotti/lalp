@@ -4,13 +4,13 @@
  * 
  * Created on July 12, 2013, 10:02 AM
  */
-#include "../header/meuHeader.h"
+//#include "../header/meuHeader.h"
 #include "op_simple.h"
 #include "string"
 
 using namespace std;
 
-op_simple::op_simple(SgNode* node) : Componente(node) {
+op_simple::op_simple(void*node) : Componente(node) {
     this->tipo_comp = CompType::OPE;
     this->createAllPorts();
     this->createAllGeneric();

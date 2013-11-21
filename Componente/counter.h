@@ -14,7 +14,7 @@ using namespace std;
 
 class counter : public Componente  {
 public:
-    counter(SgNode* node);
+    counter(void*node);
     virtual ~counter();
     string      geraDOTComp();
     string      getEstruturaComponenteVHDL();

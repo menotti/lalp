@@ -6,7 +6,6 @@
  *
  * Created on 14 de Junho de 2013, 10:07
  */
-
 #include <string>
 #include <stdio.h>
 #include <sstream>
@@ -21,10 +20,10 @@ using namespace std;
 
 class Componente {  
     public:
-                Componente(SgNode* node = NULL, const string &aux = "");
-        //CompType* tipo_comp;
+                Componente(void* node = NULL, const string &aux = "");
+        //CompType* tipo_SgNode* node = NULcomp;
         CompType::TIPO_COMP tipo_comp;
-        void            setPai(SgNode* nodo = NULL);
+        void            setPai(void* nodo = NULL);
         int             getNumLinha();
         void            setNumLinha(int num = 0);
         Componente*     getComponenteRef();     
@@ -36,7 +35,7 @@ class Componente {
         virtual void    setGenericMapVal(const string &map, const string &aux, const string &val);
         void            setComponenteRef(Componente* comp);
         bool            isSuccessorOf(Componente* comp);
-        SgNode*         getPai();
+        void*           getPai();
         bool            writeEnable;
         void            setNomeCompVHDL(const string &nome);
         string          getNomeCompVHDL();
@@ -82,7 +81,7 @@ class Componente {
         void            setNomeVarRef(const string &nome);
         string          getNomeVarRef();
 //        virtual list<Port*> getAllPorts();
-        SgNode*         node;
+        void*          node;
         string          for_ctr_var;    //Variavel de controle - EX.: (i) => for (i = 0, ....)
 //        string          op_tipo;        //Definir tipo de opercacao - soma, sub, mult, div, etc.
         string          valor;          //Valor da Variavel ou Todos os elementos do Vetor
@@ -128,7 +127,7 @@ class Componente {
         list<Port*>     portas;
         list<GenericMap*> genMap;
         string          nome_comp_vhdl;
-        SgNode*         nodoPai;
+        void*          nodoPai;
         bool            eInicializado;
         string          tipo_var;       //Int - Str - Flo              
         bool            eVetor;

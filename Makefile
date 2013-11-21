@@ -49,5 +49,23 @@ rose-headers:
 	
 boost-headers:
 	g++ -c -Wno-deprecated header/headerGraph.h -I/home/demo/opt/boost-1.40.0/include -o header/headerGraph.h.gch
+	
+comp-headers:
+	g++ -c -Wno-deprecated Componente/Componente.h -o Componente/Componente.h.gch
+	g++ -c -Wno-deprecated Componente/GenericMap.h -o Componente/GenericMap.h.gch
+	g++ -c -Wno-deprecated Componente/Port.h -o Componente/Port.h.gch
+	g++ -c -Wno-deprecated Componente/add_reg_op_s.h -o Componente/add_reg_op_s.h.gch
+	g++ -c -Wno-deprecated Componente/block_ram.h -o Componente/block_ram.h.gch
+	g++ -c -Wno-deprecated Componente/block_ram_dual.h -o Componente/block_ram_dual.h.gch
+	g++ -c -Wno-deprecated Componente/comp_aux.h -o Componente/comp_aux.h.gch
+	g++ -c -Wno-deprecated Componente/comp_ref.h -o Componente/comp_ref.h.gch
+	g++ -c -Wno-deprecated Componente/counter.h -o Componente/counter.h.gch
+	g++ -c -Wno-deprecated Componente/delay_op.h -o Componente/delay_op.h.gch
+	g++ -c -Wno-deprecated Componente/if_gt_op_s.h -o Componente/if_gt_op_s.h.gch
+	g++ -c -Wno-deprecated Componente/op_mult_s.h -o Componente/op_mult_s.h.gch
+	g++ -c -Wno-deprecated Componente/op_simple.h -o Componente/op_simple.h.gch
+	g++ -c -Wno-deprecated Componente/op_sub_s.h -o Componente/op_sub_s.h.gch
+	g++ -c -Wno-deprecated Componente/reg_op.h -o Componente/reg_op.h.gch
+	g++ -c -Wno-deprecated Componente/op_add_s.h -o Componente/op_add_s.h.gch
 
-headers: rose-headers boost-headers
+headers: rose-headers boost-headers comp-headers

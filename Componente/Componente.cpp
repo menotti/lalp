@@ -5,10 +5,10 @@
  * Created on 14 de Junho de 2013, 10:07
  */
 //#include "rose.h"
-#include "../header/meuHeader.h"
 #include <string>
 #include <stdio.h>
 #include <sstream>
+#include <iostream>
 #include <stdlib.h>
 #include "Componente.h"
 #include "../Ligacao.h"
@@ -18,11 +18,12 @@
 
 using namespace std;
 using std::string;
+using std::stringstream;
 
-Componente::Componente(SgNode* node/*=NULL*/, const string &aux/*=""*/){
+Componente::Componente(void* node/*=NULL*/, const string &aux/*=""*/){
     
     //Criacao de componentes baseados na arvore AST Rose
-    if(node != NULL){
+    if(node != ""){
         this->node = node;
         this->writeEnable = false;
     }
@@ -335,7 +336,7 @@ void Componente::setNomeCompVHDL(const string &nome){
     this->nome_comp_vhdl = nome;
 }
 
-void Componente::setPai(SgNode* nodo){
+void Componente::setPai(void* nodo){
     //Cria a ligacao do noto atual na entrada do nodo do PARAMETRO
     this->nodoPai = nodo;
 }
@@ -356,7 +357,7 @@ void Componente::removeLigacao(Ligacao* lig){
     this->ligacoes.remove(lig);
 }
 
-SgNode* Componente::getPai(){
+void*  Componente::getPai(){
     return this->nodoPai;
 }
 

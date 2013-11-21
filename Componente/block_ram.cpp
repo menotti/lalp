@@ -5,18 +5,17 @@
  * 
  * Created on July 12, 2013, 10:02 AM
  */
-#include "../header/meuHeader.h"
+//#include "../header/meuHeader.h"
 #include "block_ram.h"
 #include "string"
 #include "../Aux/FuncoesAux.h"
-#include "stdio.h"
-#include "stdlib.h"
+#include <math.h>
 
 using namespace std;
 using std::string;
 using std::stringstream;
 
-block_ram::block_ram(SgNode* node, const string &aux) : Componente(node, aux) {
+block_ram::block_ram(void*node, const string &aux) : Componente(node, aux) {
     this->setDelayValComp("2");
     this->tipo_comp = CompType::MEM;   
     this->setNomeCompVHDL("block_ram"); 
