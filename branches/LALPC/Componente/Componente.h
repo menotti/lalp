@@ -127,7 +127,7 @@ class Componente {
         list<Port*>     portas;
         list<GenericMap*> genMap;
         string          nome_comp_vhdl;
-        void*          nodoPai;
+        void*           nodoPai;
         bool            eInicializado;
         string          tipo_var;       //Int - Str - Flo              
         bool            eVetor;
