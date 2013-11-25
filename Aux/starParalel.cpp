@@ -11,6 +11,7 @@
 using namespace std;
 using namespace SageInterface;
 using namespace AutoParallelization;
+
 using std::stringstream;
 using boost::lexical_cast;
 starParalel::starParalel(SgProject* project, list<SgNode*> listFor) {
@@ -32,10 +33,15 @@ void starParalel::removeRedundance(SgProject* project){
     cout<<"# - redundancia:                              #"<<endl;
     PRE::partialRedundancyElimination(project);
     cout<<"# - redundancia: OK                           #"<<endl;
+//    cout<<"# - VariableRenaming:                         #"<<endl;
+//    VariableRenaming* v = new VariableRenaming(project);
+//    v->run();
+//    v->
+//    cout<<"# - VariableRenaming: OK                      #"<<endl;
 }
 void starParalel::verifyLiveDeadVar(SgProject* project){
     cout<<"# - variaveis live dead:                      #"<<endl;
-    initialize_analysis(project, false);
+    initialize_analysis(project, true);
     cout<<"# - variaveis live dead: OK                   #"<<endl;
 }
 void starParalel::normalizeLoop(SgProject* project){

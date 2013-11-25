@@ -17,8 +17,8 @@ class ProcessGraph {
 public:
     ProcessGraph();
     ProcessGraph(const ProcessGraph& orig);
-    int         addVertice(const string& nome);
-    void        addEdge(const string& orig, const string& dest, const string& nome = NULL);
+    int         addVertice(void* vert);
+    void        addEdge(void* orig, void* dest, const string& nome = "");
     void        imprimeVertices();
     void        imprimeEdges();
     void        imprimeEdgesAdj();
@@ -26,14 +26,15 @@ public:
     void        imprimeTeste();
     void        geraDot();
     virtual     ~ProcessGraph();
-    void        updateVertex(const string& nome, int delay, int pos);
+    void        updateVertex(void* vert, int delay, int pos);
+    bool        isParent(void * origem, void* destino);
 private:
-    int         getIdVertice(const string& vert);
-    bool        existeVertice(const string& vert);
+    int         getIdVertice(void* vert);
+    bool        existeVertice(void* vert);
     
     struct Vertex{ 
         int     id;
-        string  name;
+        void*   nodo;
         int     delayVal;
         int     pos;
         bool    isVisited;
@@ -44,7 +45,7 @@ private:
     typedef     adjacency_list<vecS, vecS, bidirectionalS, Vertex, Edge> Graph;
 
     Graph       graph;
-    map<string, int> vertMap;
+    map<void*, int> vertMap;
 };
 
 #endif	/* PROCESSGRAPH_H */

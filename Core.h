@@ -20,6 +20,7 @@
 #include "Componente/block_ram.h"
 #include "Componente/comp_ref.h"
 #include "ArquivosDotHW.h"
+#include "ProcessGraph.h"
 #include "Ligacao.h"
 
 
@@ -34,7 +35,6 @@ class Core {
         void identificaReturn();
         Componente* analisaExp(SgNode *nodoAtual, SgNode* pai = NULL, const string& aux = "", const string& linhaParal = "");
         void FinalizaComponentes();
-        void grafo();
         void geraArquivosDotHW();
         Componente* insereDelay(Ligacao* lig, int delay = 0, int asap = 0);
         Componente* insereReg(Ligacao* lig);
@@ -82,6 +82,7 @@ class Core {
         Componente*     getComponent(const string& name);
         SgProject*      project;
         ArquivosDotHW*  dot;
+        ProcessGraph*   graph;
 };
 
 #endif	/* CORE_H */
