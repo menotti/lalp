@@ -62,7 +62,7 @@ Core::Core(SgProject* project, list<SgNode*> lista) {
     this->balanceAndSyncrhonize();
     
     this->retirarCompDelayRedundante();
-    this->identificaReturn();
+//    this->identificaReturn();
     if(this->isParallel && this->gerarDual){
         this->analiseMemoriaDualPort();
     }
@@ -768,6 +768,7 @@ Componente* Core::analisaExp(SgNode *nodoAtual, SgNode* pai, const string& aux, 
             op_add_s* comp    = new op_add_s(this->GetStrPointerAdd(expAdd));
             if(pai != NULL) comp->setPai(this->GetStrPointerAdd(pai));
             comp->setNumIdComp(FuncoesAux::IntToStr(this->ListaComp.size()));
+            comp->setName("c"+FuncoesAux::IntToStr(this->ListaComp.size()));
             comp->setNumLinha(nodoAtual->get_file_info()->get_line()); 
 //            this->ListaComp.push_back(comp);
             this->addComponent(comp);
@@ -806,6 +807,7 @@ Componente* Core::analisaExp(SgNode *nodoAtual, SgNode* pai, const string& aux, 
             op_sub_s* comp = new op_sub_s(this->GetStrPointerAdd(expSub));
             comp->setNumIdComp(FuncoesAux::IntToStr(this->ListaComp.size()));
             comp->setNumLinha(nodoAtual->get_file_info()->get_line()); 
+            comp->setName("c"+FuncoesAux::IntToStr(this->ListaComp.size()));
             if(pai != NULL) comp->setPai(this->GetStrPointerAdd(pai));
 //            this->ListaComp.push_back(comp);
             comp->setNumParalelLina(lineParal);
@@ -886,6 +888,7 @@ Componente* Core::analisaExp(SgNode *nodoAtual, SgNode* pai, const string& aux, 
             if(pai != NULL) comp->setPai(this->GetStrPointerAdd(pai));
             comp->setNumIdComp(FuncoesAux::IntToStr(this->ListaComp.size()));
             comp->setNumLinha(nodoAtual->get_file_info()->get_line()); 
+            
 //            this->ListaComp.push_back(comp);
             this->addComponent(comp);
             comp->setNumParalelLina(lineParal);
@@ -1221,7 +1224,7 @@ void Core::retirarCompDelayRedundante(){
 
 bool Core::insereLigacao(Componente* origem, Componente* destino, const string& portaOrigem, const string& portaDestino){
     bool criou = false;
-    
+
     Ligacao* lig1 = new Ligacao(origem, destino, "s" + FuncoesAux::IntToStr(this->ListaLiga.size()));
     if(portaOrigem != ""){
         lig1->setPortOrigem(origem->getPortOther(portaOrigem));
@@ -1241,11 +1244,11 @@ bool Core::insereLigacao(Componente* origem, Componente* destino, const string& 
         lig1->setPortDestino(destino->getPortDataInOut("IN"));
         destino->getPortDataInOut("IN")->setLigacao(lig1->getNome());
     }  
-
+    
     origem->addLigacao(lig1);
     destino->addLigacao(lig1);
     this->ListaLiga.push_back(lig1);
-    
+
     return criou;
 }
 
@@ -1260,8 +1263,8 @@ void Core::removeComponente(Componente* compRemove, Componente* naoRemover){
 //            cout<< (*k)->getOrigem()->getName()<<"["<<(*k)->getOrigem()->getNomeCompVHDL()<<"]" << " -> " << (*k)->getDestino()->getName()<<"["<<(*k)->getDestino()->getNomeCompVHDL()<<"]" << endl;
             (*k)->getOrigem()->removeLigacao((*k));
             (*k)->getDestino()->removeLigacao((*k));
-            (*k)->getPortDestino()->setLigacao("");
-            (*k)->getPortOrigem()->setLigacao("");
+//            (*k)->getPortDestino()->setLigacao("");
+//            (*k)->getPortOrigem()->setLigacao("");
         }
     }
     
@@ -1316,7 +1319,8 @@ void Core::FinalizaComponentes(){
     list<Componente*>ListaCompAux;
     //Ligacao* reset = new 
     int qtdLig = 0;
-    this->imprimeAll();
+//    this->imprimeAll();
+    
     //Processo de Ligacao SIMPLES (cria a ligacao disponivel na arvore AST gerada pelo ROSE)
     // <editor-fold defaultstate="collapsed" desc="Cria ligacoes conforme ROSE AST">
     this->dot->imprimeHWDOT(this->ListaComp, this->ListaLiga, "DOT/0_AntesLigBasicOK.dot", false);
@@ -1396,13 +1400,6 @@ void Core::FinalizaComponentes(){
         this->analiseDividirMemoria();
     }
     
-    for (i = this->ListaComp.begin(); i != this->ListaComp.end(); i++) {
-        if((*i)->tipo_comp != CompType::REF) continue;
-        if((*i)->getEIndice()) continue;
-        if((*i)->getComponenteRef()->tipo_comp != CompType::REG) continue;
-        cout<< "COMP: " << (*i)->getName() << " \t- " << (*i)->getNumParalelLina() << endl;
-    }
-    
     // <editor-fold defaultstate="collapsed" desc="Criar ligacao entre expressoes">
     cout<<"--Ligar componentes entre expressoes:"<<endl;
     Componente* CompRefAux = NULL;
@@ -1469,9 +1466,7 @@ void Core::FinalizaComponentes(){
                 }
             }
         }
-//        cout<< "Ultimo WE: "<< lastWE->getName() <<  endl;
-//        cout<< " ----- "<< endl;
-//        cout<< " identificando primeiro reg Nao WE "<< endl;
+
         if (lastWE == NULL) continue;
         for (j = this->ListaComp.begin(); j != this->ListaComp.end(); j++) {
             if((*j)->tipo_comp != CompType::REF) continue;
@@ -1498,7 +1493,15 @@ void Core::FinalizaComponentes(){
     cout<<"--Ligar componentes entre expressoes: OK"<<endl;
     // </editor-fold>
     this->dot->imprimeHWDOT(this->ListaComp, this->ListaLiga, "DOT/2_LigExpresOK.dot", false);
-    
+//     
+//    for (i = this->ListaComp.begin(); i != this->ListaComp.end(); i++) {
+//        if ((*i)->tipo_comp !=  CompType::OPE) continue; 
+//        cout<< "COMP: " << (*i)->getName() << endl;
+//        cout<< (*i)->imprimePortas() << endl;
+//        cout<< (*i)->imprimeLigacoes() << endl;
+//        cout<<"----"<<endl;
+//    }
+            
     
     //Criar ligacoes entre componentes iguais ou com o mesmo nome neste caso
     //evitar a repeticao destes na dentro do mesmo
@@ -2860,24 +2863,25 @@ void Core::addComponent(Componente* comp){
                 setSync(true);
             }
         }
-        void* node = NULL;
-        void* pai  = NULL;
-        if (aux != NULL){
-            node = aux->node;
-            pai  = comp->getPai();
-        }else{
-            node = comp->node;
-            pai  = comp->getPai();
-        }
-        if(node != NULL && pai != NULL){
-            this->graph->addEdge(node, pai, "");
-        }
+        
     }else{
         this->ListaComp.push_back(comp);
         //    cout<< " COMP: " << comp->getName() << " - Nome Comp VHDL: " << comp->getNomeCompVHDL() << " - ID:  "<< comp->getNumIdComp() << " - LINHA: " << comp->getNumLinha() << endl;
         if(!this->isSync() && comp->getSync()){
             setSync(true);
         }
+    }
+    void* node = NULL;
+    void* pai  = NULL;
+    if (aux != NULL){
+        node = aux->node;
+        pai  = comp->getPai();
+    }else{
+        node = comp->node;
+        pai  = comp->getPai();
+    }
+    if(node != NULL && pai != NULL){
+        this->graph->addEdge(node, pai, "");
     }
 }
 
