@@ -50,6 +50,6 @@ string op_simple::getEstruturaComponenteVHDL(){
 
 string op_simple::geraDOTComp(){
     string res = "";
-    res += "\""+this->getName()+"\" [shape=record, fontcolor=blue, label=\"{{<I0>I0[32]|<I1>I1[32]}|add_op_s:"+this->getName()+"|{<O0>O0[32]}}\"]; \n";
+    res += "\""+this->getName()+"\" [shape=record, fontcolor=blue, label=\"{{<I0>I0[32]|<I1>I1[32]}|"+this->getNomeCompVHDL()+":"+this->getName()+"|{<O0>O0[32]}}\"]; \n";
     return res;
 }
