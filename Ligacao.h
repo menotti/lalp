@@ -27,8 +27,8 @@ public:
     void        setWidth(const string &size);
     void        setName(const string &size);
     void        setTipo(const string &size);
-    void        setBlackEdge(bool val);
-    bool        getBlackEdge();
+    void        setBackEdge(bool val);
+    bool        getBackEdge();
     bool        getAtivo();
     void        setAtivo(bool status);
     string      getWidth();
