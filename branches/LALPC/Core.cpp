@@ -13,6 +13,8 @@
 #include "Core.h"
 #include "Componente/Componente.h"
 #include "Componente/op_sub_s.h"
+#include "Componente/op_div_s.h"
+#include "Componente/neg_op_s.h"
 #include "Componente/op_mult_s.h"
 #include "Componente/op_add_s.h"
 #include "Componente/op_simple.h"
@@ -665,6 +667,29 @@ Componente* Core::analisaExp(SgNode *nodoAtual, SgNode* pai, const string& aux, 
     
     
     /*
+     * Quando identificar Sinal Menos em uma variavel
+     *
+     */
+    // <editor-fold defaultstate="collapsed" desc="MENOS VAR">
+    SgMinusOp* expMin = isSgMinusOp(nodoAtual);
+    if (expMin != NULL) {
+        SgExpression* expres = expMin->get_operand_i();
+        
+        neg_op_s* comp = new neg_op_s(this->GetStrPointerAdd(expMin));
+        if(pai != NULL) comp->setPai(this->GetStrPointerAdd(pai));
+        comp->setNumIdComp(FuncoesAux::IntToStr(this->ListaComp.size()));
+        comp->setName("comp_"+FuncoesAux::IntToStr(this->ListaComp.size()));
+        comp->setNumLinha(nodoAtual->get_file_info()->get_line()); 
+
+        this->addComponent(comp);
+        comp->setNumParalelLina(lineParal);
+        compReturn = comp;
+        
+        analisaExp(expres, nodoAtual, aux, lineParal);
+    }
+    // </editor-fold>
+
+    /*
      * Quando identificar ATRIBUICAO
      *
      */
@@ -768,7 +793,7 @@ Componente* Core::analisaExp(SgNode *nodoAtual, SgNode* pai, const string& aux, 
             op_add_s* comp    = new op_add_s(this->GetStrPointerAdd(expAdd));
             if(pai != NULL) comp->setPai(this->GetStrPointerAdd(pai));
             comp->setNumIdComp(FuncoesAux::IntToStr(this->ListaComp.size()));
-            comp->setName("c"+FuncoesAux::IntToStr(this->ListaComp.size()));
+            comp->setName("comp_"+FuncoesAux::IntToStr(this->ListaComp.size()));
             comp->setNumLinha(nodoAtual->get_file_info()->get_line()); 
 //            this->ListaComp.push_back(comp);
             this->addComponent(comp);
@@ -807,9 +832,8 @@ Componente* Core::analisaExp(SgNode *nodoAtual, SgNode* pai, const string& aux, 
             op_sub_s* comp = new op_sub_s(this->GetStrPointerAdd(expSub));
             comp->setNumIdComp(FuncoesAux::IntToStr(this->ListaComp.size()));
             comp->setNumLinha(nodoAtual->get_file_info()->get_line()); 
-            comp->setName("c"+FuncoesAux::IntToStr(this->ListaComp.size()));
+            comp->setName("comp_"+FuncoesAux::IntToStr(this->ListaComp.size()));
             if(pai != NULL) comp->setPai(this->GetStrPointerAdd(pai));
-//            this->ListaComp.push_back(comp);
             comp->setNumParalelLina(lineParal);
             this->addComponent(comp);
             compReturn = comp;
@@ -824,38 +848,41 @@ Componente* Core::analisaExp(SgNode *nodoAtual, SgNode* pai, const string& aux, 
      * este nodo sempre chama rescursao pois o mesmo sempre se encontra no meio
      * da arvore.
      */
-    // <editor-fold defaultstate="collapsed" desc="OP DIV">
-//    SgDivideOp* expDiv = isSgDivideOp(nodoAtual);
-//    if (expDiv != NULL) {
-//        SgNode* filhoEsq = isSgNode(expDiv->get_lhs_operand_i());
-//        SgNode* filhoDir = isSgNode(expDiv->get_rhs_operand_i());
-//        if (filhoEsq != NULL && filhoDir != NULL) {
-//            // <editor-fold defaultstate="collapsed" desc="DEBUG">
-//            if (debug) {
-//                cout << "-------------------------" << endl;
-//                cout << "      CHAMOU RECURSAO    " << endl;
-//                cout << "-------------------------" << endl;
-//                cout << " ( " << filhoEsq->class_name() << " , " << nodoAtual->class_name() << " ) " << endl;
-//                cout << "-------------------------" << endl;
-//
-//            }
-//            if (debug) {
-//                cout << "-------------------------" << endl;
-//                cout << "      CHAMOU RECURSAO    " << endl;
-//                cout << "-------------------------" << endl;
-//                cout << " ( " << filhoDir->class_name() << " , " << nodoAtual->class_name() << " ) " << endl;
-//                cout << "-------------------------" << endl;
-//            }// </editor-fold>
-//
-//            Componente* comp = new Componente(this->GetStrPointerAdd(expDiv));
-//            if(pai != NULL) comp->setPai(this->GetStrPointerAdd(pai));
-//            comp->setNumIdComp(FuncoesAux::IntToStr(this->ListaComp.size()));
-////            this->ListaComp.push_back(comp);
-//            this->addComponent(comp);
-//            analisaExp(filhoEsq, nodoAtual, debug, aux, lineParal);
-//            analisaExp(filhoDir, nodoAtual, debug, aux, lineParal);
-//        }
-//    }
+     // <editor-fold defaultstate="collapsed" desc="OP DIV">
+    SgDivideOp* expDiv = isSgDivideOp(nodoAtual);
+    if (expDiv != NULL) {
+        SgNode* filhoEsq = isSgNode(expDiv->get_lhs_operand_i());
+        SgNode* filhoDir = isSgNode(expDiv->get_rhs_operand_i());
+        if (filhoEsq != NULL && filhoDir != NULL) {
+            // <editor-fold defaultstate="collapsed" desc="DEBUG">
+            if (debug) {
+                cout << "-------------------------" << endl;
+                cout << "      CHAMOU RECURSAO    " << endl;
+                cout << "-------------------------" << endl;
+                cout << " ( " << filhoEsq->class_name() << " , " << nodoAtual->class_name() << " ) " << endl;
+                cout << "-------------------------" << endl;
+
+            }
+            if (debug) {
+                cout << "-------------------------" << endl;
+                cout << "      CHAMOU RECURSAO    " << endl;
+                cout << "-------------------------" << endl;
+                cout << " ( " << filhoDir->class_name() << " , " << nodoAtual->class_name() << " ) " << endl;
+                cout << "-------------------------" << endl;
+            }// </editor-fold>
+
+            op_div_s* comp = new op_div_s(this->GetStrPointerAdd(expDiv));
+            if(pai != NULL) comp->setPai(this->GetStrPointerAdd(pai));
+            comp->setNumIdComp(FuncoesAux::IntToStr(this->ListaComp.size()));
+            comp->setNumLinha(nodoAtual->get_file_info()->get_line()); 
+            comp->setName("comp_"+FuncoesAux::IntToStr(this->ListaComp.size()));
+            comp->setNumParalelLina(lineParal);
+            this->addComponent(comp);
+            compReturn = comp;
+            analisaExp(filhoEsq, nodoAtual, aux, lineParal);
+            analisaExp(filhoDir, nodoAtual, aux, lineParal);
+        }
+    }
     // </editor-fold>
 
     
@@ -888,7 +915,7 @@ Componente* Core::analisaExp(SgNode *nodoAtual, SgNode* pai, const string& aux, 
             if(pai != NULL) comp->setPai(this->GetStrPointerAdd(pai));
             comp->setNumIdComp(FuncoesAux::IntToStr(this->ListaComp.size()));
             comp->setNumLinha(nodoAtual->get_file_info()->get_line()); 
-            
+            comp->setName("comp_"+FuncoesAux::IntToStr(this->ListaComp.size()));
 //            this->ListaComp.push_back(comp);
             this->addComponent(comp);
             comp->setNumParalelLina(lineParal);
@@ -1063,10 +1090,11 @@ Componente* Core::analisaExp(SgNode *nodoAtual, SgNode* pai, const string& aux, 
     SgIntVal* valInt = isSgIntVal(nodoAtual);
     if (valInt != NULL) {
         comp_aux* comp_input = new comp_aux(this->GetStrPointerAdd(valInt), "VALOR");
-        comp_input->setName("c" + FuncoesAux::IntToStr(this->ListaComp.size()));
+        comp_input->setName("num_" + FuncoesAux::IntToStr(this->ListaComp.size()));
         comp_input->setNumIdComp(FuncoesAux::IntToStr(this->ListaComp.size()));
         comp_input->setNumParalelLina(lineParal);
         string str = FuncoesAux::IntToStr(valInt->get_value());
+        comp_input->setNumLinha(valInt->get_file_info()->get_line());
         comp_input->setValAux(str);
         
         if(pai != NULL) comp_input->setPai(pai);
@@ -1425,7 +1453,7 @@ void Core::FinalizaComponentes(){
 //                    cout<< "** Novo   AUX: " << CompRefAux->getName() << endl;
                     continue;
                 } else {
-                    if(CompRefAux->getNumLinha() > (*j)->getNumLinha()) continue;
+                    if(CompRefAux->getNumLinha() >= (*j)->getNumLinha()) continue;
 //                    cout<< "REF AUX: "<< CompRefAux->getName() << endl;
 //                    cout<< "REF   J: "<< (*j)->getName() << endl;
 //                    cout<< "OUT   J: "<< (*j)->getName() << " -> "<< (*j)->getLigacaoOutDefault()->getDestino()->getName() << endl;
@@ -1443,21 +1471,28 @@ void Core::FinalizaComponentes(){
             }
         }
     }
-    Componente* lastWE          = NULL;
+    cout<<"--Ligar componentes entre expressoes: OK"<<endl;
+    // </editor-fold>
+    this->dot->imprimeHWDOT(this->ListaComp, this->ListaLiga, "DOT/2_LigExpresOK.dot", false);
+    
+    
+    // <editor-fold defaultstate="collapsed" desc="Ligar comp com dependencia">
+    cout << "--Ligar componentes DEPENDENTES:" << endl;
+    Componente* lastWE = NULL;
     for (i = this->ListaComp.begin(); i != this->ListaComp.end(); i++) {
-        if((*i)->tipo_comp != CompType::REF) continue;
-        if((*i)->getEIndice()) continue;
-        if((*i)->getComponenteRef()->tipo_comp != CompType::REG) continue;
+        if ((*i)->tipo_comp != CompType::REF) continue;
+        if ((*i)->getEIndice()) continue;
+        if ((*i)->getComponenteRef()->tipo_comp != CompType::REG) continue;
 
         lastWE = NULL;
-//        cout<< " ----- "<< endl;
-//        cout<< " Componente (I): "<< (*i)->getName() << endl;
-//        cout<< " identificando ultimo comp WE: "<< endl;
+        //        cout<< " ----- "<< endl;
+        //        cout<< " Componente (I): "<< (*i)->getName() << endl;
+        //        cout<< " identificando ultimo comp WE: "<< endl;
         for (j = this->ListaComp.begin(); j != this->ListaComp.end(); j++) {
-            if((*j)->tipo_comp != CompType::REF) continue;
-            if((*j)->getEIndice()) continue;
-            if((*j)->getComponenteRef()->tipo_comp != CompType::REG) continue;
-            if((*i)->getNumParalelLina() != (*j)->getNumParalelLina()) continue;
+            if ((*j)->tipo_comp != CompType::REF) continue;
+            if ((*j)->getEIndice()) continue;
+            if ((*j)->getComponenteRef()->tipo_comp != CompType::REG) continue;
+            if ((*i)->getNumParalelLina() != (*j)->getNumParalelLina()) continue;
             //if((*i)->node == (*j)->node) continue;
             if ((*i)->getNomeVarRef() == (*j)->getNomeVarRef()) {
                 if ((*j)->writeEnable == true) {
@@ -1466,33 +1501,31 @@ void Core::FinalizaComponentes(){
                 }
             }
         }
-
+//        cout<< "WE: "<< lastWE->getName() <<  endl;
         if (lastWE == NULL) continue;
         for (j = this->ListaComp.begin(); j != this->ListaComp.end(); j++) {
-            if((*j)->tipo_comp != CompType::REF) continue;
-            if((*j)->getEIndice()) continue;
-            if((*j)->getComponenteRef()->tipo_comp != CompType::REG) continue;
-            if((*i)->getNumParalelLina() != (*j)->getNumParalelLina()) continue;
-            if(lastWE->node == (*j)->node) continue;
+            if ((*j)->tipo_comp != CompType::REF) continue;
+            if ((*j)->getEIndice()) continue;
+            if ((*j)->getComponenteRef()->tipo_comp != CompType::REG) continue;
+            if ((*i)->getNumParalelLina() != (*j)->getNumParalelLina()) continue;
+            if (lastWE->node == (*j)->node) continue;
             if ((*i)->getNomeVarRef() == (*j)->getNomeVarRef()) {
-                cout<< " com: "<< (*j)->getName() << endl;
                 if ((*j)->writeEnable == true) {
-                    break;
-                }else{
-                    if((*j)->getPortDataInOut("IN")->getLigacao() == ""){
+                    continue;
+                } else {
+                    if ((*j)->getPortDataInOut("IN")->getLigacao() == "") {
 //                        cout<<"--Ligando componentes (dependencia): " << lastWE->getName() << " -> " << (*j)->getName() <<endl;
                         this->insereLigacao(lastWE, (*j), lastWE->getPortDataInOut("OUT")->getName(), (*j)->getPortDataInOut("IN")->getName());
+//                        (*j)->setWE(true);
                         break;
                     }
                 }
             }
         }
-//        cout<< " ----- "<< endl;
-//        cout<< " ----- "<< endl;
     }
-    cout<<"--Ligar componentes entre expressoes: OK"<<endl;
+    cout << "--Ligar componentes DEPENDENTES: OK" << endl; 
     // </editor-fold>
-    this->dot->imprimeHWDOT(this->ListaComp, this->ListaLiga, "DOT/2_LigExpresOK.dot", false);
+    this->dot->imprimeHWDOT(this->ListaComp, this->ListaLiga, "DOT/2_1_LigDependentes.dot", false);
 //     
 //    for (i = this->ListaComp.begin(); i != this->ListaComp.end(); i++) {
 //        if ((*i)->tipo_comp !=  CompType::OPE) continue; 
@@ -1718,6 +1751,13 @@ void Core::FinalizaComponentes(){
     this->dot->imprimeHWDOT(this->ListaComp, this->ListaLiga, "DOT/4_LigIndiceVar.dot", false);
     cout << "--Criando novas ligacoes indice vet com variavel: OK" << endl; // </editor-fold>
 
+//    this->detectBackwardEdges();
+    
+//    this->dot->imprimeHWDOT(this->ListaComp, this->ListaLiga, "DOT/4_1_LigIndiceVar.dot", false);
+//    this->ALAP();
+    
+    
+    
     //Processo de identificacao dos componentes CONTADORES e criar a ligacao
     //para as memorias 
     // <editor-fold defaultstate="collapsed" desc="Criar ligacoes entre memorias e contador">
@@ -1790,7 +1830,8 @@ void Core::FinalizaComponentes(){
                             //ADICIONAR NA LISTA DE LIGACOES A NOVA LIGACAO
                             this->ListaLiga.push_back(lig);
                         }
-                    }else{
+                    }
+                    else{
                         if( CompRef->getWE() ){
                             if(CompRef->getPortOther("we")->getLigacao() == ""){
                                 //CRIAR NOVA LIGACAO
@@ -1851,7 +1892,7 @@ void Core::FinalizaComponentes(){
         //*********************************************************************
         // <editor-fold defaultstate="collapsed" desc="TERMINATION">
         comp_aux* comp_term = new comp_aux(NULL, "VALOR");
-        comp_term->setName("c" + FuncoesAux::IntToStr(this->ListaComp.size()));
+        comp_term->setName("comp_" + FuncoesAux::IntToStr(this->ListaComp.size()));
         comp_term->setNumIdComp(FuncoesAux::IntToStr(this->ListaComp.size()));
         //Pegar valor do contator referente ao MAXIMO de INTERACOES
         comp_term->setValAux(CompCounter->getVarControlValStop());
@@ -1882,7 +1923,7 @@ void Core::FinalizaComponentes(){
         //*********************************************************************
         // <editor-fold defaultstate="collapsed" desc="INPUT">
         comp_aux* comp_input = new comp_aux(NULL, "VALOR");
-        comp_input->setName("c" + FuncoesAux::IntToStr(this->ListaComp.size()));
+        comp_input->setName("comp_" + FuncoesAux::IntToStr(this->ListaComp.size()));
         comp_input->setNumIdComp(FuncoesAux::IntToStr(this->ListaComp.size()));
         //Pegar valor do contator referente ao MAXIMO de INTERACOES
         comp_input->setValAux(CompCounter->getVarControlValIni());
@@ -1911,6 +1952,7 @@ void Core::FinalizaComponentes(){
     }
     // </editor-fold>   
     
+//    this->balanceAndSyncrhonize();
 }
 
 bool Core::existeSgNode(SgNode* node){
@@ -1958,7 +2000,6 @@ string Core::getNomeCompRef(const string& name){
 }
 
 void Core::updateCompRef(SgNode* node, comp_ref* comp){
-        
     SgVarRefExp* nodo_ref_var     = isSgVarRefExp(node);
     SgPntrArrRefExp* nodo_ref_arr = isSgPntrArrRefExp(node);
     // <editor-fold defaultstate="collapsed" desc="E ARRAY">
@@ -2393,6 +2434,12 @@ void Core::imprimeAll(){
     for(i=this->ListaComp.begin(); i != this->ListaComp.end(); i++){
         if ((*i)->tipo_comp == CompType::REG || (*i)->tipo_comp == CompType::MEM ) continue;
         cout<< "NOME: " << (*i)->getName() << "| COMP VHDL: " << (*i)->getNomeCompVHDL() << "| LINHA: " << (*i)->getNumLinha() << "| Paral: " << (*i)->getNumParalelLina() << endl;
+        if((*i)->getWE()){
+            cout<< "E WE" << endl;
+        }else{
+            cout<< "N WE" << endl;
+        }
+        cout << "" <<endl;
     }
     cout<<"*********************************"<<endl;
 }
@@ -2409,27 +2456,26 @@ void Core::detectBackwardEdges(){
         if((*k)->getAtivo() == false ) continue;
         //Self-connected component EX.: A->A
         if((*k)->getOrigem()->getName() == (*k)->getDestino()->getName()){
-            (*k)->setBlackEdge(true);
+            (*k)->setBackEdge(true);
             if(debug)
                 cout<< "signal " << (*k)->getOrigem()->getName() << " -> " <<  (*k)->getDestino()->getName() << " marked as backedge (self-connected)" << endl;
         }
         //self-connected components (pair) EX.: A->B and B->A 
         else if((*k)->getOrigem()->isSuccessorOf((*k)->getDestino())){
-            (*k)->setBlackEdge(true);
+            (*k)->setBackEdge(true);
             if(debug)
                  cout<< "signal " << (*k)->getOrigem()->getName() << " -> " <<  (*k)->getDestino()->getName() << " marked as backedge (self-connected pair)" << endl;
         }
         else{
-            if ((*k)->getDestino()->tipo_comp == CompType::REG || (*k)->getDestino()->tipo_comp == CompType::MEM || (*k)->getDestino()->tipo_comp == CompType::AUX  ) continue;
+            if ((*k)->getDestino()->tipo_comp == CompType::REG || (*k)->getDestino()->tipo_comp == CompType::MEM || (*k)->getDestino()->tipo_comp == CompType::AUX || (*k)->getDestino()->tipo_comp == CompType::DEL    ) continue;
             int origLine = (*k)->getOrigem()->getNumLinha();
             int destLine = (*k)->getDestino()->getNumLinha();
-            
             if(origLine > 0){
                 if (destLine == 0){
                     destLine = (*k)->getDestino()->getSuccessorsLine();
                 }
                 if(origLine > destLine){
-                    (*k)->setBlackEdge(true);
+                    (*k)->setBackEdge(true);
                     if(debug)
                         cout<< "signal \"" << (*k)->getOrigem()->getName() << "\" -> \"" <<  (*k)->getDestino()->getName() << "\" marked as backedge (source defined after destination in source code)" << endl;
                 }
@@ -2535,7 +2581,7 @@ void Core::balanceAndSyncrhonize(){
         }
         else if( (counter != NULL) && (c->getTipoCompRef() != CompType::MEM) && (c->temPorta("we"))){
 //            cout<< "sinc oper part 1.1" << endl;
-            if(c->getWE() == false) continue;
+//            if(c->getWE() == false) continue;
 //            cout<<"COMPONENTE: "<<c->getName()<<endl;
 //            cout<<"vhdl nome : "<<c->getNomeCompVHDL()<<endl;
 //            cout<< c->imprimeLigacoes() << endl;
@@ -2655,7 +2701,7 @@ void Core::balanceAndSyncrhonize(){
     
     for(k=this->ListaLiga.begin(); k != this->ListaLiga.end(); k++){
         if((*k)->getAtivo() == false ) continue;
-        if((*k)->getBlackEdge()){
+        if((*k)->getBackEdge()){
             Componente* orig = (*k)->getOrigem();
             Componente* dest = (*k)->getDestino();
             
@@ -2701,14 +2747,15 @@ void Core::ALAP(){
     while(change){
         change = false;
         for(i=this->ListaComp.begin(); i != this->ListaComp.end(); i++){
-            if ((*i)->tipo_comp == CompType::REG || (*i)->tipo_comp == CompType::MEM || (*i)->tipo_comp == CompType::AUX ) continue;
+            if ((*i)->tipo_comp == CompType::REG || (*i)->tipo_comp == CompType::MEM || (*i)->tipo_comp == CompType::AUX || (*i)->tipo_comp == CompType::DEL ) continue;
             min  = 0;
             succ = 0;
             
             //Fazer calc para todos sucessores QUANDO ARESTA FOR DIFERENTE DE BLACK
             for(k=this->ListaLiga.begin(); k != this->ListaLiga.end(); k++){
                 if((*k)->getAtivo() == false ) continue;
-                if((*k)->getOrigem() == (*i) && !(*k)->getBlackEdge()){
+                if((*k)->getBackEdge() == true) continue;
+                if((*k)->getOrigem() == (*i)){
                     dlyAux = FuncoesAux::StrToInt((*i)->getDelayValComp());
                     succ = (*k)->getDestino()->getALAP() - dlyAux;
                     if(succ < min)
@@ -2738,23 +2785,23 @@ void Core::ASAP(){
     int id = 0;
     while(change){
         change = false;
+        
         //varrer todos componentes
         for(i=this->ListaComp.begin(); i != this->ListaComp.end(); i++){
-            if ((*i)->tipo_comp == CompType::REG || (*i)->tipo_comp == CompType::MEM || (*i)->tipo_comp == CompType::AUX ) continue;
+            if ((*i)->tipo_comp == CompType::REG || (*i)->tipo_comp == CompType::MEM || (*i)->tipo_comp == CompType::AUX || (*i)->tipo_comp == CompType::DEL ) continue;
             max = 0;
             pred = 0;
             if(debug){
                 cout<< "scheduling \""<<(*i)->getName()<<"\" ASAP: \"" << (*i)->getASAP() << "\" line:" << (*i)->getNumLinha()<<endl;
-//                cout<< "---DLY:  "<<(*i)->getDelayValComp()<<endl;
-//                cout<< "---ASAP: "<<(*i)->getASAP()<<endl;
             }
             //all predecessors 
             for(k=this->ListaLiga.begin(); k != this->ListaLiga.end(); k++){
                 if((*k)->getAtivo() == false ) continue;
-                if( ((*k)->getDestino() == (*i))  && ((*k)->getBlackEdge()==false  )){
+                if((*k)->getBackEdge() == true) continue;
+                
+                if((*k)->getDestino() == (*i)){
                     dlyAux = FuncoesAux::StrToInt((*k)->getOrigem()->getDelayValComp());
                     pred = (*k)->getOrigem()->getASAP() + dlyAux;
-
                     if(pred > max){
                         max = pred;
                         if(debug)
@@ -2764,11 +2811,12 @@ void Core::ASAP(){
             }
             
             //all source code predecessors
-            if((*i)->getWE()){
+            if((*i)->getWE() == true && (*i)->getNumLinha() != 0){
                 for(j=this->ListaComp.begin(); j != this->ListaComp.end(); j++){
-                    if ((*j)->tipo_comp == CompType::REG || (*j)->tipo_comp == CompType::MEM || (*j)->tipo_comp == CompType::AUX ) continue;
+                    if ((*j)->tipo_comp == CompType::REG || (*j)->tipo_comp == CompType::MEM || (*j)->tipo_comp == CompType::AUX || (*j)->tipo_comp == CompType::DEL ) continue;
+                    if ((*j)->getWE() == false && (*j)->getNumLinha() == 0 ) continue;
                     int line = (*j)->getNumLinha();
-                    if(line > (*i)->getNumLinha()){
+                     if(line > (*i)->getNumLinha()){
                         cout<< "break on: \""<<(*j)->getName()<<"\" ASAP:" << (*j)->getASAP() << " line:" << (*j)->getNumLinha()<<endl;
                         goto innerBreak;
                     }
@@ -2788,7 +2836,6 @@ void Core::ASAP(){
                 if (max > this->getMaxSchedulingTime())
                     this->setMaxSchedulingTime(max);
             }
-//            cout<<" "<<endl;
         }
     }
     cout<<"Scheduling (ASAP)...OK"<<endl;
@@ -2805,7 +2852,7 @@ int Core::calculateASAP(Componente* comp){
         for(k=this->ListaLiga.begin(); k != this->ListaLiga.end(); k++){
             if((*k)->getAtivo() == false ) continue;
             if((*k)->getDestino() == comp){
-                if ((*k)->getOrigem()->tipo_comp == CompType::REG || (*k)->getOrigem()->tipo_comp == CompType::MEM || (*k)->getOrigem()->tipo_comp == CompType::AUX ) continue;
+                if ((*k)->getOrigem()->tipo_comp == CompType::REG || (*k)->getOrigem()->tipo_comp == CompType::MEM || (*k)->getOrigem()->tipo_comp == CompType::AUX || (*k)->getOrigem()->tipo_comp == CompType::DEL) continue;
                 int newMax = this->calculateASAP((*k)->getOrigem());
                 
                 if(newMax > max){
@@ -2905,7 +2952,7 @@ Componente* Core::insereReg(Ligacao* lig){
 
     this->addComponent(reg);
     reg->setNumIdComp(FuncoesAux::IntToStr(this->ListaComp.size()));
-    reg->setName("c"+FuncoesAux::IntToStr(this->ListaComp.size()));
+    reg->setName("comp_"+FuncoesAux::IntToStr(this->ListaComp.size()));
 
     comp_ref* ref = new comp_ref(NULL, "WE");
 //    this->addComponent(ref);
@@ -2914,7 +2961,7 @@ Componente* Core::insereReg(Ligacao* lig){
 
     ref->setTipoVar("VAR");
     ref->setNomeVarRef(reg->getName());
-    ref->setName("c"+FuncoesAux::IntToStr(this->ListaComp.size()));
+    ref->setName("comp_"+FuncoesAux::IntToStr(this->ListaComp.size()));
     ref->setComponenteRef(reg);
     ref->updateCompRef();
 
@@ -2963,7 +3010,7 @@ Componente* Core::insereDelay(Ligacao* lig, int delay, int asap){
      //Setando Valor do ID
     comp->setNumIdComp(str);
 
-    string nome = "c" + str;
+    string nome = "dly_" + str;
     comp->setName(nome);
     comp->getPortDataInOut("IN")->setWidth(lig->getWidth());
     comp->getPortDataInOut("OUT")->setWidth(lig->getWidth());

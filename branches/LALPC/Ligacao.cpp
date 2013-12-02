@@ -23,11 +23,11 @@ Ligacao::Ligacao(class Componente* origem, class Componente* destino, const stri
     this->ativo         = true;
 }
 
-void Ligacao::setBlackEdge(bool val){
+void Ligacao::setBackEdge(bool val){
     this->BackEdge  = val;
 }
 
-bool Ligacao::getBlackEdge(){
+bool Ligacao::getBackEdge(){
     return this->BackEdge;
 }
 
@@ -57,7 +57,11 @@ string Ligacao::imprimeDot(){
     outPorta = ":"+this->getPortDestino()->getName();
     size = "["+this->width+"]";
   
-    res += "\""+this->origem->getName()+"\""+inPorta+" -> \"" +this->destino->getName()+"\""+outPorta+"[label=\"" +this->nome+size+  "\" color=red fontcolor=red]; \n";
+    res += "\""+this->origem->getName()+"\""+inPorta+" -> \"" +this->destino->getName()+"\""+outPorta+"[label=\"" +this->nome+size+  "\" color=red ";
+    if(this->BackEdge) {
+        res += "style=dashed";
+    }
+    res += "]; \n";
     return res;
 }
 

@@ -11,7 +11,7 @@
 using namespace std;
 
 counter::counter(void*node) : Componente(node) {
-    this->setDelayValComp("1");
+//    this->setDelayValComp("1");
 //    SgForStatement* cur_for = isSgForStatement(this->node);
     this->setNomeCompVHDL("counter");
     this->tipo_comp = CompType::CTD;     

@@ -443,7 +443,7 @@ int Componente::getSuccessorsLine(){
     list<Ligacao*>::iterator i;
     for(i=this->ligacoes.begin(); i != this->ligacoes.end(); i++){
         if((*i)->getAtivo() == false ) continue;
-        if((*i)->getBlackEdge()) continue;
+        if((*i)->getBackEdge()) continue;
         if((*i)->getOrigem()->getName() != this->getName()) continue;
         
         if((*i)->getDestino()->getNumLinha() > 0){
