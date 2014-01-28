@@ -22,6 +22,7 @@
 #include "ArquivosDotHW.h"
 #include "ProcessGraph.h"
 #include "Ligacao.h"
+#include "Design.h"
 
 
 using namespace std;
@@ -36,7 +37,6 @@ class Core {
         Componente* analisaExp(SgNode *nodoAtual, SgNode* pai = NULL, const string& aux = "", const string& linhaParal = "");
         void FinalizaComponentes();
         void geraArquivosDotHW();
-        Componente* insereDelay(Ligacao* lig, int delay = 0, int asap = 0);
         Componente* insereReg(Ligacao* lig);
         void imprimeAll();
         int  getMaxSchedulingTime();
@@ -47,39 +47,29 @@ class Core {
         Componente*     getCompBySgNode(SgNode* node);
         bool            debug;
         bool            gerarDual;
+        bool            ramMultPort;
         bool            isParallel;
         int             maxSchedulingTime;
         list<Componente*>ListaComp;
         list<Ligacao*>  ListaLiga;
         list<SgNode*>   ListaForParall;
+        Design*         design;
         string          compNameReturn;
-        string          getNomeCompRef(const string& name);
-        bool            sync;
         void            copySchedulingTimes();
         void            existeVarRef(const string& name);
-        void            deletaLigacao(const string& name);
         void            updateCounter(SgNode* node, counter* comp);
         void            updateRegister(SgNode* node, reg_op* comp);
         void            updateBlockRam(SgNode* node, block_ram* comp);
         void            updateCompRef(SgNode* node, comp_ref* comp);
-        void            detectBackwardEdges();
         void            preIdentificacaoCompParalelizados();
         bool            isIndiceVector(const string& name);
-        void            ALAP();
-        void            ASAP();
         void            analiseMemoriaDualPort();
         void            analiseDividirMemoria();
-        void            balanceAndSyncrhonize();
-        int             calculateASAP(Componente* comp);
-        void            addComponent(Componente* comp);
         void            substiuiComRecorente(Componente* origem, Componente* destino);
-        void            removeComponente(Componente* origem, Componente* naoRemover = NULL);
         void            retirarCompDelayRedundante();
-        bool            insereLigacao(Componente* origem, Componente* destino, const string& portaOrigem = "", const string& portaDestino = "");
-        void            setSync(bool sync);
-        void            setClkReset();
-        bool            isSync();
-        Componente*     getComponent(const string& name);
+        void            setClkReset();    
+        void            identificaPragmas();
+        Componente*     compForAux;
         SgProject*      project;
         ArquivosDotHW*  dot;
         ProcessGraph*   graph;
