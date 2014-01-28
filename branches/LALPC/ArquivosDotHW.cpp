@@ -28,13 +28,15 @@ ArquivosDotHW::ArquivosDotHW(){
 void ArquivosDotHW::imprimeHWDOT(list<Componente*> listaComp, list<Ligacao*> listaLiga, const string& arquivo, bool debug) {
     this->ListaComp = listaComp;
     this->ListaLiga = listaLiga;
-    if(arquivo != ""){
-        this->nomeArquivo = arquivo;
-    }
     
     list<Componente*>::iterator i;
     list<Ligacao*>::iterator    k;
     
+    
+    if(arquivo != ""){
+        this->nomeArquivo = arquivo;
+    }
+        
     if(debug){
         cout<<"------------------------------------"<<endl;
         cout<<"Conteudo Arquivo DOT"<<endl;
@@ -46,18 +48,21 @@ void ArquivosDotHW::imprimeHWDOT(list<Componente*> listaComp, list<Ligacao*> lis
     fout.open(c);
     fout << "digraph diagram {\n";
     fout << "// Components (Nodes) \n";
-    
+   
     if(debug){
         cout << "digraph diagram {\n";
         cout << "// Components (Nodes) \n";
     }
-    
+    this->ListaAux.clear();
     for(i=this->ListaComp.begin(); i != this->ListaComp.end(); i++){
         if ((*i)->tipo_comp == CompType::REG || (*i)->tipo_comp == CompType::MEM || (*i)->tipo_comp == CompType::DEL ) continue;  
-        
-        fout << (*i)->geraDOTComp();
-        if(debug) cout << (*i)->geraDOTComp();
+        if(this->ExisteNaListaAux((*i)->getName()) == false){
+            fout << (*i)->geraDOTComp();
+            if(debug) cout << (*i)->geraDOTComp();
+            this->ListaAux.push_back((*i)->getName());
+        }
     }
+    this->ListaAux.clear();
     fout << "// Signals (Edges) \n";
     
     if(debug) cout << "// Signals (Edges) \n";
@@ -74,14 +79,18 @@ void ArquivosDotHW::imprimeHWDOT(list<Componente*> listaComp, list<Ligacao*> lis
 void ArquivosDotHW::imprimeVHDL(list<Componente*> listaComp, list<Ligacao*> listaLiga, const string& arquivo){
     this->ListaComp = listaComp;
     this->ListaLiga = listaLiga;  
+    map<string, Componente*> ::iterator m;
+    list<Componente*>::iterator i;
+    list<Ligacao*>::iterator    k;
+    
     if(arquivo != ""){
         this->nomeArquivo = arquivo;
     }
     this->organizaListaNome();
     GeraMemoryVHDL();
-    map<string, Componente*> ::iterator m;
-    list<Componente*>::iterator i;
-    list<Ligacao*>::iterator    k;
+//    map<string, Componente*> ::iterator m;
+//    list<Componente*>::iterator i;
+//    list<Ligacao*>::iterator    k;
 //    list<Port*>::iterator       p;
     
     cout<<"------------------------------------"<<endl;
@@ -99,13 +108,14 @@ void ArquivosDotHW::imprimeVHDL(list<Componente*> listaComp, list<Ligacao*> list
     fout << "use IEEE.std_logic_arith.all; \n";
     fout << "use IEEE.std_logic_unsigned.all; \n";
     fout << "entity "+this->nomeArquivo+" is \n";
-    fout << "   port ( \n";
-    fout << "           \\clear\\  : in	 std_logic; \n";
-    fout << "           \\clk\\    : in	 std_logic; \n";
-    fout << "           \\done\\   : out std_logic; \n";
-    fout << "           \\init\\   : in	 std_logic; \n";
-    fout << "           \\reset\\  : in	 std_logic; \n";
-    fout << "           \\result\\ : out std_logic_vector(31 downto 0) \n";
+    fout << "port ( \n";
+    fout << "\t\\clear\\  : in	 std_logic; \n";
+    fout << "\t\\clk\\    : in	 std_logic; \n";
+    fout << "\t\\done\\   : out std_logic; \n";
+    fout << "\t\\init\\   : in	 std_logic; \n";
+    fout << "\t\\reset\\  : in	 std_logic; \n";
+    fout << "\t\\result\\ : out std_logic_vector(31 downto 0) \n";
+//    fout << "\t\\reset\\  : in	 std_logic \n";
     fout << "); \n";
     fout << "end "+this->nomeArquivo+"; \n\n";
     fout << "architecture behavior of "+this->nomeArquivo+" is \n\n";
@@ -116,30 +126,22 @@ void ArquivosDotHW::imprimeVHDL(list<Componente*> listaComp, list<Ligacao*> list
 
 //    for(i=this->ListaComp.begin(); i != this->ListaComp.end(); i++){
     for(m=this->CompMap.begin(); m != this->CompMap.end(); m++){
-//        cout<< "1 - " <<  (*m).first << " -- " << (*m).second->getName() <<endl;
-//        if ((*m).second->tipo_comp == CompType::REG || (*m).second->tipo_comp == CompType::MEM || (*m).second->tipo_comp == CompType::AUX ) continue;
-//        if ( (*m).second->tipo_comp == CompType::AUX ) continue;
-//        cout<< "2 - " <<  (*m).first << " -- " << (*m).second->getName() <<endl;
-//        if(this->ExisteNaListaAux((*m).first) == false){
-//            cout<< "3 - " <<  (*m).first << " -- " << (*m).second->getName() <<endl;
-            fout << (*m).second->getEstruturaComponenteVHDL();
-            this->ListaAux.push_back((*m).first);
-//        }
-        
+        fout << (*m).second->getEstruturaComponenteVHDL();
+        this->ListaAux.push_back((*m).first);
     }
-    
+   
     //IGUAO OCORRE NO LALP UMA SAIDA TEM APENAS UM SINAL, ESTA PODE IR PARA 
     //VARIAS ENTRADAS.
     this->ListaAux.clear();
     for(k=this->ListaLiga.begin(); k != this->ListaLiga.end(); k++){
         if((*k)->getAtivo() == false ) continue;
         if((*k)->getPortOrigem()->getLigacao() != (*k)->getNome()){            
-            (*k)->getPortDestino()->setLigacao((*k)->getPortOrigem()->getLigacao());
-            (*k)->setName((*k)->getPortOrigem()->getLigacao());
+            (*k)->getPortDestino()->addLigacao((*k)->getPortOrigem()->getLigacao2());
+            (*k)->setName((*k)->getPortOrigem()->getLigacao2()->getNome());
 //            this->ListaAux.push_back((*k)->getNome());
         }
     }
-
+   
     //SINAIS VALIDADOS NO PASSO ANTERIOR
     for(k=this->ListaLiga.begin(); k != this->ListaLiga.end(); k++){
         if((*k)->getAtivo() == false ) continue;
@@ -157,12 +159,14 @@ void ArquivosDotHW::imprimeVHDL(list<Componente*> listaComp, list<Ligacao*> list
             this->ListaAux.push_back((*k)->getNome());
         }
     }
-    
+   
     fout << "\nbegin \n\n";
     for(i=this->ListaComp.begin(); i != this->ListaComp.end(); i++){
         if ((*i)->tipo_comp == CompType::REG || (*i)->tipo_comp == CompType::MEM || (*i)->tipo_comp == CompType::AUX || (*i)->tipo_comp == CompType::DEL  ) continue;
-        
-        fout << (*i)->geraCompVHDL();
+        if(this->ExisteNaListaAux((*i)->getName()) == false){
+            this->ListaAux.push_back((*i)->getName());
+            fout << (*i)->geraCompVHDL();
+        }
     }
     for(i=this->ListaComp.begin(); i != this->ListaComp.end(); i++){
         if ((*i)->tipo_comp != CompType::AUX ) continue;

@@ -10,7 +10,7 @@
 
 class CompType {
 public:
-    enum TIPO_COMP {REG,MEM,CTD,OPE,DLY,REF,AUX,CND,DEL};
+    enum TIPO_COMP {REG,MEM,CTD,OPE,DLY,REF,AUX,CND,MUX,DEL};
     CompType();
     virtual ~CompType();
 private:

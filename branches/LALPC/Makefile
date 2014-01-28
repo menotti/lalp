@@ -14,19 +14,20 @@ ROSE_INSTALL=/home/demo/opt/rose-inst
 BOOST_INSTALL=/home/demo/opt/boost-1.40.0
 
 # Pastas Projeto
-FOLDER_AUX  = Aux
-FOLDER_COMP = Componente
+FOLDER_AUX      = Aux
+FOLDER_COMP     = Componente
+FOLDER_COMP_HDR = AlgoritHdw
+FOLDER_COMP_ALG = Algoritmos
 
 #funcoes AUX
 AUX	    = $(FOLDER_AUX)/*.cpp
-#AUX	    = $(FOLDER_AUX)/FuncoesAux.cpp
 COMPONENTES = $(FOLDER_COMP)/*.cpp
+FUNC_HDR    = $(FOLDER_COMP_HDR)/*.cpp
+FUNC_ALG    = $(FOLDER_COMP_ALG)/*.cpp
 
 ## Your translator
 TRANSLATOR=LALPC
-TRANSLATOR_SOURCE=*.cpp $(AUX) $(COMPONENTES)
-#TRANSLATOR_SOURCE=$(TRANSLATOR).cpp Core.cpp ProcessGraph.cpp Ligacao.cpp CompType.cpp ArquivosDotHW.cpp $(AUX) $(COMPONENTES)
-
+TRANSLATOR_SOURCE=*.cpp $(AUX) $(COMPONENTES) $(FUNC_HDR) $(FUNC_ALG)
 
 #-------------------------------------------------------------
 # Makefile Targets
