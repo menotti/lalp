@@ -14,6 +14,7 @@ op_simple::op_simple(void*node) : Componente(node) {
     this->tipo_comp = CompType::OPE;
     this->createAllPorts();
     this->createAllGeneric();
+//    this->setDelayValComp("0");
 }
 
 op_simple::~op_simple() {

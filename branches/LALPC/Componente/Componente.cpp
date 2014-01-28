@@ -13,6 +13,7 @@
 #include "Componente.h"
 #include "../Ligacao.h"
 #include "Port.h"
+#include "PortLarge.h"
 #include "../Aux/FuncoesAux.h"
 #include "GenericMap.h"
 
@@ -30,16 +31,60 @@ Componente::Componente(void* node/*=NULL*/, const string &aux/*=""*/){
     if(aux == "WE"){
         this->writeEnable = true;
     }
-    this->nodoPai = NULL;
-    this->sync = true;
+    this->nodoPai       = NULL;
+    this->sync          = true;
     this->addressWidth  = 2;
     this->dataWidth     = 32;
     this->eInicializado = false;
+    this->compIf        = NULL;
+    this->isIf          = false;
+    this->isIfBody      = false;
+    this->valStepAux    = 0;
     setEIndice(false);
     setALAP(0);
     setASAP(0);
     setNumLinha(0);
     this->setDelayValComp("1");
+}
+
+
+void Componente::setValStepAux(int val){
+    this->valStepAux = val;
+}
+
+int Componente::getValStepAux(){
+    return this->valStepAux;
+}
+
+void Componente::setIf(bool val){
+    this->isIf = val;
+}
+
+bool Componente::getIf(){
+    return this->isIf;
+}
+
+void Componente::setIfComp(Componente* comp){
+    this->compIf = comp;
+}
+
+void Componente::setForComp(Componente* comp){
+    this->compFor = comp;
+}
+
+Componente* Componente::getIfComp(){
+    return this->compIf;
+}
+Componente* Componente::getForComp(){
+    return this->compFor;
+}
+
+void Componente::setIfBody(bool val){
+    this->isIfBody = val;
+}
+
+bool Componente::getIfBody(){
+    return this->isIfBody;
 }
 
 string Componente::getMemoriaVHDLCab(){
@@ -182,10 +227,10 @@ string Componente::geraCompVHDL(){
 
     bool f;
     //NOME COMP
-    res += "\t\\"+this->getName()+"\\: "+this->getNomeCompVHDL()+"\n";
-    
+    res += "\\"+this->getName()+"\\: "+this->getNomeCompVHDL()+"\n";
+        
     //GENERICS
-    res += "\tgeneric map ( \n";
+    res += "generic map ( \n";
     f = false;
     for(g=this->genMap.begin(); g != this->genMap.end(); g++){
         if(f){
@@ -193,20 +238,22 @@ string Componente::geraCompVHDL(){
         }else{
             f = true;
         }
-        res += "\t\t"+(*g)->getNome()+" => "+(*g)->getValor();
+        res += "\t"+(*g)->getNome()+" => "+(*g)->getValor();
     }
-    res += "\n\t)\n"; 
+    res += "\n)\n"; 
     
     //PORTS
     f = false;
-    res += "\tport map ( \n";
+    res += "port map ( \n";
     list<Port*>::iterator p;
     for(p=this->portas.begin(); p != this->portas.end(); p++){
-        if((*p)->getLigacao() == "") continue;
+//        if(!(*p)->temLigacao()) continue;
 
-        Ligacao* s = this->getLigacaoByName((*p)->getLigacao());
-//        cout<< this->getName() << "  PORTA "<< (*p)->getName() << " LIG: "<<(*p)->getLigacao() << endl;
-        if(s != NULL){
+        
+        Ligacao* s = (*p)->getLigacao2();
+
+        if(s != NULL && (*p)->isLargePort == false){
+            //cout<< "COMP: {"<< this->getName() << "}  PORTA ["<< (*p)->getName() << "] LIG: '"<<s->getNome()<<"' " << endl;
             if(f){
                 res += ",\n";
             }else{
@@ -214,40 +261,66 @@ string Componente::geraCompVHDL(){
             }
             if((*p)->getType() == s->getTipo()){
                 if((*p)->getWidth() == s->getWidth()){
-                    res += "\t\t"+(*p)->getName()+" => "+(*p)->getLigacao();
+                    res += "\t"+(*p)->getName()+" => "+(*p)->getLigacao2()->getNome();
                 }else{
                     int portaWidth = FuncoesAux::StrToInt((*p)->getWidth());
                     int LigacWidth = FuncoesAux::StrToInt(s->getWidth());
                     if(portaWidth < LigacWidth){
-                        res += "\t\t"+(*p)->getName()+"("+FuncoesAux::IntToStr(portaWidth-1)+" downto 0) => "+(*p)->getLigacao()+"(" +FuncoesAux::IntToStr(portaWidth-1)+" downto 0)";
+                        res += "\t"+(*p)->getName()+"("+FuncoesAux::IntToStr(portaWidth-1)+" downto 0) => "+(*p)->getLigacao2()->getNome()+"(" +FuncoesAux::IntToStr(portaWidth-1)+" downto 0)";
                     }else{
-                        res += "\t\t"+(*p)->getName()+"("+FuncoesAux::IntToStr(LigacWidth-1)+" downto 0) => "+(*p)->getLigacao()+"(" +FuncoesAux::IntToStr(LigacWidth-1)+" downto 0)";
+                        res += "\t"+(*p)->getName()+"("+FuncoesAux::IntToStr(LigacWidth-1)+" downto 0) => "+(*p)->getLigacao2()->getNome()+"(" +FuncoesAux::IntToStr(LigacWidth-1)+" downto 0)";
                     }  
                 }
                 
             }else{
 
                 if(s->getTipo() == "std_logic"){
-                    res += "\t\t"+(*p)->getName()+"(0) => "+(*p)->getLigacao();
+                    res += "\t"+(*p)->getName()+"(0) => "+(*p)->getLigacao2()->getNome();
                 }else{
-                    res += "\t\t"+(*p)->getName()+" => "+(*p)->getLigacao()+"(0)";
+                    res += "\t"+(*p)->getName()+" => "+(*p)->getLigacao2()->getNome()+"(0)";
                 }
             }
         }
         //Este caso entra as ligacoes de RESET e CLK tem a ref na porta mas nao existe a ligacao 
-        else{ 
-            if((*p)->getLigacao() != ""){
-                if(f){
-                res += ",\n";
-                }else{
-                    f = true;
+        else{
+            if((*p)->isLargePort){
+                map<int, Ligacao*>::iterator m;
+                map<int, Ligacao*> ligacoes;
+                PortLarge* portaL = (PortLarge*)(*p);
+                int bits = (FuncoesAux::StrToInt(portaL->getWidth()))-1;
+                
+                ligacoes = portaL->getLigacoes();
+                
+                for(m= ligacoes.begin(); m != ligacoes.end(); m++){
+                    if(f){
+                        res += ",\n";
+                    }else{
+                        f = true;
+                    }
+                    int val             = -1 * ((*m).first);
+                    string name         = (*m).second->getNome();
+                    string auxWIdht     = (*m).second->getWidth();
+                    int sinalWidth      = FuncoesAux::StrToInt(auxWIdht);
+                    sinalWidth--; 
+                    
+                    res += "\t"+(*p)->getName() + "(" + FuncoesAux::IntToStr(bits) + " downto " + FuncoesAux::IntToStr(val) + ") => " + name + "(" + FuncoesAux::IntToStr(sinalWidth) + " downto 0)";
+                    val--;
+                    bits = val;
                 }
-                res += "\t\t"+(*p)->getName()+" => "+(*p)->getLigacao();
+            }else{
+                if((*p)->getLigacao() != ""){
+                    if(f){
+                        res += ",\n";
+                    }else{
+                        f = true;
+                    }
+                    res += "\t"+(*p)->getName()+" => "+(*p)->getLigacao();
+                }
             }
         }
   
     }
-    res += "\n\t);\n\n"; 
+    res += "\n);\n\n"; 
     return res;
 }
 
@@ -275,17 +348,13 @@ Ligacao* Componente::getLigacaoByName(const string &nome){
 
 Ligacao* Componente::getLigacaoOutDefault(){
     Ligacao* aux = NULL;
-    string ligName = "";
-    ligName = this->getPortDataInOut("OUT")->getLigacao();
-    if(ligName != ""){
-        aux = this->getLigacaoByName(ligName);
-    }
+    aux = this->getPortDataInOut("OUT")->getLigacao2();
     return aux;
 }
 
 Ligacao* Componente::getLigacaoInDefault(){
     Ligacao* aux = NULL;
-    aux = this->getLigacaoByName(this->getPortDataInOut("IN")->getName());
+    aux = this->getPortDataInOut("IN")->getLigacao2();;
     return aux;
 }
 
@@ -364,6 +433,7 @@ void*  Componente::getPai(){
 string Componente::imprimeLigacoes(){
     string res ="";
     list<Ligacao*>::iterator i;
+    cout<< "QTD LIG: "<< this->ligacoes.size() << endl;
     for(i=this->ligacoes.begin(); i != this->ligacoes.end(); i++){
         if((*i)->getAtivo() == false ) continue;
 //        res += (*i)->getNome()+":( "+ (*i)->getWidth() +" ):"+(*i)->getOrigem()->getName()+" ("+(*i)->getPortOrigem()->getName()+") -> ("+(*i)->getPortDestino()->getName()+") "+(*i)->getDestino()->getName()+"\n";
@@ -377,10 +447,27 @@ string Componente::imprimeLigacoes(){
 string Componente::imprimePortas(){
     string res ="";
     list<Port*>::iterator i;
+    cout<< "qtd: "<< this->portas.size() << endl;
+ 
     for(i=this->portas.begin(); i != this->portas.end(); i++){
-        res += (*i)->getName()+" : "+(*i)->getInput()+" | "+ (*i)->getType() +" | NOME LIG:" + (*i)->getLigacao() + "\n";
+        if ((*i)->temLigacaoo != true) continue;
+        if ((*i)->isLargePort == false){
+            if((*i)->temLigacaoo == true && (*i)->getLigacao2() == false){
+                res += (*i)->getName()+" : "+(*i)->getInput()+" | "+ (*i)->getType() +" | NOME LIG:" + (*i)->getLigacao() + "\n";
+            }else{
+                res += (*i)->getName()+" : "+(*i)->getInput()+" | "+ (*i)->getType() +" | NOME LIG:" + (*i)->getLigacao2()->getNome() + "\n";
+            }
+        }else{
+            map<int, Ligacao*>::iterator m;
+            map<int, Ligacao*> ligacoes1;
+            PortLarge* portaL = (PortLarge*)(*i);
+            ligacoes1 = portaL->getLigacoes();
+            for(m= ligacoes1.begin(); m != ligacoes1.end(); m++){
+                res += (*i)->getName()+" : "+(*i)->getInput()+" | "+ (*i)->getType() +" | NOME LIG:" + (*m).second->getNome() + "\n";
+            }
+        }
     }
-      return res;
+    return res;
 }
 
 bool Componente::temPorta(const string &nome){

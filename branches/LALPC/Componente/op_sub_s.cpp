@@ -8,7 +8,7 @@
 #include "op_sub_s.h"
 
 op_sub_s::op_sub_s(void*node) : op_simple(node){
-    this->setDelayValComp("0");
+//    this->setDelayValComp("0");
     this->setNomeCompVHDL("sub_op_s");
     this->op_tipo       = "SUB";
     this->setSync(false);

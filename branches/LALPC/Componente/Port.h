@@ -11,7 +11,7 @@
 #include <stdio.h>
 #include <sstream>
 #include <stdlib.h>
-//#include "../Ligacao.h"
+#include "../Ligacao.h"
 
 using namespace std;
 
@@ -23,20 +23,26 @@ public:
     string      getInput();
     string      getWidth();
     string      getAux();
-//    Ligacao*    getLigacao();
-    const string&      getLigacao() const;
+    Ligacao*    getLigacao2();
+    const string&      getLigacao();
 //    void        setLigacao(Ligacao* lig);
     void        setLigacao(const string&  lig);
+    virtual void        addLigacao(Ligacao* lig);
     void        setWidth(const string&  width);
     virtual     ~Port();
-private:
-//    Ligacao*    ligacao;
+    bool        temLigacao();
+    bool        temLigacaoo;
+    bool        isLargePort;
     string      ligacao;
+    Ligacao*     lig;
     string      name;
     string      type;
     string      input;
     string      width;
     string      aux;
+private:
+//    Ligacao*    ligacao;
+    
 };
 
 #endif	/* PORT_H */
