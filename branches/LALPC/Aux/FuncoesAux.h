@@ -28,7 +28,7 @@ public:
     static string ConvertDecToBin(const string &val);
 
 private:
-
+    
 };
 
 #endif	/* FUNCOESAUX_H */

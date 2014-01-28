@@ -7,10 +7,13 @@
 #include "../header/meuHeader.h"
 #include "FuncoesAux.h"
 #include <stdio.h>
+#include <cstdlib>
 #include <sstream>
 #include <stdlib.h>
 #include <string>
 #include <vector>
+#include <bitset>
+
 using namespace std;
 using boost::lexical_cast;
 
@@ -63,18 +66,23 @@ string FuncoesAux::LPad(const string &val, int size){
 
 string FuncoesAux::ConvertDecToBin(const string &val){
     int dec = FuncoesAux::StrToInt(val);
-    int rem,i=1,sum=0;
-    do
+    bitset<32> binaryNumber;     
+    binaryNumber = dec;
+    /*
+     * As duas funcoes estao funfando
+    int i = dec; //my value
+    std::string result;
+    for (int bit = 0; bit < sizeof(int)*8; ++bit)
     {
-        rem=dec%2;
-        sum=sum + (i*rem);
-        dec=dec/2;
-        i=i*10;
-    }while(dec>0);
-    string res = FuncoesAux::IntToStr(sum);
-    return res;
+       int bit_val = 1 & i;
+       result = (bit_val ? "1" : "0") + result;
+       i = i >> 1;
+    }
+     return result;
+     */
+    
+    return binaryNumber.to_string();
 }
-
 
 
 FuncoesAux::~FuncoesAux() {
