@@ -14,7 +14,9 @@
 #include "../Ligacao.h"
 #include "../CompType.h"
 #include "Port.h"
+#include "PortLarge.h"
 #include "GenericMap.h"
+#include <map>
 
 using namespace std;
 
@@ -24,6 +26,8 @@ class Componente {
         //CompType* tipo_SgNode* node = NULcomp;
         CompType::TIPO_COMP tipo_comp;
         void            setPai(void* nodo = NULL);
+        void            setValStepAux(int val);
+        int             getValStepAux();
         int             getNumLinha();
         void            setNumLinha(int num = 0);
         Componente*     getComponenteRef();     
@@ -112,8 +116,23 @@ class Componente {
         void            printAllPortsAllLig();
         void            copyAllPortsAndGM();
         
+        void            setIf(bool val);
+        bool            getIf();
+        void            setIfComp(Componente* comp);
+
+        void            setForComp(Componente* comp);
+  
+        Componente*     getIfComp();
+        Componente*     getForComp();
+        void            setIfBody(bool val);
+        bool            getIfBody();
     private:
-        
+        int             valStepAux;
+   
+        Componente*     compIf;
+        Componente*     compFor;
+        bool            isIf;
+        bool            isIfBody;
         string          ref_var_nome;
         bool            isIndice;
         int             alap;

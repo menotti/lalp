@@ -8,7 +8,7 @@
 #include "op_mult_s.h"
 
 op_mult_s::op_mult_s(void*node) : op_simple(node){
-    this->setDelayValComp("0");
+//    this->setDelayValComp("0");
     this->setNomeCompVHDL("mult_op_s");
     this->op_tipo       = "MUL";
     this->setSync(false);

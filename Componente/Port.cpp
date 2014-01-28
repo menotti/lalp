@@ -10,25 +10,45 @@
 #include <stdio.h>
 #include <sstream>
 #include <stdlib.h>
-
-
+#include "../Ligacao.h"
+#include <iostream>
 using namespace std;
 
 Port::Port(const string& name, const string& input, const string& type, const string& width, const string& aux) {
-    this->name  = name;
-    this->input = input;
-    this->type  = type;
-    this->width = width;
-    this->aux   = aux;
+    this->name          = name;
+    this->input         = input;
+    this->type          = type;
+    this->width         = width;
+    this->aux           = aux;
+    this->isLargePort   = false;
+    this->temLigacaoo   = false;
+    this->lig           = NULL;
+    this->ligacao       = "";
 }
 
-//Ligacao* Port::getLigacao(){
-const string& Port::getLigacao() const{
+bool Port::temLigacao(){
+    return this->temLigacaoo;
+}
+
+Ligacao* Port::getLigacao2(){
+    Ligacao* retorno = NULL;
+    if(this->isLargePort == false){ 
+        retorno = this->lig; 
+    }
+    return retorno;
+}
+
+const string& Port::getLigacao(){
     return this->ligacao;
 }
 
-//void Port::setLigacao(Ligacao* lig){
+void Port::addLigacao(Ligacao* lig1){
+    this->temLigacaoo = true;
+    this->lig = lig1;
+}
+
 void Port::setLigacao(const string&  lig){
+    this->temLigacaoo = true;
     this->ligacao = lig;
 }
 

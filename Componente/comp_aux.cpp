@@ -48,16 +48,16 @@ string  comp_aux::geraCompVHDL(){
         res = "\\"+this->getName()+"\\ <= "+this->getPortDataInOut("IN")->getLigacao()+"; \n";
     }
     if(this->getNomeCompVHDL() == "done"){
-        res = "\\"+this->getName()+"\\ <= "+this->getPortDataInOut("IN")->getLigacao()+"(0); \n";
+        res = "\\"+this->getName()+"\\ <= "+this->getPortDataInOut("IN")->getLigacao2()->getNome()+"(0); \n";
     }
     if(this->getNomeCompVHDL() == "init"){
-        res = this->getPortDataInOut("OUT")->getLigacao()+" <= \\"+this->getName()+"\\; \n";
+        res = this->getPortDataInOut("OUT")->getLigacao2()->getNome()+" <= \\"+this->getName()+"\\; \n";
     }
     if(this->getNomeCompVHDL() == "termination" || this->getNomeCompVHDL() == "input"){
         res = this->getPortDataInOut("OUT")->getLigacao()+" <= conv_std_logic_vector("+this->valAux+", 32); \n";
     }
     if(this->getNomeCompVHDL() == "valor"){
-        res = this->getPortDataInOut("OUT")->getLigacao()+" <= conv_std_logic_vector("+this->valAux+", 32); \n";
+        res = this->getPortDataInOut("OUT")->getLigacao2()->getNome()+" <= conv_std_logic_vector("+this->valAux+", 32); \n";
     }
     return res;
 }
