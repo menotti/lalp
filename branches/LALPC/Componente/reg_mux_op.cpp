@@ -60,7 +60,7 @@ string reg_mux_op::getEstruturaComponenteVHDL(){
 
 string reg_mux_op::geraDOTComp(){
     string res = "";
-    res += "\""+this->getName()+"\" [shape=record, fontcolor=blue, style=\"filled\", fillcolor=\"lightgray\", label=\"{{<I0>I0[16]|<I1>I1[16]|<Sel1>Sel1[1]|<clk>clk|<reset>reset|<we>we}|reg_mux_op:"+this->getName()+"|{<O0>O0[16]}}\"]; \n";  
+    res += "\""+this->getName()+"\" [shape=record, fontcolor=blue, style=\"filled\", fillcolor=\"lightgray\", label=\"{{<I0>I0[32]|<I1>I1[32]|<Sel1>Sel1[1]|<clk>clk|<reset>reset|<we>we}|reg_mux_op:"+this->getName()+"|{<O0>O0[32]}}\"]; \n";  
     return res;
 }
 
