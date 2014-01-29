@@ -26,13 +26,13 @@ and_op::~and_op() {
 void and_op::createAllPorts(){
     this->addPort(new Port("I0"         ,"in"   ,"std_logic_vector"     ,"32", ""));
     this->addPort(new Port("I1"         ,"in"   ,"std_logic_vector"     ,"32", "IN"));
-    this->addPort(new Port("O0"         ,"out"  ,"std_logic_vector"     ,"1", "OUT"));
+    this->addPort(new Port("O0"         ,"out"  ,"std_logic_vector"     ,"32", "OUT"));
 }
 
 void and_op::createAllGeneric(){
     this->addGenericMap(new GenericMap("w_in1", "integer", "32"));
     this->addGenericMap(new GenericMap("w_in2", "integer", "32"));
-    this->addGenericMap(new GenericMap("w_out", "integer", "1"));
+    this->addGenericMap(new GenericMap("w_out", "integer", "32"));
 }
 
 string and_op::getEstruturaComponenteVHDL(){

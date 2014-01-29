@@ -48,6 +48,6 @@ string neg_op_s::getEstruturaComponenteVHDL(){
 
 string neg_op_s::geraDOTComp(){
     string res = "";
-    res += "\""+this->getName()+"\" [shape=record, fontcolor=blue, label=\"{{<I0>I0[16]}|neg_op_s:"+this->getName()+"|{<O0>O0[16]}}\"]; \n";
+    res += "\""+this->getName()+"\" [shape=record, fontcolor=blue, label=\"{{<I0>I0[32]}|neg_op_s:"+this->getName()+"|{<O0>O0[32]}}\"]; \n";
     return res;
 }
