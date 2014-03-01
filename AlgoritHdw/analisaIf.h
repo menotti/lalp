@@ -24,11 +24,16 @@ public:
     virtual ~analisaIf();
     void        buscaIfs();
     void        ligaExpInternoIf(Componente* comp);
-    void        criaMux(Componente* comp);
     Design*     getDesign();
     
 private:
+    void                criaLigIfParaPortaWE(Componente* comp);
+    bool                verificaCompAntesIf(Componente* compIf,Componente* compAtual);
+    bool                verificaCompExisteBodyTrueEFalse(Componente* compIf,Componente* compAtual);
+    void                analiseProcessoCriaMux(Componente* compIf);
+    void                criaComponenteMux(Componente* compIf, Componente* compAtual);
     Componente*         getCompAntesIf(Componente* compIf, const string& linhaParal);
+    bool                verificaCompPrecisaMux(Componente* compIf, Componente* compAtual);
     Design*             design;
     bool                debug;
 };

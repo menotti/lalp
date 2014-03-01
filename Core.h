@@ -69,6 +69,10 @@ class Core {
         void            retirarCompDelayRedundante();
         void            setClkReset();    
         void            identificaPragmas();
+        void            ligaCompDep();
+        void            corrigeRegWe();
+        void            ligaRegNoWE();
+        
         Componente*     compForAux;
         SgProject*      project;
         ArquivosDotHW*  dot;

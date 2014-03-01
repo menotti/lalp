@@ -43,8 +43,8 @@ const string& Port::getLigacao(){
 }
 
 void Port::addLigacao(Ligacao* lig1){
-    this->temLigacaoo = true;
     this->lig = lig1;
+    this->temLigacaoo = true;
 }
 
 void Port::setLigacao(const string&  lig){
