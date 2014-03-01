@@ -85,12 +85,18 @@ Core::Core(SgProject* project, list<SgNode*> lista) {
         this->design = memHdr->getDesign();
     }
     
+    //Coloca ligacao para calcular melhor no processo asap
+//    this->ligaRegNoWE();
+    
     //Processo de Scheduling
     Scheduling* sched = new Scheduling(this->design);
     sched->detectBackwardEdges();
     sched->ALAP();
     sched->balanceAndSyncrhonize();
     this->design = sched->getDesign();
+    
+    this->ligaCompDep();
+//    this->corrigeRegWe();
     
     
     if (this->ramMultPort == false){
@@ -124,7 +130,6 @@ void Core::identificaPragmas(){
         SgPragma* pragma = isSgPragma((*iter));
         if (pragma != NULL){
             if (pragma->get_pragma().find("multport") == 0){
-                cout << "PRAGMA MULTPORT" << endl; 
                 this->ramMultPort = true;
             }
         }
@@ -1573,6 +1578,145 @@ void Core::substiuiComRecorente(Componente* origem, Componente* destino){
 
 }
 
+void Core::ligaRegNoWE(){
+    //procedimento para efetuar um calculo correto no balanceamento
+    cout<< "------------------------" <<endl;
+    cout<< "COLOCANDO SINAL PORTA WE" <<endl;
+    cout<< "------------------------" <<endl;
+    list<Componente*>::iterator i;
+    Componente* ctd = NULL;
+    for (i = this->design->ListaComp.begin(); i != this->design->ListaComp.end(); i++) {
+        if ((*i)->tipo_comp != CompType::CTD) continue;
+        ctd = (*i);
+        break;
+    }
+    cout<< "------------------------" <<endl;
+    cout<< "Achou o contador: "<< ctd->getName() <<endl;
+    cout<< "------------------------" <<endl;
+    for (i = this->design->ListaComp.begin(); i != this->design->ListaComp.end(); i++) {
+        if ((*i)->tipo_comp != CompType::REF) continue;
+        if ((*i)->getEIndice()) continue;
+        if ((*i)->getComponenteRef()->tipo_comp != CompType::REG) continue;
+        if ((*i)->getComponenteRef()->getNomeCompVHDL() != "reg_op") continue;
+        if ((*i)->writeEnable == true) continue;
+        if ((*i)->getPortOther("we")->temLigacao() == false){
+            cout<< " - inserindo ligacao: '" << ctd->getName() << "' -> '" << (*i)->getName() <<"'" << endl;
+            this->design->insereLigacao(ctd,(*i), "step", "we");
+        }
+    }
+    this->dot->imprimeHWDOT(this->design->getListaComp(), this->design->getListaLiga(), "DOT/6_colocandoSinalWE.dot", false);
+}
+
+void Core::corrigeRegWe(){
+    list<Componente*>::iterator i;
+    for (i = this->design->ListaComp.begin(); i != this->design->ListaComp.end(); i++) {
+       if ((*i)->tipo_comp != CompType::REF) continue;
+       if ((*i)->getEIndice()) continue;
+       if ((*i)->getComponenteRef()->tipo_comp != CompType::REG) continue;
+       if ((*i)->getComponenteRef()->getNomeCompVHDL() != "reg_op") continue;
+       if ((*i)->writeEnable == true) continue;
+       if ((*i)->getPortOther("we")->temLigacao() != false){
+           Ligacao* lig = (*i)->getPortOther("we")->getLigacao2();
+           Componente* comp = lig->getOrigem();
+
+           comp->removeLigacao(lig);
+
+           if (comp->tipo_comp == CompType::DLY){
+               Ligacao* lig2 = comp->getPortDataInOut("IN")->getLigacao2();
+               Componente* compCTD = lig->getOrigem();
+               if (comp->tipo_comp == CompType::CTD){
+                   compCTD->removeLigacao(lig2);
+                   comp->removeLigacao(lig2);
+                   this->design->deletaLigacao(lig2->getNome());
+                   this->design->removeComponente(comp);
+               }
+           }
+           (*i)->getPortOther("we")->lig = NULL;
+           (*i)->getPortOther("we")->temLigacaoo = false;
+           
+           (*i)->removeLigacao(lig);
+           this->design->deletaLigacao(lig->getNome());
+       }
+    }  
+    this->dot->imprimeHWDOT(this->design->getListaComp(), this->design->getListaLiga(), "DOT/7_RemovendoSinalWE.dot", false);
+}
+
+void Core::ligaCompDep(){
+    list<Componente*>::iterator i;
+    list<Componente*>::iterator j;
+    list<Ligacao*>::iterator    k;
+    
+      // <editor-fold defaultstate="collapsed" desc="Ligar comp com dependencia">
+    cout << "--Ligar componentes DEPENDENTES:" << endl;
+    Componente* lastWE = NULL;
+    for (i = this->design->ListaComp.begin(); i != this->design->ListaComp.end(); i++) {
+        if ((*i)->tipo_comp != CompType::REF) continue;
+        if ((*i)->getEIndice()) continue;
+        if ((*i)->getComponenteRef()->tipo_comp != CompType::REG) continue;
+
+        lastWE = NULL;
+//                cout<< " ----- "<< endl;
+//                cout<< " Componente (I): "<< (*i)->getName() << endl;
+//                cout<< " identificando ultimo comp WE: "<< endl;
+        for (j = this->design->ListaComp.begin(); j != this->design->ListaComp.end(); j++) {
+            if ((*j)->tipo_comp != CompType::REF) continue;
+            if ((*j)->getEIndice()) continue;
+            if ((*j)->getComponenteRef()->tipo_comp != CompType::REG) continue;
+            if ((*i)->getNumParalelLina() != (*j)->getNumParalelLina()) continue;
+            //if((*i)->node == (*j)->node) continue;
+            if ((*i)->getNomeVarRef() == (*j)->getNomeVarRef()) {
+                if ((*j)->writeEnable == true) {
+                    lastWE = (*j);
+//                    cout<< "WE: "<< lastWE->getName() <<  endl;
+                }
+            }
+        }
+//        cout<< "WE: "<< lastWE->getName() <<  endl;
+        if (lastWE == NULL) continue;
+        
+//        cout<< "PROCURAR PRIMEIRA OCORRENCIA DO REG COM NOME: '"<< lastWE->getNomeCompVHDL() << "'" <<  endl;
+        for (j = this->design->ListaComp.begin(); j != this->design->ListaComp.end(); j++) {
+            if ((*j)->tipo_comp != CompType::REF) continue;
+            if ((*j)->getComponenteRef()->tipo_comp != CompType::REG) continue;
+            if ((*i)->getNumParalelLina() != (*j)->getNumParalelLina()) continue;
+            if (lastWE->node == (*j)->node) continue;
+//            cout<< "---: "<< lastWE->getName() <<  endl;
+            if ((*i)->getNomeVarRef() == (*j)->getNomeVarRef()) {
+                if ((*j)->writeEnable == true) {
+                    continue;
+                } else {
+                    if ((*j)->getPortDataInOut("IN")->temLigacao() == false) {
+                        cout<<"--Ligando componentes (dependencia): " << lastWE->getName() << " -> " << (*j)->getName() <<endl;
+
+                        //pegar ligacao na porta IN do componente lastWE e setar como BACKEDGE
+                        
+                        //Pegar todas as ligacores da saida do componente que o compoente ORIGEM seja (*j)
+                        for (k = this->design->ListaLiga.begin(); k != this->design->ListaLiga.end(); k++) {
+                            if ((*k)->getOrigem() == (*j) && (*k)->getAtivo() == true){
+                                (*j)->removeLigacao((*k));
+                                (*k)->editOrig(lastWE);
+                                (*k)->setPortOrigem(lastWE->getPortDataInOut("OUT"));
+                                lastWE->addLigacao((*k));
+                                lastWE->getPortDataInOut("OUT")->addLigacao((*k));
+                            }
+                        }
+                        this->design->removeComponente((*j), NULL);
+                        
+                        lastWE->getPortDataInOut("IN")->getLigacao2()->setBackEdge(true);
+                        
+                        break;
+                    }
+                }
+            }
+        }
+    }
+    cout << "--Ligar componentes DEPENDENTES: OK" << endl; 
+    // </editor-fold>
+    this->dot->imprimeHWDOT(this->design->getListaComp(), this->design->getListaLiga(), "DOT/8_LigDependentes.dot", false);
+   
+    
+}
+
 void Core::FinalizaComponentes(){
  
     list<Componente*>::iterator i;
@@ -1672,6 +1816,7 @@ void Core::FinalizaComponentes(){
         this->analiseDividirMemoria();
     }
     
+    
     cout<<"--Ligar componentes IF:"<<endl;
     analisaIf* compAnaIf = new analisaIf(this->design);
     this->design = compAnaIf->getDesign();
@@ -1683,18 +1828,22 @@ void Core::FinalizaComponentes(){
     cout<<"--Ligar componentes entre expressoes:"<<endl;
     Componente* CompRefAux = NULL;
     for (i = this->design->ListaComp.begin(); i != this->design->ListaComp.end(); i++) {
-        if((*i)->tipo_comp != CompType::REF) continue;
-        if((*i)->getEIndice()) continue;
+        if((*i)->tipo_comp != CompType::REF) continue;        
+        if(isIndiceVector((*i)->getNomeVarRef()))continue;
         if((*i)->getComponenteRef()->tipo_comp != CompType::REG) continue;
         if((*i)->getIf()) continue;
-
+//        cout << "#########################################"<< endl;
         CompRefAux = (*i);
+//        cout << "(*I) NOME: " << (*i)->getName() << " - LINHA: " << (*i)->getNumLinha() << endl;
+//        cout << "------------------------------"<< endl;
         for (j = this->design->ListaComp.begin(); j != this->design->ListaComp.end(); j++) {
             if((*j)->tipo_comp != CompType::REF) continue;
-            if((*j)->getEIndice()) continue;
+            if(CompRefAux == (*j)) continue;
+            if(isIndiceVector((*j)->getNomeVarRef()))continue;
             if((*j)->getComponenteRef()->tipo_comp != CompType::REG) continue;
+//            cout << "1(*J) NOME: " << (*j)->getName() << " - LINHA: " << (*j)->getNumLinha() << endl;
             if((*i)->getNumParalelLina() != (*j)->getNumParalelLina()) continue;
-            if((*i)->node == (*j)->node) continue;
+//            cout << "2(*J) NOME: " << (*j)->getName() << " - LINHA: " << (*j)->getNumLinha() << endl;
             if (CompRefAux->getNomeVarRef() == (*j)->getNomeVarRef()) {
 //                cout << "(*J) NOME: " << (*j)->getName() << " - LINHA: " << (*j)->getNumLinha() << endl;
 //                cout << "------------------------------"<< endl;
@@ -1705,7 +1854,8 @@ void Core::FinalizaComponentes(){
 //                    cout<< "** Novo   AUX: " << CompRefAux->getName() << endl;
                     continue;
                 }else{
-                    if(CompRefAux->getNumLinha() >= (*j)->getNumLinha()) continue;
+//                    cout << " CHEGOU NO ELSE " << endl;
+                    if(CompRefAux->getNumLinha() > (*j)->getNumLinha()) continue;
 //                    cout<< "REF AUX: "<< CompRefAux->getName() << endl;
 //                    cout<< "REF   J: "<< (*j)->getName() << endl;
 //                    cout<< "OUT   J: "<< (*j)->getName() << " -> "<< (*j)->getLigacaoOutDefault()->getDestino()->getName() << endl;
@@ -1716,12 +1866,13 @@ void Core::FinalizaComponentes(){
 //                        cout<< "-- ADD: "<< endl;
                         //CompRefI->getPortOther("address")->getLigacao();
                         Componente* compAuxDestino = (*j)->getLigacaoOutDefault()->getDestino();
+//                        cout<< "-- NEW LIG: '"<< CompRefAux->getName() << "' ->  '" << compAuxDestino->getName()<< "'" << endl;
                         this->design->insereLigacao(CompRefAux, compAuxDestino, CompRefAux->getPortDataInOut("OUT")->getName(), (*j)->getLigacaoOutDefault()->getPortDestino()->getName());
                         this->design->removeComponente((*j), NULL);
                     }
                 }
-//                cout << "------------------------------"<< endl;
             }
+//            cout << "==============================="<< endl;
         }
 //        cout << "------------------------------"<< endl;
     }
@@ -1729,57 +1880,7 @@ void Core::FinalizaComponentes(){
     // </editor-fold>
     this->dot->imprimeHWDOT(this->design->getListaComp(), this->design->getListaLiga(), "DOT/2_2_LigExpresOK.dot", false);
   
-    // <editor-fold defaultstate="collapsed" desc="Ligar comp com dependencia">
-    cout << "--Ligar componentes DEPENDENTES:" << endl;
-    Componente* lastWE = NULL;
-    for (i = this->design->ListaComp.begin(); i != this->design->ListaComp.end(); i++) {
-        if ((*i)->tipo_comp != CompType::REF) continue;
-        if ((*i)->getEIndice()) continue;
-        if ((*i)->getComponenteRef()->tipo_comp != CompType::REG) continue;
-
-        lastWE = NULL;
-//                cout<< " ----- "<< endl;
-//                cout<< " Componente (I): "<< (*i)->getName() << endl;
-//                cout<< " identificando ultimo comp WE: "<< endl;
-        for (j = this->design->ListaComp.begin(); j != this->design->ListaComp.end(); j++) {
-            if ((*j)->tipo_comp != CompType::REF) continue;
-            if ((*j)->getEIndice()) continue;
-            if ((*j)->getComponenteRef()->tipo_comp != CompType::REG) continue;
-            if ((*i)->getNumParalelLina() != (*j)->getNumParalelLina()) continue;
-            //if((*i)->node == (*j)->node) continue;
-            if ((*i)->getNomeVarRef() == (*j)->getNomeVarRef()) {
-                if ((*j)->writeEnable == true) {
-                    lastWE = (*j);
-//                    cout<< "WE: "<< lastWE->getName() <<  endl;
-                }
-            }
-        }
-//        cout<< "WE: "<< lastWE->getName() <<  endl;
-        if (lastWE == NULL) continue;
-        for (j = this->design->ListaComp.begin(); j != this->design->ListaComp.end(); j++) {
-            if ((*j)->tipo_comp != CompType::REF) continue;
-            if ((*j)->getEIndice()) continue;
-            if ((*j)->getComponenteRef()->tipo_comp != CompType::REG) continue;
-            if ((*i)->getNumParalelLina() != (*j)->getNumParalelLina()) continue;
-            if (lastWE->node == (*j)->node) continue;
-            if ((*i)->getNomeVarRef() == (*j)->getNomeVarRef()) {
-                if ((*j)->writeEnable == true) {
-                    continue;
-                } else {
-                    if ((*j)->getPortDataInOut("IN")->temLigacao() == false) {
-//                        cout<<"--Ligando componentes (dependencia): " << lastWE->getName() << " -> " << (*j)->getName() <<endl;
-                        this->design->insereLigacao(lastWE, (*j), lastWE->getPortDataInOut("OUT")->getName(), (*j)->getPortDataInOut("IN")->getName());
-//                        (*j)->setWE(true);
-                        break;
-                    }
-                }
-            }
-        }
-    }
-    cout << "--Ligar componentes DEPENDENTES: OK" << endl; 
-    // </editor-fold>
-    this->dot->imprimeHWDOT(this->design->getListaComp(), this->design->getListaLiga(), "DOT/2_3_LigDependentes.dot", false);
-    
+ 
     //REMOVER registradores apos um NEG
     // <editor-fold defaultstate="collapsed" desc="Remover Reg apos um NEG">
     cout << "--Ligar componentes registradores apos um NEG: " << endl;
@@ -1811,7 +1912,7 @@ void Core::FinalizaComponentes(){
 //        cout << " COMP: '" << (*i)->getName() << "' --> '" << excluir->getName() << "' --> '" << NovoDes->getName() << "'" << endl;
 //    }
     cout << "--Ligar componentes registradores apos um NEG: OK" << endl;
-    this->dot->imprimeHWDOT(this->design->getListaComp(), this->design->getListaLiga(), "DOT/2_4_RemoveRegNEG_OK.dot", false); // </editor-fold>
+    this->dot->imprimeHWDOT(this->design->getListaComp(), this->design->getListaLiga(), "DOT/2_5_RemoveRegNEG_OK.dot", false); // </editor-fold>
     
     // <editor-fold defaultstate="collapsed" desc="Efetuar ligacao varaivel que liga no indice vetor">
     cout << "--Criando novas ligacoes indice vet com variavel:" << endl;
@@ -1878,19 +1979,11 @@ void Core::FinalizaComponentes(){
  
                     comp_ref* CompRef = (comp_ref*)(*j); 
                     
-                    if((*j)->getEIndice()){
-//                        if( (*j)->getPortDataInOut("OUT")->getLigacao() != "" ){
+                    //Liga a saida do contador na entrada na saida do registrador com o mesmo nome da variavel 
+                    //de controle do contador
+                    if (CompRef->getTipoVar() == "VAR" && CompRef->getNomeVarRef() == CompCounter->getVarControlCont()) {
                         if( (*j)->getPortDataInOut("OUT")->temLigacao()){
-                            
-//                            Ligacao* s1Lig = (*j)->getLigacaoByName((*j)->getPortDataInOut("OUT")->getLigacao());
-//                            s1Lig->getOrigem()->removeLigacao(s1Lig);
-//                            s1Lig->editOrig((*i));
-//                            (*i)->addLigacao(s1Lig);
-//                            
-//                            s1Lig->setPortOrigem((*i)->getPortDataInOut("OUT"));
-//                            s1Lig->setWidth((*i)->getPortDataInOut("OUT")->getWidth());
-//                            s1Lig->setTipo((*i)->getPortDataInOut("OUT")->getType());
-//                            s1Lig->getPortOrigem()->setLigacao(s1Lig->getNome());
+                                   
                             for (k = this->design->ListaLiga.begin(); k != this->design->ListaLiga.end(); k++) {
                                 if((*k)->getAtivo() == false) continue;
                                 if((*k)->getOrigem() == (*j)){                                                          
@@ -1901,20 +1994,18 @@ void Core::FinalizaComponentes(){
                                     (*k)->setPortOrigem((*i)->getPortDataInOut("OUT"));
                                     (*k)->setWidth((*i)->getPortDataInOut("OUT")->getWidth());
                                     (*k)->setTipo((*i)->getPortDataInOut("OUT")->getType());
-//                                    (*k)->getPortOrigem()->setLigacao((*k)->getNome());
                                     (*k)->getPortOrigem()->addLigacao((*k));
                                 }
                             }
 
-                            (*j)->tipo_comp = CompType::DEL;
-//                            ListaCompAux.push_back((*j));                            
+                            (*j)->tipo_comp = CompType::DEL;                        
                         }
                     }
                     
-                    
+                    //Nao usa mais
                     if (CompRef->getNomeVarIndex() == CompCounter->getVarControlCont()) {
                         if(CompRef->getPortOther("address")->temLigacao() == false){
-
+                            cout << "CRIANDO LIGACAO ENTRE: " << (*i)->getName() << "' -> '" << (*j)->getName() << "'" << endl;
                             //CRIAR NOVA LIGACAO
                             string str = FuncoesAux::IntToStr(this->design->ListaLiga.size());
                             Ligacao* lig = new Ligacao((*i), (*j), "s" + str);
@@ -1935,31 +2026,6 @@ void Core::FinalizaComponentes(){
 
                             //ADICIONAR NA LISTA DE LIGACOES A NOVA LIGACAO
                             this->design->ListaLiga.push_back(lig);
-                        }
-                    }
-                    else{
-                        if( CompRef->getWE() ){
-                            if(CompRef->getPortOther("we")->temLigacao() == false){
-                                //CRIAR NOVA LIGACAO
-                                Ligacao* lig = new Ligacao((*i), (*j), "s" + FuncoesAux::IntToStr(this->design->ListaLiga.size()));
-                                lig->setPortOrigem((*i)->getPortOther("step"));
-                                lig->setPortDestino((*j)->getPortOther("we"));
-                                lig->setWidth((*i)->getPortOther("step")->getWidth());
-                                lig->setTipo((*i)->getPortOther("step")->getType());
-
-                                //ADICIONAR LIGACAO NA PORTA                        
-//                                lig->getPortDestino()->setLigacao(lig->getNome());
-                                lig->getPortDestino()->addLigacao(lig);
-//                                lig->getPortOrigem()->setLigacao(lig->getNome());
-                                lig->getPortOrigem()->addLigacao(lig);
-
-                                //ADICIONAR LIGACAO AOS COMPONENTES
-                                (*i)->addLigacao(lig);
-                                (*j)->addLigacao(lig);
-
-                                //ADICIONAR NA LISTA DE LIGACOES A NOVA LIGACAO
-                                this->design->ListaLiga.push_back(lig);
-                            }
                         }
                     }
                 }
@@ -2110,7 +2176,7 @@ void Core::updateCompRef(SgNode* node, comp_ref* comp){
             comp->setNomeVarRef(arrName);
             name = this->design->getNomeCompRef(arrName);
             
-            comp->setName(this->design->getNomeCompRef(name));
+            comp->setName(name);
             comp->setNomeVarIndex(arrPos);
 
         }
@@ -2600,7 +2666,7 @@ void Core::geraArquivosDotHW(){
 
 //    this->imprimeAll();
     
-    this->dot->imprimeHWDOT(this->design->ListaComp, this->design->ListaLiga, "DOT/"+nome+"_HW.dot", true);
+    this->dot->imprimeHWDOT(this->design->ListaComp, this->design->ListaLiga, "DOT/"+nome+"_HW.dot", false);
     this->dot->imprimeVHDL(this->design->ListaComp, this->design->ListaLiga, nome);
 }
 

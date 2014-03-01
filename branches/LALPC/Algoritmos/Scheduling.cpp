@@ -119,62 +119,89 @@ void Scheduling::balanceAndSyncrhonize(){
                     this->design->addComponent(dly1);
                     
                     string port = "we";
-                    if(!destino->getWE())
-                        port = "oe";
-
-                    //CRIAR NOVA LIGACAO
-                    Ligacao* lig = new Ligacao(counter, destino, "s" + FuncoesAux::IntToStr(this->design->ListaLiga.size()));
-                    lig->setPortOrigem(counter->getPortOther("step"));
-                    lig->setPortDestino(destino->getPortOther(port));
-                    lig->setWidth(counter->getPortOther("step")->getWidth());
-                    lig->setTipo(counter->getPortOther("step")->getType());
-
-                    //ADICIONAR LIGACAO NA PORTA                        
-                    lig->getPortDestino()->addLigacao(lig);
-                    lig->getPortOrigem()->addLigacao(lig);
-
-                    //ADICIONAR LIGACAO AOS COMPONENTES
-                    counter->addLigacao(lig);
-                    destino->addLigacao(lig);
-
-                    //ADICIONAR NA LISTA DE LIGACOES A NOVA LIGACAO
-                    this->design->ListaLiga.push_back(lig);
-
-                    //INSERINDO DELAY NA NOVA LIGACAO
-                    Componente* dly2 = this->design->insereDelay(lig, distance-1, (*k)->getDestino()->getASAP() - dlyCtd);
-                    this->design->addComponent(dly2);
+                    if(!destino->getWE()) port = "oe";
                     
-                    ats++;
-                    if(this->debug){
-                        cout<< "inserting " << (distance-1) << " delay(s) on signal "<< counter->getName()<< "->" << destino->getName() <<" (memory port: WE)" << endl;
-                    }                      
+                    if (destino->getPortOther(port)->temLigacao() == false){
+                    
+                        //CRIAR NOVA LIGACAO
+                        Ligacao* lig = new Ligacao(counter, destino, "s" + FuncoesAux::IntToStr(this->design->ListaLiga.size()));
+                        lig->setPortOrigem(counter->getPortOther("step"));
+                        lig->setPortDestino(destino->getPortOther(port));
+                        lig->setWidth(counter->getPortOther("step")->getWidth());
+                        lig->setTipo(counter->getPortOther("step")->getType());
+
+                        //ADICIONAR LIGACAO NA PORTA                        
+                        lig->getPortDestino()->addLigacao(lig);
+                        lig->getPortOrigem()->addLigacao(lig);
+
+                        //ADICIONAR LIGACAO AOS COMPONENTES
+                        counter->addLigacao(lig);
+                        destino->addLigacao(lig);
+
+                        //ADICIONAR NA LISTA DE LIGACOES A NOVA LIGACAO
+                        this->design->ListaLiga.push_back(lig);
+
+                        //INSERINDO DELAY NA NOVA LIGACAO
+                        Componente* dly2 = this->design->insereDelay(lig, distance-1, (*k)->getDestino()->getASAP() - dlyCtd);
+                        this->design->addComponent(dly2);
+
+                        ats++;
+                        if(this->debug){
+                            cout<< "inserting " << (distance-1) << " delay(s) on signal "<< counter->getName()<< "->" << destino->getName() <<" (memory port: WE)" << endl;
+                        }
+                    }
                 }
             }
         }
         else if( (counter != NULL) && (c->getTipoCompRef() != CompType::MEM) && (c->temPorta("we"))){
-            if(c->getPortOther("we")->temLigacao() && this->design->verificaTemDelay(c,"we")==false){
+            if(c->getPortOther("we")->temLigacao() == false){
                 int distance = c->getASAP() - counter->getASAP();
                 if(distance > 1){
-                    Ligacao* s1 = c->getPortOther("we")->getLigacao2();
-                    if (s1->getOrigem()->tipo_comp != CompType::CND){
-                        string strAux = counter->getDelayValComp();
-                        int dlyCtd = 0;
-                        if(strAux != ""){
-                            dlyCtd = FuncoesAux::StrToInt(counter->getDelayValComp());
-                        }
-                        int stepAux= c->getValStepAux();
-                        Componente* dly3 = this->design->insereDelay(s1, distance-1+stepAux, counter->getASAP() + dlyCtd);
-                        this->design->addComponent(dly3);
-                        ats++;
-                        if(this->debug){
-                            cout<< "inserting '" << (distance-1+stepAux) << "' delay(s) on signal '"<< counter->getName()<< "->" << c->getName() <<"' (memory port: WE)" << endl;
-                        }
+                    string strAux = counter->getDelayValComp();
+                    int dlyCtd = 0;
+                    if(strAux != ""){
+                        dlyCtd = FuncoesAux::StrToInt(counter->getDelayValComp());
+                    }
+                    int stepAux= c->getValStepAux();
+                    
+                    Ligacao* s1 = this->design->insereLigacao(counter, c, "step", "we");
+                    Componente* dly3 = this->design->insereDelay(s1, distance-1+stepAux, counter->getASAP() + dlyCtd);
+                    this->design->addComponent(dly3);
+                    ats++;
+                    if(this->debug){
+                        cout<< "inserting '" << (distance-1+stepAux) << "' delay(s) on signal '"<< counter->getName()<< "->" << c->getName() <<"' (weite enable) " << dly3->getNomeCompVHDL() << ": '" << dly3->getName() <<"'" << endl;
                     }
                 }
             }else{
                 if(this->debug) cout<< "port 'we' of component \"" << c->getName() << "\" is connected, please check if aditional synchronization is needed (when ... && "<<counter->getName()<<".step@N)" << endl;
             }
         }
+        
+        
+//        else if( (counter != NULL) && (c->getTipoCompRef() != CompType::MEM) && (c->temPorta("we"))){
+//            if(c->getPortOther("we")->temLigacao() && this->design->verificaTemDelay(c,"we")==false){
+//                int distance = c->getASAP() - counter->getASAP();
+//                if(distance > 1){
+//                    Ligacao* s1 = c->getPortOther("we")->getLigacao2();
+//                    if (s1->getOrigem()->tipo_comp != CompType::CND){
+//                        string strAux = counter->getDelayValComp();
+//                        int dlyCtd = 0;
+//                        if(strAux != ""){
+//                            dlyCtd = FuncoesAux::StrToInt(counter->getDelayValComp());
+//                        }
+//                        int stepAux= c->getValStepAux();
+//                        Componente* dly3 = this->design->insereDelay(s1, distance-1+stepAux, counter->getASAP() + dlyCtd);
+//                        this->design->addComponent(dly3);
+//                        ats++;
+//                        if(this->debug){
+//                            cout<< "inserting '" << (distance-1+stepAux) << "' delay(s) on signal '"<< counter->getName()<< "->" << c->getName() <<"' (memory port: WE)" << endl;
+//                        }
+//                    }
+//                }
+//            }else{
+//                if(this->debug) cout<< "port 'we' of component \"" << c->getName() << "\" is connected, please check if aditional synchronization is needed (when ... && "<<counter->getName()<<".step@N)" << endl;
+//            }
+//        }
     }
 //    if(this->debug){
 //        cout<< "sinc oper part 1: OK" << endl;
@@ -232,7 +259,7 @@ void Scheduling::balanceAndSyncrhonize(){
             dlyCtd = FuncoesAux::StrToInt(counter->getDelayValComp());
         }
         
-        Componente* dly4 = this->design->insereDelay(newLig4, amount+2, counter->getASAP() + dlyCtd);
+        Componente* dly4 = this->design->insereDelay(newLig4, amount, counter->getASAP() + dlyCtd);
         this->design->addComponent(dly4); 
         if(this->debug){
             cout<< "inserting " << amount << " delay(s) on signal "<< counter->getName()<< "->" << comp_done->getName() <<" (termination)" << endl;
