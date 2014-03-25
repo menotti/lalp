@@ -12,7 +12,8 @@
 
 using namespace std;
 
-or_op::or_op(void*node) : Componente(node) {
+or_op::or_op(void*node, int dataWidth) : Componente(node) {
+    this->dataWidth = dataWidth;
     this->setNomeCompVHDL("or_op");
     this->setSync(false);
     this->tipo_comp = CompType::OPE;  
@@ -24,15 +25,15 @@ or_op::~or_op() {
 }
 
 void or_op::createAllPorts(){
-    this->addPort(new Port("I0"         ,"in"   ,"std_logic_vector"     ,"32", ""));
-    this->addPort(new Port("I1"         ,"in"   ,"std_logic_vector"     ,"32", "IN"));
-    this->addPort(new Port("O0"         ,"out"  ,"std_logic_vector"     ,"32", "OUT"));
+    this->addPort(new Port("I0"         ,"in"   ,"std_logic_vector"     ,FuncoesAux::IntToStr(this->dataWidth), ""));
+    this->addPort(new Port("I1"         ,"in"   ,"std_logic_vector"     ,FuncoesAux::IntToStr(this->dataWidth), "IN"));
+    this->addPort(new Port("O0"         ,"out"  ,"std_logic_vector"     ,FuncoesAux::IntToStr(this->dataWidth), "OUT"));
 }
 
 void or_op::createAllGeneric(){
-    this->addGenericMap(new GenericMap("w_in1", "integer", "32"));
-    this->addGenericMap(new GenericMap("w_in2", "integer", "32"));
-    this->addGenericMap(new GenericMap("w_out", "integer", "32"));
+    this->addGenericMap(new GenericMap("w_in1", "integer", FuncoesAux::IntToStr(this->dataWidth)));
+    this->addGenericMap(new GenericMap("w_in2", "integer", FuncoesAux::IntToStr(this->dataWidth)));
+    this->addGenericMap(new GenericMap("w_out", "integer", FuncoesAux::IntToStr(this->dataWidth)));
 }
 
 string or_op::getEstruturaComponenteVHDL(){
@@ -53,7 +54,8 @@ string or_op::getEstruturaComponenteVHDL(){
 }
 
 string or_op::geraDOTComp(){
+    string dataWidthAux = FuncoesAux::IntToStr(this->dataWidth);
     string res = "";
-    res += "\""+this->getName()+"\" [shape=record, fontcolor=blue, label=\"{{<I0>I0[32]|<I1>I1[32]}|"+this->getNomeCompVHDL()+":"+this->getName()+"|{<O0>O0[32]}}\"]; \n";
+    res += "\""+this->getName()+"\" [shape=record, fontcolor=blue, label=\"{{<I0>I0["+dataWidthAux+"]|<I1>I1["+dataWidthAux+"]}|"+this->getNomeCompVHDL()+":"+this->getName()+"|{<O0>O0["+dataWidthAux+"]}}\"]; \n";
     return res;
 }

@@ -15,7 +15,7 @@ using namespace std;
 
 class and_op : public Componente {
 public:
-    and_op(void* node);
+    and_op(void* node = NULL, int dataWidth = 32);
     virtual     ~and_op();
     string      getEstruturaComponenteVHDL();
     string      geraDOTComp();

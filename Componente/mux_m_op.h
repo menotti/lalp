@@ -14,7 +14,7 @@ using namespace std;
 
 class mux_m_op : public Componente {
 public:
-    mux_m_op(void* node = NULL, const string &nOps = "32", const string &sSels = "31");
+    mux_m_op(void* node = NULL, const string &nOps = "32", const string &sSels = "31", int dataWidth = 32);
     virtual     ~mux_m_op();
     void        setNOps(const string &val);
     void        setNSels(const string &bits);

@@ -25,10 +25,10 @@ using std::stringstream;
 ArquivosDotHW::ArquivosDotHW(){
 }
 
-void ArquivosDotHW::imprimeHWDOT(list<Componente*> listaComp, list<Ligacao*> listaLiga, const string& arquivo, bool debug) {
+void ArquivosDotHW::imprimeHWDOT(list<Componente*> listaComp, list<Ligacao*> listaLiga, const string& arquivo, bool debug, bool temMemoria) {
     this->ListaComp = listaComp;
     this->ListaLiga = listaLiga;
-    
+    this->temMemoria= temMemoria;
     list<Componente*>::iterator i;
     list<Ligacao*>::iterator    k;
     
@@ -87,7 +87,7 @@ void ArquivosDotHW::imprimeVHDL(list<Componente*> listaComp, list<Ligacao*> list
         this->nomeArquivo = arquivo;
     }
     this->organizaListaNome();
-    GeraMemoryVHDL();
+    if(this->temMemoria) GeraMemoryVHDL();
 //    map<string, Componente*> ::iterator m;
 //    list<Componente*>::iterator i;
 //    list<Ligacao*>::iterator    k;

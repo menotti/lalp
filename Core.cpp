@@ -39,14 +39,16 @@
 #include "Componente/shr_c_op_s.h"
 #include "Componente/shl_c_op_s.h"
 #include "Componente/comp_aux.h"
-#include "Componente/not_op_s.h"
+#include "Componente/not_op.h"
 #include "Aux/FuncoesAux.h"
 #include "ArquivosDotHW.h"
 #include <iostream>
 #include <fstream>
 #include "ProcessGraph.h"
 #include "AlgoritHdw/analisaMem.h"
+#include "AlgoritHdw/analisaLigaComponente.h"
 #include "AlgoritHdw/analisaIf.h"
+#include "AlgoritHdw/analisaCounter.h"
 
 using namespace std;
 using namespace boost;
@@ -64,9 +66,13 @@ Core::Core(SgProject* project, list<SgNode*> lista) {
     this->dot = new ArquivosDotHW();
     this->graph = new ProcessGraph();
     this->compForAux = NULL;
-    this->design = new Design(this->ListaLiga, this->ListaComp);
+    this->DATA_WIDTH = 32;
     
+    //Identificar todos os pragmas no arquivo
     this->identificaPragmas();
+    
+    this->design = new Design(this->ListaLiga, this->ListaComp, this->DATA_WIDTH);
+    
     this->identificaVariaveis();
     this->identificaFor();
     
@@ -88,6 +94,11 @@ Core::Core(SgProject* project, list<SgNode*> lista) {
     //Coloca ligacao para calcular melhor no processo asap
 //    this->ligaRegNoWE();
     
+    
+    this->ligaCompDep();
+    this->design->finalizaComponentesIF();
+    this->aplicarDelayPragma();
+
     //Processo de Scheduling
     Scheduling* sched = new Scheduling(this->design);
     sched->detectBackwardEdges();
@@ -95,7 +106,8 @@ Core::Core(SgProject* project, list<SgNode*> lista) {
     sched->balanceAndSyncrhonize();
     this->design = sched->getDesign();
     
-    this->ligaCompDep();
+    
+    
 //    this->corrigeRegWe();
     
     
@@ -116,8 +128,100 @@ Core::Core(SgProject* project, list<SgNode*> lista) {
     
     this->setClkReset();
     this->identificaReturn();
+    this->corrigeRegSemValorInicial();
     this->geraArquivosDotHW();
 //    this->design->graph->geraDot();
+}
+
+void Core::aplicarDelayPragma(){
+
+    cout<<"#--Aplicar pragmas Delay/step:                #"<<endl;
+
+    list<Componente*>::iterator i;
+    VariantVector vv (V_SgPragma); 
+    Rose_STL_Container<SgNode*> loops = NodeQuery::queryMemoryPool(vv); 
+    // #pragma delay 8
+    for (Rose_STL_Container<SgNode*>::iterator iter = loops.begin(); iter!= loops.end(); iter++ ){
+        SgPragma* pragma = isSgPragma((*iter));
+        if (pragma != NULL){
+            if (pragma->get_pragma().find("delay") == 0){
+                
+                int linha = pragma->get_file_info()->get_line();
+                const vector<string> words = FuncoesAux::split(pragma->get_pragma(), " ");
+                
+                string newValDelay = string(words[1].c_str());
+                
+                for (i = this->design->ListaComp.begin(); i != this->design->ListaComp.end(); i++) {
+                    if ((linha+1) != (*i)->getNumLinha() ) continue;
+                    if ((*i)->getWE() == true){
+                        (*i)->setUserSync(true);
+                        (*i)->setDelayValComp(newValDelay);
+                        cout<< "Comp: '" << (*i)->getName() << "' recebendo novo valor delay: '" << newValDelay << "' " << endl;
+                        break;
+                    }
+                }
+            }
+            if (pragma->get_pragma().find("step") == 0){
+                
+                int linha = pragma->get_file_info()->get_line();
+                const vector<string> words = FuncoesAux::split(pragma->get_pragma(), " ");
+                
+                string newValStep = string(words[1].c_str());
+                
+                for (i = this->design->ListaComp.begin(); i != this->design->ListaComp.end(); i++) {
+                    if ((linha+1) != (*i)->getNumLinha() ) continue;
+                    if ((*i)->tipo_comp == CompType::CTD){
+                        counter* ctd = (counter*)(*i);
+                        cout<< "Contador: '" << (*i)->getName() << "' recebendo novo valor step: '" << newValStep << "' " << endl;
+                        ctd->setGenericMapSteps(newValStep);
+                        break;
+                    }
+                }
+            }
+        }
+    }
+    cout<<"#--Aplicar pragmas Delay/step: OK             #"<<endl;
+}
+
+void Core::corrigeRegSemValorInicial(){
+    string valor = "";
+    list<Componente*>::iterator i;
+    for (i = this->design->ListaComp.begin(); i != this->design->ListaComp.end(); i++) {
+        if ((*i)->tipo_comp !=  CompType::REF) continue;
+        comp_ref* auxCom = (comp_ref*)(*i);
+        if (auxCom->getTipoVar() != "VAR") continue;
+        if ((*i)->getPortDataInOut("IN")->temLigacaoo) continue;
+        if ((*i)->getPortDataInOut("IN")->temLigacaoo == false && (*i)->getPortDataInOut("OUT")->temLigacaoo == true){
+           
+            valor = (*i)->getGenericMapVal("initial","VAL") ;
+         
+            comp_aux* comp_input = new comp_aux(NULL, "VALOR", (*i)->dataWidth);
+            comp_input->setName("num_" + FuncoesAux::IntToStr(this->design->ListaComp.size()));
+            comp_input->setNumIdComp(FuncoesAux::IntToStr(this->design->ListaComp.size()));
+            comp_input->setNumParalelLina((*i)->getNumParalelLina());
+            comp_input->setNumLinha((*i)->getNumLinha());
+            comp_input->setValAux(valor);
+            this->design->addComponent(comp_input);
+     
+             //LIGACAO
+            Ligacao* newLig3 = new Ligacao(comp_input, (*i), "s" + FuncoesAux::IntToStr(this->design->ListaLiga.size()));
+            newLig3->setPortDestino((*i)->getPortDataInOut("IN"));
+            newLig3->setPortOrigem(comp_input->getPortDataInOut("OUT"));
+            newLig3->setWidth((*i)->getPortDataInOut("IN")->getWidth());
+            newLig3->setTipo((*i)->getPortDataInOut("IN")->getType());
+
+            //ADICIONAR NOME LIGACAO NA PORTA
+            newLig3->getPortDestino()->addLigacao(newLig3);
+            newLig3->getPortOrigem()->addLigacao(newLig3);
+
+            //ADICIONAR LIGACAO NO COMPONENTE
+            (*i)->addLigacao(newLig3);
+            comp_input->addLigacao(newLig3);
+
+            //ADD LISTAS
+            this->design->ListaLiga.push_back(newLig3);
+        }
+    }
 }
 
 void Core::identificaPragmas(){
@@ -131,6 +235,15 @@ void Core::identificaPragmas(){
         if (pragma != NULL){
             if (pragma->get_pragma().find("multport") == 0){
                 this->ramMultPort = true;
+            }
+            if (pragma->get_pragma().find("bit") == 0){
+                const vector<string> words = FuncoesAux::split(pragma->get_pragma(), " ");
+                this->bitRegList.insert(string(words[1].c_str()));
+            }
+            if (pragma->get_pragma().find("DATA_WIDTH") == 0){
+                const vector<string> words = FuncoesAux::split(pragma->get_pragma(), " ");
+                string val = string(words[1].c_str());
+                this->DATA_WIDTH = FuncoesAux::StrToInt(val);
             }
         }
     }
@@ -543,24 +656,28 @@ void Core::identificaVariaveis() {
             for (Rose_STL_Container<SgNode*>::iterator i = var.begin(); i != var.end(); i++ ) 
             {
                 SgInitializedName* cur_var    = isSgInitializedName(*i);
-                            
+                int auxDataWidth = this->DATA_WIDTH;
+                
+                if(this->bitRegList.find(cur_var->get_name().getString()) != this->bitRegList.end()){
+                    auxDataWidth = 1;
+                }
+         
                 if (cur_var != NULL){
                     ROSE_ASSERT(cur_var);
                     varID var(isSgInitializedName(cur_var));
                     if(var.isArrayType()){
-                        block_ram* mem = new block_ram(this->GetStrPointerAdd(cur_var));
+                        block_ram* mem = new block_ram(this->GetStrPointerAdd(cur_var), auxDataWidth);
                         mem->setNumIdComp(FuncoesAux::IntToStr(this->design->ListaComp.size()));
-//                        this->design->ListaComp.push_back(mem);
                         this->design->addComponent(mem);
                         this->updateBlockRam(cur_var, mem);
                         mem->setNumLinha(cur_var->get_file_info()->get_line());   
                         if(this->debug){
                             cout<<" - Array: "<<mem->getName()<<endl;
                         }
+                        this->design->setTemMemoria(true);
                     }else{
-                        reg_op* reg = new reg_op(this->GetStrPointerAdd(cur_var));
+                        reg_op* reg = new reg_op(this->GetStrPointerAdd(cur_var), "", auxDataWidth);
                         reg->setNumIdComp(FuncoesAux::IntToStr(this->design->ListaComp.size()));
-//                        this->design->ListaComp.push_back(reg);
                         this->design->addComponent(reg);
                         this->updateRegister(cur_var, reg);
                         reg->setNumLinha(cur_var->get_file_info()->get_line()); 
@@ -624,7 +741,7 @@ void Core::identificaFor() {
                 if (cur_for != NULL){
                     ROSE_ASSERT(cur_for);
                     
-                    counter* comp = new counter(this->GetStrPointerAdd(cur_for));
+                    counter* comp = new counter(this->GetStrPointerAdd(cur_for), this->DATA_WIDTH);
                     this->compForAux = comp;
                     comp->setNumIdComp(FuncoesAux::IntToStr(this->design->ListaComp.size()));
 //                    this->design->ListaComp.push_back(comp);                    
@@ -659,7 +776,7 @@ void Core::identificaFor() {
                                             {
                                                 SgNode* expStmt = isSgNode(*ilb);
                                                 if(expStmt != NULL && expStmt->get_parent() == basicBlocP && !isSgBasicBlock((*ilb))){
-                                                    analisaExp(expStmt, NULL, "", FuncoesAux::IntToStr(id));
+                                                    analisaExp(expStmt, NULL, "", FuncoesAux::IntToStr(id), comp);
                                                 }
                                             }                                      
                                             cout<<"#linha paralelizada: "<< id << " - OK" <<endl;
@@ -676,7 +793,7 @@ void Core::identificaFor() {
 
                                                 SgNode* expStmt = isSgNode(*ilb);
                                                 if(expStmt != NULL && expStmt->get_parent() == basic && !isSgBasicBlock((*ilb))){
-                                                    analisaExp(expStmt, NULL, "", FuncoesAux::IntToStr(id));
+                                                    analisaExp(expStmt, NULL, "", FuncoesAux::IntToStr(id), comp);
                                                 }
                                             }
                                             cout<<"#linha paralelizada: "<< id << " - OK" <<endl;
@@ -704,8 +821,8 @@ void Core::identificaFor() {
                             }
                             SgNode* expStmt = isSgNode(*ilb);
                             if(expStmt != NULL && sg_basic != NULL && expStmt->get_parent() == sg_basic){
-                                cout<< " NODO: " << expStmt->class_name() << endl;
-                                analisaExp(expStmt, NULL, "", "0");
+                                
+                                analisaExp(expStmt, NULL, "", "0", comp);
                          }
                         }
                         cout<<"# Iniciando processo expressao FOR: OK        #"<<endl;
@@ -717,7 +834,77 @@ void Core::identificaFor() {
     }    
 }
 
-Componente* Core::analisaExp(SgNode *nodoAtual, SgNode* pai, const string& aux, const string& lineParal) {
+int Core::getDataWidthByName(const string& name){
+    list<Componente*>::iterator i;
+    int res = this->DATA_WIDTH;
+    for (i = this->design->ListaComp.begin(); i != this->design->ListaComp.end(); i++) {
+        if ((*i)->tipo_comp !=  CompType::REG) continue;
+        if ((*i)->getName() == name){
+            res = (*i)->dataWidth;
+            break;
+        }
+    }
+    return res;
+}
+
+void Core::trataIfTernario(Componente* comp, SgNode* condicao){
+
+    Componente* compIf    = NULL;
+    Componente* comTrue   = NULL;
+    Componente* comFalse  = NULL;
+
+    SgNode* CondNode      = NULL;
+    SgNode* BodyTrue      = NULL;
+    SgNode* BodyFalse     = NULL;
+
+    
+    SgConditionalExp* IFNode = isSgConditionalExp(condicao);
+    
+    CondNode = IFNode->get_conditional_exp();
+    if(CondNode != NULL) compIf = analisaExp(CondNode, NULL, "", comp->getNumParalelLina(), comp->getForComp());
+
+    if(compIf != NULL){
+        BodyTrue = IFNode->get_true_exp();
+        BodyFalse= IFNode->get_false_exp();
+        if(BodyTrue  != NULL) comTrue =  analisaExp(BodyTrue , NULL, "", comp->getNumParalelLina(), comp->getForComp());
+        if(BodyFalse != NULL) comFalse =  analisaExp(BodyFalse, NULL, "", comp->getNumParalelLina(), comp->getForComp());
+    }    
+
+    comp_ref* ref = new comp_ref(NULL, "WE", comp->dataWidth);
+    ref->setName("reg_mux_"+comp->getNomeVarRef()+FuncoesAux::IntToStr(this->design->ListaComp.size()));
+    ref->setNumIdComp(FuncoesAux::IntToStr(this->design->ListaComp.size()));
+
+    ref->setNumParalelLina(comp->getNumParalelLina()); 
+    
+    ref->setNumLinha(comp->getNumLinha());
+
+    ref->setTipoVar("VAR");
+    ref->setNomeVarRef(comp->getNomeVarRef());
+
+    reg_mux_op* reg = new reg_mux_op(NULL, "WE", comp->dataWidth);
+    reg->setNumIdComp(FuncoesAux::IntToStr(this->design->ListaComp.size()));
+    reg->setName(ref->getName());
+    this->design->addComponent(reg);
+
+    ref->setComponenteRef(reg);
+    ref->updateCompRef();
+
+    ref->setDelayValComp(comp->getDelayValComp());
+
+    
+    list<Componente*>::iterator i;
+    for (i = this->design->ListaComp.begin(); i != this->design->ListaComp.end(); i++) {
+        if ((*i) == comp) {
+            (*i) = ref;
+            break;
+        }
+    }
+    if(comTrue  != NULL) this->design->insereLigacao(comTrue , ref, comTrue->getPortDataInOut("OUT")->getName()  , "I1"  );
+    if(comFalse != NULL) this->design->insereLigacao(comFalse, ref, comFalse->getPortDataInOut("OUT")->getName() , "I0"  );
+    if(compIf   != NULL) this->design->insereLigacao(compIf  , ref, compIf->getPortDataInOut("OUT")->getName()   , "Sel1");    
+}
+
+Componente* Core::analisaExp(SgNode *nodoAtual, SgNode* pai, const string& aux, const string& lineParal, Componente* compFor) {
     Componente* compReturn = NULL;
     // <editor-fold defaultstate="collapsed" desc="DEBUG">
     if (this->debug) {
@@ -737,13 +924,13 @@ Componente* Core::analisaExp(SgNode *nodoAtual, SgNode* pai, const string& aux, 
     SgExprStatement* sgExpEst =  isSgExprStatement(nodoAtual);
     if (sgExpEst != NULL) {
         SgNode* proxNodo = isSgNode(sgExpEst->get_expression());
-        analisaExp(proxNodo, pai, aux, lineParal);
+        compReturn = analisaExp(proxNodo, pai, aux, lineParal, compFor);
     }
     
     SgBasicBlock* sgBasic =  isSgBasicBlock(nodoAtual);
     if (sgExpEst != NULL) {
         SgNode* proxNodo = isSgNode(sgBasic);
-        analisaExp(proxNodo, pai, aux, lineParal);
+        analisaExp(proxNodo, pai, aux, lineParal, compFor);
     }
 
     
@@ -751,7 +938,7 @@ Componente* Core::analisaExp(SgNode *nodoAtual, SgNode* pai, const string& aux, 
     SgNotOp* expNot = isSgNotOp(nodoAtual);
     if (expNot != NULL) {
         SgNode* proxNodo = isSgNode(expNot->get_operand_i());
-        analisaExp(proxNodo, pai, aux, lineParal);
+        analisaExp(proxNodo, pai, aux, lineParal, compFor);
     }// </editor-fold>
     
     // <editor-fold defaultstate="collapsed" desc="NOT VAR">
@@ -759,18 +946,30 @@ Componente* Core::analisaExp(SgNode *nodoAtual, SgNode* pai, const string& aux, 
     if (expNotE != NULL) {
         SgNode* filhoEsq = isSgNode(expNotE->get_lhs_operand_i());
         if (filhoEsq != NULL ) {
+            int dataWidht = this->DATA_WIDTH;
+     
+            //Se o filho ESQ for uma variavel tem que pegar o DATA_WIDTH para calcular corretamenta
+            SgVarRefExp* decVarAux = isSgVarRefExp(filhoEsq);
+            if (decVarAux != NULL) {
 
-            not_op_s* comp = new not_op_s(this->GetStrPointerAdd(expNotE));
+                string varNome = "";
+                varNome = decVarAux->get_symbol()->get_name().getString();
+
+                dataWidht = getDataWidthByName(varNome);
+            }
+
+            
+            not_op* comp = new not_op(this->GetStrPointerAdd(expNotE), dataWidht);
             if(pai != NULL) comp->setPai(this->GetStrPointerAdd(pai));
             comp->setNumIdComp(FuncoesAux::IntToStr(this->design->ListaComp.size()));
             comp->setName("comp_"+FuncoesAux::IntToStr(this->design->ListaComp.size()));
             comp->setNumLinha(nodoAtual->get_file_info()->get_line()); 
-
-            this->design->addComponent(comp);
             comp->setNumParalelLina(lineParal);
+            comp->setForComp(compFor);
+            this->design->addComponent(comp);
             compReturn = comp;
 
-            analisaExp(filhoEsq, nodoAtual, aux, lineParal);
+            analisaExp(filhoEsq, nodoAtual, aux, lineParal, compFor);
         }
     }
     // </editor-fold>
@@ -780,17 +979,17 @@ Componente* Core::analisaExp(SgNode *nodoAtual, SgNode* pai, const string& aux, 
     if (expMin != NULL) {
         SgExpression* expres = expMin->get_operand_i();
         
-        neg_op_s* comp = new neg_op_s(this->GetStrPointerAdd(expMin));
+        neg_op_s* comp = new neg_op_s(this->GetStrPointerAdd(expMin), this->DATA_WIDTH);
         if(pai != NULL) comp->setPai(this->GetStrPointerAdd(pai));
         comp->setNumIdComp(FuncoesAux::IntToStr(this->design->ListaComp.size()));
         comp->setName("comp_"+FuncoesAux::IntToStr(this->design->ListaComp.size()));
         comp->setNumLinha(nodoAtual->get_file_info()->get_line()); 
-
-        this->design->addComponent(comp);
         comp->setNumParalelLina(lineParal);
+        comp->setForComp(compFor);
+        this->design->addComponent(comp);
         compReturn = comp;
         
-        analisaExp(expres, nodoAtual, aux, lineParal);
+        analisaExp(expres, nodoAtual, aux, lineParal, compFor);
     }
     // </editor-fold>
 
@@ -815,9 +1014,16 @@ Componente* Core::analisaExp(SgNode *nodoAtual, SgNode* pai, const string& aux, 
                 cout << " ( " << filhoDir->class_name() << " , " << filhoEsq->class_name() << " ) " << endl;
                 cout << "-------------------------" << endl;
             }// </editor-fold>
+            Componente* compEsqWE = NULL;
+            compEsqWE = analisaExp(filhoEsq, nodoAtual,"WE", lineParal, compFor);
             
-            analisaExp(filhoEsq, nodoAtual,"WE", lineParal);
-            analisaExp(filhoDir, filhoEsq, aux, lineParal);
+            SgConditionalExp* condDirExp = NULL;
+            condDirExp = isSgConditionalExp(filhoDir);
+            if(condDirExp != NULL){
+                this->trataIfTernario(compEsqWE, condDirExp);
+            }else{
+                analisaExp(filhoDir, filhoEsq, aux, lineParal, compFor);
+            }
         }
     }// </editor-fold>
     
@@ -843,8 +1049,8 @@ Componente* Core::analisaExp(SgNode *nodoAtual, SgNode* pai, const string& aux, 
                 cout << "-------------------------" << endl;
             }// </editor-fold>
             
-            analisaExp(filhoEsq, nodoAtual, "WE", lineParal);
-            analisaExp(filhoDir, filhoEsq, aux, lineParal);
+            analisaExp(filhoEsq, nodoAtual, "WE", lineParal, compFor);
+            analisaExp(filhoDir, filhoEsq, aux, lineParal, compFor);
         }
     }
     // </editor-fold>
@@ -853,7 +1059,7 @@ Componente* Core::analisaExp(SgNode *nodoAtual, SgNode* pai, const string& aux, 
     SgCastExp* castExp = isSgCastExp(nodoAtual);
     if (castExp != NULL) {
         SgNode* proxNodo = isSgNode(castExp->get_operand_i());
-        analisaExp(proxNodo, pai, aux, lineParal);
+        analisaExp(proxNodo, pai, aux, lineParal, compFor);
     }// </editor-fold>
 
     // <editor-fold defaultstate="collapsed" desc="OP RIGHT SHIF">
@@ -882,16 +1088,18 @@ Componente* Core::analisaExp(SgNode *nodoAtual, SgNode* pai, const string& aux, 
                 valAmount = FuncoesAux::IntToStr(valInt->get_value());
             }
             
-            shr_c_op_s* comp      = new shr_c_op_s(this->GetStrPointerAdd(rightShift),valAmount);
+            shr_c_op_s* comp      = new shr_c_op_s(this->GetStrPointerAdd(rightShift),valAmount, this->DATA_WIDTH);
             if(pai != NULL) comp->setPai(this->GetStrPointerAdd(pai));
             comp->setNumIdComp(FuncoesAux::IntToStr(this->design->ListaComp.size()));
             comp->setName("comp_"+FuncoesAux::IntToStr(this->design->ListaComp.size()));
             comp->setNumLinha(nodoAtual->get_file_info()->get_line()); 
 //            this->design->ListaComp.push_back(comp);
-            this->design->addComponent(comp);
+            
             comp->setNumParalelLina(lineParal);
+            comp->setForComp(compFor);
+            this->design->addComponent(comp);
             compReturn = comp;
-            analisaExp(filhoEsq, nodoAtual, aux, lineParal);
+            analisaExp(filhoEsq, nodoAtual, aux, lineParal, compFor);
         }
     }// </editor-fold>
     
@@ -921,16 +1129,16 @@ Componente* Core::analisaExp(SgNode *nodoAtual, SgNode* pai, const string& aux, 
                 valAmount = FuncoesAux::IntToStr(valInt->get_value());
             }
             
-            shl_c_op_s* comp      = new shl_c_op_s(this->GetStrPointerAdd(leftShift),valAmount);
+            shl_c_op_s* comp      = new shl_c_op_s(this->GetStrPointerAdd(leftShift),valAmount, this->DATA_WIDTH);
             if(pai != NULL) comp->setPai(this->GetStrPointerAdd(pai));
             comp->setNumIdComp(FuncoesAux::IntToStr(this->design->ListaComp.size()));
             comp->setName("comp_"+FuncoesAux::IntToStr(this->design->ListaComp.size()));
             comp->setNumLinha(nodoAtual->get_file_info()->get_line()); 
-//            this->design->ListaComp.push_back(comp);
-            this->design->addComponent(comp);
             comp->setNumParalelLina(lineParal);
+            comp->setForComp(compFor);
+            this->design->addComponent(comp);
             compReturn = comp;
-            analisaExp(filhoEsq, nodoAtual, aux, lineParal);
+            analisaExp(filhoEsq, nodoAtual, aux, lineParal, compFor);
         }
     }// </editor-fold>
     
@@ -954,17 +1162,17 @@ Componente* Core::analisaExp(SgNode *nodoAtual, SgNode* pai, const string& aux, 
                 cout << "-------------------------" << endl;
             }// </editor-fold>
             //Componente* comp = new Componente(expAdd);
-            or_op* comp      = new or_op(this->GetStrPointerAdd(bitOr));
+            or_op* comp      = new or_op(this->GetStrPointerAdd(bitOr), this->DATA_WIDTH);
             if(pai != NULL) comp->setPai(this->GetStrPointerAdd(pai));
             comp->setNumIdComp(FuncoesAux::IntToStr(this->design->ListaComp.size()));
             comp->setName("comp_"+FuncoesAux::IntToStr(this->design->ListaComp.size()));
             comp->setNumLinha(nodoAtual->get_file_info()->get_line()); 
-//            this->design->ListaComp.push_back(comp);
-            this->design->addComponent(comp);
             comp->setNumParalelLina(lineParal);
+            comp->setForComp(compFor);
+            this->design->addComponent(comp);
             compReturn = comp;
-            analisaExp(filhoEsq, nodoAtual, aux, lineParal);
-            analisaExp(filhoDir, nodoAtual, aux, lineParal);
+            analisaExp(filhoEsq, nodoAtual, aux, lineParal, compFor);
+            analisaExp(filhoDir, nodoAtual, aux, lineParal, compFor);
         }
     }// </editor-fold>
          
@@ -988,17 +1196,18 @@ Componente* Core::analisaExp(SgNode *nodoAtual, SgNode* pai, const string& aux, 
                 cout << "-------------------------" << endl;
             }// </editor-fold>
             //Componente* comp = new Componente(expAdd);
-            and_op* comp      = new and_op(this->GetStrPointerAdd(bitAnd));
+            and_op* comp      = new and_op(this->GetStrPointerAdd(bitAnd), this->DATA_WIDTH);
             if(pai != NULL) comp->setPai(this->GetStrPointerAdd(pai));
             comp->setNumIdComp(FuncoesAux::IntToStr(this->design->ListaComp.size()));
             comp->setName("comp_"+FuncoesAux::IntToStr(this->design->ListaComp.size()));
             comp->setNumLinha(nodoAtual->get_file_info()->get_line()); 
 //            this->design->ListaComp.push_back(comp);
-            this->design->addComponent(comp);
+            comp->setForComp(compFor);
             comp->setNumParalelLina(lineParal);
+            this->design->addComponent(comp);
             compReturn = comp;
-            analisaExp(filhoEsq, nodoAtual, aux, lineParal);
-            analisaExp(filhoDir, nodoAtual, aux, lineParal);
+            analisaExp(filhoEsq, nodoAtual, aux, lineParal, compFor);
+            analisaExp(filhoDir, nodoAtual, aux, lineParal, compFor);
         }
     }// </editor-fold>
     
@@ -1022,17 +1231,18 @@ Componente* Core::analisaExp(SgNode *nodoAtual, SgNode* pai, const string& aux, 
                 cout << "-------------------------" << endl;
             }// </editor-fold>
             //Componente* comp = new Componente(expAdd);
-            op_add_s* comp    = new op_add_s(this->GetStrPointerAdd(expAdd));
+            op_add_s* comp    = new op_add_s(this->GetStrPointerAdd(expAdd), this->DATA_WIDTH);
             if(pai != NULL) comp->setPai(this->GetStrPointerAdd(pai));
             comp->setNumIdComp(FuncoesAux::IntToStr(this->design->ListaComp.size()));
             comp->setName("comp_"+FuncoesAux::IntToStr(this->design->ListaComp.size()));
             comp->setNumLinha(nodoAtual->get_file_info()->get_line()); 
 //            this->design->ListaComp.push_back(comp);
-            this->design->addComponent(comp);
             comp->setNumParalelLina(lineParal);
+            comp->setForComp(compFor);
+            this->design->addComponent(comp);
             compReturn = comp;
-            analisaExp(filhoEsq, nodoAtual, aux, lineParal);
-            analisaExp(filhoDir, nodoAtual, aux, lineParal);
+            analisaExp(filhoEsq, nodoAtual, aux, lineParal, compFor);
+            analisaExp(filhoDir, nodoAtual, aux, lineParal, compFor);
         }
     }// </editor-fold>
 
@@ -1055,16 +1265,17 @@ Componente* Core::analisaExp(SgNode *nodoAtual, SgNode* pai, const string& aux, 
                 cout << " ( " << filhoDir->class_name() << " , " << nodoAtual->class_name() << " ) " << endl;
                 cout << "-------------------------" << endl;
             }// </editor-fold>
-            op_sub_s* comp = new op_sub_s(this->GetStrPointerAdd(expSub));
+            op_sub_s* comp = new op_sub_s(this->GetStrPointerAdd(expSub), this->DATA_WIDTH);
             comp->setNumIdComp(FuncoesAux::IntToStr(this->design->ListaComp.size()));
             comp->setNumLinha(nodoAtual->get_file_info()->get_line()); 
             comp->setName("comp_"+FuncoesAux::IntToStr(this->design->ListaComp.size()));
             if(pai != NULL) comp->setPai(this->GetStrPointerAdd(pai));
             comp->setNumParalelLina(lineParal);
+            comp->setForComp(compFor);
             this->design->addComponent(comp);
             compReturn = comp;
-            analisaExp(filhoEsq, nodoAtual, aux, lineParal);
-            analisaExp(filhoDir, nodoAtual, aux, lineParal);
+            analisaExp(filhoEsq, nodoAtual, aux, lineParal, compFor);
+            analisaExp(filhoDir, nodoAtual, aux, lineParal, compFor);
         }
     }// </editor-fold>
     
@@ -1091,16 +1302,17 @@ Componente* Core::analisaExp(SgNode *nodoAtual, SgNode* pai, const string& aux, 
                 cout << "-------------------------" << endl;
             }// </editor-fold>
 
-            op_div_s* comp = new op_div_s(this->GetStrPointerAdd(expDiv));
+            op_div_s* comp = new op_div_s(this->GetStrPointerAdd(expDiv), this->DATA_WIDTH);
             if(pai != NULL) comp->setPai(this->GetStrPointerAdd(pai));
             comp->setNumIdComp(FuncoesAux::IntToStr(this->design->ListaComp.size()));
             comp->setNumLinha(nodoAtual->get_file_info()->get_line()); 
             comp->setName("comp_"+FuncoesAux::IntToStr(this->design->ListaComp.size()));
             comp->setNumParalelLina(lineParal);
+            comp->setForComp(compFor);
             this->design->addComponent(comp);
             compReturn = comp;
-            analisaExp(filhoEsq, nodoAtual, aux, lineParal);
-            analisaExp(filhoDir, nodoAtual, aux, lineParal);
+            analisaExp(filhoEsq, nodoAtual, aux, lineParal, compFor);
+            analisaExp(filhoDir, nodoAtual, aux, lineParal, compFor);
         }
     }
     // </editor-fold>
@@ -1125,20 +1337,134 @@ Componente* Core::analisaExp(SgNode *nodoAtual, SgNode* pai, const string& aux, 
                 cout << "-------------------------" << endl;
             }// </editor-fold>
 
-            op_mult_s* comp = new op_mult_s(this->GetStrPointerAdd(expMul));
+            op_mult_s* comp = new op_mult_s(this->GetStrPointerAdd(expMul), this->DATA_WIDTH);
             if(pai != NULL) comp->setPai(this->GetStrPointerAdd(pai));
             comp->setNumIdComp(FuncoesAux::IntToStr(this->design->ListaComp.size()));
             comp->setNumLinha(nodoAtual->get_file_info()->get_line()); 
             comp->setName("comp_"+FuncoesAux::IntToStr(this->design->ListaComp.size()));
 //            this->design->ListaComp.push_back(comp);
-            this->design->addComponent(comp);
             comp->setNumParalelLina(lineParal);
+            comp->setForComp(compFor);
+            this->design->addComponent(comp);
             compReturn = comp;
-            analisaExp(filhoEsq, nodoAtual, aux, lineParal);
-            analisaExp(filhoDir, nodoAtual, aux, lineParal);
+            analisaExp(filhoEsq, nodoAtual, aux, lineParal, compFor);
+            analisaExp(filhoDir, nodoAtual, aux, lineParal, compFor);
         }
     }
     // </editor-fold>
+
+    // <editor-fold defaultstate="collapsed" desc="IF DEFINICAO">    
+    SgGreaterThanOp* greaterThan        =  isSgGreaterThanOp(nodoAtual);
+    SgGreaterOrEqualOp* greaterOrEqual  =  isSgGreaterOrEqualOp(nodoAtual);
+    SgLessThanOp* lessThan              =  isSgLessThanOp(nodoAtual);
+    SgLessOrEqualOp* lessThanOrEqual    =  isSgLessOrEqualOp(nodoAtual);
+    SgNotEqualOp* notEqualOp            =  isSgNotEqualOp(nodoAtual);
+    
+    if(lessThan != NULL  || greaterThan != NULL  || greaterOrEqual != NULL  || lessThanOrEqual != NULL || notEqualOp != NULL) {
+        
+        Componente* comp        = NULL;
+        Componente* compCondEsq = NULL;
+        Componente* compCondDir = NULL;
+        int dataWidhtEsq= this->DATA_WIDTH;       
+        int dataWidhtDir= this->DATA_WIDTH;
+        int dataWidht   = this->DATA_WIDTH;
+        SgNode* cndEsq =  NULL;
+        SgNode* cndDir =  NULL;
+        
+        
+        //-----------------------------------------------------
+        //Pegando condicionais para calcular o valor correto do data width
+        if(lessThan != NULL){
+            cndEsq = isSgNode(lessThan->get_lhs_operand_i());
+            cndDir = isSgNode(lessThan->get_rhs_operand_i());
+        }
+        if(greaterThan != NULL){ 
+            cndEsq = isSgNode(greaterThan->get_lhs_operand_i());
+            cndDir = isSgNode(greaterThan->get_rhs_operand_i());
+        }
+        if(greaterOrEqual != NULL){ 
+            cndEsq = isSgNode(greaterOrEqual->get_lhs_operand_i());
+            cndDir = isSgNode(greaterOrEqual->get_rhs_operand_i());
+        }
+        if(lessThanOrEqual != NULL){ 
+            cndEsq = isSgNode(lessThanOrEqual->get_lhs_operand_i());
+            cndDir = isSgNode(lessThanOrEqual->get_rhs_operand_i());
+        }
+        if(notEqualOp != NULL){ 
+            cndEsq = isSgNode(notEqualOp->get_lhs_operand_i());
+            cndDir = isSgNode(notEqualOp->get_rhs_operand_i());
+        }
+        
+        //---------------------------------------------
+        //Se o filho ESQ for uma variavel tem que pegar o DATA_WIDTH para calcular corretamenta
+        SgVarRefExp* decVarEsq = isSgVarRefExp(cndEsq);
+        SgVarRefExp* decVarDir = isSgVarRefExp(cndDir);
+        if (decVarEsq != NULL) {
+            string varNome = "";
+            varNome = decVarEsq->get_symbol()->get_name().getString();
+            dataWidhtEsq = getDataWidthByName(varNome);
+        }
+        if (decVarDir != NULL) {
+            string varNome = "";
+            varNome = decVarDir->get_symbol()->get_name().getString();
+            dataWidhtDir = getDataWidthByName(varNome);
+        }
+        if(dataWidhtEsq < dataWidht) dataWidht = dataWidhtEsq;
+        if(dataWidhtDir < dataWidht) dataWidht = dataWidhtDir;
+        
+        // <editor-fold defaultstate="collapsed" desc="MENOR QUE">
+                if (lessThan != NULL) {
+
+                    if_lt_op_s* ifComp = new if_lt_op_s(this->GetStrPointerAdd(nodoAtual), dataWidht);
+                    ifComp->setName("if_lt_op_s_" + FuncoesAux::IntToStr(this->design->ListaComp.size()));
+                    comp = ifComp;
+                }// </editor-fold>
+
+        // <editor-fold defaultstate="collapsed" desc="MAIOR QUE">
+        if (greaterThan != NULL) {
+            if_gt_op_s* ifComp = new if_gt_op_s(this->GetStrPointerAdd(nodoAtual), dataWidht);
+            ifComp->setName("if_gt_op_s_" + FuncoesAux::IntToStr(this->design->ListaComp.size()));
+            comp = ifComp;
+        } // </editor-fold>
+
+        // <editor-fold defaultstate="collapsed" desc="MAIOR IGUAL QUE">
+        if (greaterOrEqual != NULL) {
+            if_ge_op_s* ifComp = new if_ge_op_s(this->GetStrPointerAdd(nodoAtual), dataWidht);
+            ifComp->setName("if_ge_op_s_" + FuncoesAux::IntToStr(this->design->ListaComp.size()));
+            comp = ifComp;
+        }// </editor-fold>
+
+        // <editor-fold defaultstate="collapsed" desc="MENOR IGUAL QUE">
+        if (lessThanOrEqual != NULL) {
+            if_le_op_s* ifComp = new if_le_op_s(this->GetStrPointerAdd(nodoAtual), dataWidht);
+            ifComp->setName("if_le_op_s_" + FuncoesAux::IntToStr(this->design->ListaComp.size()));
+            comp = ifComp;
+        }// </editor-fold>
+
+        // <editor-fold defaultstate="collapsed" desc="DIFERENTE">
+        if (notEqualOp != NULL) {
+            if_ne_op_s* ifComp = new if_ne_op_s(this->GetStrPointerAdd(nodoAtual), dataWidht);
+            ifComp->setName("if_ne_op_s_" + FuncoesAux::IntToStr(this->design->ListaComp.size()));
+            comp = ifComp;
+        }// </editor-fold>
+
+        comp->setNumLinha(nodoAtual->get_file_info()->get_line());
+        comp->setNumIdComp(FuncoesAux::IntToStr(this->design->ListaComp.size()));
+        
+        if(cndEsq != NULL) compCondEsq = analisaExp(cndEsq, NULL, "" , lineParal, compFor);
+        if(cndDir != NULL) compCondDir = analisaExp(cndDir, NULL, "" , lineParal, compFor);
+
+        comp->setNumIdComp(FuncoesAux::IntToStr(this->design->ListaComp.size()));
+
+        comp->setNumParalelLina(lineParal);
+        comp->setForComp(compFor);
+        this->design->addComponent(comp);
+
+        if (compCondEsq != NULL)this->design->insereLigacao(compCondEsq, comp, compCondEsq->getPortDataInOut("OUT")->getName(), comp->getPortOther("I0")->getName());                        
+        if (compCondDir != NULL)this->design->insereLigacao(compCondDir, comp, compCondDir->getPortDataInOut("OUT")->getName(), comp->getPortOther("I1")->getName());                        
+
+        compReturn = comp;
+    }// </editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="IF">
     SgIfStmt* ifStm = isSgIfStmt(nodoAtual);
@@ -1147,116 +1473,17 @@ Componente* Core::analisaExp(SgNode *nodoAtual, SgNode* pai, const string& aux, 
         SgStatement* tBody =  ifStm->get_true_body();
         SgStatement* fBody =  ifStm->get_false_body();
         int lastId = 0;
-        Componente* comp        = NULL;
-        Componente* compCondEsq = NULL;
-        Componente* compCondDir = NULL;
         
-        SgGreaterThanOp* greaterThan            = NULL;
-        SgGreaterOrEqualOp* greaterOrEqual      = NULL;
-        SgLessThanOp* lessThan                  = NULL;
-        SgLessOrEqualOp* lessThanOrEqual        = NULL;
-        SgNotEqualOp* notEqualOp                = NULL;
-        if(cond != NULL){
-            Rose_STL_Container<SgNode*> var = NodeQuery::querySubTree(cond,V_SgNode);             
-            for (Rose_STL_Container<SgNode*>::iterator i = var.begin(); i != var.end(); i++ ) 
-            {
-                greaterThan    =  isSgGreaterThanOp((*i));
-                greaterOrEqual =  isSgGreaterOrEqualOp((*i));
-                lessThan       =  isSgLessThanOp((*i));
-                lessThanOrEqual=  isSgLessOrEqualOp((*i));
-                notEqualOp     =  isSgNotEqualOp((*i));
-                
-                SgNode* cndEsq =  NULL;
-                SgNode* cndDir =  NULL;
-                string varName1 = "";
-                string varName2 = "";
-
-                if(lessThan == NULL && greaterThan == NULL && greaterOrEqual == NULL && lessThanOrEqual == NULL && notEqualOp == NULL) continue;
-                if(lessThan != NULL){
-  
-                    if_lt_op_s* ifComp = new if_lt_op_s(this->GetStrPointerAdd(nodoAtual));
-                    ifComp->setName("if_lt_op_s_"+FuncoesAux::IntToStr(this->design->ListaComp.size()));
-     
-                    cndEsq = isSgNode(lessThan->get_lhs_operand_i());
-                    cndDir = isSgNode(lessThan->get_rhs_operand_i());
-           
-                    comp = ifComp;
-
-                }
-
-                if(greaterThan != NULL){ 
- 
-                    if_gt_op_s* ifComp = new if_gt_op_s(this->GetStrPointerAdd(nodoAtual));
-                    ifComp->setName("if_gt_op_s_"+FuncoesAux::IntToStr(this->design->ListaComp.size()));
-   
-                    cndEsq = isSgNode(greaterThan->get_lhs_operand_i());
-                    cndDir = isSgNode(greaterThan->get_rhs_operand_i());
-
-                    comp = ifComp;
-   
-                } 
-                
-                if(greaterOrEqual != NULL){ 
- 
-                    if_ge_op_s* ifComp = new if_ge_op_s(this->GetStrPointerAdd(nodoAtual));
-                    ifComp->setName("if_ge_op_s_"+FuncoesAux::IntToStr(this->design->ListaComp.size()));
-   
-                    cndEsq = isSgNode(greaterOrEqual->get_lhs_operand_i());
-                    cndDir = isSgNode(greaterOrEqual->get_rhs_operand_i());
-
-                    comp = ifComp;
-   
-                }
-                
-                if(lessThanOrEqual != NULL){ 
- 
-                    if_le_op_s* ifComp = new if_le_op_s(this->GetStrPointerAdd(nodoAtual));
-                    ifComp->setName("if_le_op_s_"+FuncoesAux::IntToStr(this->design->ListaComp.size()));
-   
-                    cndEsq = isSgNode(lessThanOrEqual->get_lhs_operand_i());
-                    cndDir = isSgNode(lessThanOrEqual->get_rhs_operand_i());
-
-                    comp = ifComp;
-   
-                }
-                
-                if(notEqualOp != NULL){ 
- 
-                    if_ne_op_s* ifComp = new if_ne_op_s(this->GetStrPointerAdd(nodoAtual));
-                    ifComp->setName("if_ne_op_s_"+FuncoesAux::IntToStr(this->design->ListaComp.size()));
-   
-                    cndEsq = isSgNode(notEqualOp->get_lhs_operand_i());
-                    cndDir = isSgNode(notEqualOp->get_rhs_operand_i());
-
-                    comp = ifComp;
-   
-                }
-                
-                comp->setNumLinha(nodoAtual->get_file_info()->get_line());
-                comp->setNumIdComp(FuncoesAux::IntToStr(this->design->ListaComp.size()));
-                
-                if(cndEsq != NULL) compCondEsq = analisaExp(cndEsq, NULL, "" , lineParal);
-                if(cndDir != NULL) compCondDir = analisaExp(cndDir, NULL, "" , lineParal);
-                
-                comp->setNumIdComp(FuncoesAux::IntToStr(this->design->ListaComp.size()));
-                lastId = this->design->ListaComp.size();
-                               
-                comp->setNumParalelLina(lineParal);
-                this->design->addComponent(comp);
-                
-                
-                if (compCondEsq != NULL)this->design->insereLigacao(compCondEsq, comp, compCondEsq->getPortDataInOut("OUT")->getName(), comp->getPortOther("I0")->getName());                        
-                if (compCondDir != NULL)this->design->insereLigacao(compCondDir, comp, compCondDir->getPortDataInOut("OUT")->getName(), comp->getPortOther("I1")->getName());                        
-
-                compReturn = comp;
-            }
-        }
+        lastId = this->design->ListaComp.size();
+        
+        compReturn = analisaExp(cond, NULL, "", lineParal, compFor);
+        
         if(tBody != NULL){
             Rose_STL_Container<SgNode*> var = NodeQuery::querySubTree(tBody,V_SgNode);             
             for (Rose_STL_Container<SgNode*>::iterator i = var.begin(); i != var.end(); i++ ) 
             {
                 if(isSgExprStatement((*i))){
-                    analisaExp((*i), NULL, "", lineParal);                    
+                    analisaExp((*i), NULL, "", lineParal, compFor);                    
                 }
             }
             list<Componente*>::iterator com;
@@ -1271,12 +1498,13 @@ Componente* Core::analisaExp(SgNode *nodoAtual, SgNode* pai, const string& aux, 
             }
             lastId = this->design->ListaComp.size();
         }
+
         if(fBody != NULL){
             Rose_STL_Container<SgNode*> var = NodeQuery::querySubTree(fBody,V_SgNode);             
             for (Rose_STL_Container<SgNode*>::iterator i = var.begin(); i != var.end(); i++ ) 
             {
                 if(isSgExprStatement((*i))){
-                    analisaExp((*i), NULL, "", lineParal);
+                    analisaExp((*i), NULL, "", lineParal, compFor);
                 }
             }
             list<Componente*>::iterator com;
@@ -1321,6 +1549,7 @@ Componente* Core::analisaExp(SgNode *nodoAtual, SgNode* pai, const string& aux, 
         comp->setNumIdComp(FuncoesAux::IntToStr(this->design->ListaComp.size()));
         comp->setNumLinha(decArr->get_file_info()->get_line());
         comp->setNumParalelLina(lineParal);
+        comp->setForComp(compFor);
         if(pai != NULL) comp->setPai(this->GetStrPointerAdd(pai));
         this->design->addComponent(comp);
         compReturn = comp;
@@ -1357,6 +1586,7 @@ Componente* Core::analisaExp(SgNode *nodoAtual, SgNode* pai, const string& aux, 
         comp_ref* comp = new comp_ref(this->GetStrPointerAdd(decVar), aux);
         comp->setNumIdComp(FuncoesAux::IntToStr(this->design->ListaComp.size()));
         comp->setNumLinha(decVar->get_file_info()->get_line());
+        comp->setForComp(compFor);
         comp->setNumParalelLina(lineParal);
         if(pai != NULL) comp->setPai(this->GetStrPointerAdd(pai));
         this->design->addComponent(comp);
@@ -1380,10 +1610,11 @@ Componente* Core::analisaExp(SgNode *nodoAtual, SgNode* pai, const string& aux, 
     //<editor-fold defaultstate="collapsed" desc="CONSTANTE INTEIRA">
     SgIntVal* valInt = isSgIntVal(nodoAtual);
     if (valInt != NULL) {
-        comp_aux* comp_input = new comp_aux(this->GetStrPointerAdd(valInt), "VALOR");
+        comp_aux* comp_input = new comp_aux(this->GetStrPointerAdd(valInt), "VALOR", this->DATA_WIDTH);
         comp_input->setName("num_" + FuncoesAux::IntToStr(this->design->ListaComp.size()));
         comp_input->setNumIdComp(FuncoesAux::IntToStr(this->design->ListaComp.size()));
         comp_input->setNumParalelLina(lineParal);
+        comp_input->setForComp(compFor);
         string str = FuncoesAux::IntToStr(valInt->get_value());
         comp_input->setNumLinha(valInt->get_file_info()->get_line());
         comp_input->setValAux(str);
@@ -1392,8 +1623,9 @@ Componente* Core::analisaExp(SgNode *nodoAtual, SgNode* pai, const string& aux, 
         compReturn = comp_input;
         // <editor-fold defaultstate="collapsed" desc="DEBUG">
         if (this->debug) {
+            string res = "";
             cout << "-------------------------------" << endl;
-            cout << "INT VALOR:    " << valInt->get_valueString() << " ---> " << pai->class_name() << endl;
+            cout << "INT VALOR:    " << valInt->get_valueString() << endl;
             cout << "-------------------------------" << endl;
         }// </editor-fold> 
     }// </editor-fold>
@@ -1545,38 +1777,6 @@ void Core::retirarCompDelayRedundante(){
     }
 }
 
-void Core::substiuiComRecorente(Componente* origem, Componente* destino){
-    //Ligacao nodo DESTINO
-    Ligacao* sDestino = destino->getPortDataInOut("OUT")->getLigacao2();    
-    sDestino->getDestino()->removeLigacao(sDestino);
-    
-    //CRIAR NOVA LIGACAO
-    string str = FuncoesAux::IntToStr(this->design->ListaLiga.size());
-    Ligacao* lig = new Ligacao(origem, sDestino->getDestino(), "s" + str);
-    lig->setPortOrigem(origem->getPortDataInOut("OUT"));
-    lig->setPortDestino(sDestino->getPortDestino());
-    lig->setWidth(origem->getPortDataInOut("OUT")->getWidth());
-    lig->setTipo(origem->getPortDataInOut("OUT")->getType());
-
-    //ADICIONAR LIGACAO NA PORTA                        
-//    lig->getPortDestino()->setLigacao(lig->getNome());
-    lig->getPortDestino()->addLigacao(lig);
-//    lig->getPortOrigem()->setLigacao(lig->getNome());
-    lig->getPortOrigem()->addLigacao(lig);
-
-    //ADICIONAR LIGACAO AOS COMPONENTES
-    origem->addLigacao(lig);
-    sDestino->getDestino()->addLigacao(lig);
-
-    //ADICIONAR NA LISTA DE LIGACOES A NOVA LIGACAO
-    this->design->ListaLiga.push_back(lig);
-
-    this->design->deletaLigacao(sDestino->getNome());
-    this->design->removeComponente(destino, NULL);
-    //Neste caso nao gera nem VHDL/DOT para o J (comp repetido)
-//    destino->tipo_comp = CompType::REG;
-
-}
 
 void Core::ligaRegNoWE(){
     //procedimento para efetuar um calculo correto no balanceamento
@@ -1702,7 +1902,7 @@ void Core::ligaCompDep(){
                         }
                         this->design->removeComponente((*j), NULL);
                         
-                        lastWE->getPortDataInOut("IN")->getLigacao2()->setBackEdge(true);
+//                        lastWE->getPortDataInOut("IN")->getLigacao2()->setBackEdge(true);
                         
                         break;
                     }
@@ -1728,6 +1928,12 @@ void Core::FinalizaComponentes(){
     //Ligacao* reset = new 
     int qtdLig = 0;
 //    this->imprimeAll();
+    
+    
+    
+    
+    
+    
     
     this->ListaComp = this->design->getListaComp();
      
@@ -1826,56 +2032,59 @@ void Core::FinalizaComponentes(){
     
     // <editor-fold defaultstate="collapsed" desc="Criar ligacao entre expressoes SIMPLES">
     cout<<"--Ligar componentes entre expressoes:"<<endl;
-    Componente* CompRefAux = NULL;
-    for (i = this->design->ListaComp.begin(); i != this->design->ListaComp.end(); i++) {
-        if((*i)->tipo_comp != CompType::REF) continue;        
-        if(isIndiceVector((*i)->getNomeVarRef()))continue;
-        if((*i)->getComponenteRef()->tipo_comp != CompType::REG) continue;
-        if((*i)->getIf()) continue;
-//        cout << "#########################################"<< endl;
-        CompRefAux = (*i);
-//        cout << "(*I) NOME: " << (*i)->getName() << " - LINHA: " << (*i)->getNumLinha() << endl;
-//        cout << "------------------------------"<< endl;
-        for (j = this->design->ListaComp.begin(); j != this->design->ListaComp.end(); j++) {
-            if((*j)->tipo_comp != CompType::REF) continue;
-            if(CompRefAux == (*j)) continue;
-            if(isIndiceVector((*j)->getNomeVarRef()))continue;
-            if((*j)->getComponenteRef()->tipo_comp != CompType::REG) continue;
-//            cout << "1(*J) NOME: " << (*j)->getName() << " - LINHA: " << (*j)->getNumLinha() << endl;
-            if((*i)->getNumParalelLina() != (*j)->getNumParalelLina()) continue;
-//            cout << "2(*J) NOME: " << (*j)->getName() << " - LINHA: " << (*j)->getNumLinha() << endl;
-            if (CompRefAux->getNomeVarRef() == (*j)->getNomeVarRef()) {
-//                cout << "(*J) NOME: " << (*j)->getName() << " - LINHA: " << (*j)->getNumLinha() << endl;
-//                cout << "------------------------------"<< endl;
-                if ((*j)->writeEnable == true ) {
-//                    cout<< "** WE: " << (*j)->getName() << endl;
-//                    cout<< "** ANTIGO AUX: " << CompRefAux->getName() << endl;
-                    if ((*j)->getIf() == false) CompRefAux = (*j);
-//                    cout<< "** Novo   AUX: " << CompRefAux->getName() << endl;
-                    continue;
-                }else{
-//                    cout << " CHEGOU NO ELSE " << endl;
-                    if(CompRefAux->getNumLinha() > (*j)->getNumLinha()) continue;
-//                    cout<< "REF AUX: "<< CompRefAux->getName() << endl;
-//                    cout<< "REF   J: "<< (*j)->getName() << endl;
-//                    cout<< "OUT   J: "<< (*j)->getName() << " -> "<< (*j)->getLigacaoOutDefault()->getDestino()->getName() << endl;
-                    if (CompRefAux->getPortDataInOut("OUT")->temLigacao() ){
-//                        cout<< "-- SUB: "<< endl;
-                        this->substiuiComRecorente(CompRefAux, (*j));
-                    }else{
-//                        cout<< "-- ADD: "<< endl;
-                        //CompRefI->getPortOther("address")->getLigacao();
-                        Componente* compAuxDestino = (*j)->getLigacaoOutDefault()->getDestino();
-//                        cout<< "-- NEW LIG: '"<< CompRefAux->getName() << "' ->  '" << compAuxDestino->getName()<< "'" << endl;
-                        this->design->insereLigacao(CompRefAux, compAuxDestino, CompRefAux->getPortDataInOut("OUT")->getName(), (*j)->getLigacaoOutDefault()->getPortDestino()->getName());
-                        this->design->removeComponente((*j), NULL);
-                    }
-                }
-            }
-//            cout << "==============================="<< endl;
-        }
-//        cout << "------------------------------"<< endl;
-    }
+    
+    analisaLigaComponente* objAnalisa = new analisaLigaComponente(this->design);
+    this->design = objAnalisa->getDesign();
+//    Componente* CompRefAux = NULL;
+//    for (i = this->design->ListaComp.begin(); i != this->design->ListaComp.end(); i++) {
+//        if((*i)->tipo_comp != CompType::REF) continue;        
+//        if(isIndiceVector((*i)->getNomeVarRef()))continue;
+//        if((*i)->getComponenteRef()->tipo_comp != CompType::REG) continue;
+//        if((*i)->getIf()) continue;
+////        cout << "#########################################"<< endl;
+//        CompRefAux = (*i);
+////        cout << "(*I) NOME: " << (*i)->getName() << " - LINHA: " << (*i)->getNumLinha() << endl;
+////        cout << "------------------------------"<< endl;
+//        for (j = this->design->ListaComp.begin(); j != this->design->ListaComp.end(); j++) {
+//            if((*j)->tipo_comp != CompType::REF) continue;
+//            if(CompRefAux == (*j)) continue;
+//            if(isIndiceVector((*j)->getNomeVarRef()))continue;
+//            if((*j)->getComponenteRef()->tipo_comp != CompType::REG) continue;
+////            cout << "1(*J) NOME: " << (*j)->getName() << " - LINHA: " << (*j)->getNumLinha() << endl;
+//            if((*i)->getNumParalelLina() != (*j)->getNumParalelLina()) continue;
+////            cout << "2(*J) NOME: " << (*j)->getName() << " - LINHA: " << (*j)->getNumLinha() << endl;
+//            if (CompRefAux->getNomeVarRef() == (*j)->getNomeVarRef()) {
+////                cout << "(*J) NOME: " << (*j)->getName() << " - LINHA: " << (*j)->getNumLinha() << endl;
+////                cout << "------------------------------"<< endl;
+//                if ((*j)->writeEnable == true ) {
+////                    cout<< "** WE: " << (*j)->getName() << endl;
+////                    cout<< "** ANTIGO AUX: " << CompRefAux->getName() << endl;
+//                    if ((*j)->getIf() == false) CompRefAux = (*j);
+////                    cout<< "** Novo   AUX: " << CompRefAux->getName() << endl;
+//                    continue;
+//                }else{
+////                    cout << " CHEGOU NO ELSE " << endl;
+//                    if(CompRefAux->getNumLinha() > (*j)->getNumLinha()) continue;
+////                    cout<< "REF AUX: "<< CompRefAux->getName() << endl;
+////                    cout<< "REF   J: "<< (*j)->getName() << endl;
+////                    cout<< "OUT   J: "<< (*j)->getName() << " -> "<< (*j)->getLigacaoOutDefault()->getDestino()->getName() << endl;
+//                    if (CompRefAux->getPortDataInOut("OUT")->temLigacao() ){
+////                        cout<< "-- SUB: "<< endl;
+//                        this->design->substiuiComRecorente(CompRefAux, (*j));
+//                    }else{
+////                        cout<< "-- ADD: "<< endl;
+//                        //CompRefI->getPortOther("address")->getLigacao();
+//                        Componente* compAuxDestino = (*j)->getLigacaoOutDefault()->getDestino();
+////                        cout<< "-- NEW LIG: '"<< CompRefAux->getName() << "' ->  '" << compAuxDestino->getName()<< "'" << endl;
+//                        this->design->insereLigacao(CompRefAux, compAuxDestino, CompRefAux->getPortDataInOut("OUT")->getName(), (*j)->getLigacaoOutDefault()->getPortDestino()->getName());
+//                        this->design->removeComponente((*j), NULL);
+//                    }
+//                }
+//            }
+////            cout << "==============================="<< endl;
+//        }
+////        cout << "------------------------------"<< endl;
+//    }
     cout<<"--Ligar componentes entre expressoes: OK"<<endl;
     // </editor-fold>
     this->dot->imprimeHWDOT(this->design->getListaComp(), this->design->getListaLiga(), "DOT/2_2_LigExpresOK.dot", false);
@@ -2005,7 +2214,7 @@ void Core::FinalizaComponentes(){
                     //Nao usa mais
                     if (CompRef->getNomeVarIndex() == CompCounter->getVarControlCont()) {
                         if(CompRef->getPortOther("address")->temLigacao() == false){
-                            cout << "CRIANDO LIGACAO ENTRE: " << (*i)->getName() << "' -> '" << (*j)->getName() << "'" << endl;
+                            
                             //CRIAR NOVA LIGACAO
                             string str = FuncoesAux::IntToStr(this->design->ListaLiga.size());
                             Ligacao* lig = new Ligacao((*i), (*j), "s" + str);
@@ -2032,17 +2241,27 @@ void Core::FinalizaComponentes(){
             }
         }
     }
+    
+    for (i = this->design->ListaComp.begin(); i != this->design->ListaComp.end(); i++) {
+        if ((*i)->writeEnable != true) continue;
+        if ((*i)->tipo_comp != CompType::REF) continue;
+//        if ((*i)->getComponenteRef()->tipo_comp != CompType::MEM) continue;
+        if((*i)->getPortOther("we")->temLigacao() == false && (*i)->getForComp() != NULL){
+            this->design->insereLigacao((*i)->getForComp(), (*i), "step"  , "we");
+        }
+    }
+    
     this->dot->imprimeHWDOT(this->design->getListaComp(), this->design->getListaLiga(), "DOT/5_LigContador.dot", false);
     cout<<"--Criando novas ligacoes do Contador: OK"<<endl;
     // </editor-fold> 
        
     //Setar INICIALIZACAO
-    comp_aux* comp_init = new comp_aux(NULL,"INIT");
+    comp_aux* comp_init = new comp_aux(NULL,"INIT", this->DATA_WIDTH);
     comp_init->setName("init");
     comp_init->setNumIdComp(FuncoesAux::IntToStr(this->design->ListaComp.size()));
     this->design->addComponent(comp_init); 
     
-    comp_aux* comp_done = new comp_aux(NULL, "DONE");
+    comp_aux* comp_done = new comp_aux(NULL, "DONE", this->DATA_WIDTH);
     comp_done->setName("done");
     comp_done->setNumIdComp(FuncoesAux::IntToStr(this->design->ListaComp.size()));
     this->design->addComponent(comp_done); 
@@ -2054,7 +2273,7 @@ void Core::FinalizaComponentes(){
 
         //*********************************************************************
         // <editor-fold defaultstate="collapsed" desc="TERMINATION">
-        comp_aux* comp_term = new comp_aux(NULL, "VALOR");
+        comp_aux* comp_term = new comp_aux(NULL, "VALOR", this->DATA_WIDTH);
         comp_term->setName("comp_" + FuncoesAux::IntToStr(this->design->ListaComp.size()));
         comp_term->setNumIdComp(FuncoesAux::IntToStr(this->design->ListaComp.size()));
         //Pegar valor do contator referente ao MAXIMO de INTERACOES
@@ -2085,7 +2304,7 @@ void Core::FinalizaComponentes(){
         
         //*********************************************************************
         // <editor-fold defaultstate="collapsed" desc="INPUT">
-        comp_aux* comp_input = new comp_aux(NULL, "VALOR");
+        comp_aux* comp_input = new comp_aux(NULL, "VALOR", this->DATA_WIDTH);
         comp_input->setName("comp_" + FuncoesAux::IntToStr(this->design->ListaComp.size()));
         comp_input->setNumIdComp(FuncoesAux::IntToStr(this->design->ListaComp.size()));
         //Pegar valor do contator referente ao MAXIMO de INTERACOES
@@ -2194,7 +2413,7 @@ void Core::updateCompRef(SgNode* node, comp_ref* comp){
                 if ((*i)->tipo_comp != CompType::REG) continue;
                 if ((*i)->getName() == comp->getName()) {
                     //                cout<< "---" << (*i)->getName()<< " -- "<< (*i)->getNomeCompVHDL() << " -- " << (*i)->node <<endl;
-                    add_reg_op_s* add_reg = new add_reg_op_s((*i)->node, "WE");
+                    add_reg_op_s* add_reg = new add_reg_op_s((*i)->node, "WE", (*i)->dataWidth);
                     //                if(comp->getNumParalelLina() == ""){
                     name = (*i)->getName();
 //                    (*i)->getComponenteRef()->tipo_comp = CompType::DEL;
@@ -2666,7 +2885,7 @@ void Core::geraArquivosDotHW(){
 
 //    this->imprimeAll();
     
-    this->dot->imprimeHWDOT(this->design->ListaComp, this->design->ListaLiga, "DOT/"+nome+"_HW.dot", false);
+    this->dot->imprimeHWDOT(this->design->ListaComp, this->design->ListaLiga, "DOT/"+nome+"_HW.dot", false, this->design->getTemMemoria());
     this->dot->imprimeVHDL(this->design->ListaComp, this->design->ListaLiga, nome);
 }
 

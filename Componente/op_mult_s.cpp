@@ -7,11 +7,11 @@
 //#include "../header/meuHeader.h"
 #include "op_mult_s.h"
 
-op_mult_s::op_mult_s(void*node) : op_simple(node){
-//    this->setDelayValComp("0");
+op_mult_s::op_mult_s(void*node, int dataWidth) : op_simple(node){
     this->setNomeCompVHDL("mult_op_s");
     this->op_tipo       = "MUL";
     this->setSync(false);
+    this->dataWidth     = dataWidth;
 }
 
 op_mult_s::~op_mult_s() {

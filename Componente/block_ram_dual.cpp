@@ -13,11 +13,11 @@
 
 using namespace std;
 
-block_ram_dual::block_ram_dual(void*node, const string &aux) : Componente(node, aux) {
+block_ram_dual::block_ram_dual(void*node, const string &aux, int dataWidth) : Componente(node, aux) {
     this->setDelayValComp("2");
     this->tipo_comp = CompType::MEM;   
     this->setNomeCompVHDL("block_ram_dual"); 
-    this->dataWidth     = 32;
+    this->dataWidth     = dataWidth;
     this->addressWidth  = 8;
 }
 
@@ -49,8 +49,10 @@ string block_ram_dual::getEstruturaComponenteVHDL(){
 }
 
 string block_ram_dual::geraDOTComp(){
+    string dataWidthAux    = FuncoesAux::IntToStr(this->dataWidth);
+    string addressWidthAux = FuncoesAux::IntToStr(this->addressWidth);
     string res = "";
-    res += "\""+this->getName()+"\" [shape=record, fontcolor=blue, style=\"filled\", fillcolor=\"lightblue\", label=\"{{<address_0>address_0[11]|<data_in_0>data_in_0[32]|<oe_0>oe_0|<we_0>we_0|<address_1>address_1[11]|<data_in_1>data_in_1[32]|<oe_1>oe_1|<we_1>we_1}|block_ram_dual:"+this->getName()+"|{<data_out_0>data_out_0[32]|<data_out_1>data_out_1[32]}}\"]; \n";
+    res += "\""+this->getName()+"\" [shape=record, fontcolor=blue, style=\"filled\", fillcolor=\"lightblue\", label=\"{{<address_0>address_0["+addressWidthAux+"]|<data_in_0>data_in_0["+dataWidthAux+"]|<oe_0>oe_0|<we_0>we_0|<address_1>address_1["+addressWidthAux+"]|<data_in_1>data_in_1["+dataWidthAux+"]|<oe_1>oe_1|<we_1>we_1}|block_ram_dual:"+this->getName()+"|{<data_out_0>data_out_0["+dataWidthAux+"]|<data_out_1>data_out_1["+dataWidthAux+"]}}\"]; \n";
     return res;
 }
 

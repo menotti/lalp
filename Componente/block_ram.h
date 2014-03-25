@@ -14,7 +14,7 @@ using namespace std;
 
 class block_ram : public Componente {
 public:
-    block_ram(void*node=NULL, const string &aux = "");
+    block_ram(void*node=NULL, int dataWidth = 32);
     virtual     ~block_ram();
     string      getEstruturaComponenteVHDL();
     string      geraDOTComp();

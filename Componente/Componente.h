@@ -22,7 +22,7 @@ using namespace std;
 
 class Componente {  
     public:
-                Componente(void* node = NULL, const string &aux = "");
+                Componente(void* node = NULL, const string &aux = "", int dataWidth = 32);
         //CompType* tipo_SgNode* node = NULcomp;
         CompType::TIPO_COMP tipo_comp;
         void            setPai(void* nodo = NULL);
@@ -113,17 +113,19 @@ class Componente {
         CompType::TIPO_COMP  getTipoCompRef();
         bool            getSync();
         void            setSync(bool val);
+        bool            getUserSync();
+        void            setUserSync(bool val);
         void            printAllPortsAllLig();
         void            copyAllPortsAndGM();
         
         void            setIf(bool val);
         bool            getIf();
+        
         void            setIfComp(Componente* comp);
-
         void            setForComp(Componente* comp);
-  
         Componente*     getIfComp();
         Componente*     getForComp();
+        
         void            setIfBody(bool val);
         bool            getIfBody();
     private:
@@ -138,6 +140,7 @@ class Componente {
         int             alap;
         int             asap;
         bool            sync;
+        bool            userSync;
         int             numLinha;
         string          numParallelLine;
         string          idComp;

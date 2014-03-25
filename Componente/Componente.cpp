@@ -21,7 +21,7 @@ using namespace std;
 using std::string;
 using std::stringstream;
 
-Componente::Componente(void* node/*=NULL*/, const string &aux/*=""*/){
+Componente::Componente(void* node/*=NULL*/, const string &aux/*=""*/,  int dataWidth /*=32*/){
     
     //Criacao de componentes baseados na arvore AST Rose
     if(node != ""){
@@ -33,13 +33,16 @@ Componente::Componente(void* node/*=NULL*/, const string &aux/*=""*/){
     }
     this->nodoPai       = NULL;
     this->sync          = true;
+    this->userSync      = false;
     this->addressWidth  = 2;
-    this->dataWidth     = 32;
+    this->dataWidth     = dataWidth;
     this->eInicializado = false;
     this->compIf        = NULL;
+    this->compFor       = NULL;
     this->isIf          = false;
     this->isIfBody      = false;
     this->valStepAux    = 0;
+    this->delayValComp  = "1";
     setEIndice(false);
     setALAP(0);
     setASAP(0);
@@ -110,13 +113,21 @@ string Componente::getNomeVarRef(){
     return this->ref_var_nome;
 }
 
+bool Componente::getUserSync(){
+    return this->userSync;
+}
+
+void Componente::setUserSync(bool userSync){
+    this->userSync = userSync;
+}
+
 bool Componente::getSync(){
     return this->sync;
 }
 
 void Componente::setSync(bool sync){
     this->sync = sync;
-    if(!this->sync)
+    if(sync == false)
         this->setDelayValComp("0");
 }
 
@@ -548,9 +559,11 @@ void Componente::copySchedulingTimes(){
 }
 
 void Componente::updateCompRef(){
-    if (this->tipo_comp == CompType::REF){      
-        this->genMap = this->getComponenteRef()->getGenericMap();
-        this->portas = this->getComponenteRef()->getPorts();
+    if (this->tipo_comp == CompType::REF){
+        this->dataWidth         = this->getComponenteRef()->dataWidth;
+        this->genMap            = this->getComponenteRef()->getGenericMap();
+        this->portas            = this->getComponenteRef()->getPorts();
+        this->delayValComp      = this->getComponenteRef()->getDelayValComp();
         this->copyAllPortsAndGM();
 //        if(this->getTipoCompRef() == CompType::MEM){
 //            string vhdlComp =  this->getComponenteRef()->getNomeCompVHDL();

@@ -13,11 +13,11 @@
 
 using namespace std;
 
-block_ram_mult::block_ram_mult(void*node, const string &aux, int qtdElementos) : Componente(node, aux) {
+block_ram_mult::block_ram_mult(void*node, const string &aux, int qtdElementos, int dataWidth) :Componente(node, aux) {
     this->setDelayValComp("2");
     this->tipo_comp = CompType::MEM;   
     this->setNomeCompVHDL("block_ram_mult"); 
-    this->dataWidth     = 32;
+    this->dataWidth     = dataWidth;
     this->addressWidth  = 8;
     this->qtdElementos = qtdElementos;
 }
@@ -48,13 +48,14 @@ string block_ram_mult::getEstruturaComponenteVHDL(){
 }
 
 string block_ram_mult::geraDOTComp(){
+    string dataWidthAux = FuncoesAux::IntToStr(this->dataWidth);
     string addressWidth = FuncoesAux::IntToStr(this->addressWidth);
     string res = "";
     res += "\""+this->getName()+"\" [shape=record, fontcolor=blue, style=\"filled\", fillcolor=\"lightblue\", label=\"{{";
     for (int i = 0; i < this->qtdElementos; i++){
         string val      = FuncoesAux::IntToStr(i);
         res += "<address_"+val+">address_"+val+"["+addressWidth+"]|";  
-        res += "<data_in_"+val+">data_in_"+val+"[32]|";  
+        res += "<data_in_"+val+">data_in_"+val+"["+dataWidthAux+"]|";  
         res += "<oe_"+val+">oe_"+val+"|";  
         res += "<we_"+val+">we_"+val+"";
         if(i < this->qtdElementos-1) res += "|";
@@ -62,7 +63,7 @@ string block_ram_mult::geraDOTComp(){
     res += "}|block_ram_mult:"+this->getName()+"|{";
     for (int i = 0; i < this->qtdElementos; i++){
         string val      = FuncoesAux::IntToStr(i);
-        res+= "<data_out_"+val+">data_out_"+val+"[32]";
+        res+= "<data_out_"+val+">data_out_"+val+"["+dataWidthAux+"]";
         if(i < this->qtdElementos-1) res += "|";
     }
     res+= "}}\"]; \n";

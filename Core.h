@@ -34,7 +34,7 @@ class Core {
         void identificaVariaveis();
         void identificaFor();
         void identificaReturn();
-        Componente* analisaExp(SgNode *nodoAtual, SgNode* pai = NULL, const string& aux = "", const string& linhaParal = "");
+        Componente* analisaExp(SgNode *nodoAtual, SgNode* pai = NULL, const string& aux = "", const string& linhaParal = "", Componente* compFor = NULL);
         void FinalizaComponentes();
         void geraArquivosDotHW();
         Componente* insereReg(Ligacao* lig);
@@ -43,6 +43,8 @@ class Core {
         void setMaxSchedulingTime(int maxSchedulingTime);
         void* GetStrPointerAdd(SgNode* nodo);
     private:
+        void            aplicarDelayPragma();
+        void            trataIfTernario(Componente* comp, SgNode* condicao);
         bool            existeSgNode(SgNode* node);
         Componente*     getCompBySgNode(SgNode* node);
         bool            debug;
@@ -65,14 +67,17 @@ class Core {
         bool            isIndiceVector(const string& name);
         void            analiseMemoriaDualPort();
         void            analiseDividirMemoria();
-        void            substiuiComRecorente(Componente* origem, Componente* destino);
         void            retirarCompDelayRedundante();
         void            setClkReset();    
         void            identificaPragmas();
         void            ligaCompDep();
         void            corrigeRegWe();
         void            ligaRegNoWE();
+        int             getDataWidthByName(const string& name);
+        void            corrigeRegSemValorInicial();
         
+        set<string>     bitRegList; //Lista com componentes marcados como BIT
+        int             DATA_WIDTH;
         Componente*     compForAux;
         SgProject*      project;
         ArquivosDotHW*  dot;

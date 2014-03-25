@@ -7,11 +7,13 @@
 //#include "../header/meuHeader.h"
 #include "shr_c_op_s.h"
 #include "string"
+#include "../Aux/FuncoesAux.h"
 
 using namespace std;
 
-shr_c_op_s::shr_c_op_s(void*node, const string& amount) : Componente(node) {
+shr_c_op_s::shr_c_op_s(void*node, const string& amount, int dataWidth) : Componente(node) {
     this->amount = amount;
+    this->dataWidth = dataWidth;
     this->setNomeCompVHDL("shr_c_op_s");
     this->tipo_comp  = CompType::OPE;
     this->createAllPorts();
@@ -23,14 +25,14 @@ shr_c_op_s::~shr_c_op_s() {
 }
 
 void shr_c_op_s::createAllGeneric(){
-    this->addGenericMap(new GenericMap("w_in1"     , "integer", "32"));
-    this->addGenericMap(new GenericMap("w_out"     , "integer", "32"));
+    this->addGenericMap(new GenericMap("w_in1"     , "integer", FuncoesAux::IntToStr(this->dataWidth)));
+    this->addGenericMap(new GenericMap("w_out"     , "integer", FuncoesAux::IntToStr(this->dataWidth)));
     this->addGenericMap(new GenericMap("s_amount"  , "integer", this->amount));
 }
 
 void shr_c_op_s::createAllPorts(){
-    this->addPort(new Port("I0"  ,"in"   ,"std_logic_vector"     ,"32", "IN" ));
-    this->addPort(new Port("O0"  ,"out"  ,"std_logic_vector"     ,"32", "OUT"));
+    this->addPort(new Port("I0"  ,"in"   ,"std_logic_vector"     ,FuncoesAux::IntToStr(this->dataWidth), "IN" ));
+    this->addPort(new Port("O0"  ,"out"  ,"std_logic_vector"     ,FuncoesAux::IntToStr(this->dataWidth), "OUT"));
 }
 
 string shr_c_op_s::getEstruturaComponenteVHDL(){
@@ -50,7 +52,8 @@ string shr_c_op_s::getEstruturaComponenteVHDL(){
 }
 
 string shr_c_op_s::geraDOTComp(){
+    string dataWidthAux = FuncoesAux::IntToStr(this->dataWidth);
     string res = "";
-    res += "\""+this->getName()+"\" [shape=record, fontcolor=blue, label=\"{{<I0>I0[32]}|shr_c_op_s:"+this->getName()+"\\namount="+this->amount+"  |{<O0>O0[32]}}\"]; \n";
+    res += "\""+this->getName()+"\" [shape=record, fontcolor=blue, label=\"{{<I0>I0["+dataWidthAux+"]}|shr_c_op_s:"+this->getName()+"\\namount="+this->amount+"  |{<O0>O0["+dataWidthAux+"]}}\"]; \n";
     return res;
 }

@@ -15,7 +15,7 @@ using namespace std;
 
 class reg_mux_op : public Componente {
 public:
-    reg_mux_op(void* node = NULL, const string &aux = "");
+    reg_mux_op(void* node = NULL, const string &aux = "", int dataWidth = 32);
     virtual     ~reg_mux_op();
     string      getEstruturaComponenteVHDL();
     string      geraDOTComp();

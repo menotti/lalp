@@ -7,11 +7,11 @@
 //#include "../header/meuHeader.h"
 #include "op_sub_s.h"
 
-op_sub_s::op_sub_s(void*node) : op_simple(node){
-//    this->setDelayValComp("0");
+op_sub_s::op_sub_s(void*node, int dataWidth) : op_simple(node){
     this->setNomeCompVHDL("sub_op_s");
     this->op_tipo       = "SUB";
     this->setSync(false);
+    this->dataWidth     = dataWidth;
 }
 
 op_sub_s::~op_sub_s() {

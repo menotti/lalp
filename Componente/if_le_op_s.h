@@ -15,7 +15,7 @@ using namespace std;
 
 class if_le_op_s : public Componente {
 public:
-    if_le_op_s(void* node);
+    if_le_op_s(void* node,int dataWidth = 32);
     virtual     ~if_le_op_s();
     string      getEstruturaComponenteVHDL();
     string      geraDOTComp();

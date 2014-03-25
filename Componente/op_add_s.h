@@ -14,7 +14,7 @@ using namespace std;
 
 class op_add_s : public op_simple {
 public:
-    op_add_s(void* node = NULL);
+    op_add_s(void* node = NULL, int dataWidth = 32);
     virtual ~op_add_s();
 private:
 

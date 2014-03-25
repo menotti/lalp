@@ -15,11 +15,11 @@ using namespace std;
 using std::string;
 using std::stringstream;
 
-block_ram::block_ram(void*node, const string &aux) : Componente(node, aux) {
+block_ram::block_ram(void*node, int dataWidth) : Componente(node, "", dataWidth) {
     this->setDelayValComp("2");
     this->tipo_comp = CompType::MEM;   
     this->setNomeCompVHDL("block_ram"); 
-    this->dataWidth     = 32;
+    this->dataWidth     = dataWidth;
     this->addressWidth  = 8;
 }
 
@@ -46,8 +46,10 @@ string block_ram::getEstruturaComponenteVHDL(){
 }
 
 string block_ram::geraDOTComp(){
+    string dataWidthAux    = FuncoesAux::IntToStr(this->dataWidth);
+    string addressWidthAux = FuncoesAux::IntToStr(this->addressWidth);
     string res = "";
-    res += "\""+this->getName()+"\" [shape=record, fontcolor=blue, style=\"filled\", fillcolor=\"lightgray\", label=\"{{<address>address[11]|<clk>clk|<data_in>data_in[32]|<oe>oe|<we>we}|block_ram:"+this->getName()+"|{<data_out>data_out[32]}}\"]; \n";
+    res += "\""+this->getName()+"\" [shape=record, fontcolor=blue, style=\"filled\", fillcolor=\"lightgray\", label=\"{{<address>address["+addressWidthAux+"]|<clk>clk|<data_in>data_in["+dataWidthAux+"]|<oe>oe|<we>we}|block_ram:"+this->getName()+"|{<data_out>data_out["+dataWidthAux+"]}}\"]; \n";
     return res;
 }
 
