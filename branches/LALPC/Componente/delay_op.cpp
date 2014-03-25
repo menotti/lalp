@@ -65,6 +65,7 @@ string delay_op::getDelayBits(){
 }
 
 void delay_op::setDelayVal(const string &val){
+    this->setDelayValComp(val);
     this->setGenericMapVal("delay", "VAL", val);
 }
 

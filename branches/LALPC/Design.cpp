@@ -7,6 +7,9 @@
 
 #include "Design.h"
 #include "Componente/comp_ref.h"
+#include "Componente/and_op.h"
+#include "Componente/not_op.h"
+#include "Componente/counter.h"
 #include "Componente/delay_op.h"
 #include "Aux/FuncoesAux.h"
 
@@ -17,11 +20,25 @@
 #include <stdlib.h>
 using namespace std;
 
-Design::Design(list<Ligacao*> ligacoes, list<Componente*> componentes) {
-    this->ListaLiga = ligacoes;
-    this->ListaComp = componentes;
-    this->maxSchedulingTime = 0;
-    this->sync = false;
+Design::Design(list<Ligacao*> ligacoes, list<Componente*> componentes, int dataWidth) {
+    this->ListaLiga             = ligacoes;
+    this->ListaComp             = componentes;
+    this->maxSchedulingTime     = 0;
+    this->sync                  = false;
+    this->DATA_WIDHT            = dataWidth;
+    this->temMemoria            = false;
+}
+
+void Design::setTemMemoria(bool val){
+    this->temMemoria = val;
+}
+
+bool Design::getTemMemoria(){
+    return this->temMemoria;
+}
+
+int Design::getDataWidht(){
+    return this->DATA_WIDHT;
 }
 
 void Design::setListaLiga(list<Ligacao*> ligacoes){
@@ -39,6 +56,7 @@ list<Ligacao*> Design::getListaLiga(){
 list<Componente*> Design::getListaComp(){
     return this->ListaComp;
 }
+
 
 bool Design::verificarPrecisaMux(Componente* comp) {
     list<Componente*>::iterator i;
@@ -192,11 +210,12 @@ void Design::removeComponente(Componente* compRemove, Componente* naoRemover){
 
 void Design::addComponent(Componente* comp){
     list<Componente*>::iterator i;
-    if(this->compForAux != NULL) comp->setForComp(this->compForAux);
+    
     //verificar se existe o nodo ja nos componentes
     //isso ocorre pois existe a otimizacao da arvore durante o processo do rose
     bool existe = false;
     Componente* aux= false;
+
     if(comp->node != NULL){
         for(i=this->ListaComp.begin(); i != this->ListaComp.end(); i++){
             if( comp->node == (*i)->node ){
@@ -247,6 +266,85 @@ int Design::getMaxSchedulingTime(){
 
 void Design::setMaxSchedulingTime(int maxSchedulingTime){
     this->maxSchedulingTime = maxSchedulingTime;
+}
+
+void Design::finalizaComponentesIF(){
+    cout<< "FINALIZANDO LIGANDO NA SAIDA WE DOS COMPONENTES" << endl;
+    list<Componente*>::iterator i;
+    for(i=this->ListaComp.begin(); i != this->ListaComp.end(); i++){
+        if ((*i)->writeEnable != true) continue;
+        if ((*i)->tipo_comp != CompType::REF) continue;
+        if ((*i)->getNomeCompVHDL() == "reg_mux_op"){
+            cout << (*i)->getName() << endl;
+//            this->insereLigacao((*i)->getIfComp(), (*i), (*i)->getIfComp()->getPortDataInOut("OUT")->getName()   , "Sel1");
+        }else{
+            if ((*i)->getIf() != true) continue;
+            cout << (*i)->getName() << endl;
+            Componente* comOriAuxWE = NULL;
+            if((*i)->getPortOther("we")->temLigacao()){
+                Ligacao* ligAuxWE = (*i)->getPortOther("we")->getLigacao2();
+                comOriAuxWE = (*i)->getPortOther("we")->getLigacao2()->getOrigem();
+
+                (*i)->removeLigacao(ligAuxWE);
+                comOriAuxWE->removeLigacao(ligAuxWE);
+
+                this->deletaLigacao(ligAuxWE->getNome());
+            }
+
+            if(comOriAuxWE != NULL){
+
+                //Criando componente AND
+                and_op* andCompAux = new and_op(NULL, 1);
+                andCompAux->setNumIdComp(FuncoesAux::IntToStr(this->ListaComp.size()));
+                andCompAux->setName("comp_"+FuncoesAux::IntToStr(this->ListaComp.size()));
+                andCompAux->setNumParalelLina((*i)->getIfComp()->getNumParalelLina());
+                andCompAux->setNumLinha((*i)->getIfComp()->getNumLinha());
+                this->addComponent(andCompAux);
+
+                //Verificar se e' da parte TRUE do IF - caso for da FALSE tem que colocar um componente NEG na saida do IF
+                if((*i)->getIfBody()){  
+                    this->insereLigacao(comOriAuxWE, andCompAux, comOriAuxWE->getPortDataInOut("OUT")->getName()  , "I0");
+                    this->insereLigacao((*i)->getIfComp(), andCompAux, "O0", "I1");
+                    this->insereLigacao(andCompAux, (*i), "O0", "we");
+                }else{
+                    //Criar componente NEG e colocar entre o IF e o COMP *I
+                    not_op* negComp = new not_op(NULL, 1);
+                    negComp->setNumIdComp(FuncoesAux::IntToStr(this->ListaComp.size()));
+                    negComp->setName("comp_"+FuncoesAux::IntToStr(this->ListaComp.size()));
+                    negComp->setNumParalelLina((*i)->getIfComp()->getNumParalelLina());
+                    negComp->setNumLinha((*i)->getIfComp()->getNumLinha());
+
+                    this->addComponent(negComp);
+
+                    this->insereLigacao((*i)->getIfComp(), negComp, "O0", "I0");
+                    this->insereLigacao(negComp   , andCompAux, "O0", "I1");
+                    this->insereLigacao(comOriAuxWE, andCompAux, comOriAuxWE->getPortDataInOut("OUT")->getName()  , "I0");
+                    this->insereLigacao(andCompAux, (*i), "O0", "we");
+                }
+
+            }else{
+                //Verificar se e' da parte TRUE do IF - caso for da FALSE tem que colocar um componente NEG na saida do IF
+                if((*i)->getIfBody()){
+                    this->insereLigacao((*i)->getIfComp(), (*i), "O0", "we");
+                }else{
+                    //Criar componente NEG e colocar entre o IF e o COMP *I
+                    not_op* negComp = new not_op(NULL, 1);
+                    negComp->setNumIdComp(FuncoesAux::IntToStr(this->ListaComp.size()));
+                    negComp->setName("comp_"+FuncoesAux::IntToStr(this->ListaComp.size()));
+                    negComp->setNumParalelLina((*i)->getIfComp()->getNumParalelLina());
+                    negComp->setNumLinha((*i)->getIfComp()->getNumLinha());
+
+                    this->addComponent(negComp);
+
+                    this->insereLigacao((*i)->getIfComp(), negComp, "O0", "I0");
+                    this->insereLigacao(negComp, (*i), "O0", "we");
+                }
+            } 
+            
+        }
+               
+    }
+    cout<< "FINALIZANDO LIGANDO NA SAIDA WE DOS COMPONENTES: OK" << endl;
 }
 
 Componente* Design::insereDelay(Ligacao* lig, int delay, int asap){
@@ -326,6 +424,21 @@ bool Design::verificaTemDelay(Componente* comp, const string& porta){
     }
     return existe;
 }
+
+bool Design::isIndiceVector(const string& name){
+    bool res = false;
+    list<Componente*>::iterator i;
+    for (i = this->ListaComp.begin(); i != this->ListaComp.end(); i++) {
+        if ((*i)->tipo_comp == CompType::CTD){
+            counter* CompCounter = (counter*)(*i); 
+            if(CompCounter->getVarControlCont() == name){
+                res = true;
+            }
+        }
+    }
+    return res; 
+}
+
 
 string Design::getNomeCompRef(const string& name){
     list<Componente*>::iterator i;

@@ -16,7 +16,7 @@ using namespace std;
 
 Scheduling::Scheduling(Design* design) {
     this->design = design;
-    this->debug = false;
+    this->debug = true;
 }
 
 Design* Scheduling::getDesign() {
@@ -169,7 +169,7 @@ void Scheduling::balanceAndSyncrhonize(){
                     this->design->addComponent(dly3);
                     ats++;
                     if(this->debug){
-                        cout<< "inserting '" << (distance-1+stepAux) << "' delay(s) on signal '"<< counter->getName()<< "->" << c->getName() <<"' (weite enable) " << dly3->getNomeCompVHDL() << ": '" << dly3->getName() <<"'" << endl;
+                        cout<< "inserting '" << (distance-1+stepAux) << "' delay(s) on signal '"<< counter->getName()<< "->" << c->getName() <<"' (write enable) " << dly3->getNomeCompVHDL() << ": '" << dly3->getName() <<"'" << endl;
                     }
                 }
             }else{
@@ -258,7 +258,8 @@ void Scheduling::balanceAndSyncrhonize(){
         if(strAux != ""){
             dlyCtd = FuncoesAux::StrToInt(counter->getDelayValComp());
         }
-        
+        if(amount <= 0) amount = 1;
+        ats++;
         Componente* dly4 = this->design->insereDelay(newLig4, amount, counter->getASAP() + dlyCtd);
         this->design->addComponent(dly4); 
         if(this->debug){
@@ -274,11 +275,12 @@ void Scheduling::balanceAndSyncrhonize(){
         if(orig->tipo_comp == CompType::DEL || dest->tipo_comp == CompType::DEL) continue;
         if(orig->tipo_comp == CompType::AUX || dest->tipo_comp == CompType::AUX) continue;
         
-        if(! (orig->getNomeCompVHDL() == "delay_op" || dest->getNomeCompVHDL() == "delay_op" || orig->getNomeCompVHDL() == "mux_m_op" || dest->getNomeCompVHDL() == "mux_m_op")) {
+        if(! (orig->getNomeCompVHDL() == "delay_op" || dest->getNomeCompVHDL() == "delay_op" || orig->getNomeCompVHDL() == "mux_m_op" || dest->getNomeCompVHDL() == "mux_m_op" || dest->getUserSync())) {
             int sourceSched = this->calculateASAP(orig);
             int destSched   = dest->getASAP();
             int distance    = destSched - sourceSched;
-            if (distance > 1) {
+            //if (distance > 1) {
+            if (distance >= 1) {
                 Componente* dly5 = this->design->insereDelay((*k), distance, dest->getASAP());
                 ats++;
                 this->design->addComponent(dly5);
@@ -316,6 +318,8 @@ void Scheduling::balanceAndSyncrhonize(){
         }
     }
     
+    cout<<""<<endl;
+    cout<<"MII: "<<mii<<endl;
     
     
     cout<<"*********************************"<<endl;

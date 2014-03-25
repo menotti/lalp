@@ -14,7 +14,7 @@ using namespace std;
 
 class shr_c_op_s : public Componente {
 public:
-    shr_c_op_s(void*node = NULL, const string& amount = "1");
+    shr_c_op_s(void*node = NULL, const string& amount = "1", int dataWidht = 32);
     virtual     ~shr_c_op_s();
     void        createAllGeneric();
     string      getEstruturaComponenteVHDL();

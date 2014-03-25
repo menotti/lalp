@@ -8,11 +8,12 @@
 //#include "../header/meuHeader.h"
 #include "reg_mux_op.h"
 #include "string"
-//#include "../Aux/FuncoesAux.h"
+#include "../Aux/FuncoesAux.h"
 
 using namespace std;
 
-reg_mux_op::reg_mux_op(void* node, const string &aux) : Componente(node, aux) {
+reg_mux_op::reg_mux_op(void* node, const string &aux, int dataWidth) : Componente(node, aux) {
+    this->dataWidth = dataWidth;
     this->setNomeCompVHDL("reg_mux_op");    
     this->tipo_comp = CompType::REG;    
     this->createAllPorts();
@@ -24,9 +25,9 @@ reg_mux_op::~reg_mux_op() {
 
 void reg_mux_op::createAllPorts(){
     this->addPort(new Port("clk"        ,"in"   ,"std_logic"            ,"1", ""));
-    this->addPort(new Port("I0"         ,"in"   ,"std_logic_vector"     ,"32", ""));
-    this->addPort(new Port("I1"         ,"in"   ,"std_logic_vector"     ,"32", "IN"));
-    this->addPort(new Port("O0"         ,"out"  ,"std_logic_vector"     ,"32", "OUT"));
+    this->addPort(new Port("I0"         ,"in"   ,"std_logic_vector"     ,FuncoesAux::IntToStr(this->dataWidth), ""));
+    this->addPort(new Port("I1"         ,"in"   ,"std_logic_vector"     ,FuncoesAux::IntToStr(this->dataWidth), "IN"));
+    this->addPort(new Port("O0"         ,"out"  ,"std_logic_vector"     ,FuncoesAux::IntToStr(this->dataWidth), "OUT"));
     this->addPort(new Port("reset"      ,"in"   ,"std_logic"            ,"1", ""));
     this->addPort(new Port("Sel1"       ,"in"   ,"std_logic_vector"     ,"1", ""));
     this->addPort(new Port("we"         ,"in"   ,"std_logic"            ,"1", ""));
@@ -34,7 +35,7 @@ void reg_mux_op::createAllPorts(){
 
 void reg_mux_op::createAllGeneric(){
     this->addGenericMap(new GenericMap("initial", "integer", "0"));
-    this->addGenericMap(new GenericMap("w_in", "integer", "32"));
+    this->addGenericMap(new GenericMap("w_in", "integer", FuncoesAux::IntToStr(this->dataWidth)));
 }
 
 string reg_mux_op::getEstruturaComponenteVHDL(){
@@ -59,8 +60,9 @@ string reg_mux_op::getEstruturaComponenteVHDL(){
 }
 
 string reg_mux_op::geraDOTComp(){
+    string dataWidthAux    = FuncoesAux::IntToStr(this->dataWidth);
     string res = "";
-    res += "\""+this->getName()+"\" [shape=record, fontcolor=blue, style=\"filled\", fillcolor=\"lightgray\", label=\"{{<I0>I0[32]|<I1>I1[32]|<Sel1>Sel1[1]|<clk>clk|<reset>reset|<we>we}|reg_mux_op:"+this->getName()+"|{<O0>O0[32]}}\"]; \n";  
+    res += "\""+this->getName()+"\" [shape=record, fontcolor=blue, style=\"filled\", fillcolor=\"lightgray\", label=\"{{<I0>I0["+dataWidthAux+"]|<I1>I1["+dataWidthAux+"]|<Sel1>Sel1[1]|<clk>clk|<reset>reset|<we>we}|reg_mux_op:"+this->getName()+"|{<O0>O0["+dataWidthAux+"]}}\"]; \n";  
     return res;
 }
 

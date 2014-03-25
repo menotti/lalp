@@ -24,11 +24,12 @@ public:
     ArquivosDotHW();
     CompType*           tipo_comp;
     void                imprimeVHDL(list<Componente*> listaComp, list<Ligacao*> listaLiga, const string& arquivo = "");
-    void                imprimeHWDOT(list<Componente*> listaComp, list<Ligacao*> listaLiga, const string& arquivo = "", bool debug = false);    
+    void                imprimeHWDOT(list<Componente*> listaComp, list<Ligacao*> listaLiga, const string& arquivo = "", bool debug = false, bool temMemoria = false);    
     virtual             ~ArquivosDotHW();
 private:
     list<Componente*>   ListaComp;
     list<Ligacao*>      ListaLiga;
+    bool                temMemoria;
     vector<string>      ListaAux;
     string              nomeArquivo;
     void                GeraMemoryVHDL();

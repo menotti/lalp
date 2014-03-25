@@ -13,14 +13,14 @@ using namespace std;
 
 class comp_ref : public Componente{
 public:
-    comp_ref(void*node = NULL, const string &aux = "");
+    comp_ref(void*node = NULL, const string &aux = "", int dataWidth = 32);
     string      getEstruturaComponenteVHDL();
     string      geraDOTComp();
     void        createAllGeneric();
     void        createAllPorts();
     void        montaComponente();
-    void        setDelayValComp(const string &delayVal);
-    string      getDelayValComp();
+//    void        setDelayValComp(const string &delayVal);
+//    string      getDelayValComp();
 
     void        addGenericMap(GenericMap* map);    
     void        setNomeVarIndex(const string &index);

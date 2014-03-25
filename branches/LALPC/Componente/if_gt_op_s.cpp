@@ -12,8 +12,9 @@
 
 using namespace std;
 
-if_gt_op_s::if_gt_op_s(void*node) : Componente(node) {
+if_gt_op_s::if_gt_op_s(void*node, int dataWidth) : Componente(node) {
     this->setNomeCompVHDL("if_gt_op_s");
+    this->dataWidth     = dataWidth;
     this->setSync(false);
     this->tipo_comp = CompType::CND;  
     this->createAllPorts();
@@ -24,14 +25,14 @@ if_gt_op_s::~if_gt_op_s() {
 }
 
 void if_gt_op_s::createAllPorts(){
-    this->addPort(new Port("I0"         ,"in"   ,"std_logic_vector"     ,"32", ""));
-    this->addPort(new Port("I1"         ,"in"   ,"std_logic_vector"     ,"32", "IN"));
+    this->addPort(new Port("I0"         ,"in"   ,"std_logic_vector"     ,FuncoesAux::IntToStr(this->dataWidth), ""));
+    this->addPort(new Port("I1"         ,"in"   ,"std_logic_vector"     ,FuncoesAux::IntToStr(this->dataWidth), "IN"));
     this->addPort(new Port("O0"         ,"out"  ,"std_logic_vector"     ,"1", "OUT"));
 }
 
 void if_gt_op_s::createAllGeneric(){
-    this->addGenericMap(new GenericMap("w_in1", "integer", "32"));
-    this->addGenericMap(new GenericMap("w_in2", "integer", "32"));
+    this->addGenericMap(new GenericMap("w_in1", "integer", FuncoesAux::IntToStr(this->dataWidth)));
+    this->addGenericMap(new GenericMap("w_in2", "integer", FuncoesAux::IntToStr(this->dataWidth)));
     this->addGenericMap(new GenericMap("w_out", "integer", "1"));
 }
 
@@ -53,8 +54,9 @@ string if_gt_op_s::getEstruturaComponenteVHDL(){
 }
 
 string if_gt_op_s::geraDOTComp(){
+    string dataWidthAux    = FuncoesAux::IntToStr(this->dataWidth);
     string res = "";
-    res += "\""+this->getName()+"\" [shape=record, fontcolor=blue, label=\"{{<I0>I0[32]|<I1>I1[32]}|"+this->getNomeCompVHDL()+":"+this->getName()+"|{<O0>O0[1]}}\"]; \n";
+    res += "\""+this->getName()+"\" [shape=record, fontcolor=blue, label=\"{{<I0>I0["+dataWidthAux+"]|<I1>I1["+dataWidthAux+"]}|"+this->getNomeCompVHDL()+":"+this->getName()+"|{<O0>O0[1]}}\"]; \n";
     return res;
 }
 

@@ -7,10 +7,11 @@
 //#include "../header/meuHeader.h"
 #include "op_div_s.h"
 
-op_div_s::op_div_s(void*node) : op_simple(node){
+op_div_s::op_div_s(void*node, int dataWidth) : op_simple(node){
     this->setNomeCompVHDL("div_op_s");
     this->op_tipo       = "DIV";
     this->setSync(false);
+    this->dataWidth     = dataWidth;
 }
 
 op_div_s::~op_div_s() {

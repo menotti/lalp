@@ -21,7 +21,7 @@ using namespace std;
 
 class Design {
 public:
-    Design(list<Ligacao*> ligacoes, list<Componente*> componentes);
+    Design(list<Ligacao*> ligacoes, list<Componente*> componentes, int dataWidth = 32);
     list<Ligacao*>      getListaLiga();
     list<Componente*>   getListaComp();
     void                setListaLiga(list<Ligacao*> ligacoes);
@@ -34,7 +34,6 @@ public:
     void                removeComponente(Componente* origem, Componente* naoRemover = NULL);
     void                setSync(bool sync);
     bool                isSync();
-    void                substiuiComRecorente(Componente* origem, Componente* destino);
     int                 getMaxSchedulingTime();
     void                setMaxSchedulingTime(int maxSchedulingTime);
     Componente*         insereDelay(Ligacao* lig, int delay = 0, int asap = 0);
@@ -45,11 +44,19 @@ public:
     list<Ligacao*>      ListaLiga; 
     list<Componente*>   ListaComp;
 //    ProcessGraph*       graph;
+    int                 getDataWidht();
     virtual ~Design();
+    void                setTemMemoria(bool val);
+    bool                getTemMemoria();
+    bool                isIndiceVector(const string& name);
+    void                substiuiComRecorente(Componente* origem, Componente* destino);
+    void                finalizaComponentesIF();
 private:
+    bool                temMemoria;
     bool                sync;
     Componente*         compForAux;
     int                 maxSchedulingTime;
+    int                 DATA_WIDHT;
 };
 
 #endif	/* DESIGN_H */

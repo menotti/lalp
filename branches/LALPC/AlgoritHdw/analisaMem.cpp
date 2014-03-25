@@ -107,7 +107,8 @@ void analisaMem::insereMux(){
                     int qtdMem = this->design->verificarQtdAcessoMem((*i));
                     string nPos = FuncoesAux::IntToStr(qtdMem);
                     string nLis = FuncoesAux::IntToStr(qtdMem - 1);
-                    mux_m_op* mux = new mux_m_op(NULL, nPos, nLis);
+                    
+                    mux_m_op* mux = new mux_m_op(NULL, nPos, nLis, (*i)->dataWidth);
                     mux->setName("mux" + FuncoesAux::IntToStr(this->design->ListaComp.size()));
                     mux->setNumLinha((*i)->getNumLinha());
                     mux->setNumIdComp(FuncoesAux::IntToStr(this->design->ListaComp.size()));
@@ -219,7 +220,7 @@ void analisaMem::insereRamMultPort(){
                     
                     int qtdMem = this->design->verificarQtdAcessoMem((*i));
                     
-                    block_ram_mult*     multRam =  new block_ram_mult(NULL, "", qtdMem);
+                    block_ram_mult*     multRam =  new block_ram_mult(NULL, "", qtdMem, (*i)->dataWidth);
                     block_ram*          ram = (block_ram*)(*i)->getComponenteRef();
                     
                     multRam->setName((*i)->getNomeVarRef());

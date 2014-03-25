@@ -14,7 +14,7 @@ using namespace std;
 
 class block_ram_mult : public Componente {
 public:
-    block_ram_mult(void*node=NULL, const string &aux = "", int qtdElementos = 0);
+    block_ram_mult(void*node=NULL, const string &aux = "", int qtdElementos = 0, int dataWidth = 32);
     virtual     ~block_ram_mult();
     string      getEstruturaComponenteVHDL();
     string      geraDOTComp();

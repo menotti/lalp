@@ -8,7 +8,8 @@
 #include "comp_ref.h"
 #include "string"
 
-comp_ref::comp_ref(void*node, const string &aux) : Componente(node, aux){
+comp_ref::comp_ref(void*node, const string &aux, int dataWidth) : Componente(node, aux){
+    this->dataWidth = dataWidth;
     this->tipo_comp = CompType::REF;
     if(aux == "WE"){ 
         this->setWE(true);
@@ -30,13 +31,14 @@ void comp_ref::createAllPorts(){
 void comp_ref::addGenericMap(GenericMap* map){
 }
 
-string comp_ref::getDelayValComp(){
-    return (this->getComponenteRef()->getDelayValComp()); 
-}
+//string comp_ref::getDelayValComp(){
+//    return (this->getComponenteRef()->getDelayValComp()); 
+//}
 
-void comp_ref::setDelayValComp(const string &delayVal){
-    this->getComponenteRef()->setDelayValComp(delayVal);
-}
+//void comp_ref::setDelayValComp(const string &delayVal){
+//    this->getComponenteRef()->setDelayValComp(delayVal);
+//}
+
 void comp_ref::setNomeVarIndex(const string &index){
     this->ref_var_index = index;
 }

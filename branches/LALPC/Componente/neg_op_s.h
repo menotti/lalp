@@ -14,7 +14,7 @@ using namespace std;
 
 class neg_op_s : public Componente {
 public:
-    neg_op_s(void*node = NULL);
+    neg_op_s(void*node = NULL, int dataWidth = 32);
     virtual     ~neg_op_s();
     void        createAllGeneric();
     string      getEstruturaComponenteVHDL();

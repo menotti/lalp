@@ -15,7 +15,8 @@
 #include "../Aux/FuncoesAux.h"
 using namespace std;
 
-mux_m_op::mux_m_op(void* node, const string &nOps, const string &sSels) : Componente(node) {
+mux_m_op::mux_m_op(void* node, const string &nOps, const string &sSels, int dataWidth) : Componente(node) {
+    this->dataWidth = dataWidth;
     this->nOps  = nOps;
     this->nSels = sSels;
     this->setSync(false);
@@ -31,7 +32,7 @@ mux_m_op::~mux_m_op() {
 void mux_m_op::createAllGeneric(){
     this->addGenericMap(new GenericMap("N_ops"  , "integer", this->nOps));
     this->addGenericMap(new GenericMap("N_sels" , "integer", this->nSels));
-    this->addGenericMap(new GenericMap("w_in"   , "integer", "32"));
+    this->addGenericMap(new GenericMap("w_in"   , "integer", FuncoesAux::IntToStr(this->dataWidth)));
     
 
 }
@@ -39,13 +40,13 @@ void mux_m_op::createAllGeneric(){
 void mux_m_op::createAllPorts(){
     string dataWPort = "";
     int val = 0;
-    val = 32 * FuncoesAux::StrToInt(this->nOps);
+    val = this->dataWidth * FuncoesAux::StrToInt(this->nOps);
     dataWPort = FuncoesAux::IntToStr(val);
     
     PortLarge* porta = new PortLarge("I0","in","std_logic_vector",dataWPort, "IN");
     this->addPort(porta);
     
-    this->addPort(new Port("O0"         ,"out"  ,"std_logic_vector"     ,"32", "OUT"));
+    this->addPort(new Port("O0","out"  ,"std_logic_vector"     ,FuncoesAux::IntToStr(this->dataWidth), "OUT"));
     
     PortLarge* porta2 = new PortLarge("Sel","in","std_logic_vector",this->nSels, "");
     this->addPort(porta2);
@@ -70,13 +71,14 @@ string mux_m_op::getEstruturaComponenteVHDL(){
 }
 
 string mux_m_op::geraDOTComp(){
+    string dataWidthAux    = FuncoesAux::IntToStr(this->dataWidth);
     string dataWPort,nSels = "";
     int val, val1 = 0;
     val  = 32 * FuncoesAux::StrToInt(this->nOps);
     dataWPort = FuncoesAux::IntToStr(val);
     
     string res = "";
-    res += "\""+this->getName()+"\" [shape=record, fontcolor=blue, label=\"{{<I0>I0["+dataWPort+"]|<Sel>Sel["+this->nSels+"]}|mux_m_op:"+this->getName()+"|{<O0>O0[32]}}\"]; \n";
+    res += "\""+this->getName()+"\" [shape=record, fontcolor=blue, label=\"{{<I0>I0["+dataWPort+"]|<Sel>Sel["+this->nSels+"]}|mux_m_op:"+this->getName()+"|{<O0>O0["+dataWidthAux+"]}}\"]; \n";
     return res;
 }
 

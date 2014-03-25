@@ -7,24 +7,22 @@
 //#include "../header/meuHeader.h"
 #include "counter.h"
 #include "string"
+#include "../Aux/FuncoesAux.h"
 
 using namespace std;
 
-counter::counter(void*node) : Componente(node) {
-//    this->setDelayValComp("1");
-//    SgForStatement* cur_for = isSgForStatement(this->node);
+counter::counter(void*node, int dataWidth) : Componente(node) {
     this->setNomeCompVHDL("counter");
     this->tipo_comp = CompType::CTD;     
-    
+    this->dataWidth     = dataWidth;
     this->createAllPorts();
-    this->createAllGeneric();
-    
+    this->createAllGeneric();    
 }
 counter::~counter() {
 }
 
 void counter::createAllGeneric(){
-    this->addGenericMap(new GenericMap("bits"           , "integer", "32"));
+    this->addGenericMap(new GenericMap("bits"           , "integer", FuncoesAux::IntToStr(this->dataWidth)));
     this->addGenericMap(new GenericMap("condition"      , "integer", "0"));
     this->addGenericMap(new GenericMap("down"           , "integer", "0"));
     this->addGenericMap(new GenericMap("increment"      , "integer", "1"));
@@ -35,12 +33,12 @@ void counter::createAllPorts(){
     this->addPort(new Port("clk"        ,"in"   ,"std_logic"            ,"1", ""));
     this->addPort(new Port("clk_en"     ,"in"   ,"std_logic"            ,"1", ""));
     this->addPort(new Port("done"       ,"out"  ,"std_logic"            ,"1", ""));
-    this->addPort(new Port("input"      ,"in"   ,"std_logic_vector"     ,"32", "IN"));
+    this->addPort(new Port("input"      ,"in"   ,"std_logic_vector"     ,FuncoesAux::IntToStr(this->dataWidth), "IN"));
     this->addPort(new Port("load"       ,"in"   ,"std_logic"            ,"1", ""));
-    this->addPort(new Port("output"     ,"out"  ,"std_logic_vector"     ,"32", "OUT"));
+    this->addPort(new Port("output"     ,"out"  ,"std_logic_vector"     ,FuncoesAux::IntToStr(this->dataWidth), "OUT"));
     this->addPort(new Port("reset"      ,"in"   ,"std_logic"            ,"1", ""));
     this->addPort(new Port("step"       ,"out"  ,"std_logic"            ,"1", ""));
-    this->addPort(new Port("termination","in"   ,"std_logic_vector"     ,"32", "")); 
+    this->addPort(new Port("termination","in"   ,"std_logic_vector"     ,FuncoesAux::IntToStr(this->dataWidth), "")); 
 }
 
 string counter::getEstruturaComponenteVHDL(){
@@ -69,8 +67,9 @@ string counter::getEstruturaComponenteVHDL(){
 }
 
 string counter::geraDOTComp(){
+    string dataWidthAux    = FuncoesAux::IntToStr(this->dataWidth);
     string res = "";
-    res += "\""+this->getName() +"\" [shape=record, fontcolor=blue, style=\"filled\", fillcolor=\"lightgray\", label=\"{{<clk>clk|<clk_en>clk_en|<input>input[32]|<load>load|<reset>reset|<termination>termination[32]}|counter:"+this->getName() +"\\n\\<\\n+="+this->getGenericMapIncrements()+"\\nsteps="+this->getGenericMapSteps()+"|{<done>done|<output>output[32]|<step>step}}\"]; \n";   
+    res += "\""+this->getName() +"\" [shape=record, fontcolor=blue, style=\"filled\", fillcolor=\"lightgray\", label=\"{{<clk>clk|<clk_en>clk_en|<input>input["+dataWidthAux+"]|<load>load|<reset>reset|<termination>termination["+dataWidthAux+"]}|counter:"+this->getName() +"\\n\\<\\n+="+this->getGenericMapIncrements()+"\\nsteps="+this->getGenericMapSteps()+"|{<done>done|<output>output["+dataWidthAux+"]|<step>step}}\"]; \n";   
     return res;
 }
 

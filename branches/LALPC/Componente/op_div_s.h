@@ -14,7 +14,7 @@ using namespace std;
 
 class op_div_s : public op_simple {
 public:
-    op_div_s(void* node = NULL);
+    op_div_s(void* node = NULL, int dataWidth = 32);
     virtual ~op_div_s();
 private:
 

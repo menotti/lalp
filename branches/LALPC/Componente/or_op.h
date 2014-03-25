@@ -15,7 +15,7 @@ using namespace std;
 
 class or_op : public Componente {
 public:
-    or_op(void* node);
+    or_op(void* node= NULL, int dataWidth = 32);
     virtual     ~or_op();
     string      getEstruturaComponenteVHDL();
     string      geraDOTComp();

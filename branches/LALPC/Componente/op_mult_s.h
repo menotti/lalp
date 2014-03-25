@@ -14,7 +14,7 @@ using namespace std;
 
 class op_mult_s : public op_simple {
 public:
-    op_mult_s(void*node);
+    op_mult_s(void*node, int dataWidth = 32 );
     virtual ~op_mult_s();
 private:
 

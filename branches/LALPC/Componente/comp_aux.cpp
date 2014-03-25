@@ -7,10 +7,12 @@
 //#include "../header/meuHeader.h"
 #include "comp_aux.h"
 #include "string"
+#include "../Aux/FuncoesAux.h"
 
 using namespace std;
 //Componente voltado para criacao dos pinos de entrada
-comp_aux::comp_aux(void*node,  const string& aux) : Componente(node, aux) {
+comp_aux::comp_aux(void*node,  const string& aux, int dataWidth) : Componente(node, aux) {
+    this->dataWidth = dataWidth;
     this->setDelayValComp("1");
     this->tipo_comp = CompType::AUX;     
     if(aux == "INIT"){
@@ -23,11 +25,11 @@ comp_aux::comp_aux(void*node,  const string& aux) : Componente(node, aux) {
     }        
     if(aux == "TERMINATION"){
         this->setNomeCompVHDL("termination");
-        this->addPort(new Port("out","out"   ,"std_logic_vector","32", "OUT"));
+        this->addPort(new Port("out","out"   ,"std_logic_vector",FuncoesAux::IntToStr(this->dataWidth), "OUT"));
     }
     if(aux == "VALOR"){
         this->setNomeCompVHDL("valor");
-        this->addPort(new Port("out","out"   ,"std_logic_vector","32", "OUT"));
+        this->addPort(new Port("out","out"   ,"std_logic_vector",FuncoesAux::IntToStr(this->dataWidth), "OUT"));
     }
     if(aux == "DONE"){
         this->setNomeCompVHDL("done");
@@ -43,6 +45,7 @@ void    comp_aux::setValAux(const string& aux){
 }
 
 string  comp_aux::geraCompVHDL(){
+    string dataWidthAux = FuncoesAux::IntToStr(this->dataWidth);
     string res = "\t";
     if(this->getNomeCompVHDL() == "result"){
         res = "\\"+this->getName()+"\\ <= "+this->getPortDataInOut("IN")->getLigacao()+"; \n";
@@ -54,10 +57,10 @@ string  comp_aux::geraCompVHDL(){
         res = this->getPortDataInOut("OUT")->getLigacao2()->getNome()+" <= \\"+this->getName()+"\\; \n";
     }
     if(this->getNomeCompVHDL() == "termination" || this->getNomeCompVHDL() == "input"){
-        res = this->getPortDataInOut("OUT")->getLigacao()+" <= conv_std_logic_vector("+this->valAux+", 32); \n";
+        res = this->getPortDataInOut("OUT")->getLigacao()+" <= conv_std_logic_vector("+this->valAux+", "+dataWidthAux+"); \n";
     }
     if(this->getNomeCompVHDL() == "valor"){
-        res = this->getPortDataInOut("OUT")->getLigacao2()->getNome()+" <= conv_std_logic_vector("+this->valAux+", 32); \n";
+        res = this->getPortDataInOut("OUT")->getLigacao2()->getNome()+" <= conv_std_logic_vector("+this->valAux+", "+dataWidthAux+"); \n";
     }
     return res;
 }
