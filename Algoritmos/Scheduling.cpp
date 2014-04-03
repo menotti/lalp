@@ -155,7 +155,9 @@ void Scheduling::balanceAndSyncrhonize(){
         }
         else if( (counter != NULL) && (c->getTipoCompRef() != CompType::MEM) && (c->temPorta("we"))){
             if(c->getPortOther("we")->temLigacao() == false){
+               
                 int distance = c->getASAP() - counter->getASAP();
+                
                 if(distance > 1){
                     string strAux = counter->getDelayValComp();
                     int dlyCtd = 0;
@@ -172,40 +174,22 @@ void Scheduling::balanceAndSyncrhonize(){
                         cout<< "inserting '" << (distance-1+stepAux) << "' delay(s) on signal '"<< counter->getName()<< "->" << c->getName() <<"' (write enable) " << dly3->getNomeCompVHDL() << ": '" << dly3->getName() <<"'" << endl;
                     }
                 }
+//                
+//                else{
+//                    if(distance == 1){
+//                        cout << "**** Nome: '"<< c->getName() <<"' distance:"<< distance <<  endl;
+//                        Ligacao* s1 = this->design->insereLigacao(counter, c, "step", "we");
+//                        Componente* dly3 = this->design->insereDelay(s1, 1, counter->getASAP());
+//                        this->design->addComponent(dly3);
+//                        ats++;
+//                    }
+//                }
             }else{
                 if(this->debug) cout<< "port 'we' of component \"" << c->getName() << "\" is connected, please check if aditional synchronization is needed (when ... && "<<counter->getName()<<".step@N)" << endl;
             }
         }
-        
-        
-//        else if( (counter != NULL) && (c->getTipoCompRef() != CompType::MEM) && (c->temPorta("we"))){
-//            if(c->getPortOther("we")->temLigacao() && this->design->verificaTemDelay(c,"we")==false){
-//                int distance = c->getASAP() - counter->getASAP();
-//                if(distance > 1){
-//                    Ligacao* s1 = c->getPortOther("we")->getLigacao2();
-//                    if (s1->getOrigem()->tipo_comp != CompType::CND){
-//                        string strAux = counter->getDelayValComp();
-//                        int dlyCtd = 0;
-//                        if(strAux != ""){
-//                            dlyCtd = FuncoesAux::StrToInt(counter->getDelayValComp());
-//                        }
-//                        int stepAux= c->getValStepAux();
-//                        Componente* dly3 = this->design->insereDelay(s1, distance-1+stepAux, counter->getASAP() + dlyCtd);
-//                        this->design->addComponent(dly3);
-//                        ats++;
-//                        if(this->debug){
-//                            cout<< "inserting '" << (distance-1+stepAux) << "' delay(s) on signal '"<< counter->getName()<< "->" << c->getName() <<"' (memory port: WE)" << endl;
-//                        }
-//                    }
-//                }
-//            }else{
-//                if(this->debug) cout<< "port 'we' of component \"" << c->getName() << "\" is connected, please check if aditional synchronization is needed (when ... && "<<counter->getName()<<".step@N)" << endl;
-//            }
-//        }
     }
-//    if(this->debug){
-//        cout<< "sinc oper part 1: OK" << endl;
-//    }
+
     
     Componente* comp_init = this->design->getComponent("init");
     if(firstCounter != NULL && comp_init != NULL && comp_init->getLigacaoOutDefault() == NULL){
@@ -279,8 +263,8 @@ void Scheduling::balanceAndSyncrhonize(){
             int sourceSched = this->calculateASAP(orig);
             int destSched   = dest->getASAP();
             int distance    = destSched - sourceSched;
-            //if (distance > 1) {
-            if (distance >= 1) {
+            if (distance > 1) {
+//            if (distance >= 1) {
                 Componente* dly5 = this->design->insereDelay((*k), distance, dest->getASAP());
                 ats++;
                 this->design->addComponent(dly5);
@@ -310,10 +294,17 @@ void Scheduling::balanceAndSyncrhonize(){
             if(orig->getSync() && dest->getSync()){
                 if(distance > mii){
                     if(this->debug) cout<< "backedge "<< orig->getName()<< "->" << dest->getName() <<" have distance "<<distance<< " which is bigger than MII = "<<mii<<", this can limit MII to lower value" << endl;
+                    if(orig->getForComp() != NULL )orig->getForComp()->setGenericMapVal("steps", "VAL", FuncoesAux::IntToStr(distance));
+                    mii = distance;
                 }
             }
+            if(distance < 0){
+                dest->setUserSync(true);
+                dest->setDelayValComp(FuncoesAux::IntToStr(distance*(-1)));
+            }
+                
             if(this->debug){
-                cout<< "backedge "<< orig->getName()<< "->" << dest->getName()<< " with distance "<< distance << endl;
+                cout<< "backedge "<< orig->getName()<< "->" << dest->getName()<< " with distance ||"<< distance << endl;
             }
         }
     }

@@ -47,7 +47,7 @@ int main() {
 		delta = !bufferstep ? (inputbuffer >> 4) & 0xf : inputbuffer & 0xf;
 		bufferstep = !bufferstep;
 		
-
+/*
 		index2 = index + indexTable[delta];
 
 		step = stepSizeTable[index];
@@ -65,7 +65,7 @@ int main() {
 		vpdiff3= (((delta2) & 2) > 0)?vpdiff + (step >> 1):vpdiff2;
 		vpdiff4= (((delta2) & 4) > 0)? vpdiff + (step):vpdiff3;
 
-/*
+
 		if((sign) > 0 ){
 			valpred2= valpred - vpdiff4;
 		}else{
