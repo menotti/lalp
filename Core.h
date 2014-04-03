@@ -75,7 +75,8 @@ class Core {
         void            ligaRegNoWE();
         int             getDataWidthByName(const string& name);
         void            corrigeRegSemValorInicial();
-        
+        void            rodarSCC();
+        void            insereDelayLigBackEdge();
         set<string>     bitRegList; //Lista com componentes marcados como BIT
         int             DATA_WIDTH;
         Componente*     compForAux;
