@@ -13,6 +13,7 @@
 #include "Core.h"
 #include "Design.h"
 #include "Algoritmos/Scheduling.h"
+#include "Algoritmos/SCC.h"
 #include "Componente/Componente.h"
 #include "Componente/op_sub_s.h"
 #include "Componente/and_op.h"
@@ -94,19 +95,32 @@ Core::Core(SgProject* project, list<SgNode*> lista) {
     //Coloca ligacao para calcular melhor no processo asap
 //    this->ligaRegNoWE();
     
+    //this->dot->imprimeHWDOT(this->design->getListaComp(), this->design->getListaLiga(), "DOT/000_FinalizaIF_OK.dot", false);
     
-    this->ligaCompDep();
-    this->design->finalizaComponentesIF();
+    
+    
     this->aplicarDelayPragma();
-
+    this->dot->imprimeHWDOT(this->design->getListaComp(), this->design->getListaLiga(), "DOT/9_LIGA_DEP.dot", false);
+    this->ligaCompDep();
+    this->dot->imprimeHWDOT(this->design->getListaComp(), this->design->getListaLiga(), "DOT/10_ANTES_SCHEDULE.dot", false);   
     //Processo de Scheduling
     Scheduling* sched = new Scheduling(this->design);
     sched->detectBackwardEdges();
     sched->ALAP();
     sched->balanceAndSyncrhonize();
     this->design = sched->getDesign();
+    this->dot->imprimeHWDOT(this->design->getListaComp(), this->design->getListaLiga(), "DOT/11_DEPOIS_SCHEDULE.dot", false);  
+    
+    this->insereDelayLigBackEdge();
+    
+    this->dot->imprimeHWDOT(this->design->getListaComp(), this->design->getListaLiga(), "DOT/12_DEPOIS_SCHEDULE.dot", false); 
+    this->design->finalizaComponentesIF();
     
     
+    
+    
+    //Rodar processo para identificar componente fortemente conectado.
+//    this->rodarSCC();
     
 //    this->corrigeRegWe();
     
@@ -132,6 +146,44 @@ Core::Core(SgProject* project, list<SgNode*> lista) {
     this->geraArquivosDotHW();
 //    this->design->graph->geraDot();
 }
+
+void Core::insereDelayLigBackEdge(){
+    list<Componente*>::iterator i;
+    for (i = this->design->ListaComp.begin(); i != this->design->ListaComp.end(); i++) {
+        if( (*i)->getUserSync() == true ){
+            if((*i)->getPortOther("we")->temLigacao() ){
+                Ligacao* ligAux = (*i)->getPortOther("we")->getLigacao2();
+                if(ligAux->getOrigem()->tipo_comp == CompType::DLY){
+                    delay_op* dly = (delay_op*)(ligAux->getOrigem());
+                    string dlyValOld = dly->getDelayVal();
+                    int oldVal = FuncoesAux::StrToInt(dlyValOld);
+                    int comPal = FuncoesAux::StrToInt((*i)->getDelayValComp());
+                    int newVal = oldVal + comPal;
+                    dly->setDelayVal(FuncoesAux::IntToStr(newVal));
+                }else{
+                    int val = FuncoesAux::StrToInt((*i)->getDelayValComp());
+                    this->design->insereDelay(ligAux,val);
+                }
+            }
+        }
+    }
+}
+
+void Core::rodarSCC(){
+    cout<<"#--Algoritmo SCC:                             #"<<endl;
+    SCC* scc = new SCC();
+    list<Ligacao*>::iterator k;
+    for (k = this->design->ListaLiga.begin(); k != this->design->ListaLiga.end(); k++) {
+        if ( (*k)->getAtivo() == false ) continue;
+        scc->addEdge((*k)->getOrigem()->getName(), (*k)->getDestino()->getName(), (*k)->getNome());
+    }
+    int valSCC = 0;
+    valSCC = scc->getSCC();
+    scc->geraDot();
+    cout<< " Valor SCC: '"<< valSCC<<"'" << endl;
+    cout<<"#--Algoritmo SCC: OK                          #"<<endl;
+}
+
 
 void Core::aplicarDelayPragma(){
 
@@ -932,19 +984,17 @@ Componente* Core::analisaExp(SgNode *nodoAtual, SgNode* pai, const string& aux, 
         SgNode* proxNodo = isSgNode(sgBasic);
         analisaExp(proxNodo, pai, aux, lineParal, compFor);
     }
-
-    
-    // <editor-fold defaultstate="collapsed" desc="NODO CAST - IGNORADO">
-    SgNotOp* expNot = isSgNotOp(nodoAtual);
-    if (expNot != NULL) {
-        SgNode* proxNodo = isSgNode(expNot->get_operand_i());
-        analisaExp(proxNodo, pai, aux, lineParal, compFor);
-    }// </editor-fold>
     
     // <editor-fold defaultstate="collapsed" desc="NOT VAR">
-    SgNotEqualOp* expNotE = isSgNotEqualOp(nodoAtual);
+    //SgNotEqualOp* expNotE = isSgNotEqualOp(nodoAtual);
+    SgNotOp* expNotE = isSgNotOp(nodoAtual);
     if (expNotE != NULL) {
-        SgNode* filhoEsq = isSgNode(expNotE->get_lhs_operand_i());
+        SgNode* filhoAbaixo     = isSgNode(expNotE->get_operand_i());
+        
+        SgNotEqualOp* expNotE2  = isSgNotEqualOp(filhoAbaixo);
+        
+        SgNode* filhoEsq        = isSgNode(expNotE2->get_lhs_operand_i());
+        
         if (filhoEsq != NULL ) {
             int dataWidht = this->DATA_WIDTH;
      
@@ -1445,6 +1495,8 @@ Componente* Core::analisaExp(SgNode *nodoAtual, SgNode* pai, const string& aux, 
         if (notEqualOp != NULL) {
             if_ne_op_s* ifComp = new if_ne_op_s(this->GetStrPointerAdd(nodoAtual), dataWidht);
             ifComp->setName("if_ne_op_s_" + FuncoesAux::IntToStr(this->design->ListaComp.size()));
+            cout << "--- TESTE NOT EQUAL ----" << ifComp->getName() << " - " << ifComp->getNomeCompVHDL() << endl;
+            cout << ifComp->getEstruturaComponenteVHDL() << endl;
             comp = ifComp;
         }// </editor-fold>
 
@@ -1477,6 +1529,8 @@ Componente* Core::analisaExp(SgNode *nodoAtual, SgNode* pai, const string& aux, 
         lastId = this->design->ListaComp.size();
         
         compReturn = analisaExp(cond, NULL, "", lineParal, compFor);
+        
+        if(compReturn->tipo_comp != CompType::CND) compReturn->tipo_comp = CompType::CND;
         
         if(tBody != NULL){
             Rose_STL_Container<SgNode*> var = NodeQuery::querySubTree(tBody,V_SgNode);             
@@ -1511,6 +1565,7 @@ Componente* Core::analisaExp(SgNode *nodoAtual, SgNode* pai, const string& aux, 
             for (com = this->design->ListaComp.begin(); com != this->design->ListaComp.end(); com++) {
                 int idI =  FuncoesAux::StrToInt((*com)->getNumIdComp());
                 if ( idI >= lastId){
+                    
                     (*com)->setIf(true);
                     (*com)->setIfBody(false);
                     (*com)->setIfComp(compReturn);
@@ -1893,11 +1948,30 @@ void Core::ligaCompDep(){
                         //Pegar todas as ligacores da saida do componente que o compoente ORIGEM seja (*j)
                         for (k = this->design->ListaLiga.begin(); k != this->design->ListaLiga.end(); k++) {
                             if ((*k)->getOrigem() == (*j) && (*k)->getAtivo() == true){
+                                
                                 (*j)->removeLigacao((*k));
                                 (*k)->editOrig(lastWE);
                                 (*k)->setPortOrigem(lastWE->getPortDataInOut("OUT"));
                                 lastWE->addLigacao((*k));
                                 lastWE->getPortDataInOut("OUT")->addLigacao((*k));
+                                (*k)->setBackEdge(true);
+                                
+                                if( (*k)->getDestino()->tipo_comp == CompType::DLY ){
+                                    Componente* dlyAux = (*k)->getDestino();
+                                    Ligacao* ligOutDly = dlyAux->getLigacaoOutDefault();
+                                    
+                                    dlyAux->removeLigacao(ligOutDly);
+                                    
+                                    Componente* newAux = ligOutDly->getDestino();
+                                    newAux->removeLigacao(ligOutDly);
+                                    
+                                    (*k)->editDest(newAux);
+                                    (*k)->setPortDestino(ligOutDly->getPortDestino());
+                                    dlyAux->addLigacao((*k));
+                          
+                                    this->design->removeComponente(dlyAux, NULL);
+                                }
+                                
                             }
                         }
                         this->design->removeComponente((*j), NULL);
@@ -1929,11 +2003,7 @@ void Core::FinalizaComponentes(){
     int qtdLig = 0;
 //    this->imprimeAll();
     
-    
-    
-    
-    
-    
+
     
     this->ListaComp = this->design->getListaComp();
      
@@ -2242,14 +2312,14 @@ void Core::FinalizaComponentes(){
         }
     }
     
-    for (i = this->design->ListaComp.begin(); i != this->design->ListaComp.end(); i++) {
-        if ((*i)->writeEnable != true) continue;
-        if ((*i)->tipo_comp != CompType::REF) continue;
-//        if ((*i)->getComponenteRef()->tipo_comp != CompType::MEM) continue;
-        if((*i)->getPortOther("we")->temLigacao() == false && (*i)->getForComp() != NULL){
-            this->design->insereLigacao((*i)->getForComp(), (*i), "step"  , "we");
-        }
-    }
+//    for (i = this->design->ListaComp.begin(); i != this->design->ListaComp.end(); i++) {
+//        if ((*i)->writeEnable != true) continue;
+//        if ((*i)->tipo_comp != CompType::REF) continue;
+////        if ((*i)->getComponenteRef()->tipo_comp != CompType::MEM) continue;
+//        if((*i)->getPortOther("we")->temLigacao() == false && (*i)->getForComp() != NULL){
+//            this->design->insereLigacao((*i)->getForComp(), (*i), "step"  , "we");
+//        }
+//    }
     
     this->dot->imprimeHWDOT(this->design->getListaComp(), this->design->getListaLiga(), "DOT/5_LigContador.dot", false);
     cout<<"--Criando novas ligacoes do Contador: OK"<<endl;
@@ -3000,6 +3070,7 @@ void Core::analiseMemoriaDualPort(){
     list<Componente*>::iterator i;
     list<Componente*>::iterator j;
     list<Ligacao*>::iterator k;
+    
     //Processo de verificacao se existe duas memorias iguais do processo de paralelizacao
     //neste caso se existir apenas 2 estas vao ser substituidas por uma memoria DUAL
     // <editor-fold defaultstate="collapsed" desc="Inserir Dual Port">
