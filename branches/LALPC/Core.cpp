@@ -162,8 +162,18 @@ void Core::insereDelayLigBackEdge(){
                     dly->setDelayVal(FuncoesAux::IntToStr(newVal));
                 }else{
                     int val = FuncoesAux::StrToInt((*i)->getDelayValComp());
-                    this->design->insereDelay(ligAux,val);
+                    Componente* newDly = this->design->insereDelay(ligAux,val, 0);
+                    this->design->addComponent(newDly);
                 }
+            }else{
+                Componente* ctdAux = NULL;
+                ctdAux = (*i)->getForComp();
+                Ligacao* newLig = this->design->insereLigacao(ctdAux, (*i), "step", "we");
+
+                int val = FuncoesAux::StrToInt((*i)->getDelayValComp());
+                Componente* newDly = this->design->insereDelay(newLig,val, 0);
+ 
+                this->design->addComponent(newDly);
             }
         }
     }

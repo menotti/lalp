@@ -255,35 +255,20 @@ void analisaIf::criaLigIfParaPortaWE(Componente* comp){
         cout<< "Componente FOR: '"<< comp->getForComp()->getName()  <<"'" << endl;
         cout<< "----------------------------------------" << endl;
     }
-    cout << "1" << endl;
     and_op* andCompAux = new and_op(NULL, 1);
-    cout << "2" << endl;
     andCompAux->setNumIdComp(FuncoesAux::IntToStr(this->design->ListaComp.size()));
-    cout << "3" << endl;
     andCompAux->setName("comp_"+FuncoesAux::IntToStr(this->design->ListaComp.size()));
-    cout << "3" << endl;
     andCompAux->setNumParalelLina(comp->getIfComp()->getNumParalelLina());
-    cout << "4" << endl;
     andCompAux->setNumLinha(comp->getIfComp()->getNumLinha());
-    cout << "5" << endl;
     this->design->addComponent(andCompAux);
-    cout << "6" << endl;
         
     Componente* compAuxFor = NULL;
     compAuxFor = comp->getForComp();
     if(compAuxFor == NULL) compAuxFor = comp->getIfComp()->getForComp();
-    cout << "71 --::"<< comp->getForComp()->getName() << endl;
-    cout << "72 --::"<< compAuxFor->getName() << endl;
     if(comp->getIfBody()){
-        cout << "FOR: "<< compAuxFor->getName() << endl;
-        cout << "11" << endl;
         this->design->insereLigacao(comp->getIfComp(), andCompAux, "O0"  , "I0");
-        cout << "12" << endl;
         this->design->insereLigacao(compAuxFor       , andCompAux, "step", "I1");
-        cout << "13" << endl;
         this->design->insereLigacao(andCompAux, comp, "O0", "we");
-        cout << "14" << endl;
-        //this->design->insereLigacao(comp->getIfComp(), comp, "O0", "we");
         
     }else{
         
@@ -297,8 +282,6 @@ void analisaIf::criaLigIfParaPortaWE(Componente* comp){
         this->design->addComponent(negComp);
         
         this->design->insereLigacao(comp->getIfComp(), negComp, "O0", "I0");
-//        this->design->insereLigacao(negComp, comp, "O0", "we");
-        cout << "22" << endl;
         this->design->insereLigacao(negComp   , andCompAux, "O0", "I0");
         this->design->insereLigacao(compAuxFor, andCompAux, "step", "I1");
         
@@ -318,10 +301,11 @@ void analisaIf::analiseProcessoCriaMux(Componente* compIf){
         if ((*i)->tipo_comp != CompType::REF) continue;
         if ((*i)->getNomeCompVHDL() == "reg_mux_op") continue;
         
+        
         comp_ref* CompRefI = (comp_ref*) (*i);
         if (CompRefI->getTipoVar() == "VET") {
             if (this->verificaCompExisteBodyTrueEFalse(compIf,(*i)) == false){
-                this->criaLigIfParaPortaWE((*i));
+                //this->criaLigIfParaPortaWE((*i));
             }else{
                 cout<< "ERROR: utilizando duas escritas na mesma memoria - operacao nao permitida..." << endl;
                 exit(EXIT_FAILURE);
@@ -331,7 +315,7 @@ void analisaIf::analiseProcessoCriaMux(Componente* compIf){
             //se nao existir setar saida do IF para a porta WE deste componente
             //NAO PODE TER ELEMENTO no Body FALSE do IF
             if(this->verificaCompExisteBodyTrueEFalse(compIf,(*i)) == false  && this->verificaCompAntesIf(compIf,(*i)) == false){
-                this->criaLigIfParaPortaWE((*i));
+                //this->criaLigIfParaPortaWE((*i));
             }else{
                 if(this->verificaCompPrecisaMux(compIf,(*i)) == true){
                     this->criaComponenteMux(compIf, (*i));
@@ -549,11 +533,10 @@ void analisaIf::criaComponenteMux(Componente* compIf, Componente* compAtual){
         
         ref->setNumParalelLina(compAuxTrue->getNumParalelLina());      
         ref->setNumLinha(linha+1);
-        
 
         ref->setTipoVar("VAR");
         ref->setNomeVarRef(compAuxTrue->getNomeVarRef());
-        ref->setNumParalelLina(compAuxTrue->getNumParalelLina());
+        
         ref->setIfComp(compIf);
 
         reg_mux_op* reg = new reg_mux_op(NULL, "WE", compAuxTrue->dataWidth);
@@ -563,7 +546,7 @@ void analisaIf::criaComponenteMux(Componente* compIf, Componente* compAtual){
 
         ref->setComponenteRef(reg);
         ref->updateCompRef();
-        
+        ref->setDelayValComp(compAuxTrue->getDelayValComp());   
         
         bool auxFind = false;
         
