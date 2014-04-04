@@ -103,11 +103,13 @@ Core::Core(SgProject* project, list<SgNode*> lista) {
     this->dot->imprimeHWDOT(this->design->getListaComp(), this->design->getListaLiga(), "DOT/9_LIGA_DEP.dot", false);
     this->ligaCompDep();
     this->dot->imprimeHWDOT(this->design->getListaComp(), this->design->getListaLiga(), "DOT/10_ANTES_SCHEDULE.dot", false);   
+    
     //Processo de Scheduling
     Scheduling* sched = new Scheduling(this->design);
     sched->detectBackwardEdges();
     sched->ALAP();
     sched->balanceAndSyncrhonize();
+    
     this->design = sched->getDesign();
     this->dot->imprimeHWDOT(this->design->getListaComp(), this->design->getListaLiga(), "DOT/11_DEPOIS_SCHEDULE.dot", false);  
     
