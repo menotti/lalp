@@ -43,49 +43,22 @@ int main() {
 			inputbuffer = indata[i];
 			i = i + 1;
 		}
-
 		delta = !bufferstep ? (inputbuffer >> 4) & 0xf : inputbuffer & 0xf;
 		bufferstep = !bufferstep;
-		
-/*
 		index2 = index + indexTable[delta];
-
 		step = stepSizeTable[index];
-
 		sign = delta & 8;
-
 		delta2 = delta & 7;
-
 		index3 = (index2 < 0) ? 0: index2;
-
 		index = (index3 > 88) ? 88 : index3;
-		
 		vpdiff = step >> 3;
-		vpdiff2= (((delta2) & 1) > 0) ? vpdiff + (step >> 2):vpdiff;
-		vpdiff3= (((delta2) & 2) > 0)?vpdiff + (step >> 1):vpdiff2;
-		vpdiff4= (((delta2) & 4) > 0)? vpdiff + (step):vpdiff3;
-
-
-		if((sign) > 0 ){
-			valpred2= valpred - vpdiff4;
-		}else{
-			valpred2= valpred + vpdiff4;
-		}
-
-		if(valpred2 > 32767){
-			valpred3= 32767;
-		}else{
-			valpred3= valpred2;
-		}
-
-		if(valpred3 < -32768){
-			valpred= -32768;
-		}else{
-			valpred= valpred3;
-		}
-
+		vpdiff2 = (((delta2) & 1) > 0) ? vpdiff + (step >> 2):vpdiff;
+		vpdiff3 = (((delta2) & 2) > 0)? vpdiff + (step >> 1):vpdiff2;
+		vpdiff4 = (((delta2) & 4) > 0)? vpdiff + (step):vpdiff3;
+		valpred2 =  sign > 0 ? valpred - vpdiff4 : valpred + vpdiff4;
+		valpred3 = valpred2 > 32767 ? 32767:valpred2;
+		valpred = valpred3 < -32768?-32768:valpred3;
 		outdata[len] = valpred;
-		*/
   	}
 
 	return outdata; 

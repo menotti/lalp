@@ -38,80 +38,59 @@ int main() {
 
   for (len = 0 ; len < 1024 ; len++ ) {
     val = indata[len];
-
     diff = val - valpred;
-    
     if (diff < 0){
 	sign = 8;
     }else{ 
         sign = 0; 
     }
-
     delta = delta | sign;    
-
     step = stepsizeTable[index];
-
     if ( sign != 0 ){
         diff = (-diff);
     }
-
     vpdiff = (step >> 3);
-   
-
     if ( diff >= step ) {
       delta = 4;
       diff = diff - step;
       vpdiff = vpdiff + step;
     }
-    
     step = step >> 1;
-  
-
-
     if ( diff >= step  ) {
       delta = delta | 2;
       diff = diff - step;
       vpdiff = vpdiff + step;
     }    
-    
     step = step >> 1;
-   
     if ( diff >= step ) {
       delta = delta | 1;
       vpdiff = vpdiff + step;
     }
-      
     if ( sign != 0  ){
       valpred =  valpred - vpdiff;
     }else {
       valpred = valpred + vpdiff;
     }
-
     if ( valpred > 32767 ){
       valpred = 32767;
     }
-    
     if ( valpred < -32768 ){
       valpred = -32768;
     }
-    
     index = index + indexTable[delta];
 
     if ( index < 0 ) {
         index = 0;
     }
-
     if ( index > 88 ) {
         index = 88;
     }
-    
     if (!bufferstep) {
       	outdata[i] = (delta & 0x0f) | outputbuffer;
       	i = i + 1;
     } else {
       	outputbuffer = (delta << 4) & 0xf0;
     }
-
     bufferstep = !bufferstep;
     
   }
