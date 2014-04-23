@@ -52,4 +52,4 @@ boost-headers:
 	g++ -c -Wno-deprecated header/headerGraph.h -I/home/demo/opt/boost-1.40.0/include -o header/headerGraph.h.gch
 	
 
-headers: rose-headers boost-headers comp-headers
+headers: rose-headers boost-headers
