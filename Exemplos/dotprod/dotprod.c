@@ -5,7 +5,7 @@ int main() {
   //int b[4] = {1,2,3,4}; 
   int i;
   int sum = 0;
-  #pragma unroll 2
+  //#pragma unroll 2
   for (i=0; i<2048; i++){
     sum += a[i] * b[i];
   }

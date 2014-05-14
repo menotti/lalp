@@ -3,7 +3,7 @@
 TRANSLATOR=../../LALPC
 
 ## Input testcode for your translator
-TESTCODE=template.c
+TESTCODE=sobel.c
 
 #On Windows systems comment the line below and use: make TESTBENCH=t_<EntityName>
 DIR = $(shell basename ${PWD})
@@ -47,4 +47,4 @@ view :
 
 clean :
 	$(GHDL_CMD) --clean
-	$(REMOVE_CMD) *.vcd rose_*.c work-obj93.cf *.dot *.o
+	$(REMOVE_CMD) *.vcd rose_*.c work-obj93.cf *.dot *.o DOT/*.dot 
