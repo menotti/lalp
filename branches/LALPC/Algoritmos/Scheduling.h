@@ -16,6 +16,7 @@ public:
     Scheduling(Design* design);
     Design*     getDesign();
     void        ALAP();
+    void        corrigeNumLinha();
     void        balanceAndSyncrhonize();
     void        detectBackwardEdges();
     virtual     ~Scheduling();

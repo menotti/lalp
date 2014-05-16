@@ -127,8 +127,7 @@ bool Componente::getSync(){
 
 void Componente::setSync(bool sync){
     this->sync = sync;
-    if(sync == false)
-        this->setDelayValComp("0");
+    if(sync == false) this->setDelayValComp("0");
 }
 
 void Componente::setNumParalelLina(const string &id){

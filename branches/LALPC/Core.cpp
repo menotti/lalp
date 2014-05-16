@@ -2117,56 +2117,7 @@ void Core::FinalizaComponentes(){
     
     analisaLigaComponente* objAnalisa = new analisaLigaComponente(this->design);
     this->design = objAnalisa->getDesign();
-//    Componente* CompRefAux = NULL;
-//    for (i = this->design->ListaComp.begin(); i != this->design->ListaComp.end(); i++) {
-//        if((*i)->tipo_comp != CompType::REF) continue;        
-//        if(isIndiceVector((*i)->getNomeVarRef()))continue;
-//        if((*i)->getComponenteRef()->tipo_comp != CompType::REG) continue;
-//        if((*i)->getIf()) continue;
-////        cout << "#########################################"<< endl;
-//        CompRefAux = (*i);
-////        cout << "(*I) NOME: " << (*i)->getName() << " - LINHA: " << (*i)->getNumLinha() << endl;
-////        cout << "------------------------------"<< endl;
-//        for (j = this->design->ListaComp.begin(); j != this->design->ListaComp.end(); j++) {
-//            if((*j)->tipo_comp != CompType::REF) continue;
-//            if(CompRefAux == (*j)) continue;
-//            if(isIndiceVector((*j)->getNomeVarRef()))continue;
-//            if((*j)->getComponenteRef()->tipo_comp != CompType::REG) continue;
-////            cout << "1(*J) NOME: " << (*j)->getName() << " - LINHA: " << (*j)->getNumLinha() << endl;
-//            if((*i)->getNumParalelLina() != (*j)->getNumParalelLina()) continue;
-////            cout << "2(*J) NOME: " << (*j)->getName() << " - LINHA: " << (*j)->getNumLinha() << endl;
-//            if (CompRefAux->getNomeVarRef() == (*j)->getNomeVarRef()) {
-////                cout << "(*J) NOME: " << (*j)->getName() << " - LINHA: " << (*j)->getNumLinha() << endl;
-////                cout << "------------------------------"<< endl;
-//                if ((*j)->writeEnable == true ) {
-////                    cout<< "** WE: " << (*j)->getName() << endl;
-////                    cout<< "** ANTIGO AUX: " << CompRefAux->getName() << endl;
-//                    if ((*j)->getIf() == false) CompRefAux = (*j);
-////                    cout<< "** Novo   AUX: " << CompRefAux->getName() << endl;
-//                    continue;
-//                }else{
-////                    cout << " CHEGOU NO ELSE " << endl;
-//                    if(CompRefAux->getNumLinha() > (*j)->getNumLinha()) continue;
-////                    cout<< "REF AUX: "<< CompRefAux->getName() << endl;
-////                    cout<< "REF   J: "<< (*j)->getName() << endl;
-////                    cout<< "OUT   J: "<< (*j)->getName() << " -> "<< (*j)->getLigacaoOutDefault()->getDestino()->getName() << endl;
-//                    if (CompRefAux->getPortDataInOut("OUT")->temLigacao() ){
-////                        cout<< "-- SUB: "<< endl;
-//                        this->design->substiuiComRecorente(CompRefAux, (*j));
-//                    }else{
-////                        cout<< "-- ADD: "<< endl;
-//                        //CompRefI->getPortOther("address")->getLigacao();
-//                        Componente* compAuxDestino = (*j)->getLigacaoOutDefault()->getDestino();
-////                        cout<< "-- NEW LIG: '"<< CompRefAux->getName() << "' ->  '" << compAuxDestino->getName()<< "'" << endl;
-//                        this->design->insereLigacao(CompRefAux, compAuxDestino, CompRefAux->getPortDataInOut("OUT")->getName(), (*j)->getLigacaoOutDefault()->getPortDestino()->getName());
-//                        this->design->removeComponente((*j), NULL);
-//                    }
-//                }
-//            }
-////            cout << "==============================="<< endl;
-//        }
-////        cout << "------------------------------"<< endl;
-//    }
+
     cout<<"--Ligar componentes entre expressoes: OK"<<endl;
     // </editor-fold>
     this->dot->imprimeHWDOT(this->design->getListaComp(), this->design->getListaLiga(), "DOT/2_2_LigExpresOK.dot", false);

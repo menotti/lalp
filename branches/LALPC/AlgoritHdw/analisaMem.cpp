@@ -27,7 +27,28 @@ analisaMem::analisaMem(Design* design) {
 }
 
 Design* analisaMem::getDesign(){
+    
     return this->design;
+}
+
+//Quando existe a necessidade de se colocar um mux isso ocorre que existe mais de um acesso
+//para a mesma memoria, neste caso para corrigir um erro durante o processo de verificar backedge
+//vamos pegar a ultima ocorrencia do acesso da memoria e definir esse valor para todos os componentes
+int analisaMem::getNumLinhaMaxMem(Componente* comp){
+    list<Componente*>::iterator i;
+    int max = 0;
+    for (i = this->design->ListaComp.begin(); i != this->design->ListaComp.end(); i++) {
+        if ((*i)->tipo_comp != CompType::REF) continue;
+        if ((*i)->getEIndice()) continue;
+        if ((*i)->getWE()) continue;
+        comp_ref* comp = (comp_ref*) (*i);
+        if (comp->getTipoVar() != "VET") continue;
+
+        if ((*i)->getNomeVarRef() == comp->getNomeVarRef() && (*i)->getNumParalelLina() == comp->getNumParalelLina()) {
+            if(max < (*i)->getNumLinha()) max = (*i)->getNumLinha();
+        }
+    }
+    return max;
 }
 
 void analisaMem::insereStepMux(){
@@ -77,6 +98,8 @@ void analisaMem::insereMux(){
     cout << "--Verificando necessidade de MUX: " << endl;
     ListaAuxString.clear();
     Componente* compAux = NULL;
+    
+    int valLinha = 0;
 
     for (i = this->design->ListaComp.begin(); i != this->design->ListaComp.end(); i++) {
         if ((*i)->tipo_comp != CompType::REF) continue;
@@ -85,7 +108,9 @@ void analisaMem::insereMux(){
         comp_ref* comp = (comp_ref*) (*i);
         if (comp->getTipoVar() != "VET") continue;
         if (this->design->verificarPrecisaMux((*i)) == false) continue;
-
+        
+        valLinha = getNumLinhaMaxMem((*i));
+        
         if (ListaAuxString.find((*i)->getNomeVarRef()+(*i)->getNumParalelLina()) == ListaAuxString.end()) {
             int count = 0;
             ListaAuxString.insert((*i)->getNomeVarRef()+(*i)->getNumParalelLina());
@@ -110,13 +135,19 @@ void analisaMem::insereMux(){
                     
                     mux_m_op* mux = new mux_m_op(NULL, nPos, nLis, (*i)->dataWidth);
                     mux->setName("mux" + FuncoesAux::IntToStr(this->design->ListaComp.size()));
-                    mux->setNumLinha((*i)->getNumLinha());
+                    mux->setNumLinha(valLinha);
                     mux->setNumIdComp(FuncoesAux::IntToStr(this->design->ListaComp.size()));
                     mux->setNumParalelLina((*i)->getNumParalelLina());
                     this->design->addComponent(mux);
 
                     Ligacao* ligAddr = (*i)->getPortOther("address")->getLigacao2();
+                    
+                    (*i)->setNumLinha(valLinha);
+                    (*i)->getPortDataInOut("OUT")->getLigacao2()->getDestino()->setNumLinha(valLinha);
+                    (*i)->getPortDataInOut("OUT")->getLigacao2()->getDestino()->setUserSync(true);
+                    (*i)->getPortDataInOut("OUT")->getLigacao2()->getDestino()->setSync(true);
 
+                    
                     Componente* compOrigem = ligAddr->getOrigem();
                     compOrigem->removeLigacao(ligAddr);
                     (*i)->removeLigacao(ligAddr);
@@ -143,7 +174,11 @@ void analisaMem::insereMux(){
 
                     this->design->insereLigacao(compOrigemJ, mux, compOrigemJ->getPortDataInOut("OUT")->getName(), mux->getPortDataInOut("IN")->getName());
                     this->design->insereLigacao((*i), compDestJ, (*i)->getPortDataInOut("OUT")->getName(), compDestJ->getPortDataInOut("IN")->getName());
-
+                    
+                    compDestJ->setNumLinha(valLinha);
+                    compDestJ->setUserSync(true);
+                    compDestJ->setSync(true);
+                    
                     this->design->removeComponente((*j), NULL);
                 }else{
                     (*j)->getPortDataInOut("OUT")->getLigacao2()->getDestino()->setValStepAux(count);
@@ -168,7 +203,11 @@ void analisaMem::insereMux(){
 
                     this->design->insereLigacao(compOrigemJ, compAux, compOrigemJ->getPortDataInOut("OUT")->getName(), compAux->getPortDataInOut("IN")->getName());
                     this->design->insereLigacao((*i), compDestJ, (*i)->getPortDataInOut("OUT")->getName(), compDestJ->getPortDataInOut("IN")->getName());
-
+                    
+                    compDestJ->setNumLinha(valLinha);
+                    compDestJ->setUserSync(true);
+                    compDestJ->setSync(true);
+                    
                     this->design->removeComponente((*j), NULL);
                 }
             }
