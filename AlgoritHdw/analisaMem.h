@@ -27,6 +27,7 @@ public:
     void        insereRamMultPort();
     Design*     getDesign();
     void        insereStepMux();
+    int         getNumLinhaMaxMem(Componente* comp);
     
 private:
     Design*             design;

@@ -269,7 +269,7 @@ void Scheduling::balanceAndSyncrhonize(){
                 ats++;
                 this->design->addComponent(dly5);
                 if(this->debug){
-                    cout<< "inserting " << distance << " delay(s) on signal "<< orig->getName()<< "->" << dest->getName() <<" (balance)" << endl;
+                    cout<< "inserting '" << distance << "' delay(s) on signal '"<< orig->getName()<< "' -> '" << dest->getName() <<"' (balance)" << endl;
                 }
             }
         }
@@ -325,6 +325,8 @@ void Scheduling::ALAP(){
     list<Componente*>::iterator i;
     list<Ligacao*>::iterator    k;
     
+    this->corrigeNumLinha();
+    
     this->ASAP();
     this->copySchedulingTimes();
     bool change = true;
@@ -332,7 +334,7 @@ void Scheduling::ALAP(){
     while(change){
         change = false;
         for(i=this->design->ListaComp.begin(); i != this->design->ListaComp.end(); i++){
-            if ((*i)->tipo_comp == CompType::REG || (*i)->tipo_comp == CompType::MEM || (*i)->tipo_comp == CompType::AUX || (*i)->tipo_comp == CompType::DEL ) continue;
+            if ((*i)->tipo_comp == CompType::REG || (*i)->tipo_comp == CompType::MEM || (*i)->tipo_comp == CompType::DEL ) continue;
             min  = 0;
             succ = 0;
             
@@ -357,6 +359,14 @@ void Scheduling::ALAP(){
     cout<<"*********************************"<<endl;
     cout<<"ALAP... OK"<<endl;
     cout<<"*********************************"<<endl;
+    cout<< " TESTE TESTE TESTE " << endl;
+    for(i=this->design->ListaComp.begin(); i != this->design->ListaComp.end(); i++){
+        if ((*i)->tipo_comp == CompType::REG || (*i)->tipo_comp == CompType::MEM || (*i)->tipo_comp == CompType::DEL ) continue;
+        cout<< "COMP: '" << (*i)->getName() << "' - ASAP: " << (*i)->getASAP() << "' - ALAP: '" << (*i)->getALAP() << "'" << endl;
+    }
+    cout<<"*********************************"<<endl;
+    cout<<"*********************************"<<endl;
+    cout<<"*********************************"<<endl;
 }
 
 void Scheduling::ASAP(){
@@ -373,7 +383,7 @@ void Scheduling::ASAP(){
         
         //varrer todos componentes
         for(i=this->design->ListaComp.begin(); i != this->design->ListaComp.end(); i++){
-            if ((*i)->tipo_comp == CompType::REG || (*i)->tipo_comp == CompType::MEM || (*i)->tipo_comp == CompType::AUX || (*i)->tipo_comp == CompType::DEL ) continue;
+            if ((*i)->tipo_comp == CompType::REG || (*i)->tipo_comp == CompType::MEM || (*i)->tipo_comp == CompType::DEL ) continue;
             max = 0;
             pred = 0;
             if(this->debug){
@@ -398,7 +408,7 @@ void Scheduling::ASAP(){
             //all source code predecessors
             if((*i)->getWE() == true && (*i)->getNumLinha() != 0){
                 for(j=this->design->ListaComp.begin(); j != this->design->ListaComp.end(); j++){
-                    if ((*j)->tipo_comp == CompType::REG || (*j)->tipo_comp == CompType::MEM || (*j)->tipo_comp == CompType::AUX || (*j)->tipo_comp == CompType::DEL ) continue;
+                    if ((*j)->tipo_comp == CompType::REG || (*j)->tipo_comp == CompType::MEM || (*j)->tipo_comp == CompType::DEL ) continue;
                     if ((*j)->getWE() == false && (*j)->getNumLinha() == 0 ) continue;
                     int line = (*j)->getNumLinha();
                     if(line > (*i)->getNumLinha()){
@@ -426,7 +436,21 @@ void Scheduling::ASAP(){
     cout<<"Scheduling (ASAP)...OK"<<endl;
 }
 
+void Scheduling::corrigeNumLinha(){
+    list<Componente*>::iterator i;
+    for(i=this->design->ListaComp.begin(); i != this->design->ListaComp.end(); i++){
+        if ((*i)->tipo_comp == CompType::REG || (*i)->tipo_comp == CompType::MEM || (*i)->tipo_comp == CompType::DEL || (*i)->tipo_comp == CompType::CTD || (*i)->tipo_comp == CompType::MUX || (*i)->tipo_comp == CompType::REF) continue;
+        (*i)->setNumLinha(0);
+    }
+    
+    for(i=this->design->ListaComp.begin(); i != this->design->ListaComp.end(); i++){
+        if ((*i)->tipo_comp != CompType::CTD && (*i)->tipo_comp != CompType::MUX && (*i)->tipo_comp != CompType::REF) continue;
+        cout << "COMP: '" << (*i)->getName() << "' na linha: '"<< (*i)->getNumLinha() << "'" << endl;
+    }
+}
+
 int Scheduling::calculateASAP(Componente* comp){
+//    cout << "? '" << comp->getName()<< "'" << endl;
     list<Ligacao*>::iterator    k;
     if(comp->getSync()){
         int dlyAux = FuncoesAux::StrToInt(comp->getDelayValComp());
@@ -441,8 +465,7 @@ int Scheduling::calculateASAP(Componente* comp){
                 
                 if(newMax > max){
                     max = newMax;
-                    if(this->debug)
-                        cout<< "calculating ASAP of \""<< comp->getName() << "\" by '" << (*k)->getOrigem()->getName()<<"'"<< endl;
+                    if(this->debug) cout<< "calculating ASAP of \""<< comp->getName() << "\" by '" << (*k)->getOrigem()->getName()<<"'"<< endl;
             
                 }
             }
