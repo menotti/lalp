@@ -31,6 +31,7 @@
 #include "Componente/reg_op.h"
 #include "Componente/reg_mux_op.h"
 #include "Componente/add_reg_op_s.h"
+#include "Componente/sub_reg_op_s.h"
 #include "Componente/delay_op.h"
 #include "Componente/if_gt_op_s.h"
 #include "Componente/if_lt_op_s.h"
@@ -104,6 +105,15 @@ Core::Core(SgProject* project, list<SgNode*> lista) {
     this->ligaCompDep();
     this->dot->imprimeHWDOT(this->design->getListaComp(), this->design->getListaLiga(), "DOT/10_ANTES_SCHEDULE.dot", false);   
     
+    if (this->ramMultPort == false){
+        memHdr->insereStepMux();
+        this->design = memHdr->getDesign();
+    }else{
+        memHdr = new analisaMem(this->design);
+        memHdr->insereRamMultPort();
+        this->design = memHdr->getDesign();
+    }
+    
     //Processo de Scheduling
     Scheduling* sched = new Scheduling(this->design);
     sched->detectBackwardEdges();
@@ -125,17 +135,7 @@ Core::Core(SgProject* project, list<SgNode*> lista) {
 //    this->rodarSCC();
     
 //    this->corrigeRegWe();
-    
-    
-    if (this->ramMultPort == false){
-        memHdr->insereStepMux();
-        this->design = memHdr->getDesign();
-    }else{
-        memHdr = new analisaMem(this->design);
-        memHdr->insereRamMultPort();
-        this->design = memHdr->getDesign();
-    }
-        
+
 //    this->retirarCompDelayRedundante();
 
     if(this->isParallel && this->gerarDual){
@@ -1091,6 +1091,7 @@ Componente* Core::analisaExp(SgNode *nodoAtual, SgNode* pai, const string& aux, 
     
     // <editor-fold defaultstate="collapsed" desc="MAIS ATRIBUICAO">
     SgPlusAssignOp* sgPlusAssignOp = isSgPlusAssignOp(nodoAtual);
+    
     if (sgPlusAssignOp != NULL) {
         SgNode* filhoEsq = isSgNode(sgPlusAssignOp->get_lhs_operand_i());
         SgNode* filhoDir = isSgNode(sgPlusAssignOp->get_rhs_operand_i());
@@ -1111,8 +1112,65 @@ Componente* Core::analisaExp(SgNode *nodoAtual, SgNode* pai, const string& aux, 
                 cout << "-------------------------" << endl;
             }// </editor-fold>
             
-            analisaExp(filhoEsq, nodoAtual, "WE", lineParal, compFor);
+            Componente* comp = analisaExp(filhoEsq, nodoAtual, "WE", lineParal, compFor);
             analisaExp(filhoDir, filhoEsq, aux, lineParal, compFor);
+            add_reg_op_s* add_reg = new add_reg_op_s(comp->node, "WE", comp->dataWidth);
+
+            add_reg->setNumIdComp(FuncoesAux::IntToStr(this->design->ListaComp.size()));
+
+            this->design->ListaComp.push_back(add_reg);
+            add_reg->setName(comp->getName());
+            add_reg->setValor(comp->getGenericMapVal("initial", "VAL"));
+
+            add_reg->setNumLinha(comp->getNumLinha());
+            add_reg->setForComp(compFor);
+            add_reg->setNumParalelLina(lineParal);
+
+            comp->setComponenteRef(add_reg);
+            comp->updateCompRef();
+        }
+    }
+    // </editor-fold>
+    
+    // <editor-fold defaultstate="collapsed" desc="MENOS ATRIBUICAO">
+    SgMinusAssignOp* sgMinusAssignOp = isSgMinusAssignOp(nodoAtual);
+    
+    if (sgMinusAssignOp != NULL) {
+        SgNode* filhoEsq = isSgNode(sgMinusAssignOp->get_lhs_operand_i());
+        SgNode* filhoDir = isSgNode(sgMinusAssignOp->get_rhs_operand_i());
+
+        if (filhoEsq != NULL && filhoDir != NULL) {
+            // <editor-fold defaultstate="collapsed" desc="DEBUG">
+
+            if (this->debug) {
+                cout << "-------------------------" << endl;
+                cout << "      CHAMOU RECURSAO    " << endl;
+                cout << "-------------------------" << endl;
+                cout << " ( " << filhoEsq->class_name() << " , " <<  " ) " << endl;
+                cout << "-------------------------" << endl;
+                cout << "-------------------------" << endl;
+                cout << "      CHAMOU RECURSAO    " << endl;
+                cout << "-------------------------" << endl;
+                cout << " ( " << filhoDir->class_name() << " , " << filhoEsq->class_name() << " ) " << endl;
+                cout << "-------------------------" << endl;
+            }// </editor-fold>
+            
+            Componente* comp = analisaExp(filhoEsq, nodoAtual, "WE", lineParal, compFor);
+            analisaExp(filhoDir, filhoEsq, aux, lineParal, compFor);
+            sub_reg_op_s* sub_reg = new sub_reg_op_s(comp->node, "WE", comp->dataWidth);
+
+            sub_reg->setNumIdComp(FuncoesAux::IntToStr(this->design->ListaComp.size()));
+
+            this->design->ListaComp.push_back(sub_reg);
+            sub_reg->setName(comp->getName());
+            sub_reg->setValor(comp->getGenericMapVal("initial", "VAL"));
+
+            sub_reg->setNumLinha(comp->getNumLinha());
+            sub_reg->setForComp(compFor);
+            sub_reg->setNumParalelLina(lineParal);
+
+            comp->setComponenteRef(sub_reg);
+            comp->updateCompRef();
         }
     }
     // </editor-fold>
@@ -2073,7 +2131,7 @@ void Core::FinalizaComponentes(){
                 //ADICIONAR NA LISTA DE LIGACOES A NOVA LIGACAO
                 this->design->ListaLiga.push_back(lig);
 
-                if((*j)->getNomeCompVHDL() == "add_reg_op_s"){
+                if((*j)->getNomeCompVHDL() == "add_reg_op_s" || (*j)->getNomeCompVHDL() == "sub_reg_op_s"){
                     if((*j)->getPortOther("I0")->temLigacao() == false){
                         Ligacao* lig1 = new Ligacao((*j), (*j), "s" + FuncoesAux::IntToStr(this->design->ListaLiga.size()));
 
@@ -2435,30 +2493,30 @@ void Core::updateCompRef(SgNode* node, comp_ref* comp){
     }
     // </editor-fold>   
 
-    // <editor-fold defaultstate="collapsed" desc="Componente ACC">
-    if(comp->getPai() != NULL ){
-        SgNode* castPai = (SgNode*)(comp->getPai()); 
-        SgNode* nodePA = isSgPlusAssignOp(castPai);
-        if (nodePA != NULL) {
-            list<Componente*>::iterator i;
-            for (i = this->design->ListaComp.begin(); i != this->design->ListaComp.end(); i++) {
-                //            cout<< (*i)->getName()<< "-- "<< (*i)->getNomeCompVHDL() << " -- " << (*i)->node <<endl;
-                if ((*i)->tipo_comp != CompType::REG) continue;
-                if ((*i)->getName() == comp->getName()) {
-                    //                cout<< "---" << (*i)->getName()<< " -- "<< (*i)->getNomeCompVHDL() << " -- " << (*i)->node <<endl;
-                    add_reg_op_s* add_reg = new add_reg_op_s((*i)->node, "WE", (*i)->dataWidth);
-                    //                if(comp->getNumParalelLina() == ""){
-                    name = (*i)->getName();
-//                    (*i)->getComponenteRef()->tipo_comp = CompType::DEL;
-                    add_reg->setName(name);
-                    add_reg->setNomeVarRef(name);
-                    add_reg->setNumIdComp((*i)->getNumIdComp());
-                    add_reg->setValor((*i)->getGenericMapVal("initial", "VAL"));
-                    (*i) = add_reg;
-                }
-            }
-        }
-    }// </editor-fold>
+//    // <editor-fold defaultstate="collapsed" desc="Componente ACC">
+//    if(comp->getPai() != NULL ){
+//        SgNode* castPai = (SgNode*)(comp->getPai()); 
+//        SgNode* nodePA = isSgPlusAssignOp(castPai);
+//        if (nodePA != NULL) {
+//            list<Componente*>::iterator i;
+//            for (i = this->design->ListaComp.begin(); i != this->design->ListaComp.end(); i++) {
+//                //            cout<< (*i)->getName()<< "-- "<< (*i)->getNomeCompVHDL() << " -- " << (*i)->node <<endl;
+//                if ((*i)->tipo_comp != CompType::REG) continue;
+//                if ((*i)->getName() == comp->getName()) {
+//                    //                cout<< "---" << (*i)->getName()<< " -- "<< (*i)->getNomeCompVHDL() << " -- " << (*i)->node <<endl;
+//                    add_reg_op_s* add_reg = new add_reg_op_s((*i)->node, "WE", (*i)->dataWidth);
+//                    //                if(comp->getNumParalelLina() == ""){
+//                    name = (*i)->getName();
+////                    (*i)->getComponenteRef()->tipo_comp = CompType::DEL;
+//                    add_reg->setName(name);
+//                    add_reg->setNomeVarRef(name);
+//                    add_reg->setNumIdComp((*i)->getNumIdComp());
+//                    add_reg->setValor((*i)->getGenericMapVal("initial", "VAL"));
+//                    (*i) = add_reg;
+//                }
+//            }
+//        }
+//    }// </editor-fold>
 
     //MODIFICANDO E IDENTIFICANDO VARIAVEIS DO TIPO INDICES
     // <editor-fold defaultstate="collapsed" desc="VERIFICAR SE INDICE DO VET">
@@ -2473,6 +2531,14 @@ void Core::updateCompRef(SgNode* node, comp_ref* comp){
                     if ((*j)->getNomeCompVHDL() == "add_reg_op_s") {
                         add_reg_op_s *ref2 = (add_reg_op_s*)(*j);
                         add_reg_op_s *newComp = new add_reg_op_s(*ref2);
+                        newComp->setName(comp->getName());
+                        comp->setComponenteRef(newComp);
+                        newComp->setNumIdComp(FuncoesAux::IntToStr(this->design->ListaComp.size()));
+                        this->design->addComponent(newComp);
+                    }
+                    if ((*j)->getNomeCompVHDL() == "sub_reg_op_s") {
+                        sub_reg_op_s *ref2 = (sub_reg_op_s*)(*j);
+                        sub_reg_op_s *newComp = new sub_reg_op_s(*ref2);
                         newComp->setName(comp->getName());
                         comp->setComponenteRef(newComp);
                         newComp->setNumIdComp(FuncoesAux::IntToStr(this->design->ListaComp.size()));

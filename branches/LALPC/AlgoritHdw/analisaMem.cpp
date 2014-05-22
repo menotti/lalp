@@ -66,12 +66,14 @@ void analisaMem::insereStepMux(){
     if(mux != NULL && ctd != NULL){
         int qtdEleMux = FuncoesAux::StrToInt(mux->getNSels());
         ctd->setGenericMapSteps(mux->getNOps());
+ 
         for (int z = 0; z < qtdEleMux; z++){
             int val = z+1;
             string widthPortaStep = ctd->getPortOther("step")->getWidth();
             string str = FuncoesAux::IntToStr(this->design->ListaComp.size());
             delay_op* comp = new delay_op(NULL);
             this->design->addComponent(comp);
+            
             comp->setDelayVal(FuncoesAux::IntToStr(val));
             comp->setNumIdComp(str);
             
@@ -110,6 +112,7 @@ void analisaMem::insereMux(){
         if (this->design->verificarPrecisaMux((*i)) == false) continue;
         
         valLinha = getNumLinhaMaxMem((*i));
+//        valLinha = (*i)->getNumLinha();
         
         if (ListaAuxString.find((*i)->getNomeVarRef()+(*i)->getNumParalelLina()) == ListaAuxString.end()) {
             int count = 0;
@@ -127,7 +130,7 @@ void analisaMem::insereMux(){
                     (*j)->getPortDataInOut("OUT")->getLigacao2()->getDestino()->setValStepAux(count);
                     string valAuxDly = (*j)->getPortDataInOut("OUT")->getLigacao2()->getDestino()->getDelayValComp();
                     int valAuxDlyy = FuncoesAux::StrToInt(valAuxDly);
-                    (*j)->getPortDataInOut("OUT")->getLigacao2()->getDestino()->setDelayValComp(FuncoesAux::IntToStr(valAuxDlyy + count));
+//                    (*j)->getPortDataInOut("OUT")->getLigacao2()->getDestino()->setDelayValComp(FuncoesAux::IntToStr(valAuxDlyy + count));
 
                     int qtdMem = this->design->verificarQtdAcessoMem((*i));
                     string nPos = FuncoesAux::IntToStr(qtdMem);
@@ -139,14 +142,18 @@ void analisaMem::insereMux(){
                     mux->setNumIdComp(FuncoesAux::IntToStr(this->design->ListaComp.size()));
                     mux->setNumParalelLina((*i)->getNumParalelLina());
                     this->design->addComponent(mux);
-
+                    
                     Ligacao* ligAddr = (*i)->getPortOther("address")->getLigacao2();
                     
                     (*i)->setNumLinha(valLinha);
                     (*i)->getPortDataInOut("OUT")->getLigacao2()->getDestino()->setNumLinha(valLinha);
                     (*i)->getPortDataInOut("OUT")->getLigacao2()->getDestino()->setUserSync(true);
-                    (*i)->getPortDataInOut("OUT")->getLigacao2()->getDestino()->setSync(true);
-
+                    
+                    // Ligar do Contador ate este comp da porta STEP -> WE
+                    Ligacao* newLig1 = this->design->insereLigacao((*i)->getForComp(), (*i)->getPortDataInOut("OUT")->getLigacao2()->getDestino(), "step", "we"); 
+                    Componente* dly1 = this->design->insereDelay(newLig1, 2);
+                    this->design->addComponent(dly1);
+                    
                     
                     Componente* compOrigem = ligAddr->getOrigem();
                     compOrigem->removeLigacao(ligAddr);
@@ -177,14 +184,18 @@ void analisaMem::insereMux(){
                     
                     compDestJ->setNumLinha(valLinha);
                     compDestJ->setUserSync(true);
-                    compDestJ->setSync(true);
                     
+                    // Ligar do Contador ate este comp da porta STEP -> WE
+                    Ligacao* newLig2 = this->design->insereLigacao(compDestJ->getForComp(), compDestJ, "step", "we"); 
+                    Componente* dly2 = this->design->insereDelay(newLig2, 2 + count);
+                    this->design->addComponent(dly2);
+
                     this->design->removeComponente((*j), NULL);
                 }else{
                     (*j)->getPortDataInOut("OUT")->getLigacao2()->getDestino()->setValStepAux(count);
                     string valAuxDly = (*j)->getPortDataInOut("OUT")->getLigacao2()->getDestino()->getDelayValComp();
                     int valAuxDlyy = FuncoesAux::StrToInt(valAuxDly);
-                    (*j)->getPortDataInOut("OUT")->getLigacao2()->getDestino()->setDelayValComp(FuncoesAux::IntToStr(valAuxDlyy + count));
+//                    (*j)->getPortDataInOut("OUT")->getLigacao2()->getDestino()->setDelayValComp(FuncoesAux::IntToStr(valAuxDlyy + count));
 
                     Ligacao* ligAddrJ = (*j)->getPortOther("address")->getLigacao2();
                     Ligacao* ligOutJ = (*j)->getPortDataInOut("OUT")->getLigacao2();
@@ -206,7 +217,11 @@ void analisaMem::insereMux(){
                     
                     compDestJ->setNumLinha(valLinha);
                     compDestJ->setUserSync(true);
-                    compDestJ->setSync(true);
+                    
+                    // Ligar do Contador ate este comp da porta STEP -> WE
+                    Ligacao* newLig2 = this->design->insereLigacao(compDestJ->getForComp(), compDestJ, "step", "we"); 
+                    Componente* dly2 = this->design->insereDelay(newLig2, 2 + count);
+                    this->design->addComponent(dly2);
                     
                     this->design->removeComponente((*j), NULL);
                 }

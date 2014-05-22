@@ -164,7 +164,8 @@ void Scheduling::balanceAndSyncrhonize(){
                     if(strAux != ""){
                         dlyCtd = FuncoesAux::StrToInt(counter->getDelayValComp());
                     }
-                    int stepAux= c->getValStepAux();
+//                    int stepAux= c->getValStepAux();
+                    int stepAux= 0;
                     
                     Ligacao* s1 = this->design->insereLigacao(counter, c, "step", "we");
                     Componente* dly3 = this->design->insereDelay(s1, distance-1+stepAux, counter->getASAP() + dlyCtd);
@@ -174,16 +175,6 @@ void Scheduling::balanceAndSyncrhonize(){
                         cout<< "inserting '" << (distance-1+stepAux) << "' delay(s) on signal '"<< counter->getName()<< "->" << c->getName() <<"' (write enable) " << dly3->getNomeCompVHDL() << ": '" << dly3->getName() <<"'" << endl;
                     }
                 }
-//                
-//                else{
-//                    if(distance == 1){
-//                        cout << "**** Nome: '"<< c->getName() <<"' distance:"<< distance <<  endl;
-//                        Ligacao* s1 = this->design->insereLigacao(counter, c, "step", "we");
-//                        Componente* dly3 = this->design->insereDelay(s1, 1, counter->getASAP());
-//                        this->design->addComponent(dly3);
-//                        ats++;
-//                    }
-//                }
             }else{
                 if(this->debug) cout<< "port 'we' of component \"" << c->getName() << "\" is connected, please check if aditional synchronization is needed (when ... && "<<counter->getName()<<".step@N)" << endl;
             }
@@ -191,8 +182,9 @@ void Scheduling::balanceAndSyncrhonize(){
     }
 
     
+    // <editor-fold defaultstate="collapsed" desc="Componente INIT">
     Componente* comp_init = this->design->getComponent("init");
-    if(firstCounter != NULL && comp_init != NULL && comp_init->getLigacaoOutDefault() == NULL){
+    if (firstCounter != NULL && comp_init != NULL && comp_init->getLigacaoOutDefault() == NULL) {
         //LIGACAO
         Ligacao* newLig = new Ligacao(comp_init, firstCounter, "s" + FuncoesAux::IntToStr(this->design->ListaLiga.size()));
 
@@ -210,14 +202,15 @@ void Scheduling::balanceAndSyncrhonize(){
         comp_init->addLigacao(newLig);
 
         //ADD LISTAS
-        this->design->ListaLiga.push_back(newLig);
-
-    }
+        this->design->ListaLiga.push_back(newLig); 
+    }// </editor-fold>
     
+    // <editor-fold defaultstate="collapsed" desc="componente DONE">
+
     Componente* comp_done = this->design->getComponent("done");
- 
-    if(counter != NULL && comp_done != NULL &&  comp_done->getLigacaoInDefault() == NULL){
-        int amount = this->design->getMaxSchedulingTime() - counter->getASAP();// - 1;
+
+    if (counter != NULL && comp_done != NULL && comp_done->getLigacaoInDefault() == NULL) {
+        int amount = this->design->getMaxSchedulingTime() - counter->getASAP(); // - 1;
 
         //LIGACAO 
         Ligacao* newLig4 = new Ligacao(firstCounter, comp_done, "s" + FuncoesAux::IntToStr(this->design->ListaLiga.size()));
@@ -225,31 +218,32 @@ void Scheduling::balanceAndSyncrhonize(){
         newLig4->setPortDestino(comp_done->getPortDataInOut("IN"));
         newLig4->setWidth(counter->getPortOther("done")->getWidth());
         newLig4->setTipo(counter->getPortOther("done")->getType());
-        
+
         //ADICIONAR NOME LIGACAO NA PORTA
         newLig4->getPortDestino()->addLigacao(newLig4);
         newLig4->getPortOrigem()->addLigacao(newLig4);
-        
+
         //ADICIONAR LIGACAO NO COMPONENTE
         counter->addLigacao(newLig4);
         comp_done->addLigacao(newLig4);
 
         //ADD LISTAS LIGACAO
         this->design->ListaLiga.push_back(newLig4);
-        
+
         string strAux = counter->getDelayValComp();
         int dlyCtd = 0;
-        if(strAux != ""){
+        if (strAux != "") {
             dlyCtd = FuncoesAux::StrToInt(counter->getDelayValComp());
         }
-        if(amount <= 0) amount = 1;
+        if (amount <= 0) amount = 1;
         ats++;
-        Componente* dly4 = this->design->insereDelay(newLig4, amount, counter->getASAP() + dlyCtd);
-        this->design->addComponent(dly4); 
-        if(this->debug){
-            cout<< "inserting " << amount << " delay(s) on signal "<< counter->getName()<< "->" << comp_done->getName() <<" (termination)" << endl;
+        Componente* dly4 = this->design->insereDelay(newLig4, amount+1, counter->getASAP() + dlyCtd);
+        this->design->addComponent(dly4);
+        if (this->debug) {
+            cout << "inserting " << amount+1<< " delay(s) on signal " << counter->getName() << "->" << comp_done->getName() << " (termination)" << endl;
         }
-    }    
+    } // </editor-fold>
+
     
     for(k=this->design->ListaLiga.begin(); k != this->design->ListaLiga.end(); k++){
         if((*k)->getAtivo() == false ) continue;
@@ -358,14 +352,6 @@ void Scheduling::ALAP(){
     }
     cout<<"*********************************"<<endl;
     cout<<"ALAP... OK"<<endl;
-    cout<<"*********************************"<<endl;
-    cout<< " TESTE TESTE TESTE " << endl;
-    for(i=this->design->ListaComp.begin(); i != this->design->ListaComp.end(); i++){
-        if ((*i)->tipo_comp == CompType::REG || (*i)->tipo_comp == CompType::MEM || (*i)->tipo_comp == CompType::DEL ) continue;
-        cout<< "COMP: '" << (*i)->getName() << "' - ASAP: " << (*i)->getASAP() << "' - ALAP: '" << (*i)->getALAP() << "'" << endl;
-    }
-    cout<<"*********************************"<<endl;
-    cout<<"*********************************"<<endl;
     cout<<"*********************************"<<endl;
 }
 
