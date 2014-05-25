@@ -240,6 +240,8 @@ void analisaMem::insereRamMultPort(){
     cout << "--Inserindo Block Ram Mult Port: " << endl;
     ListaAuxString.clear();
     Componente* compAux = NULL;
+    
+    bool debug = true;
 
     for (i = this->design->ListaComp.begin(); i != this->design->ListaComp.end(); i++) {
         if ((*i)->tipo_comp != CompType::REF) continue;
@@ -248,21 +250,27 @@ void analisaMem::insereRamMultPort(){
         comp_ref* comp = (comp_ref*) (*i);
         if (comp->getTipoVar() != "VET") continue;
         if (this->design->verificarPrecisaMux((*i)) == false) continue;
-
-        if (ListaAuxString.find((*i)->getNomeVarRef()+(*i)->getNumParalelLina()) == ListaAuxString.end()) {
+        
+        if(debug) cout<< "1 - MEM: '" << comp->getName() << "' - '" << (*i)->getNomeVarRef()<<"'" << endl;
+//        if (ListaAuxString.find((*i)->getNomeVarRef()+(*i)->getNumParalelLina()) == ListaAuxString.end()) {
+        if (ListaAuxString.find((*i)->getNomeVarRef()) == ListaAuxString.end()) {
+            if(debug) cout<< "2 - Nao existe na lista" << endl;
             int count = 0;
-            ListaAuxString.insert((*i)->getNomeVarRef()+(*i)->getNumParalelLina());
+//            ListaAuxString.insert((*i)->getNomeVarRef()+(*i)->getNumParalelLina());
+            ListaAuxString.insert((*i)->getNomeVarRef());
+            if(debug) cout<< "3 - inserido na lista" << endl;
             for (j = this->design->ListaComp.begin(); j != this->design->ListaComp.end(); j++) {
                 if ((*j)->tipo_comp != CompType::REF) continue;
                 comp_ref* compJ = (comp_ref*) (*j);
                 if (compJ->getTipoVar() != "VET") continue;
                 if ((*j)->getWE()) continue;
                 if ((*i)->node == (*j)->node) continue;
-                if ((*i)->getNumParalelLina() != (*j)->getNumParalelLina()) continue;
+//                if ((*i)->getNumParalelLina() != (*j)->getNumParalelLina()) continue;
                 if ((*i)->getNomeVarRef() != (*j)->getNomeVarRef()) continue;
+                if(debug) cout<< "3.1 - MEM: '" << (*j)->getName() << "' - '" << (*j)->getNomeVarRef()<<"'" << endl;
                 count++;
                 if (count <= 1) {
-                    
+                    if(debug) cout<< "4 - COUTN <= 1: '" << (*j)->getName() << "' - '" << (*j)->getNomeVarRef()<<"'" << endl;
                     comp_ref* comp = new comp_ref();
                     
                     comp->setNumIdComp(FuncoesAux::IntToStr(this->design->ListaComp.size()));
@@ -272,7 +280,8 @@ void analisaMem::insereRamMultPort(){
                     comp->setEInicializado((*i)->getEInicializado());
                     this->design->addComponent(comp);
                     
-                    int qtdMem = this->design->verificarQtdAcessoMem((*i));
+                    int qtdMem = 0;
+                    qtdMem = this->design->verificarQtdAcessoMem((*i));
                     
                     block_ram_mult*     multRam =  new block_ram_mult(NULL, "", qtdMem, (*i)->dataWidth);
                     block_ram*          ram = (block_ram*)(*i)->getComponenteRef();
@@ -285,6 +294,8 @@ void analisaMem::insereRamMultPort(){
                         multRam->setNomeCompVHDL("block_ram_mult_"+(*i)->getNomeVarRef());
                     }
                     
+                    if(debug) cout<< "4.1 - MULTRAM: '" << multRam->getName() << "' - QTD PORTS: '" << qtdMem<<"'" << endl;
+                    
                     multRam->valores = ram->valores;
                     multRam->setQtdElementos(FuncoesAux::IntToStr(ram->qtd_elem_vet));
                     
@@ -295,6 +306,9 @@ void analisaMem::insereRamMultPort(){
                                        
                     Ligacao* ligAddrI = (*i)->getPortOther("address")->getLigacao2();
                     Ligacao* ligOutI = (*i)->getPortDataInOut("OUT")->getLigacao2();
+                    
+                    if(debug) cout<< "4.2 - LIG ADRESS: '" << ligAddrI->getNome()<<"'" << endl;
+                    if(debug) cout<< "4.2 - LIG OUT   : '" << ligOutI->getNome()<<"'" << endl;
 
                     Componente* compOrigem  = ligAddrI->getOrigem();
                     Componente* compDestino = ligOutI->getDestino();
@@ -302,12 +316,12 @@ void analisaMem::insereRamMultPort(){
                     compDestino->removeLigacao(ligOutI);
                     (*i)->removeLigacao(ligAddrI);
                     (*i)->removeLigacao(ligOutI);
+ 
+                    this->design->insereLigacao(compOrigem, comp, compOrigem->getPortDataInOut("OUT")->getName(), "address_0");
+                    this->design->insereLigacao(comp, compDestino, "data_out_0", ligOutI->getPortDestino()->getName());
                     
                     this->design->deletaLigacao(ligAddrI->getNome());
                     this->design->deletaLigacao(ligOutI->getNome());
-                    
-                    this->design->insereLigacao(compOrigem, comp, compOrigem->getPortDataInOut("OUT")->getName(), "address_0");
-                    this->design->insereLigacao(comp, compDestino, "data_out_0", compDestino->getPortDataInOut("IN")->getName());
                     
                     compAux = comp;
                     
@@ -323,11 +337,11 @@ void analisaMem::insereRamMultPort(){
                     (*j)->removeLigacao(ligAddrJ);
                     (*j)->removeLigacao(ligOutJ);
                     
+                    this->design->insereLigacao(compOrigemJ, comp, compOrigemJ->getPortDataInOut("OUT")->getName(), "address_1");
+                    this->design->insereLigacao(comp, compDestJ, "data_out_1", ligOutJ->getPortDestino()->getName());
+                    
                     this->design->deletaLigacao(ligAddrJ->getNome());
                     this->design->deletaLigacao(ligOutJ->getNome());
-
-                    this->design->insereLigacao(compOrigemJ, comp, compOrigemJ->getPortDataInOut("OUT")->getName(), "address_1");
-                    this->design->insereLigacao(comp, compDestJ, "data_out_1", compDestJ->getPortDataInOut("IN")->getName());
 
                     this->design->removeComponente((*j), NULL);
                     this->design->removeComponente((*i), NULL);
@@ -345,15 +359,15 @@ void analisaMem::insereRamMultPort(){
                     (*j)->removeLigacao(ligAddrJ);
                     (*j)->removeLigacao(ligOutJ);
                     
-                    this->design->deletaLigacao(ligAddrJ->getNome());
-                    this->design->deletaLigacao(ligOutJ->getNome());
-                    
                     string portaAdd = "address_"+auxVal;
                     string portaOut = "data_out_"+auxVal;
                     
                     this->design->insereLigacao(compOrigemJ, compAux, compOrigemJ->getPortDataInOut("OUT")->getName(), portaAdd);
-                    this->design->insereLigacao(compAux, compDestJ, portaOut, compDestJ->getPortDataInOut("IN")->getName());
-
+                    this->design->insereLigacao(compAux, compDestJ, portaOut, ligOutJ->getPortDestino()->getName());
+                    
+                    this->design->deletaLigacao(ligAddrJ->getNome());
+                    this->design->deletaLigacao(ligOutJ->getNome());
+                    
                     this->design->removeComponente((*j), NULL);
                 }
             }
