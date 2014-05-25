@@ -80,19 +80,22 @@ bool Design::verificarPrecisaMux(Componente* comp) {
 }
 
 int Design::verificarQtdAcessoMem(Componente* comp) {
+    bool debug = true;
     list<Componente*>::iterator i;
     int aux = 0;
+    if (debug) cout << "Verificando quantidade de acessos na memoria: '"<< comp->getName()<<"'" << endl;
     for (i = this->ListaComp.begin(); i != this->ListaComp.end(); i++) {
         if ((*i)->tipo_comp != CompType::REF) continue;
         if ((*i)->getEIndice()) continue;
         if ((*i)->getWE()) continue;
-        comp_ref* comp = (comp_ref*) (*i);
-        if (comp->getTipoVar() != "VET") continue;
-
-        if ((*i)->getNomeVarRef() == comp->getNomeVarRef() && (*i)->getNumParalelLina() == comp->getNumParalelLina()) {
+        comp_ref* compI = (comp_ref*) (*i);
+        if (compI->getTipoVar() != "VET") continue;
+        if ((*i)->getNomeVarRef() == comp->getNomeVarRef()) {
+            if (debug) cout << "componente: '" << (*i)->getName() <<"' - compRef: '"<< (*i)->getNomeVarRef() <<"'" << endl;
             aux++;
         }
     }
+    if (debug) cout << "Total de acessos na memoria: '"<< aux <<"'" << endl;
     return aux;
 }
 
@@ -186,8 +189,9 @@ void Design::substiuiComRecorente(Componente* origem, Componente* destino){
 }
 
 void Design::removeComponente(Componente* compRemove, Componente* naoRemover){
-   compRemove->tipo_comp = CompType::DEL;
-   list<Ligacao*>::iterator    k;
+
+    compRemove->tipo_comp = CompType::DEL;
+    list<Ligacao*>::iterator    k;
     for (k = this->ListaLiga.begin(); k != this->ListaLiga.end(); k++){
         if ( (*k)->getAtivo() == false  ) continue;
         if((*k)->getOrigem() == compRemove){
@@ -196,7 +200,7 @@ void Design::removeComponente(Componente* compRemove, Componente* naoRemover){
             (*k)->getDestino()->removeLigacao((*k));
         }
     }
-    
+
     for (k = this->ListaLiga.begin(); k != this->ListaLiga.end(); k++){
         if ( (*k)->getAtivo() == false  ) continue;
         if((*k)->getDestino() == compRemove){
@@ -206,6 +210,7 @@ void Design::removeComponente(Componente* compRemove, Componente* naoRemover){
             this->removeComponente((*k)->getOrigem(), naoRemover); 
         }
     }
+    
 }
 
 void Design::addComponent(Componente* comp){

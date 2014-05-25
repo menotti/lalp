@@ -92,13 +92,7 @@ Core::Core(SgProject* project, list<SgNode*> lista) {
         memHdr->insereMux();
         this->design = memHdr->getDesign();
     }
-    
-    //Coloca ligacao para calcular melhor no processo asap
-//    this->ligaRegNoWE();
-    
-    //this->dot->imprimeHWDOT(this->design->getListaComp(), this->design->getListaLiga(), "DOT/000_FinalizaIF_OK.dot", false);
-    
-    
+   
     
     this->aplicarDelayPragma();
     this->dot->imprimeHWDOT(this->design->getListaComp(), this->design->getListaLiga(), "DOT/9_LIGA_DEP.dot", false);
@@ -138,9 +132,9 @@ Core::Core(SgProject* project, list<SgNode*> lista) {
 
 //    this->retirarCompDelayRedundante();
 
-    if(this->isParallel && this->gerarDual){
-        this->analiseMemoriaDualPort();
-    }
+//    if(this->isParallel && this->gerarDual){
+//        this->analiseMemoriaDualPort();
+//    }
     
     this->setClkReset();
     this->identificaReturn();
@@ -1819,6 +1813,17 @@ void Core::preIdentificacaoCompParalelizados(){
                     newComp->setNumIdComp(FuncoesAux::IntToStr(this->design->ListaComp.size()));
                     this->design->addComponent(newComp);
                 }
+                
+                //sub
+                if(CompRefI->getNomeCompVHDL() == "sub_reg_op_s"){
+                    sub_reg_op_s *ref2 = (sub_reg_op_s*)(*i)->getComponenteRef();
+                    sub_reg_op_s *newComp = new sub_reg_op_s(*ref2);
+
+                    newComp->setName((*i)->getName());
+                    (*i)->setComponenteRef(newComp);
+                    newComp->setNumIdComp(FuncoesAux::IntToStr(this->design->ListaComp.size()));
+                    this->design->addComponent(newComp);
+                }
             }
         }
     }
@@ -2158,10 +2163,10 @@ void Core::FinalizaComponentes(){
     // </editor-fold>    
     this->dot->imprimeHWDOT(this->design->getListaComp(), this->design->getListaLiga(), "DOT/1_LigBasicOK.dot", false);
     
-    if(this->isParallel==true && this->gerarDual == false){
-        this->analiseDividirMemoria();
-    }
-    
+//    if(this->isParallel==true && this->gerarDual == false){
+//        this->analiseDividirMemoria();
+//    }
+    this->dot->imprimeHWDOT(this->design->getListaComp(), this->design->getListaLiga(), "DOT/2_AntesAnalisaIF.dot", false);
     
     cout<<"--Ligar componentes IF:"<<endl;
     analisaIf* compAnaIf = new analisaIf(this->design);
@@ -2180,39 +2185,6 @@ void Core::FinalizaComponentes(){
     // </editor-fold>
     this->dot->imprimeHWDOT(this->design->getListaComp(), this->design->getListaLiga(), "DOT/2_2_LigExpresOK.dot", false);
   
- 
-    //REMOVER registradores apos um NEG
-    // <editor-fold defaultstate="collapsed" desc="Remover Reg apos um NEG">
-    cout << "--Ligar componentes registradores apos um NEG: " << endl;
-//    for (i = this->design->ListaComp.begin(); i != this->design->ListaComp.end(); i++) {
-//        if ((*i)->tipo_comp != CompType::OPE && (*i)->tipo_comp != CompType::AUX) continue;
-//        if ((*i)->getNomeCompVHDL() != "neg_op_s" && (*i)->getNomeCompVHDL() != "valor") continue;
-//
-//        Ligacao* lig = (*i)->getPortDataInOut("OUT")->getLigacao2();
-//        Componente* excluir = lig->getDestino();
-//
-//        if (excluir->tipo_comp != CompType::REF) continue;
-//        if (excluir->getComponenteRef()->tipo_comp != CompType::REG) continue;
-//
-//        Ligacao* lig2 = excluir->getPortDataInOut("OUT")->getLigacao2();
-//        Componente* NovoDes = lig2->getDestino();
-//
-//        excluir->removeLigacao(lig);
-//        excluir->removeLigacao(lig2);
-//        (*i)->removeLigacao(lig);
-//        NovoDes->removeLigacao(lig2);
-//
-//        this->design->insereLigacao((*i), NovoDes, (*i)->getPortDataInOut("OUT")->getName(), lig2->getPortDestino()->getName());
-//
-//        excluir->tipo_comp = CompType::DEL;
-//
-//        this->design->deletaLigacao(lig->getNome());
-//        this->design->deletaLigacao(lig2->getNome());
-//
-//        cout << " COMP: '" << (*i)->getName() << "' --> '" << excluir->getName() << "' --> '" << NovoDes->getName() << "'" << endl;
-//    }
-    cout << "--Ligar componentes registradores apos um NEG: OK" << endl;
-    this->dot->imprimeHWDOT(this->design->getListaComp(), this->design->getListaLiga(), "DOT/2_5_RemoveRegNEG_OK.dot", false); // </editor-fold>
     
     // <editor-fold defaultstate="collapsed" desc="Efetuar ligacao varaivel que liga no indice vetor">
     cout << "--Criando novas ligacoes indice vet com variavel:" << endl;
@@ -2992,12 +2964,14 @@ void Core::analiseDividirMemoria(){
     list<Componente*>::iterator i;
     list<Componente*>::iterator j;
     list<int>::iterator val;
+    bool debug = true;
     int newQtdFor = 0;
     bool achouFirst = false;
     Componente* compOrigemAux = NULL;
     Port* portOrigemAux = NULL;
     Ligacao* ligOrigemAux= NULL;
-    cout<<"--Processo de divisao de intens dentro da memoria: "<<endl;
+    
+    if(debug) cout<<"--Processo de divisao de intens dentro da memoria: "<<endl;
     
     for (i = this->design->ListaComp.begin(); i != this->design->ListaComp.end(); i++) {
         if ((*i)->tipo_comp !=  CompType::REF) continue;
@@ -3017,36 +2991,49 @@ void Core::analiseDividirMemoria(){
                 if( CompRefI->getNomeVarRef() == CompRefJ->getNomeVarRef()) totalVars++;
             }
             if(totalVars > 1){
-//                cout<< " COMP: " << CompRefI->getName() << " - "<< CompRefI->getNomeCompVHDL()<< " - Linha Parall: " <<  numP << endl;
+                if(debug) cout<< " COMP: " << CompRefI->getName() << " - "<< CompRefI->getNomeCompVHDL()<< " - Linha Parall: " <<  numP << endl;
 
                 //Pegando informacoes da porta address, ligacao e do comp de origem.
                 if(CompRefI->getPortOther("address")->temLigacao()){
+                    if(debug) cout << "entrou no IF" << endl;
                     Componente* compOrigemI = NULL;
                     Port* portOrigemI = NULL;
                     Ligacao* ligOrigemI= NULL;
                     ligOrigemI = CompRefI->getPortOther("address")->getLigacao2();
+
                     if( ligOrigemI->getAtivo() == true ){
                         if( ligOrigemI != NULL ){
                             portOrigemI = ligOrigemI->getPortOrigem();
                             compOrigemI = ligOrigemI->getOrigem();
                             if(numP == 1 && achouFirst == false){
-//                                cout<< " DEFININDO COMPOENENTES INICIAIS PARA TROCA DO INDICE" <<endl;
+                                
                                 ligOrigemAux  = ligOrigemI;
                                 portOrigemAux = portOrigemI;
                                 compOrigemAux = compOrigemI;
+                                
+                                if(debug){
+                                    cout<< " DEFININDO COMPOENENTES INICIAIS PARA TROCA DO INDICE" <<endl;
+                                    cout << "Lig Orig: " << ligOrigemAux->getNome() << endl;
+                                    cout << "Por Orig: " << portOrigemAux->getName() << endl;
+                                    cout << "Com Orig: " << compOrigemAux->getName() << endl;
+                                }
+                                
                                 achouFirst = true;
                             }
                         }
-
-                        if(portOrigemAux != NULL && compOrigemAux != NULL){
-                            if(compOrigemAux != compOrigemI && portOrigemAux != portOrigemI){
-//                                cout<< " entrou no processo de remover comps e criar nova ligacao" <<endl;
-                                this->design->removeComponente(compOrigemI, NULL);
-                                this->design->insereLigacao(compOrigemAux, CompRefI, portOrigemAux->getName(), "address");
+                    }
+                    if(portOrigemAux != NULL && compOrigemAux != NULL){
+                        if(compOrigemAux != compOrigemI && portOrigemAux != portOrigemI){
+                            if(debug) cout<< " entrou no processo de remover comps e criar nova ligacao" <<endl;
+                            if(ligOrigemI->getAtivo() == true ){
+                                if(compOrigemI->tipo_comp != CompType::DEL) this->design->removeComponente(compOrigemI, NULL);
                             }
+                            this->design->insereLigacao(compOrigemAux, CompRefI, portOrigemAux->getName(), "address");
+                            if(debug) cout<< " -- nova ligacao: '" << compOrigemAux->getName() << "' -> '"<< CompRefI->getName() <<"'"<<endl;
                         }
-                    } 
+                    }
                 }else{
+                    if(debug) cout << "entrou no ELSE" << endl;
                     this->design->insereLigacao(compOrigemAux, CompRefI, portOrigemAux->getName(), "address");
                 }
                 
