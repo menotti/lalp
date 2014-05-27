@@ -24,6 +24,7 @@ using namespace std;
 
 analisaMem::analisaMem(Design* design) {
     this->design = design; 
+    this->debug  = false;
 }
 
 Design* analisaMem::getDesign(){
@@ -240,8 +241,6 @@ void analisaMem::insereRamMultPort(){
     cout << "--Inserindo Block Ram Mult Port: " << endl;
     ListaAuxString.clear();
     Componente* compAux = NULL;
-    
-    bool debug = true;
 
     for (i = this->design->ListaComp.begin(); i != this->design->ListaComp.end(); i++) {
         if ((*i)->tipo_comp != CompType::REF) continue;
@@ -251,14 +250,14 @@ void analisaMem::insereRamMultPort(){
         if (comp->getTipoVar() != "VET") continue;
         if (this->design->verificarPrecisaMux((*i)) == false) continue;
         
-        if(debug) cout<< "1 - MEM: '" << comp->getName() << "' - '" << (*i)->getNomeVarRef()<<"'" << endl;
+        if(this->debug) cout<< "1 - MEM: '" << comp->getName() << "' - '" << (*i)->getNomeVarRef()<<"'" << endl;
 //        if (ListaAuxString.find((*i)->getNomeVarRef()+(*i)->getNumParalelLina()) == ListaAuxString.end()) {
         if (ListaAuxString.find((*i)->getNomeVarRef()) == ListaAuxString.end()) {
-            if(debug) cout<< "2 - Nao existe na lista" << endl;
+            if(this->debug) cout<< "2 - Nao existe na lista" << endl;
             int count = 0;
 //            ListaAuxString.insert((*i)->getNomeVarRef()+(*i)->getNumParalelLina());
             ListaAuxString.insert((*i)->getNomeVarRef());
-            if(debug) cout<< "3 - inserido na lista" << endl;
+            if(this->debug) cout<< "3 - inserido na lista" << endl;
             for (j = this->design->ListaComp.begin(); j != this->design->ListaComp.end(); j++) {
                 if ((*j)->tipo_comp != CompType::REF) continue;
                 comp_ref* compJ = (comp_ref*) (*j);
@@ -267,10 +266,10 @@ void analisaMem::insereRamMultPort(){
                 if ((*i)->node == (*j)->node) continue;
 //                if ((*i)->getNumParalelLina() != (*j)->getNumParalelLina()) continue;
                 if ((*i)->getNomeVarRef() != (*j)->getNomeVarRef()) continue;
-                if(debug) cout<< "3.1 - MEM: '" << (*j)->getName() << "' - '" << (*j)->getNomeVarRef()<<"'" << endl;
+                if(this->debug) cout<< "3.1 - MEM: '" << (*j)->getName() << "' - '" << (*j)->getNomeVarRef()<<"'" << endl;
                 count++;
                 if (count <= 1) {
-                    if(debug) cout<< "4 - COUTN <= 1: '" << (*j)->getName() << "' - '" << (*j)->getNomeVarRef()<<"'" << endl;
+                    if(this->debug) cout<< "4 - COUTN <= 1: '" << (*j)->getName() << "' - '" << (*j)->getNomeVarRef()<<"'" << endl;
                     comp_ref* comp = new comp_ref();
                     
                     comp->setNumIdComp(FuncoesAux::IntToStr(this->design->ListaComp.size()));
@@ -294,7 +293,7 @@ void analisaMem::insereRamMultPort(){
                         multRam->setNomeCompVHDL("block_ram_mult_"+(*i)->getNomeVarRef());
                     }
                     
-                    if(debug) cout<< "4.1 - MULTRAM: '" << multRam->getName() << "' - QTD PORTS: '" << qtdMem<<"'" << endl;
+                    if(this->debug) cout<< "4.1 - MULTRAM: '" << multRam->getName() << "' - QTD PORTS: '" << qtdMem<<"'" << endl;
                     
                     multRam->valores = ram->valores;
                     multRam->setQtdElementos(FuncoesAux::IntToStr(ram->qtd_elem_vet));
@@ -307,8 +306,8 @@ void analisaMem::insereRamMultPort(){
                     Ligacao* ligAddrI = (*i)->getPortOther("address")->getLigacao2();
                     Ligacao* ligOutI = (*i)->getPortDataInOut("OUT")->getLigacao2();
                     
-                    if(debug) cout<< "4.2 - LIG ADRESS: '" << ligAddrI->getNome()<<"'" << endl;
-                    if(debug) cout<< "4.2 - LIG OUT   : '" << ligOutI->getNome()<<"'" << endl;
+                    if(this->debug) cout<< "4.2 - LIG ADRESS: '" << ligAddrI->getNome()<<"'" << endl;
+                    if(this->debug) cout<< "4.2 - LIG OUT   : '" << ligOutI->getNome()<<"'" << endl;
 
                     Componente* compOrigem  = ligAddrI->getOrigem();
                     Componente* compDestino = ligOutI->getDestino();

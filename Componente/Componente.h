@@ -48,6 +48,8 @@ class Componente {
         void            setEInicializado(bool val);
         bool            getEInicializado();
         
+        void            setDelaySchedComp(const string &delaySchedVal);
+        string          getDelaySchedComp();
         virtual void    setDelayValComp(const string &delayVal); //Referenciado a necessidade de delay do componente
         virtual string  getDelayValComp();
         void            setDelayVal(const string &val); //Referente ao VALOR dentro do DELAY (Generic Map)
@@ -115,6 +117,8 @@ class Componente {
         void            setSync(bool val);
         bool            getUserSync();
         void            setUserSync(bool val);
+        void            setSchedSync(bool userSchedSync);
+        bool            getSchedSync();
         void            printAllPortsAllLig();
         void            copyAllPortsAndGM();
         
@@ -141,10 +145,12 @@ class Componente {
         int             asap;
         bool            sync;
         bool            userSync;
+        bool            schedSync;
         int             numLinha;
         string          numParallelLine;
         string          idComp;
         string          delayValComp; //Delay relacionado necessário na execucao em Hadware
+        string          delaySchedComp;
         Componente*     refComp;
         list<Port*>     portas;
         list<GenericMap*> genMap;

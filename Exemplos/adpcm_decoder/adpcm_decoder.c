@@ -36,20 +36,24 @@ int main() {
 	int RES2 = 0;
 	int RES3 = 0;
 	
-	
-  	for (len = 0; len < 1024 ; len++ ) {
+	#pragma step 3
+  	for (len = 0; len < 1024; len++ ) {
 
 		if(!bufferstep){
+			#pragma delay 1
 			inputbuffer = indata[i];
-			i = i + 1;
 		}
-		delta = !bufferstep ? (inputbuffer >> 4) & 0xf : inputbuffer & 0xf;
+		delta = bufferstep ? inputbuffer & 0xf : (inputbuffer >> 4) & 0xf ;
+		if(!bufferstep){
+			#pragma delay 2
+			i += 1;
+		}
 		bufferstep = !bufferstep;
-		index2 = index + indexTable[delta];
-		step = stepSizeTable[index];
 		sign = delta & 8;
 		delta2 = delta & 7;
+		index2 = index + indexTable[delta];
 		index3 = (index2 < 0) ? 0: index2;
+		step = stepSizeTable[index];
 		index = (index3 > 88) ? 88 : index3;
 		vpdiff = step >> 3;
 		vpdiff2 = (((delta2) & 1) > 0) ? vpdiff + (step >> 2):vpdiff;

@@ -13,7 +13,7 @@ using namespace std;
 //Componente voltado para criacao dos pinos de entrada
 comp_aux::comp_aux(void*node,  const string& aux, int dataWidth) : Componente(node, aux) {
     this->dataWidth = dataWidth;
-    //this->setDelayValComp("1");
+    this->setSync(false);
     this->tipo_comp = CompType::AUX;     
     if(aux == "INIT"){
         this->setNomeCompVHDL("init");

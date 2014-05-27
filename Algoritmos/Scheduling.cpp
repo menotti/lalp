@@ -24,6 +24,7 @@ Design* Scheduling::getDesign() {
 }
 
 void Scheduling::detectBackwardEdges(){
+
     list<Ligacao*>::iterator    k;
     cout<<"*********************************"<<endl;
     cout<<"Detectando Backward Edges (Topological)..."<<endl;
@@ -65,6 +66,8 @@ void Scheduling::detectBackwardEdges(){
 }
 
 void Scheduling::balanceAndSyncrhonize(){
+    this->design->zeraValorNumLinha();
+    this->design->imprimeAllComp();
     cout<<"*********************************"<<endl;
     cout<<"Balance And Synchronize..."<<endl;
     cout<<"*********************************"<<endl;
@@ -288,13 +291,21 @@ void Scheduling::balanceAndSyncrhonize(){
             if(orig->getSync() && dest->getSync()){
                 if(distance > mii){
                     if(this->debug) cout<< "backedge "<< orig->getName()<< "->" << dest->getName() <<" have distance "<<distance<< " which is bigger than MII = "<<mii<<", this can limit MII to lower value" << endl;
-                    if(orig->getForComp() != NULL )orig->getForComp()->setGenericMapVal("steps", "VAL", FuncoesAux::IntToStr(distance));
+//                    if(orig->getForComp()->getUserSync()==false){
+//                        /*****************************************/
+//                        //TODO mecanismo de add DELAYS necessarios
+//                        //A funcao que faz esse processo esta no CORE.CPP na funcao insereDelayLigBackEdge()
+//                        if(orig->getForComp() != NULL )orig->getForComp()->setGenericMapVal("steps", "VAL", FuncoesAux::IntToStr(distance));
+//                    }
                     mii = distance;
                 }
             }
             if(distance < 0){
-                dest->setUserSync(true);
-                dest->setDelayValComp(FuncoesAux::IntToStr(distance*(-1)));
+                /*****************************************/
+                //TODO mecanismo de add DELAYS necessarios
+                //A funcao que faz esse processo esta no CORE.CPP na funcao insereDelayLigBackEdge()
+//                dest->setSchedSync(true);
+//                dest->setDelaySchedComp(FuncoesAux::IntToStr(distance*(-1)));
             }
                 
             if(this->debug){
@@ -467,6 +478,7 @@ void Scheduling::copySchedulingTimes(){
         (*i)->copySchedulingTimes();
     }
 } 
+
 
 Scheduling::~Scheduling() {
 }

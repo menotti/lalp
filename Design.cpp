@@ -454,7 +454,7 @@ string Design::getNomeCompRef(const string& name){
         if ((*i)->tipo_comp == CompType::REG || (*i)->tipo_comp == CompType::MEM ) continue;
         comp_ref* CompRef = (comp_ref*)(*i);
         if(CompRef->getNomeVarRef() == name){
-            newName = CompRef->getNomeVarRef()+CompRef->getNumIdComp();
+            newName = CompRef->getNomeVarRef()+"_"+CompRef->getNumIdComp();
             aux++;
         }
     }
@@ -464,23 +464,37 @@ string Design::getNomeCompRef(const string& name){
     return nameReturn;
 }
 
+/*
+ * Metodo criado para gerar componentes similar ao LALP
+ * no lalp apenas REGISTRADORES, MEMORIAS e CONTADORES tem a informacao do 
+ * numero da linha referente ao arquivo de entrada
+ * Porem no LALPC essa info e importante no processo de ligacao dos componentes
+ */
+void Design::zeraValorNumLinha(){
+    //metodo utilizado antes do scheduling
+    list<Componente*>::iterator i;
+    for (i = this->ListaComp.begin(); i != this->ListaComp.end(); i++) {
+        if ((*i)->tipo_comp ==  CompType::MEM ) continue; 
+        if ((*i)->tipo_comp ==  CompType::REF ) continue; 
+        if ((*i)->tipo_comp ==  CompType::REG ) continue;
+        if ((*i)->tipo_comp ==  CompType::CTD ) continue;
+        
+        (*i)->setNumLinha(0);
+    }
+}
+
 void Design::imprimeAllComp(){
     list<Componente*>::iterator i;
     cout<< " ======================================== "<<endl;
     cout<< " COMPONENTES - QTD: "<< this->ListaComp.size() <<endl;
     cout<< " ======================================== "<<endl;
     for (i = this->ListaComp.begin(); i != this->ListaComp.end(); i++) {
-//        if ((*i)->tipo_comp ==  CompType::MEM ) continue; 
-//        if ((*i)->tipo_comp ==  CompType::REG ) continue; 
         if ((*i)->tipo_comp ==  CompType::DEL ) continue; 
-        cout<< "COMP: " << (*i)->getName() << " - NUM: " <<(*i)->getNumIdComp() << "||| " << (*i) << endl;
-        cout<< " ---------------------------------------- "<<endl;
-//        cout<< (*i)->imprimePortas() << endl;
-//        cout<< " ---------------------------------------- "<<endl;
-//        cout<< (*i)->imprimeLigacoes() << endl;
-//        cout<< " ---------------------------------------- "<<endl;
-//        cout<< (*i)->geraCompVHDL() << endl;
-//        cout<< " ---------------------------------------- "<<endl;
+        if ((*i)->tipo_comp ==  CompType::MEM ) continue; 
+        if ((*i)->tipo_comp ==  CompType::REG ) continue; 
+        if ((*i)->getNumLinha() <= 0)  continue; 
+//        cout<< "COMP: '" << (*i)->getName() << "' - VHDL: '" <<(*i)->getNomeCompVHDL()<< "' - DLY: '" << (*i)->getDelayValComp()<<"' - LINHA: '" <<(*i)->getNumLinha()  <<"'" <<endl;
+        cout<< (*i)->getName() << "|"<< (*i)->getDelayValComp()<<"|" <<(*i)->getNumLinha()  <<endl;
     }
     cout<< " ======================================== "<<endl;  
 }

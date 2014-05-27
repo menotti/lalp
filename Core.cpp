@@ -92,13 +92,12 @@ Core::Core(SgProject* project, list<SgNode*> lista) {
         memHdr->insereMux();
         this->design = memHdr->getDesign();
     }
-   
-    
-    this->aplicarDelayPragma();
-    this->dot->imprimeHWDOT(this->design->getListaComp(), this->design->getListaLiga(), "DOT/9_LIGA_DEP.dot", false);
+    this->design->finalizaComponentesIF();
     this->ligaCompDep();
-    this->dot->imprimeHWDOT(this->design->getListaComp(), this->design->getListaLiga(), "DOT/10_ANTES_SCHEDULE.dot", false);   
-    
+    this->dot->imprimeHWDOT(this->design->getListaComp(), this->design->getListaLiga(), "DOT/6_LIGA_COMP_DEP.dot", false);
+    this->aplicarDelayPragma();
+    this->dot->imprimeHWDOT(this->design->getListaComp(), this->design->getListaLiga(), "DOT/7_APLICA_DLY_PRAGMA.dot", false);
+
     if (this->ramMultPort == false){
         memHdr->insereStepMux();
         this->design = memHdr->getDesign();
@@ -107,7 +106,7 @@ Core::Core(SgProject* project, list<SgNode*> lista) {
         memHdr->insereRamMultPort();
         this->design = memHdr->getDesign();
     }
-    
+    this->dot->imprimeHWDOT(this->design->getListaComp(), this->design->getListaLiga(), "DOT/10_ANTES_SCHEDULE.dot", false);   
     //Processo de Scheduling
     Scheduling* sched = new Scheduling(this->design);
     sched->detectBackwardEdges();
@@ -120,10 +119,6 @@ Core::Core(SgProject* project, list<SgNode*> lista) {
     this->insereDelayLigBackEdge();
     
     this->dot->imprimeHWDOT(this->design->getListaComp(), this->design->getListaLiga(), "DOT/12_DEPOIS_SCHEDULE.dot", false); 
-    this->design->finalizaComponentesIF();
-    
-    
-    
     
     //Rodar processo para identificar componente fortemente conectado.
 //    this->rodarSCC();
@@ -144,20 +139,22 @@ Core::Core(SgProject* project, list<SgNode*> lista) {
 }
 
 void Core::insereDelayLigBackEdge(){
+    //TODO aqui vai o esquema de colocar os DELAYS autmaticos para substituir os pragmas
+    //e' definido no SCHEDULING.CPP na LINHA: 300
     list<Componente*>::iterator i;
     for (i = this->design->ListaComp.begin(); i != this->design->ListaComp.end(); i++) {
-        if( (*i)->getUserSync() == true ){
+        if( (*i)->getSchedSync() == true ){
             if((*i)->getPortOther("we")->temLigacao() ){
                 Ligacao* ligAux = (*i)->getPortOther("we")->getLigacao2();
                 if(ligAux->getOrigem()->tipo_comp == CompType::DLY){
                     delay_op* dly = (delay_op*)(ligAux->getOrigem());
                     string dlyValOld = dly->getDelayVal();
                     int oldVal = FuncoesAux::StrToInt(dlyValOld);
-                    int comPal = FuncoesAux::StrToInt((*i)->getDelayValComp());
-                    int newVal = oldVal + comPal;
+                    int comPal = FuncoesAux::StrToInt((*i)->getDelaySchedComp());
+                    int newVal = oldVal + comPal; // VERIFICA AQUI se realmente SOME ou se pega apenas o valor em getDelaySchedComp()
                     dly->setDelayVal(FuncoesAux::IntToStr(newVal));
                 }else{
-                    int val = FuncoesAux::StrToInt((*i)->getDelayValComp());
+                    int val = FuncoesAux::StrToInt((*i)->getDelaySchedComp());
                     Componente* newDly = this->design->insereDelay(ligAux,val, 0);
                     this->design->addComponent(newDly);
                 }
@@ -166,7 +163,7 @@ void Core::insereDelayLigBackEdge(){
                 ctdAux = (*i)->getForComp();
                 Ligacao* newLig = this->design->insereLigacao(ctdAux, (*i), "step", "we");
 
-                int val = FuncoesAux::StrToInt((*i)->getDelayValComp());
+                int val = FuncoesAux::StrToInt((*i)->getDelaySchedComp());
                 Componente* newDly = this->design->insereDelay(newLig,val, 0);
  
                 this->design->addComponent(newDly);
@@ -212,8 +209,38 @@ void Core::aplicarDelayPragma(){
                 for (i = this->design->ListaComp.begin(); i != this->design->ListaComp.end(); i++) {
                     if ((linha+1) != (*i)->getNumLinha() ) continue;
                     if ((*i)->getWE() == true){
-                        (*i)->setUserSync(true);
-                        (*i)->setDelayValComp(newValDelay);
+                        //verificar se a porta WE ja tem uma conexao
+                        if( (*i)->temPorta("we") == true ) {
+                            (*i)->setUserSync(true);
+                            if((*i)->getPortOther("we")->temLigacao()){
+                                //pegar ligacao
+                                Ligacao* oldLig = (*i)->getPortOther("we")->getLigacao2();
+                                
+                                oldLig->getOrigem()->removeLigacao(oldLig);
+                                oldLig->getDestino()->removeLigacao(oldLig);
+                                
+                                //Criar componente AND
+                                and_op* comp      = new and_op(NULL, 1);
+                                comp->setNumIdComp(FuncoesAux::IntToStr(this->design->ListaComp.size()));
+                                comp->setName("comp_"+FuncoesAux::IntToStr(this->design->ListaComp.size()));
+                                this->design->addComponent(comp);
+                                
+                                this->design->insereLigacao(oldLig->getOrigem(), comp, oldLig->getPortOrigem()->getName(), "I0");
+                                this->design->deletaLigacao(oldLig->getNome());
+                                
+                                Ligacao* newLig = this->design->insereLigacao((*i)->getForComp(), comp, "step", "I1");
+                                this->design->insereLigacao(comp, (*i), "O0", "we");
+                                
+                                Componente* compDLY = this->design->insereDelay(newLig,FuncoesAux::StrToInt(newValDelay));
+                                this->design->addComponent(compDLY);
+                            }else{
+                                //Inserir DELAY diretamente na porta
+                                Ligacao* newLig = this->design->insereLigacao((*i)->getForComp(), (*i), "step", "we");
+                                Componente* compDLY = this->design->insereDelay(newLig,FuncoesAux::StrToInt(newValDelay));
+                                this->design->addComponent(compDLY);
+                            }
+                        }
+                        
                         cout<< "Comp: '" << (*i)->getName() << "' recebendo novo valor delay: '" << newValDelay << "' " << endl;
                         break;
                     }
@@ -929,7 +956,8 @@ void Core::trataIfTernario(Componente* comp, SgNode* condicao){
     }    
 
     comp_ref* ref = new comp_ref(NULL, "WE", comp->dataWidth);
-    ref->setName("reg_mux_"+comp->getNomeVarRef()+FuncoesAux::IntToStr(this->design->ListaComp.size()));
+    string name = this->design->getNomeCompRef(comp->getNomeVarRef());
+    ref->setName(name);
     ref->setNumIdComp(FuncoesAux::IntToStr(this->design->ListaComp.size()));
 
     ref->setNumParalelLina(comp->getNumParalelLina()); 
@@ -1034,18 +1062,35 @@ Componente* Core::analisaExp(SgNode *nodoAtual, SgNode* pai, const string& aux, 
     SgMinusOp* expMin = isSgMinusOp(nodoAtual);
     if (expMin != NULL) {
         SgExpression* expres = expMin->get_operand_i();
-        
-        neg_op_s* comp = new neg_op_s(this->GetStrPointerAdd(expMin), this->DATA_WIDTH);
-        if(pai != NULL) comp->setPai(this->GetStrPointerAdd(pai));
-        comp->setNumIdComp(FuncoesAux::IntToStr(this->design->ListaComp.size()));
-        comp->setName("comp_"+FuncoesAux::IntToStr(this->design->ListaComp.size()));
-        comp->setNumLinha(nodoAtual->get_file_info()->get_line()); 
-        comp->setNumParalelLina(lineParal);
-        comp->setForComp(compFor);
-        this->design->addComponent(comp);
-        compReturn = comp;
-        
-        analisaExp(expres, nodoAtual, aux, lineParal, compFor);
+
+        SgIntVal* valInt = isSgIntVal(expres);
+        if (valInt != NULL) {
+            comp_aux* comp_input = new comp_aux(this->GetStrPointerAdd(valInt), "VALOR", this->DATA_WIDTH);
+            comp_input->setName("num_" + FuncoesAux::IntToStr(this->design->ListaComp.size()));
+            comp_input->setNumIdComp(FuncoesAux::IntToStr(this->design->ListaComp.size()));
+            comp_input->setNumParalelLina(lineParal);
+            comp_input->setForComp(compFor);
+            string str = FuncoesAux::IntToStr(valInt->get_value()*(-1));
+            comp_input->setNumLinha(valInt->get_file_info()->get_line());
+            comp_input->setValAux(str);
+            if(pai != NULL) comp_input->setPai(this->GetStrPointerAdd(pai));
+            this->design->addComponent(comp_input);
+            
+            compReturn = comp_input;
+         
+        }else{
+            neg_op_s* comp = new neg_op_s(this->GetStrPointerAdd(expMin), this->DATA_WIDTH);
+            if(pai != NULL) comp->setPai(this->GetStrPointerAdd(pai));
+            comp->setNumIdComp(FuncoesAux::IntToStr(this->design->ListaComp.size()));
+            comp->setName("comp_"+FuncoesAux::IntToStr(this->design->ListaComp.size()));
+            comp->setNumLinha(nodoAtual->get_file_info()->get_line()); 
+            comp->setNumParalelLina(lineParal);
+            comp->setForComp(compFor);
+            this->design->addComponent(comp);
+            compReturn = comp;
+
+            analisaExp(expres, nodoAtual, aux, lineParal, compFor);
+        }
     }
     // </editor-fold>
 
@@ -1559,8 +1604,6 @@ Componente* Core::analisaExp(SgNode *nodoAtual, SgNode* pai, const string& aux, 
         if (notEqualOp != NULL) {
             if_ne_op_s* ifComp = new if_ne_op_s(this->GetStrPointerAdd(nodoAtual), dataWidht);
             ifComp->setName("if_ne_op_s_" + FuncoesAux::IntToStr(this->design->ListaComp.size()));
-            cout << "--- TESTE NOT EQUAL ----" << ifComp->getName() << " - " << ifComp->getNomeCompVHDL() << endl;
-            cout << ifComp->getEstruturaComponenteVHDL() << endl;
             comp = ifComp;
         }// </editor-fold>
 
@@ -1907,7 +1950,6 @@ void Core::retirarCompDelayRedundante(){
     }
 }
 
-
 void Core::ligaRegNoWE(){
     //procedimento para efetuar um calculo correto no balanceamento
     cout<< "------------------------" <<endl;
@@ -1976,7 +2018,7 @@ void Core::ligaCompDep(){
     list<Componente*>::iterator j;
     list<Ligacao*>::iterator    k;
     
-      // <editor-fold defaultstate="collapsed" desc="Ligar comp com dependencia">
+    // <editor-fold defaultstate="collapsed" desc="Ligar comp com dependencia">
     cout << "--Ligar componentes DEPENDENTES:" << endl;
     Componente* lastWE = NULL;
     for (i = this->design->ListaComp.begin(); i != this->design->ListaComp.end(); i++) {
@@ -2029,7 +2071,7 @@ void Core::ligaCompDep(){
                                 (*k)->setPortOrigem(lastWE->getPortDataInOut("OUT"));
                                 lastWE->addLigacao((*k));
                                 lastWE->getPortDataInOut("OUT")->addLigacao((*k));
-                                (*k)->setBackEdge(true);
+//                                (*k)->setBackEdge(true);
                                 
                                 if( (*k)->getDestino()->tipo_comp == CompType::DLY ){
                                     Componente* dlyAux = (*k)->getDestino();
@@ -2577,8 +2619,8 @@ void Core::updateCounter(SgNode* node, counter* comp){
         
         ROSE_ASSERT(cur_for);
 
-//        comp->setName(SageInterface::getLoopIndexVariable(node)->get_name().str());
-        comp->setName("CTD_"+FuncoesAux::IntToStr(this->design->ListaComp.size()));
+        comp->setName(SageInterface::getLoopIndexVariable(node)->get_name().str());
+//        comp->setName("CTD_"+FuncoesAux::IntToStr(this->design->ListaComp.size()));
         comp->setVarControlCont(SageInterface::getLoopIndexVariable(node)->get_name().str());
          /**********************************************************/
         //Parte de pegar o padrao de inicio do FOR => EX.: int i = 0 
