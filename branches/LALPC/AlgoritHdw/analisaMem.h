@@ -31,6 +31,7 @@ public:
     
 private:
     Design*             design;
+    bool                debug;
 };
 
 #endif	/* ANALISAMEM_H */

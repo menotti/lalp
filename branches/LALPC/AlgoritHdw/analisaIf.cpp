@@ -20,7 +20,7 @@
 using namespace std;
 
 analisaIf::analisaIf(Design* design) {
-    this->debug = true;
+    this->debug = false;
     this->design = design;
     this->buscaIfs();
 }
@@ -528,7 +528,8 @@ void analisaIf::criaComponenteMux(Componente* compIf, Componente* compAtual){
         }
 
         comp_ref* ref = new comp_ref(NULL, "WE", compAuxTrue->dataWidth);
-        ref->setName("reg_mux_"+compAuxTrue->getNomeVarRef()+FuncoesAux::IntToStr(this->design->ListaComp.size()));
+        string name = this->design->getNomeCompRef(compAuxTrue->getNomeVarRef());
+        ref->setName(name);
         ref->setNumIdComp(FuncoesAux::IntToStr(this->design->ListaComp.size()));
         
         ref->setNumParalelLina(compAuxTrue->getNumParalelLina());      

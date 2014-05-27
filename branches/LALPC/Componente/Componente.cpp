@@ -34,6 +34,7 @@ Componente::Componente(void* node/*=NULL*/, const string &aux/*=""*/,  int dataW
     this->nodoPai       = NULL;
     this->sync          = true;
     this->userSync      = false;
+    this->schedSync     = false;
     this->addressWidth  = 2;
     this->dataWidth     = dataWidth;
     this->eInicializado = false;
@@ -43,6 +44,8 @@ Componente::Componente(void* node/*=NULL*/, const string &aux/*=""*/,  int dataW
     this->isIfBody      = false;
     this->valStepAux    = 0;
     this->delayValComp  = "1";
+    this->delaySchedComp= "0";
+    
     setEIndice(false);
     setALAP(0);
     setASAP(0);
@@ -117,6 +120,14 @@ bool Componente::getUserSync(){
     return this->userSync;
 }
 
+bool Componente::getSchedSync(){
+    return this->schedSync;
+}
+
+void Componente::setSchedSync(bool schedSync){
+    this->schedSync = schedSync;
+}
+
 void Componente::setUserSync(bool userSync){
     this->userSync = userSync;
 }
@@ -188,6 +199,14 @@ string Componente::getDelayValComp(){
 
 void Componente::setDelayValComp(const string &delayVal){
     this->delayValComp = delayVal;
+}
+
+void Componente::setDelaySchedComp(const string &delayVal){
+    this->delaySchedComp = delayVal;
+}
+
+string Componente::getDelaySchedComp(){
+    return this->delaySchedComp;
 }
 
 void Componente::setGenericMapVal(const string &map, const string &aux, const string &val){

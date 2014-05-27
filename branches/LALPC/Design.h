@@ -41,6 +41,7 @@ public:
     bool                verificaTemDelay(Componente* comp, const string& porta);
     void                imprimeAllComp();
     string              getNomeCompRef(const string& name);
+    void                zeraValorNumLinha();
     list<Ligacao*>      ListaLiga; 
     list<Componente*>   ListaComp;
 //    ProcessGraph*       graph;
