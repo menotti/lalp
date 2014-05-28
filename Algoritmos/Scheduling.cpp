@@ -168,14 +168,13 @@ void Scheduling::balanceAndSyncrhonize(){
                         dlyCtd = FuncoesAux::StrToInt(counter->getDelayValComp());
                     }
 //                    int stepAux= c->getValStepAux();
-                    int stepAux= 0;
                     
                     Ligacao* s1 = this->design->insereLigacao(counter, c, "step", "we");
-                    Componente* dly3 = this->design->insereDelay(s1, distance-1+stepAux, counter->getASAP() + dlyCtd);
+                    Componente* dly3 = this->design->insereDelay(s1, distance-1, counter->getASAP() + dlyCtd);
                     this->design->addComponent(dly3);
                     ats++;
                     if(this->debug){
-                        cout<< "inserting '" << (distance-1+stepAux) << "' delay(s) on signal '"<< counter->getName()<< "->" << c->getName() <<"' (write enable) " << dly3->getNomeCompVHDL() << ": '" << dly3->getName() <<"'" << endl;
+                        cout<< "inserting '" << (distance-1) << "' delay(s) on signal '"<< counter->getName()<< "->" << c->getName() <<"' (write enable) " << dly3->getNomeCompVHDL() << ": '" << dly3->getName() <<"'" << endl;
                     }
                 }
             }else{

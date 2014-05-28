@@ -32,13 +32,8 @@ int main() {
 	#pragma bit bufferstep 
 	int bufferstep = 1;
 	int step;                     
-    	int RES1 = 0;
-	int RES2 = 0;
-	int RES3 = 0;
-	
 	#pragma step 3
   	for (len = 0; len < 1024; len++ ) {
-
 		if(!bufferstep){
 			#pragma delay 1
 			inputbuffer = indata[i];
@@ -48,11 +43,12 @@ int main() {
 			#pragma delay 2
 			i += 1;
 		}
-		bufferstep = !bufferstep;
 		sign = delta & 8;
 		delta2 = delta & 7;
+		bufferstep = !bufferstep;
 		index2 = index + indexTable[delta];
 		index3 = (index2 < 0) ? 0: index2;
+		#pragma delay 7
 		step = stepSizeTable[index];
 		index = (index3 > 88) ? 88 : index3;
 		vpdiff = step >> 3;
