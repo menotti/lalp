@@ -24,75 +24,74 @@ int main() {
   int i;
   int len;
   int sign;             
-  int delta = 0;    
-  int step = 0;             
-  int valpred = 0;     
-  int vpdiff;           
+  int delta = 0;
+  int delta2 = 0;
+  int delta3 = 0; 
+  int delta4 = 0; 
+  int step = 0; 
+  int step2 = 0;   
+  int step3 = 0;          
+  int valpred = 0;
+  int valpred2 = 0;
+  int valpred3 = 0;     
+  int vpdiff;  
+  int vpdiff2;
+  int vpdiff3;
+  int vpdiff4;         
   int index = 0;
+  int index2 = 0;
+  int index3 = 0;
   #pragma bit bufferstep                       
   int bufferstep = 1;               
   int outputbuffer = 0; 
-  int diff;             
+  int diff; 
+  int diff2;
+  int diff3;
+  int diff4;            
   int val;                      
     
-
+  #pragma step 12
   for (len = 0 ; len < 1024 ; len++ ) {
-    val = indata[len];
-    diff = val - valpred;
-    if (diff < 0){
-	sign = 8;
-    }else{ 
-        sign = 0; 
-    }
-    delta = delta | sign;    
-    step = stepsizeTable[index];
-    if ( sign != 0 ){
-        diff = (-diff);
-    }
-    vpdiff = (step >> 3);
-    if ( diff >= step ) {
-      delta = 4;
-      diff = diff - step;
-      vpdiff = vpdiff + step;
-    }
-    step = step >> 1;
-    if ( diff >= step  ) {
-      delta = delta | 2;
-      diff = diff - step;
-      vpdiff = vpdiff + step;
-    }    
-    step = step >> 1;
-    if ( diff >= step ) {
-      delta = delta | 1;
-      vpdiff = vpdiff + step;
-    }
-    if ( sign != 0  ){
-      valpred =  valpred - vpdiff;
-    }else {
-      valpred = valpred + vpdiff;
-    }
-    if ( valpred > 32767 ){
-      valpred = 32767;
-    }
-    if ( valpred < -32768 ){
-      valpred = -32768;
-    }
-    index = index + indexTable[delta];
+	val = indata[len];
+	diff = val - valpred;
+	sign = diff < 0 ? 8 : 0;
+	#pragma delay 6
+	step = stepsizeTable[index];
+	diff2 = sign != 0 ? -diff : diff;
+	delta = diff2 >= step ? 4 : 0;
+	diff3 = diff2 >= step ? diff2 - step : diff2;
+	step2 = step >> 1;
+	vpdiff = (step >> 3);
+	delta2 = diff3 >= step2 ? delta | 2 : delta;
+	diff4 = diff3 >= step2 ? diff3 - step2 : diff3;
+	vpdiff2 = diff2 >= step ? vpdiff + step : vpdiff;
+	step3 = step2 >> 1;			
+	delta3 = diff4 >= step3 ? delta2 | 1 : delta2;
+	vpdiff3 = diff3 >= step2 ? vpdiff2 + step2 : vpdiff2;
+	vpdiff4 = diff4 >= step3 ? vpdiff3 + step3 : vpdiff3;
+	delta4 = delta3 | sign;
+    	valpred2 = sign != 0 ? valpred - vpdiff4 : valpred + vpdiff4;
+	if (bufferstep){
+		#pragma delay 11
+		outputbuffer = (delta4 << 4) & 0xf0;
+	}
+	valpred3 = valpred2 > 32767 ? 32767 : valpred2;
+    	index2 = index + indexTable[delta4];   
+    	index3 = index2 < 0 ? 0 : index2;
+	valpred = valpred3 < -32768 ? -32768 : valpred3;
 
-    if ( index < 0 ) {
-        index = 0;
-    }
-    if ( index > 88 ) {
-        index = 88;
-    }
-    if (!bufferstep) {
-      	outdata[i] = (delta & 0x0f) | outputbuffer;
-      	i = i + 1;
-    } else {
-      	outputbuffer = (delta << 4) & 0xf0;
-    }
-    bufferstep = !bufferstep;
-    
+	if(!bufferstep){
+		#pragma delay 14
+		i += 1;
+	}
+
+	index = index3 > 88 ? 88 : index3;
+
+        if(!bufferstep){
+		#pragma delay 15
+		outdata[i] = (delta4 & 0x0f) | outputbuffer;
+	}
+	bufferstep = !bufferstep;
   }
   return outdata;
 }
