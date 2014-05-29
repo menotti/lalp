@@ -108,6 +108,7 @@ Core::Core(SgProject* project, list<SgNode*> lista) {
     }
     this->dot->imprimeHWDOT(this->design->getListaComp(), this->design->getListaLiga(), "DOT/10_ANTES_SCHEDULE.dot", false);   
     //Processo de Scheduling
+    this->design->zeraValorNumLinha();
     Scheduling* sched = new Scheduling(this->design);
     sched->detectBackwardEdges();
     sched->ALAP();
