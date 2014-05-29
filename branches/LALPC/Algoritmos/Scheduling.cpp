@@ -66,7 +66,7 @@ void Scheduling::detectBackwardEdges(){
 }
 
 void Scheduling::balanceAndSyncrhonize(){
-    this->design->zeraValorNumLinha();
+    
     this->design->imprimeAllComp();
     cout<<"*********************************"<<endl;
     cout<<"Balance And Synchronize..."<<endl;
@@ -341,8 +341,9 @@ void Scheduling::ALAP(){
             if ((*i)->tipo_comp == CompType::REG || (*i)->tipo_comp == CompType::MEM || (*i)->tipo_comp == CompType::DEL ) continue;
             min  = 0;
             succ = 0;
-            
-            //Fazer calc para todos sucessores QUANDO ARESTA FOR DIFERENTE DE BLACK
+            min  = this->design->getMaxSchedulingTime();
+            succ = this->design->getMaxSchedulingTime();
+            //Fazer calc para todos sucessores QUANDO ARESTA FOR DIFERENTE DE BACK
             for(k=this->design->ListaLiga.begin(); k != this->design->ListaLiga.end(); k++){
                 if((*k)->getAtivo() == false ) continue;
                 if((*k)->getBackEdge() == true) continue;
@@ -441,7 +442,7 @@ void Scheduling::corrigeNumLinha(){
     
     for(i=this->design->ListaComp.begin(); i != this->design->ListaComp.end(); i++){
         if ((*i)->tipo_comp != CompType::CTD && (*i)->tipo_comp != CompType::MUX && (*i)->tipo_comp != CompType::REF) continue;
-        cout << "COMP: '" << (*i)->getName() << "' na linha: '"<< (*i)->getNumLinha() << "'" << endl;
+        //cout << "COMP: '" << (*i)->getName() << "' na linha: '"<< (*i)->getNumLinha() << "'" << endl;
     }
 }
 

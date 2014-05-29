@@ -488,13 +488,14 @@ void Design::imprimeAllComp(){
     cout<< " ======================================== "<<endl;
     cout<< " COMPONENTES - QTD: "<< this->ListaComp.size() <<endl;
     cout<< " ======================================== "<<endl;
+    cout<< "NOME;DELAY;LINHA;ASAP;ALAP"<<endl;
     for (i = this->ListaComp.begin(); i != this->ListaComp.end(); i++) {
         if ((*i)->tipo_comp ==  CompType::DEL ) continue; 
         if ((*i)->tipo_comp ==  CompType::MEM ) continue; 
         if ((*i)->tipo_comp ==  CompType::REG ) continue; 
         if ((*i)->getNumLinha() <= 0)  continue; 
 //        cout<< "COMP: '" << (*i)->getName() << "' - VHDL: '" <<(*i)->getNomeCompVHDL()<< "' - DLY: '" << (*i)->getDelayValComp()<<"' - LINHA: '" <<(*i)->getNumLinha()  <<"'" <<endl;
-        cout<< (*i)->getName() << "|"<< (*i)->getDelayValComp()<<"|" <<(*i)->getNumLinha()  <<endl;
+        cout<< (*i)->getName() << ";"<< (*i)->getDelayValComp()<<";" <<(*i)->getNumLinha()<<";" <<(*i)->getASAP()<<";" <<(*i)->getALAP()<<endl;
     }
     cout<< " ======================================== "<<endl;  
 }
