@@ -32,6 +32,8 @@ private:
     bool                verificaCompExisteBodyTrueEFalse(Componente* compIf,Componente* compAtual);
     void                analiseProcessoCriaMux(Componente* compIf);
     void                criaComponenteMux(Componente* compIf, Componente* compAtual);
+    void                finalizaDependenciaMux(Componente* compIf);
+    void                conectaCompIfSemMux(Componente* compIf);
     Componente*         getCompAntesIf(Componente* compIf, const string& linhaParal);
     bool                verificaCompPrecisaMux(Componente* compIf, Componente* compAtual);
     Design*             design;

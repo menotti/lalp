@@ -92,12 +92,12 @@ Core::Core(SgProject* project, list<SgNode*> lista) {
         memHdr->insereMux();
         this->design = memHdr->getDesign();
     }
-    this->design->finalizaComponentesIF();
+    
     this->ligaCompDep();
     this->dot->imprimeHWDOT(this->design->getListaComp(), this->design->getListaLiga(), "DOT/6_LIGA_COMP_DEP.dot", false);
     this->aplicarDelayPragma();
     this->dot->imprimeHWDOT(this->design->getListaComp(), this->design->getListaLiga(), "DOT/7_APLICA_DLY_PRAGMA.dot", false);
-
+//    this->design->finalizaComponentesIF();
     if (this->ramMultPort == false){
         memHdr->insereStepMux();
         this->design = memHdr->getDesign();
@@ -115,11 +115,14 @@ Core::Core(SgProject* project, list<SgNode*> lista) {
     sched->balanceAndSyncrhonize();
     
     this->design = sched->getDesign();
+    
     this->dot->imprimeHWDOT(this->design->getListaComp(), this->design->getListaLiga(), "DOT/11_DEPOIS_SCHEDULE.dot", false);  
+    //this->design->finalizaComponentesIF();
+    this->dot->imprimeHWDOT(this->design->getListaComp(), this->design->getListaLiga(), "DOT/12_DEPOIS_FINALIZA_IF.dot", false); 
     
     this->insereDelayLigBackEdge();
     
-    this->dot->imprimeHWDOT(this->design->getListaComp(), this->design->getListaLiga(), "DOT/12_DEPOIS_SCHEDULE.dot", false); 
+    this->dot->imprimeHWDOT(this->design->getListaComp(), this->design->getListaLiga(), "DOT/13_DEPOIS_DLAY_BACKEDGE.dot", false); 
     
     //Rodar processo para identificar componente fortemente conectado.
 //    this->rodarSCC();

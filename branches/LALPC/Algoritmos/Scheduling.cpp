@@ -7,6 +7,7 @@
 
 #include "Scheduling.h"
 #include "../Aux/FuncoesAux.h"
+#include "../Componente/and_op.h"
 #include <string>
 #include <stdio.h>
 #include <sstream>
@@ -80,6 +81,9 @@ void Scheduling::balanceAndSyncrhonize(){
     Componente* firstCounter = NULL;
     int mii = 0, ats = 0;
     
+//    this->debug = false;
+//    this->debug = false;
+    
     for(i=this->design->ListaComp.begin(); i != this->design->ListaComp.end(); i++){
         Componente* c = (*i);
         if ((*i)->tipo_comp == CompType::CTD){
@@ -105,6 +109,7 @@ void Scheduling::balanceAndSyncrhonize(){
                 
                 Componente* destino = (*k)->getDestino();
                 int distance = destino->getASAP() - counterSched;
+                                
                 if (distance > 1) {
                     string strAux = counter->getDelayValComp();
                     int dlyCtd = 0;
@@ -181,6 +186,61 @@ void Scheduling::balanceAndSyncrhonize(){
                 if(this->debug) cout<< "port 'we' of component \"" << c->getName() << "\" is connected, please check if aditional synchronization is needed (when ... && "<<counter->getName()<<".step@N)" << endl;
             }
         }
+        
+        if( (counter != NULL) && (c->temPorta("we"))){
+            if((c->getPortOther("we")->temLigacao() == true) ){
+                if((c->getPortOther("we")->getLigacao2()->getIfEdge() == true) ){
+                    int distance = c->getASAP() - counter->getASAP();
+                    int dlyCtd = 0;
+                    string strAux = counter->getDelayValComp();
+                    if(strAux != ""){
+                        dlyCtd = FuncoesAux::StrToInt(counter->getDelayValComp());
+                    }
+                    if(distance > 1){
+
+                        /*
+                         * Caso especial ARESTA VERDE
+                         * isso ocorre quando nao gera um mux para um registrador/memoria dentro de um IF
+                         * voce precisa da ligacao do IF na porta WE para calcular o ASAP corretamente porem voce precisa do DELAY para este componente
+                         * neste caso tem que criar um componente AND que ira ligar na porta WE combinando o IF com o DLY oriundo do Contador
+                         */
+                        if(c->getPortOther("we")->getLigacao2()->getIfEdge() == true){
+                            Ligacao* ligWe = c->getPortOther("we")->getLigacao2();
+
+                            //Pegando Origem
+                            Componente* compOrigem = ligWe->getOrigem();
+
+                            //removendo ligacao
+                            ligWe->getOrigem()->removeLigacao(ligWe);
+                            ligWe->getDestino()->removeLigacao(ligWe);
+
+                            this->design->deletaLigacao(ligWe->getNome());
+
+                            //Criando componente AND
+                            and_op* andCompAux = new and_op(NULL, 1);
+                            andCompAux->setNumIdComp(FuncoesAux::IntToStr(this->design->ListaComp.size()));
+                            andCompAux->setName("comp_"+FuncoesAux::IntToStr(this->design->ListaComp.size()));
+                            this->design->addComponent(andCompAux);
+
+                            this->design->insereLigacao(compOrigem, andCompAux, "O0", "I0");
+                            Ligacao* newLigWe =this->design->insereLigacao(andCompAux, c   , "O0", "we");
+                            newLigWe->setIfEdge(true);
+
+                            Ligacao* newLigDly = this->design->insereLigacao(counter, andCompAux, "step", "I1");
+
+                            //INSERINDO DELAY NA NOVA LIGACAO
+                            Componente* dly3 = this->design->insereDelay(newLigDly, distance-1, counter->getASAP() + dlyCtd);
+                            this->design->addComponent(dly3);
+                            ats++;
+                            if(this->debug){
+                                cout<< "inserting '" << (distance-1) << "' delay(s) on signal '"<< counter->getName()<< "->" << c->getName() <<"' (write enable + IF condition) " << dly3->getNomeCompVHDL() << ": '" << dly3->getName() <<"'" << endl;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
     }
 
     
@@ -404,11 +464,22 @@ void Scheduling::ASAP(){
             
             //all source code predecessors
             if((*i)->getWE() == true && (*i)->getNumLinha() != 0){
+//            if((*i)->getNumLinha() != 0){
                 for(j=this->design->ListaComp.begin(); j != this->design->ListaComp.end(); j++){
-                    if ((*j)->tipo_comp == CompType::REG || (*j)->tipo_comp == CompType::MEM || (*j)->tipo_comp == CompType::DEL ) continue;
+//                    if ((*j)->tipo_comp == CompType::REG || (*j)->tipo_comp == CompType::MEM || (*j)->tipo_comp == CompType::DEL  || (*j)->tipo_comp == CompType::AUX ) continue;
                     if ((*j)->getWE() == false && (*j)->getNumLinha() == 0 ) continue;
-                    int line = (*j)->getNumLinha();
-                    if(line > (*i)->getNumLinha()){
+                    if ((*j)->getNumLinha() == 0 ) continue;
+                    long lineI = (long)(*j)->getNumLinha();
+                    long lineJ = (long)(*i)->getNumLinha();
+                    
+//                    if( (*i)->getWE()== false ) lineI -= 0.5;
+//                    if( (*j)->getWE()== false ) lineJ -= 0.5;
+                    
+                    if(lineJ == lineI && (*j)->getWE() ){
+                        continue;
+                    }
+                    
+                    if(lineJ >lineI){
                         if(this->debug) cout<< "break on: \""<<(*j)->getName()<<"\" ASAP:" << (*j)->getASAP() << " line: '" << (*j)->getNumLinha()<<"'" <<endl;
                         goto innerBreak;
                     }
