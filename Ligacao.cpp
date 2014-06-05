@@ -19,8 +19,17 @@ Ligacao::Ligacao(class Componente* origem, class Componente* destino, const stri
     this->destino       = destino;
     this->nome          = nome;
     this->BackEdge      = false;
+    this->IfEdge        = false;
     this->width         = "1";
     this->ativo         = true;
+}
+
+void Ligacao::setIfEdge(bool val){
+    this->IfEdge  = val;
+}
+
+bool Ligacao::getIfEdge(){
+    return this->IfEdge;
 }
 
 void Ligacao::setBackEdge(bool val){
@@ -57,7 +66,12 @@ string Ligacao::imprimeDot(){
     outPorta = ":"+this->getPortDestino()->getName();
     size = "["+this->width+"]";
   
-    res += "\""+this->origem->getName()+"\""+inPorta+" -> \"" +this->destino->getName()+"\""+outPorta+"[label=\"" +this->nome+size+  "\" color=red ";
+    res += "\""+this->origem->getName()+"\""+inPorta+" -> \"" +this->destino->getName()+"\""+outPorta+"[label=\"" +this->nome+size+  "\" color=";
+    string color = "red ";
+    if(this->IfEdge) {
+        color= "green ";
+    }
+    res += color;
     if(this->BackEdge) {
         res += "style=dashed";
     }

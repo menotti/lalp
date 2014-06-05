@@ -452,7 +452,6 @@ void Componente::addLigacao(Ligacao* lig){
 }
 
 void Componente::removeLigacao(Ligacao* lig){
-    
     this->ligacoes.remove(lig);
 }
 

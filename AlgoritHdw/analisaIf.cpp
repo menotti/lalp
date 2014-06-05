@@ -10,12 +10,14 @@
 #include "../Componente/comp_ref.h"
 #include "../Componente/reg_mux_op.h"
 #include "../Componente/not_op.h"
+#include "../Componente/neg_op_s.h"
 #include "../Componente/and_op.h"
 #include <string>
 #include <stdio.h>
 #include <sstream>
 #include <iostream>
 #include <stdlib.h>
+#include <list>
 
 using namespace std;
 
@@ -220,30 +222,27 @@ bool analisaIf::verificaCompAntesIf(Componente* compIf, Componente* compAtual){
         cout<< "Componente FOR: '"<< compAtual->getForComp()->getName()  <<"'" << endl;
         cout<< "----------------------------------------" << endl;
     }
-    list<Componente*>::iterator i;
+    list<Componente*>::iterator k;
+ 
     bool res = false;
     
-    for (i = this->design->ListaComp.begin(); i != this->design->ListaComp.end(); i++) {
-        if ((*i)->getIf() == true) continue;        
-        if ((*i)->tipo_comp != CompType::REF) continue;
-        if ((*i)->getEIndice()) continue;
-        if ((*i)->getComponenteRef()->tipo_comp != CompType::REG) continue;
-        if ((*i)->getNumParalelLina() != compAtual->getNumParalelLina()) continue;
-        if (compAtual->node == (*i)->node) continue;
-        if (compIf->getNumLinha() < (*i)->getNumLinha()) continue;
-        if ((*i)->getNomeVarRef() == compAtual->getNomeVarRef()) {
+    for (k = this->design->ListaComp.begin(); k != this->design->ListaComp.end(); k++) {
+        if ((*k)->tipo_comp != CompType::REF) continue;
+        if ((*k)->getNumParalelLina() != compAtual->getNumParalelLina()) continue;
+        if (compIf->getNumLinha() <= (*k)->getNumLinha()) continue;
+        if ((*k)->getNomeVarRef() == compAtual->getNomeVarRef()) {
             res = true;
             if(this->debug == true){
-                cout<< "- Achou ocorrencia antes do IF na linha: '"<< (*i)->getNumLinha() << "'" << endl;
+                cout<< "- Achou ocorrencia antes do IF na linha: '"<< (*k)->getNumLinha() << "'" << endl;
             }
-            break;
         }
     }
-    
-    return res;
+
     if(this->debug == true){
-        cout<< "----------------------------------------" << endl;
+        if(res == false) cout<< "- NAO Achou ocorrencia antes do IF para o componente: '"<< compAtual->getName() << "'" << endl;
     }
+    cout<< "----------------------------------------" << endl;
+    return res;
 }
 
 void analisaIf::criaLigIfParaPortaWE(Componente* comp){
@@ -314,9 +313,10 @@ void analisaIf::analiseProcessoCriaMux(Componente* compIf){
             //Verificar se existe qualquer ocorrencia do componente antes do IF
             //se nao existir setar saida do IF para a porta WE deste componente
             //NAO PODE TER ELEMENTO no Body FALSE do IF
-            if(this->verificaCompExisteBodyTrueEFalse(compIf,(*i)) == false  && this->verificaCompAntesIf(compIf,(*i)) == false){
-                //this->criaLigIfParaPortaWE((*i));
-            }else{
+            bool ExisteNoTrueFalse  = this->verificaCompExisteBodyTrueEFalse(compIf,(*i));
+            bool ExisteAntesIf      = false;
+            if(!ExisteNoTrueFalse) ExisteAntesIf      = this->verificaCompAntesIf(compIf,(*i));
+            if(ExisteNoTrueFalse || ExisteAntesIf){
                 if(this->verificaCompPrecisaMux(compIf,(*i)) == true){
                     this->criaComponenteMux(compIf, (*i));
                 }
@@ -330,12 +330,169 @@ void analisaIf::buscaIfs(){
     list<Componente*>::iterator i;
     //Pegar todos componentes do tipo cond
     for (i = this->design->ListaComp.begin(); i != this->design->ListaComp.end(); i++) {
-        
         if ((*i)->tipo_comp != CompType::CND) continue;
         this->ligaExpInternoIf((*i));
         this->analiseProcessoCriaMux((*i));
+        this->conectaCompIfSemMux((*i));
+    }
+    cout << "%%%%%%%%%%%%%%" << endl;
+    for (i = this->design->ListaComp.begin(); i != this->design->ListaComp.end(); i++) {
+        if ((*i)->tipo_comp != CompType::CND) continue;
+        this->finalizaDependenciaMux((*i));
     }
 }
+
+void analisaIf::conectaCompIfSemMux(Componente* compIf){
+    list<Componente*>::iterator i;
+    cout<< "========================================" << endl;
+    cout<< "LIGANDO IF NA PORTA WE DOS COMP SEM MUX " << endl;
+    cout<< "Componente IF: '"<< compIf->getName() <<"'" << endl;
+    cout<< "----------------------------------------" << endl;
+    
+    Componente* compNexAux = NULL;
+    
+    for (i = this->design->ListaComp.begin(); i != this->design->ListaComp.end(); i++) {
+        if ((*i)->tipo_comp != CompType::REF) continue;
+        if ((*i)->getIfComp() != compIf) continue;
+        if ((*i)->writeEnable != true) continue;
+        if ((*i)->getNomeCompVHDL() == "reg_mux_op") continue;
+        if ((*i)->getIf() != true) continue;
+        
+        if((*i)->getPortOther("we")->temLigacao() == false){
+            Ligacao* newLig = NULL;
+            if((*i)->getIfBody() == true){
+                newLig = this->design->insereLigacao(compIf, (*i), compIf->getPortDataInOut("OUT")->getName(), "we");
+            }else{
+                if(compNexAux == NULL){
+                    neg_op_s* comp = new neg_op_s(NULL, 1);
+                    comp->setNumIdComp(FuncoesAux::IntToStr(this->design->ListaComp.size()));
+                    comp->setName("comp_"+FuncoesAux::IntToStr(this->design->ListaComp.size()));
+                    comp->setNumParalelLina(compIf->getNumParalelLina());
+                    this->design->addComponent(comp);
+                    compNexAux = comp;
+                    Ligacao* newLigAux = NULL;
+                    newLigAux = this->design->insereLigacao(compIf, compNexAux, compIf->getPortDataInOut("OUT")->getName(), compNexAux->getPortDataInOut("IN")->getName());
+                }
+                newLig = this->design->insereLigacao(compNexAux, (*i), compNexAux->getPortDataInOut("OUT")->getName(), "we");
+            }
+            cout<< "Componente  : '"<< (*i)->getName() <<"'" << endl;
+            cout<< "Ligacao     : '"<< newLig->getNome() <<"'" << endl;
+            cout<< "----------------------------------------" << endl;
+            newLig->setIfEdge(true);
+        }
+        
+    }
+}
+
+void analisaIf::finalizaDependenciaMux(Componente* compIf){
+    list<Componente*>::iterator i;
+    list<Componente*>::iterator j;
+    cout<< "========================================" << endl;
+    cout<< "PROCURANDO DEPENDENCIA PARA CRIAR MUX   " << endl;
+    cout<< "Componente IF: '"<< compIf->getName() <<"'" << endl;
+    cout<< "----------------------------------------" << endl;
+    Componente* compAuxTrue = NULL;
+    for (i = this->design->ListaComp.begin(); i != this->design->ListaComp.end(); i++) {
+        if ((*i)->tipo_comp != CompType::REF) continue;
+        if ((*i)->getIfComp() != compIf) continue;
+        if ((*i)->writeEnable != true) continue;
+        if ((*i)->getNomeCompVHDL() != "reg_op") continue;
+        if ((*i)->getIf() != true) continue;
+        if ((*i)->getPortOther("we")->temLigacao() == true && (*i)->getPortOther("we")->getLigacao2()->getIfEdge() == true){
+            cout<< "Comp: '"<< (*i)->getName() <<"'" << endl;
+            cout<< "-tentando buscar componente relacionado com a dependencia" << endl;
+            for (j = this->design->ListaComp.begin(); j != this->design->ListaComp.end(); j++) {
+                if ((*j)->tipo_comp != CompType::REF) continue;
+                if ((*i)->getNumLinha() >= (*j)->getNumLinha()) continue;
+                if ((*j)->getNomeCompVHDL() != "reg_op" && (*j)->getNomeCompVHDL() != "reg_mux_op" ) continue;
+                if ((*j)->getIfComp() == compIf) continue;
+                if ((*j)->writeEnable != true) continue;
+
+                if ((*i)->getNomeVarRef() == (*j)->getNomeVarRef()) {
+                    compAuxTrue = (*j);
+                    cout<< "--achou componente: '" <<   (*j)->getName() << "'" << endl;
+                }
+            }
+            
+        }
+        if (compAuxTrue != NULL){
+            cout<< "--DEPENDENCIA existente entre: '" <<   compAuxTrue->getName() << "' -> '"<<(*i)->getName()<< "'"   << endl;
+             
+            comp_ref* ref = new comp_ref(NULL, "WE", (*i)->dataWidth);
+    //        string name = this->design->getNomeCompRef(compAuxTrue->getNomeVarRef());
+            string name = (*i)->getName();
+            ref->setName(name);
+            ref->setNumIdComp(FuncoesAux::IntToStr(this->design->ListaComp.size()));
+
+            ref->setNumParalelLina((*i)->getNumParalelLina());      
+            ref->setNumLinha((*i)->getNumLinha());
+
+            ref->setTipoVar("VAR");
+            ref->setNomeVarRef((*i)->getNomeVarRef());
+
+            ref->setIfComp(compIf);
+
+            reg_mux_op* reg = new reg_mux_op(NULL, "WE", (*i)->dataWidth);
+            reg->setNumIdComp(FuncoesAux::IntToStr(this->design->ListaComp.size()));
+            reg->setName(ref->getName());
+            this->design->addComponent(reg);
+
+            ref->setComponenteRef(reg);
+            ref->updateCompRef();
+            ref->setDelayValComp((*i)->getDelayValComp());
+            
+            Ligacao* ligIN  = NULL;
+            Ligacao* ligWE  = NULL;
+            Ligacao* ligOUT = NULL;
+            cout << "1" << endl;
+            if ((*i)->getPortDataInOut("IN")->temLigacao() ) ligIN  = (*i)->getPortDataInOut("IN")->getLigacao2();
+            if ((*i)->getPortDataInOut("OUT")->temLigacao()) ligOUT = (*i)->getPortDataInOut("OUT")->getLigacao2();
+            if ((*i)->getPortOther("we")->temLigacao())      ligWE  = (*i)->getPortOther("we")->getLigacao2();
+            cout << "2" << endl;
+            (*i)->removeLigacao(ligIN);
+            (*i)->removeLigacao(ligOUT);
+            (*i)->removeLigacao(ligWE);
+            cout << "3" << endl;
+            Componente* CompIN  = ligIN->getOrigem();
+            string      portIN  = ligIN->getPortOrigem()->getName();
+            
+            Componente* CompWE  = ligWE->getOrigem();
+            string      portWE  = ligWE->getPortOrigem()->getName();
+            
+            Componente* CompOUT = ligOUT->getDestino();
+            string      portOUT = ligOUT->getPortDestino()->getName();
+
+            CompIN->removeLigacao(ligIN);
+            CompOUT->removeLigacao(ligOUT);
+            CompWE->removeLigacao(ligWE);
+
+            this->design->insereLigacao(CompIN, ref    , portIN, "I1");
+            this->design->insereLigacao(CompWE, ref    , portWE, "Sel1");
+            this->design->insereLigacao(ref   , CompOUT, "O0", portOUT);
+ 
+            this->design->deletaLigacao(ligIN->getNome());
+            this->design->deletaLigacao(ligOUT->getNome());
+            this->design->deletaLigacao(ligWE->getNome());
+  
+            //Inserindo Ligacao de dependencia
+            this->design->insereLigacao(compAuxTrue, ref, "O0", "I0");
+            
+            (*i) = ref;
+        }
+        //criar MUx
+        
+        cout<< "========================================" << endl;
+    }
+    //Verficair se existe componente dentro do IF
+    
+    
+    //verificar se existe mux
+    //SE NAO
+    
+    //verficicar se exite dependencia
+    
+}
+
 
 /*
  * Verificar se todas as variaveis dentro do IF precisam de um MUX
@@ -345,8 +502,7 @@ void analisaIf::buscaIfs(){
 bool analisaIf::verificaCompPrecisaMux(Componente* compIf, Componente* compAtual){
 
     list<Componente*>::iterator i;
-    bool res            = false;
-    bool existeMux      = false;
+    bool precisa      = true;
     
     int numLinha = 0;
     
@@ -367,23 +523,21 @@ bool analisaIf::verificaCompPrecisaMux(Componente* compIf, Componente* compAtual
         if ((*i)->getNomeVarRef() != compAtual->getNomeVarRef()) continue;
         
         if ((*i)->getComponenteRef()->getNomeCompVHDL() == "reg_mux_op") { 
-            existeMux = true;
+            precisa = false;
         }
     }
     
-    if(this->debug == true){
-        if (existeMux){
-            cout<< "Existe Mux para este Componente" << endl;
-        }else{
-            cout<< "NAO existe Mux para este Componente" << endl;
-            res = true;
-        }
+
+    if (!precisa){
+        if(this->debug == true) cout<< "Existe Mux para este Componente" << endl;
+    }else{
+        if(this->debug == true) cout<< "NAO existe Mux para este Componente" << endl;
     }
+
  
-    if(this->debug == true){
-        cout<< "----------------------------------------" << endl;
-    }
-    return res;
+    if(this->debug == true)cout<< "----------------------------------------" << endl;
+    
+    return precisa;
 }
 
 Componente* analisaIf::getCompAntesIf(Componente* compIf, const string& name){
@@ -398,7 +552,7 @@ Componente* analisaIf::getCompAntesIf(Componente* compIf, const string& name){
     }
     for (j = this->design->ListaComp.begin(); j != this->design->ListaComp.end(); j++) {
         if ((*j)->getEIndice()) continue;
-        if ((*j)->getIf() == true) continue;
+//        if ((*j)->getIf() == true) continue;
         if (compIf->getNumParalelLina() != (*j)->getNumParalelLina()) continue;
         if ((*j)->getNomeVarRef() == name) {
             if((*j)->getNumLinha() <= compIf->getNumLinha()){
@@ -458,7 +612,7 @@ void analisaIf::criaComponenteMux(Componente* compIf, Componente* compAtual){
     if (compAuxTrue == NULL) {
         for (j = this->design->ListaComp.begin(); j != this->design->ListaComp.end(); j++) {
             if ((*j)->getEIndice()) continue;
-            if ((*j)->getIf() == true) continue;
+//            if ((*j)->getIf() == true) continue;
             if ((*j)->writeEnable != true) continue;
             if (compIf->getNumParalelLina() != (*j)->getNumParalelLina()) continue;
             if ((*j)->getNomeVarRef() == compAtual->getNomeVarRef()) {
@@ -479,7 +633,7 @@ void analisaIf::criaComponenteMux(Componente* compIf, Componente* compAtual){
     if (compAuxFalse == NULL) {
         for (j = this->design->ListaComp.begin(); j != this->design->ListaComp.end(); j++) {
             if ((*j)->getEIndice()) continue;
-            if ((*j)->getIf() == true) continue;
+//            if ((*j)->getIf() == true) continue;
             if ((*j)->writeEnable != true) continue;
             if (compIf->getNumParalelLina() != (*j)->getNumParalelLina()) continue;
             if ((*j)->getNomeVarRef() == compAtual->getNomeVarRef()) {
@@ -528,7 +682,8 @@ void analisaIf::criaComponenteMux(Componente* compIf, Componente* compAtual){
         }
 
         comp_ref* ref = new comp_ref(NULL, "WE", compAuxTrue->dataWidth);
-        string name = this->design->getNomeCompRef(compAuxTrue->getNomeVarRef());
+//        string name = this->design->getNomeCompRef(compAuxTrue->getNomeVarRef());
+        string name = compAuxTrue->getNomeVarRef()+"_"+FuncoesAux::IntToStr(this->design->ListaComp.size());
         ref->setName(name);
         ref->setNumIdComp(FuncoesAux::IntToStr(this->design->ListaComp.size()));
         

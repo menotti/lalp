@@ -29,6 +29,8 @@ public:
     void        setTipo(const string &size);
     void        setBackEdge(bool val);
     bool        getBackEdge();
+    void        setIfEdge(bool val);
+    bool        getIfEdge();
     bool        getAtivo();
     void        setAtivo(bool status);
     string      getWidth();
@@ -41,6 +43,7 @@ private:
     class       Componente* origem;
     class       Componente* destino;
     bool        BackEdge;
+    bool        IfEdge;
     string      nome;
     string      tipo;
     string      width;
