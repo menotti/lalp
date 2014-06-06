@@ -9,23 +9,25 @@
 #define	SCHEDULING_H
 
 #include "../Design.h"
+#include <map>
 #include "../Componente/Componente.h"
-
+using namespace std;
 class Scheduling {
 public:
     Scheduling(Design* design);
     Design*     getDesign();
     void        ALAP();
-    void        corrigeNumLinha();
     void        balanceAndSyncrhonize();
     void        detectBackwardEdges();
     virtual     ~Scheduling();
 private:
     bool        debug;
+    bool        existeComponente(Componente* comp);
     void        ASAP();
     void        copySchedulingTimes();
     int         calculateASAP(Componente* comp);
     Design*     design;
+    map<int, Componente*> componentes;
 };
 
 #endif	/* SCHEDULING_H */

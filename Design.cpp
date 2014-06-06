@@ -474,7 +474,7 @@ void Design::zeraValorNumLinha(){
     //metodo utilizado antes do scheduling
     list<Componente*>::iterator i;
     for (i = this->ListaComp.begin(); i != this->ListaComp.end(); i++) {
-        if ((*i)->tipo_comp == CompType::REG || (*i)->tipo_comp == CompType::MEM || (*i)->tipo_comp == CompType::DEL || (*i)->tipo_comp == CompType::CTD || (*i)->tipo_comp == CompType::MUX || (*i)->tipo_comp == CompType::REF) continue;
+        if ((*i)->tipo_comp == CompType::REG || (*i)->tipo_comp == CompType::MEM || (*i)->tipo_comp == CompType::CTD || (*i)->tipo_comp == CompType::MUX || (*i)->tipo_comp == CompType::REF) continue;
         (*i)->setNumLinha(0);
     }
 }
