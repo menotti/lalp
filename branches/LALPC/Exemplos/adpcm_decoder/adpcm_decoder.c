@@ -33,7 +33,7 @@ int main() {
 	#pragma bit bufferstep 
 	int bufferstep = 1;
 	int step;                     
-	#pragma step 5
+	#pragma step 7
   	for (len = 0; len < 1024; len++ ) {
 		val = indata[len]; 
 		diff = val - valpred;
@@ -43,7 +43,7 @@ int main() {
 			delta = 0;
 			vpdiff = (step >> 3);
 		}
-
+		
 		if ( diff >= step ) {
 			delta = 4;
 			diff = diff - step;
@@ -56,12 +56,12 @@ int main() {
 			diff = diff - step;
 			vpdiff = vpdiff + step;
 		}
-		step >>= 1;
+		step = step >> 1;
 		if ( diff >= step ) {
 			delta = delta | 1;
 			vpdiff = vpdiff + step;
 		}
-		if ( sign ){
+		if ( sign != 0){
 			valpred = valpred - vpdiff;
 		}else{
 			valpred = valpred + vpdiff;
@@ -81,8 +81,8 @@ int main() {
 			index = 88;
 		}
 		step = stepsizeTable[index];
-
-		if ( bufferstep ) {
+                
+		if ( bufferstep != 0 ) {
 			inputbuffer = (delta << 4) & 0xf0;
 		}else {
 			outdata[i] = (delta & 0x0f) | inputbuffer;
@@ -90,7 +90,6 @@ int main() {
 		}
 
 		bufferstep = !bufferstep;
-		
 
   	}
 	return outdata; 

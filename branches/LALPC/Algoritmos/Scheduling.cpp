@@ -13,11 +13,104 @@
 #include <sstream>
 #include <iostream>
 #include <stdlib.h>
+#include <time.h>
+#include <map>
+
 using namespace std;
 
 Scheduling::Scheduling(Design* design) {
     this->design = design;
     this->debug = true;
+    
+    list<Componente*>::iterator i;
+    for(i=this->design->ListaComp.begin(); i != this->design->ListaComp.end(); i++){
+        if ((*i)->tipo_comp != CompType::REF) continue;
+        int linha       = (*i)->getNumLinha();
+        if(linha != 0) {
+            this->componentes.insert(make_pair(linha,(*i)));
+        }
+    }
+}
+
+bool Scheduling::existeComponente(Componente* comp){
+    bool existe = false;
+    map<int, Componente*>::iterator m;
+    for(m=this->componentes.begin(); m != this->componentes.end(); m++){
+        if( (*m).second == comp ) existe = true;
+    }
+    return existe;
+}
+
+void Scheduling::ASAP(){
+    map<int, Componente*>::iterator m;
+    list<Componente*>::iterator i;
+    list<Ligacao*>::iterator    k;
+    Componente* dest    = NULL;
+    Componente* source  = NULL;
+    int max, pred       = 0;
+    bool change         = true;
+//    clock_t startTime   = clock();
+    cout<<"Scheduling (ASAP)..."<<endl;
+    while(change){
+        change = false;
+        for(i=this->design->ListaComp.begin(); i != this->design->ListaComp.end(); i++){
+            if ((*i)->tipo_comp == CompType::REG || (*i)->tipo_comp == CompType::MEM || (*i)->tipo_comp == CompType::DEL  || (*i)->tipo_comp == CompType::MUX ) continue;
+            max  = 0;
+            pred = 0;
+
+            dest = (*i);
+            if(this->debug) cout<< "scheduling \""<<dest->getName()<<"\" ASAP: \"" << dest->getASAP() << "\" line:" << dest->getNumLinha()<<endl;
+
+            //PREDECESSORS
+            for(k=this->design->ListaLiga.begin(); k != this->design->ListaLiga.end(); k++){
+                if( (*k)->getAtivo() == false   ) continue;
+                if( (*k)->getBackEdge() == true ) continue;
+                if( (*k)->getDestino() == dest  ){
+
+                    source = (*k)->getOrigem();
+                    int dlyVal = FuncoesAux::StrToInt(source->getDelayValComp());
+
+                    pred = source->getASAP() + dlyVal;
+
+                    if(pred > max){
+                        max = pred;
+                        if(this->debug) cout<< "dependence \""<<(*k)->getOrigem()->getName()<<"\" ASAP: '" << (*k)->getOrigem()->getASAP() << "' line: '" << (*k)->getOrigem()->getNumLinha()<<"'" <<endl;
+                    }
+                }
+            }
+
+            //add condition
+            if(this->existeComponente(dest) == true){
+                for(m=this->componentes.begin(); m != this->componentes.end(); m++){
+                    
+                    float line = (float)(*m).first;
+                    source   = (*m).second;
+                    
+                    float lineDest = (float) dest->getNumLinha();
+
+                    if(dest->getWE())   lineDest -= 0.5;
+                    if(source->getWE()) line     -= 0.5;
+                    
+                    if(line > lineDest){
+                        if(this->debug) cout<< "  break on: \""<<source->getName()<<"\" ASAP:" << source->getASAP() << " line: '" << source->getNumLinha()<<"'" <<endl;
+                        goto innerBreak;
+                    }
+
+                    pred = source->getASAP();
+                    if (pred > max) max = pred;
+                }
+            }
+
+            innerBreak:
+
+            if( dest->getASAP() != max ){
+                dest->setASAP(max);
+                change = true;
+                if (max > this->design->getMaxSchedulingTime()) this->design->setMaxSchedulingTime(max);
+            }
+        }
+    }
+    cout<<"Scheduling (ASAP)...OK"<<endl;
 }
 
 Design* Scheduling::getDesign() {
@@ -46,7 +139,7 @@ void Scheduling::detectBackwardEdges(){
                  cout<< "signal " << (*k)->getOrigem()->getName() << " -> " <<  (*k)->getDestino()->getName() << " marked as backedge (self-connected pair)" << endl;
         }
         else{
-            if ((*k)->getDestino()->tipo_comp == CompType::REG || (*k)->getDestino()->tipo_comp == CompType::MEM || (*k)->getDestino()->tipo_comp == CompType::AUX || (*k)->getDestino()->tipo_comp == CompType::DEL    ) continue;
+            if ((*k)->getDestino()->tipo_comp == CompType::REG || (*k)->getDestino()->tipo_comp == CompType::MEM || (*k)->getDestino()->tipo_comp == CompType::MUX  || (*k)->getDestino()->tipo_comp == CompType::AUX || (*k)->getDestino()->tipo_comp == CompType::DEL    ) continue;
             int origLine = (*k)->getOrigem()->getNumLinha();
             int destLine = (*k)->getDestino()->getNumLinha();
             if(origLine > 0){
@@ -389,8 +482,6 @@ void Scheduling::ALAP(){
     list<Componente*>::iterator i;
     list<Ligacao*>::iterator    k;
     
-    this->corrigeNumLinha();
-    
     this->ASAP();
     this->copySchedulingTimes();
     bool change = true;
@@ -426,99 +517,7 @@ void Scheduling::ALAP(){
     cout<<"*********************************"<<endl;
 }
 
-void Scheduling::ASAP(){
-    cout<<"Scheduling (ASAP)..."<<endl;
-    list<Componente*>::iterator i;
-    list<Componente*>::iterator j;
-    list<Ligacao*>::iterator    k;
-    bool change = true;
-    int max, pred, dlyAux;
-    int id = 0;
-//    while(id < 10){
-    while(change){
-        change = false;
-        
-        //varrer todos componentes
-        for(i=this->design->ListaComp.begin(); i != this->design->ListaComp.end(); i++){
-            if ((*i)->tipo_comp == CompType::REG || (*i)->tipo_comp == CompType::MEM || (*i)->tipo_comp == CompType::DEL ) continue;
-            max = 0;
-            pred = 0;
-            if(this->debug){
-                cout<< "scheduling \""<<(*i)->getName()<<"\" ASAP: \"" << (*i)->getASAP() << "\" line:" << (*i)->getNumLinha()<<endl;
-            }
-            //all predecessors 
-            for(k=this->design->ListaLiga.begin(); k != this->design->ListaLiga.end(); k++){
-                if((*k)->getAtivo() == false ) continue;
-                if((*k)->getBackEdge() == true) continue;
-                
-                if((*k)->getDestino() == (*i)){
-                    dlyAux = FuncoesAux::StrToInt((*k)->getOrigem()->getDelayValComp());
-                    pred = (*k)->getOrigem()->getASAP() + dlyAux;
-                    if(pred > max){
-                        max = pred;
-                        if(this->debug)
-                            cout<< "dependence \""<<(*k)->getOrigem()->getName()<<"\" ASAP: '" << (*k)->getOrigem()->getASAP() << "' line: '" << (*k)->getOrigem()->getNumLinha()<<"'" <<endl;
-                    }
-                }
-            }
-            
-            //all source code predecessors
-            if((*i)->getWE() == true && (*i)->getNumLinha() != 0){
-//            if((*i)->getNumLinha() != 0){
-                for(j=this->design->ListaComp.begin(); j != this->design->ListaComp.end(); j++){
-//                    if ((*j)->tipo_comp == CompType::REG || (*j)->tipo_comp == CompType::MEM || (*j)->tipo_comp == CompType::DEL  || (*j)->tipo_comp == CompType::AUX ) continue;
-                    if ((*j)->getWE() == false && (*j)->getNumLinha() == 0 ) continue;
-                    if ((*j)->getNumLinha() == 0 ) continue;
-                    long lineI = (long)(*j)->getNumLinha();
-                    long lineJ = (long)(*i)->getNumLinha();
-                    
-//                    if( (*i)->getWE()== false ) lineI -= 0.5;
-//                    if( (*j)->getWE()== false ) lineJ -= 0.5;
-                    
-                    if(lineJ == lineI && (*j)->getWE() ){
-                        continue;
-                    }
-                    
-                    if(lineJ >lineI){
-                        if(this->debug) cout<< "break on: \""<<(*j)->getName()<<"\" ASAP:" << (*j)->getASAP() << " line: '" << (*j)->getNumLinha()<<"'" <<endl;
-                        goto innerBreak;
-                    }
-                    pred = (*j)->getASAP();
-                    if(pred > max){
-                        max = pred;
-                        if(this->debug)
-                            cout<< "predecessor \""<<(*j)->getName()<<"\" ASAP: '" << (*j)->getASAP() << "' line: '" << (*j)->getNumLinha()<<"'"<<endl;
-                    }
-                }
-            }
-            innerBreak:
-            
-            if( (*i)->getASAP() != max ){
-                (*i)->setASAP(max);
-                change = true;
-                if (max > this->design->getMaxSchedulingTime())
-                    this->design->setMaxSchedulingTime(max);
-            }
-        }
-    }
-    cout<<"Scheduling (ASAP)...OK"<<endl;
-}
-
-void Scheduling::corrigeNumLinha(){
-    list<Componente*>::iterator i;
-    for(i=this->design->ListaComp.begin(); i != this->design->ListaComp.end(); i++){
-        if ((*i)->tipo_comp == CompType::REG || (*i)->tipo_comp == CompType::MEM || (*i)->tipo_comp == CompType::DEL || (*i)->tipo_comp == CompType::CTD || (*i)->tipo_comp == CompType::MUX || (*i)->tipo_comp == CompType::REF) continue;
-        (*i)->setNumLinha(0);
-    }
-    
-    for(i=this->design->ListaComp.begin(); i != this->design->ListaComp.end(); i++){
-        if ((*i)->tipo_comp != CompType::CTD && (*i)->tipo_comp != CompType::MUX && (*i)->tipo_comp != CompType::REF) continue;
-        //cout << "COMP: '" << (*i)->getName() << "' na linha: '"<< (*i)->getNumLinha() << "'" << endl;
-    }
-}
-
 int Scheduling::calculateASAP(Componente* comp){
-//    cout << "? '" << comp->getName()<< "'" << endl;
     list<Ligacao*>::iterator    k;
     if(comp->getSync()){
         int dlyAux = FuncoesAux::StrToInt(comp->getDelayValComp());
@@ -528,7 +527,7 @@ int Scheduling::calculateASAP(Componente* comp){
         for(k=this->design->ListaLiga.begin(); k != this->design->ListaLiga.end(); k++){
             if((*k)->getAtivo() == false ) continue;
             if((*k)->getDestino() == comp){
-                if ((*k)->getOrigem()->tipo_comp == CompType::REG || (*k)->getOrigem()->tipo_comp == CompType::MEM || (*k)->getOrigem()->tipo_comp == CompType::AUX || (*k)->getOrigem()->tipo_comp == CompType::DEL) continue;
+                if ((*k)->getOrigem()->tipo_comp == CompType::REG || (*k)->getOrigem()->tipo_comp == CompType::MEM || (*k)->getOrigem()->tipo_comp == CompType::MUX || (*k)->getOrigem()->tipo_comp == CompType::AUX || (*k)->getOrigem()->tipo_comp == CompType::DEL) continue;
                 int newMax = this->calculateASAP((*k)->getOrigem());
                 
                 if(newMax > max){
