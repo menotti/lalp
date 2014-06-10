@@ -52,6 +52,7 @@ public:
     bool                isIndiceVector(const string& name);
     void                substiuiComRecorente(Componente* origem, Componente* destino);
     void                finalizaComponentesIF();
+    void                ligaCompDependencia();
 private:
     bool                temMemoria;
     bool                sync;
