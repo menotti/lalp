@@ -93,7 +93,7 @@ Core::Core(SgProject* project, list<SgNode*> lista) {
         this->design = memHdr->getDesign();
     }
     
-    this->ligaCompDep();
+//    this->ligaCompDep();
     this->dot->imprimeHWDOT(this->design->getListaComp(), this->design->getListaLiga(), "DOT/6_LIGA_COMP_DEP.dot", false);
     this->aplicarDelayPragma();
     this->dot->imprimeHWDOT(this->design->getListaComp(), this->design->getListaLiga(), "DOT/7_APLICA_DLY_PRAGMA.dot", false);
@@ -115,8 +115,11 @@ Core::Core(SgProject* project, list<SgNode*> lista) {
     sched->balanceAndSyncrhonize();
     
     this->design = sched->getDesign();
-    
-    this->dot->imprimeHWDOT(this->design->getListaComp(), this->design->getListaLiga(), "DOT/11_DEPOIS_SCHEDULE.dot", false);  
+    this->dot->imprimeHWDOT(this->design->getListaComp(), this->design->getListaLiga(), "DOT/11_DEPOIS_SCHEDULE1.dot", false); 
+//    this->ligaCompDep();
+    this->design->ligaCompDependencia();
+    this->dot->imprimeHWDOT(this->design->getListaComp(), this->design->getListaLiga(), "DOT/11_DEPOIS_SCHEDULE2.dot", false); 
+     
     //this->design->finalizaComponentesIF();
     this->dot->imprimeHWDOT(this->design->getListaComp(), this->design->getListaLiga(), "DOT/12_DEPOIS_FINALIZA_IF.dot", false); 
     
@@ -2031,9 +2034,9 @@ void Core::ligaCompDep(){
         if ((*i)->getComponenteRef()->tipo_comp != CompType::REG) continue;
 
         lastWE = NULL;
-//                cout<< " ----- "<< endl;
-//                cout<< " Componente (I): "<< (*i)->getName() << endl;
-//                cout<< " identificando ultimo comp WE: "<< endl;
+                cout<< " ----- "<< endl;
+                cout<< " Componente (I): "<< (*i)->getName() << endl;
+                cout<< " identificando ultimo comp WE: "<< endl;
         for (j = this->design->ListaComp.begin(); j != this->design->ListaComp.end(); j++) {
             if ((*j)->tipo_comp != CompType::REF) continue;
             if ((*j)->getEIndice()) continue;
@@ -2043,20 +2046,20 @@ void Core::ligaCompDep(){
             if ((*i)->getNomeVarRef() == (*j)->getNomeVarRef()) {
                 if ((*j)->writeEnable == true) {
                     lastWE = (*j);
-//                    cout<< "WE: "<< lastWE->getName() <<  endl;
+                    cout<< "WE: "<< lastWE->getName() <<  endl;
                 }
             }
         }
-//        cout<< "WE: "<< lastWE->getName() <<  endl;
+        cout<< "ULTIMO WE: "<< lastWE->getName() <<  endl;
         if (lastWE == NULL) continue;
         
-//        cout<< "PROCURAR PRIMEIRA OCORRENCIA DO REG COM NOME: '"<< lastWE->getNomeCompVHDL() << "'" <<  endl;
+        cout<< "--PROCURAR PRIMEIRA OCORRENCIA DO REG COM NOME: '"<< lastWE->getNomeCompVHDL() << "'" <<  endl;
         for (j = this->design->ListaComp.begin(); j != this->design->ListaComp.end(); j++) {
             if ((*j)->tipo_comp != CompType::REF) continue;
             if ((*j)->getComponenteRef()->tipo_comp != CompType::REG) continue;
             if ((*i)->getNumParalelLina() != (*j)->getNumParalelLina()) continue;
             if (lastWE->node == (*j)->node) continue;
-//            cout<< "---: "<< lastWE->getName() <<  endl;
+            cout<< "---: "<< lastWE->getName() <<  endl;
             if ((*i)->getNomeVarRef() == (*j)->getNomeVarRef()) {
                 if ((*j)->writeEnable == true) {
                     continue;
@@ -2093,6 +2096,7 @@ void Core::ligaCompDep(){
                                     this->design->removeComponente(dlyAux, NULL);
                                 }
                                 
+                               
                             }
                         }
                         this->design->removeComponente((*j), NULL);
