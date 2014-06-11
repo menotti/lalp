@@ -1,6 +1,7 @@
 /* global vars */
 
-var path = "http://lalp.dc.ufscar.br:8080/lalp/";
+/*var path = "http://localhost:9180/lalpProject/";*/
+var path = "http://projetos.ppgcc.dc.ufscar.br:9180/lalp/";
 
 var selected = false;
 var args = new Array();
@@ -9,7 +10,8 @@ var fistName = getUrlVars()["openid.ext1.value.firstname"];
 var email = getUrlVars()["openid.ext1.value.email"];
 var urlindex = window.location.href.replace('userData.jsp','index.jsp');
 
-email = email.replace('%40','@');
+email = email.replace('%40','@').replace('#', '');
+
 
 // user args not working yet
 /*
@@ -50,7 +52,7 @@ function sendUserData() {
 			window.location = (path + "index.jsp");
 		},
 		success : function() {
-		    window.location = (path + "registeredUser.html");
+		    window.location = (path + "registeredUser.jsp");
 		}
 	});
 }
@@ -158,6 +160,7 @@ function doLoad(){
 function requestVHD() {
 	var user = getUrlVars()["openid.ext1.value.email"];
 	user = user.replace('%40','@');
+	user = user.replace('#', '');
 	$.ajax({
 		url : 'LALPServlet',
 		type : 'POST',
