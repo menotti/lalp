@@ -21,7 +21,8 @@
 </script>
 <script language="JavaScript">
 
-var path = "http://lalp.dc.ufscar.br:8080/lalp/";
+/*var path = "http://localhost:9180/lalpProject/";*/
+var path = "http://projetos.ppgcc.dc.ufscar.br:9180/lalp/";
 
 function getUrlVars() {
     var vars = {};

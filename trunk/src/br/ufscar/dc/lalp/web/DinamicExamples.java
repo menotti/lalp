@@ -3,6 +3,8 @@ package br.ufscar.dc.lalp.web;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -56,40 +58,33 @@ public class DinamicExamples extends HttpServlet {
 	
 	public String listFilesForFolder(final File folder) {
 		
-        //FIXME: what if we have more than 6 examples?
-		String ex[] = new String[6];
-		
-		ex[0] = "&ex1=";
-		ex[1] = "&ex2=";
-		ex[2] = "&ex3=";
-		ex[3] = "&ex4=";
-		ex[4] = "&ex5=";
-		ex[5] = "&ex6=";
-		
+		List<String> ex = new ArrayList<String>();
 		int i = 0;
 		
-	    for (final File fileEntry : folder.listFiles()) {
-	        if (fileEntry.isDirectory()) {
+		for (final File fileEntry : folder.listFiles()) 
+		{
+	        if (fileEntry.isDirectory()) 
+	        {
 	            listFilesForFolder(fileEntry);
-	        } else {
+	        }
+	        else 
+	        {
 	            System.out.println(fileEntry.getName());
 	            String temp = fileEntry.getName();
-	            ex[i] = ex[i] + temp;
+	            ex.add("&ex" + i + "=" + temp);
 	            i++;
-	            //FIXME
-		        if (i > 5)
-		        	break;
 	        }
 	    }
-	    
-	    while (i < 6) {
-	    	ex[i] = ex[i] + "null";
-	    	i++;
-	    }
-	    
-	    String examples = ex[0] + ex[1] + ex[2] + ex[3] + ex[4] + ex[5];
-	    
-	    return examples;
+		
+		String examples = "";
+		
+		for (int j = 0; j < ex.size(); j++) 
+		{
+			examples += ex.get(j);
+		}
+		
+		return examples;
+		
 	}
 
 }

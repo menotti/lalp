@@ -5,24 +5,25 @@
 <head>
 
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<style type="text/css">
-@import "css/jquery.svg.css";
-</style>
-<link rel="stylesheet" type="text/css" href="css/lalpHome.css"></link>
-<script type="text/javascript" src="js/head.min.js"></script>
+<link rel="stylesheet" type="text/css" href="css/lalpHome.css"/>
+<link rel="stylesheet" type="text/css" href="css/jquery.svg.css"/>
+<link rel="stylesheet" type="text/css" href="css/style.css"/>
 
+<link type="image/ico" rel="icon" href="images/favicon.ico">
+
+<!-- PAGE SCRIPTS -->
+<script type="text/javascript" src="js/head.min.js"></script>
 <script type="text/javascript" src="js/jszip.js"></script>
 <script>
 	head.js("js/jquery-1.6.4.min.js",
-			"js/jquery.svg.package-1.4.4/jquery.svg.js",
-			//"http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js",
-			//"http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.9/jquery-ui.min.js",	
+			"js/jquery.svg.package-1.4.4/jquery.svg.js",	
 			"js/ajaxfileupload.js", "js/lalpArgs.js");
 </script>
 <script>
 
-var path = "http://lalp.dc.ufscar.br:8080/lalp/";
-	
+/*var path = "http://localhost:9180/lalpProject/";*/
+var path = "http://projetos.ppgcc.dc.ufscar.br:9180/lalp/";
+
 function getUrlVars() {
    	var vars = {};
    	var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
@@ -36,10 +37,10 @@ var fistName = getUrlVars()["openid.ext1.value.firstname"];
 var email = getUrlVars()["openid.ext1.value.email"];
 	
 if (email == null) {
-	window.location = path + "index.html";
+	window.location = path + "Default.jsp";
 }
 	
-email = email.replace('%40','@');
+email = email.replace('%40','@').replace('#', '');
 		
 setTimeout(function() {checkUserRole();},1000);
 	
@@ -52,12 +53,12 @@ function checkUserRole() {
 			index : "0"
 		},
 		error : function() {
-			//alert("erro");
+			//alert("error");
 			var urlindex = window.location.href.replace('idCheck.jsp','userData.jsp');
 			window.location = urlindex;
 		},
 		success: function() {
-			//alert("sucesso");
+			//alert("sucess");
 			var urlindex = window.location.href.replace('idCheck.jsp','index.jsp');
 			window.location = urlindex;
 		}
@@ -65,9 +66,20 @@ function checkUserRole() {
 }
 </script>
 
-<title>Lalp Web Compiler</title>
+<title>LALP - Compiler</title>
 </head>
 <body>
-	<b>Checking your ID...</b>
+	<div class='AllContent'>
+		<jsp:include page="Template/Header.jsp"/>
+		<div class='PageContent'>
+		<!-- All the page content must to be placed here -->
+			<br><br><br>
+			<center><b>Checking your ID...</b></center>
+			<br><br><br>
+		<!-- End of Page Content -->
+		</div>
+		<jsp:include page="Template/Footer.jsp"/>
+	</div>
+	
 </body>
 </html>
