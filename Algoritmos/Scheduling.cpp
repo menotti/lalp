@@ -160,12 +160,11 @@ void Scheduling::detectBackwardEdges(){
 }
 
 void Scheduling::balanceAndSyncrhonize(){
-    
-    this->design->imprimeAllComp();
+   
     cout<<"*********************************"<<endl;
     cout<<"Balance And Synchronize..."<<endl;
     cout<<"*********************************"<<endl;
-//    list<Componente*> ListaCompAux;
+
     list<Componente*>::iterator i;
     list<Ligacao*>::iterator    k;
     list<Ligacao*>::iterator    m;
@@ -173,9 +172,6 @@ void Scheduling::balanceAndSyncrhonize(){
     Componente* counter = NULL;
     Componente* firstCounter = NULL;
     int mii = 0, ats = 0;
-    
-//    this->debug = false;
-//    this->debug = false;
     
     for(i=this->design->ListaComp.begin(); i != this->design->ListaComp.end(); i++){
         Componente* c = (*i);
