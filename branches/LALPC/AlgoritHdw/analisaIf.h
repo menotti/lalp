@@ -29,7 +29,7 @@ public:
 private:
     void                criaLigIfParaPortaWE(Componente* comp);
     bool                verificaCompAntesIf(Componente* compIf,Componente* compAtual);
-    bool                verificaCompExisteBodyTrueEFalse(Componente* compIf,Componente* compAtual);
+    bool                verificaCompExisteBodyTrueEFalse(Componente* compIf,Componente* compAtual, bool corpo, bool isWE);
     void                analiseProcessoCriaMux(Componente* compIf);
     void                criaComponenteMux(Componente* compIf, Componente* compAtual);
     void                finalizaDependenciaMux(Componente* compIf);

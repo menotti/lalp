@@ -157,33 +157,67 @@ Ligacao* Design::insereLigacao(Componente* origem, Componente* destino, const st
 }
 
 void Design::substiuiComRecorente(Componente* origem, Componente* destino){
+    cout<< "ENTROU NO METODO DE SUB COMP REC" << endl;
     //Ligacao nodo DESTINO
-    Ligacao* sDestino = destino->getPortDataInOut("OUT")->getLigacao2();    
-    sDestino->getDestino()->removeLigacao(sDestino);
-    
-    //CRIAR NOVA LIGACAO
-    string str = FuncoesAux::IntToStr(this->ListaLiga.size());
-    Ligacao* lig = new Ligacao(origem, sDestino->getDestino(), "s" + str);
-    lig->setPortOrigem(origem->getPortDataInOut("OUT"));
-    lig->setPortDestino(sDestino->getPortDestino());
-    lig->setWidth(origem->getPortDataInOut("OUT")->getWidth());
-    lig->setTipo(origem->getPortDataInOut("OUT")->getType());
-
-    //ADICIONAR LIGACAO NA PORTA                        
-//    lig->getPortDestino()->setLigacao(lig->getNome());
-    lig->getPortDestino()->addLigacao(lig);
-//    lig->getPortOrigem()->setLigacao(lig->getNome());
-    lig->getPortOrigem()->addLigacao(lig);
-
-    //ADICIONAR LIGACAO AOS COMPONENTES
-    origem->addLigacao(lig);
-    sDestino->getDestino()->addLigacao(lig);
-
-    //ADICIONAR NA LISTA DE LIGACOES A NOVA LIGACAO
-    this->ListaLiga.push_back(lig);
-
-    this->deletaLigacao(sDestino->getNome());
-    this->removeComponente(destino, NULL);
+    if(destino->getPortDataInOut("OUT")->temLigacao() == true){
+        cout<< "1" << endl;
+        list<Ligacao*>::iterator    k;
+        for (k = this->ListaLiga.begin(); k != this->ListaLiga.end(); k++){
+            if ((*k)->getAtivo() == false  ) continue;
+            if((*k)->getOrigem() == destino){
+                Componente* compDest = (*k)->getDestino();
+                compDest->removeLigacao((*k));
+                destino->removeLigacao((*k));
+                
+                Ligacao* lig = this->insereLigacao(origem, compDest, origem->getPortDataInOut("OUT")->getName(), (*k)->getPortDestino()->getName());
+                
+                cout<< "4" << endl;
+                this->deletaLigacao((*k)->getNome());
+                cout<< "5" << endl;
+                //this->removeComponente(destino, NULL);
+            }
+        }
+//        Ligacao* sDestino = destino->getPortDataInOut("OUT")->getLigacao2();    
+//        sDestino->getDestino()->removeLigacao(sDestino);
+//        destino->removeLigacao(sDestino);
+//        cout<< "2" << endl;
+//        cout<< "LIGACAO: " <<sDestino->getNome() << endl;
+//        cout << "ORIGEM: " << origem->getName()<< "   DESTINO: "<<  sDestino->getDestino()->getName() << endl;
+//        cout << "ORIGEM: " << origem->getPortDataInOut("OUT")->getName() << "   DESTINO: "<< sDestino->getPortDestino()->getName() << endl;
+//        Ligacao* lig = this->insereLigacao(origem, sDestino->getDestino(), origem->getPortDataInOut("OUT")->getName(), sDestino->getPortDestino()->getName());
+//        cout<< "3" << endl;
+//        //CRIAR NOVA LIGACAO
+//        string str = FuncoesAux::IntToStr(this->ListaLiga.size());
+//        Ligacao* lig = new Ligacao(origem, sDestino->getDestino(), "s" + str);
+//        lig->setPortOrigem(origem->getPortDataInOut("OUT"));
+//        lig->setPortDestino(sDestino->getPortDestino());
+//        lig->setWidth(origem->getPortDataInOut("OUT")->getWidth());
+//        lig->setTipo(origem->getPortDataInOut("OUT")->getType());
+//
+//        //ADICIONAR LIGACAO NA PORTA                        
+//    //    lig->getPortDestino()->setLigacao(lig->getNome());
+//        lig->getPortDestino()->addLigacao(lig);
+//    //    lig->getPortOrigem()->setLigacao(lig->getNome());
+//        lig->getPortOrigem()->addLigacao(lig);
+//
+//        //ADICIONAR LIGACAO AOS COMPONENTES
+//        origem->addLigacao(lig);
+//        sDestino->getDestino()->addLigacao(lig);
+//
+//        //ADICIONAR NA LISTA DE LIGACOES A NOVA LIGACAO
+//        this->ListaLiga.push_back(lig);
+//        cout<< "4" << endl;
+//        this->deletaLigacao(sDestino->getNome());
+//        cout<< "5" << endl;
+//        //this->removeComponente(destino, NULL);
+//        cout<< "6" << endl;
+        destino->tipo_comp = CompType::DEL;
+    }else{
+        cout<< "Error ao tentar substituir um componente" << endl;
+        cout<< "Metodo: substiuiComRecorente()" << endl;
+        cout<< "Classe: Design" << endl;
+        perror("ERROR");
+    }
     //Neste caso nao gera nem VHDL/DOT para o J (comp repetido)
 //    destino->tipo_comp = CompType::REG;
 
@@ -503,7 +537,7 @@ void Design::ligaCompDependencia(){
     list<Ligacao*>::iterator    k;
 //    set<string> listAux;
     Componente* lastWE  = NULL;
-    bool        debug   = true;
+    bool        debug   = false;
     
     if(debug) cout << "--Ligar componentes DEPENDENTES:" << endl;
     
@@ -555,24 +589,29 @@ void Design::ligaCompDependencia(){
                     } else {
                         if ((*j)->getPortDataInOut("IN")->temLigacao() == false) {
                             if(debug) cout<<"--Ligando componentes (dependencia): " << lastWE->getName() << " -> " << (*j)->getName() <<endl;
-
+                            
+                            cout <<"1"<< endl;
                             //Pegar todas as ligacores da saida do componente que o compoente ORIGEM seja (*j)
                             for (k = this->ListaLiga.begin(); k != this->ListaLiga.end(); k++) {
                                 if ((*k)->getOrigem() == (*j) && (*k)->getAtivo() == true){
-
+                                    cout <<"---11"<< endl;
                                     (*j)->removeLigacao((*k));
                                     (*k)->editOrig(lastWE);
                                     (*k)->setPortOrigem(lastWE->getPortDataInOut("OUT"));
                                     lastWE->addLigacao((*k));
                                     lastWE->getPortDataInOut("OUT")->addLigacao((*k));
-
+                                    
+                                    (*k)->setBackEdge(true);
+                                    cout <<"---12"<< endl;
                                 }
                             }
+                             cout <<"2"<< endl;
 //                            this->removeComponente((*j), NULL);
                             (*j)->tipo_comp = CompType::DEL;
                             cout << "REMOVENDO: "<< (*j)->getName() << endl;
                             
                             if((*j)->getPortOther("we")->temLigacao()){
+                                 cout <<"---21"<< endl;
                                 Ligacao*    lig = (*j)->getPortOther("we")->getLigacao2();
                                 lig->getOrigem()->removeLigacao(lig);
                                 lig->getDestino()->removeLigacao(lig);
@@ -584,7 +623,9 @@ void Design::ligaCompDependencia(){
                                 this->deletaLigacao(lig2->getNome());
                                 
                                 lig->getOrigem()->tipo_comp = CompType::DEL;
+                                cout <<"---22"<< endl;
                             } 
+                            cout <<"---3"<< endl;
 //                            break;
                         }
                     }
@@ -595,6 +636,8 @@ void Design::ligaCompDependencia(){
     }
     if(debug) cout << "--Ligar componentes DEPENDENTES: OK" << endl;
 }
+
+
 
 Design::~Design() {
 }

@@ -17,7 +17,7 @@
 using namespace std;
 
 analisaLigaComponente::analisaLigaComponente(Design* design) {
-    this->debug = false;
+    this->debug = true;
     this->design = design;
     this->listaComponentes();
 }
@@ -39,7 +39,7 @@ void analisaLigaComponente::listaComponentes(){
         if (ListaAuxString.find((*i)->getNomeVarRef()+(*i)->getNumParalelLina()) == ListaAuxString.end()){
             ListaAuxString.insert((*i)->getNomeVarRef()+(*i)->getNumParalelLina());
             if(this->debug){
-                cout<< " Componente: '"<<(*i)->getNomeVarRef()<< "' Linha Para.: '" <<(*i)->getNumParalelLina()<<"' na linha: '"<<(*i)->getNumLinha()<<"'"<< endl;
+                cout<< "### Componente: '"<<(*i)->getNomeVarRef()<< "' Linha Para.: '" <<(*i)->getNumParalelLina()<<"' na linha: '"<<(*i)->getNumLinha()<<"'"<< endl;
                 cout<< "----------------------------------" << endl;
             }
             this->ligaComponentes((*i));
@@ -88,7 +88,7 @@ void analisaLigaComponente::ligaComponentes(Componente* comp){
             if(compAux->getPortDataInOut("OUT")->temLigacao() ){
                 if(this->debug){
                     cout<< "- SUB" << endl;
-                    cout<< "Componente: '"<<compAux->getName()<<"' POR: '"<<(*i)->getName()<<"'"<<endl;
+                    cout<< "Componente: '"<<compAux->getName()<<"' linha: '"<< compAux->getNumLinha() <<"' POR: '"<<(*i)->getName()<<"' linha: '"<< (*i)->getNumLinha() <<"'" <<endl;
                 }
                 this->design->substiuiComRecorente(compAux, (*i));
             }else{
@@ -99,7 +99,7 @@ void analisaLigaComponente::ligaComponentes(Componente* comp){
                 this->design->removeComponente((*i), NULL);
                 if(this->debug){
                     cout<< "- ADD" << endl;
-                    cout<< "Componente: '"<<compAux->getName()<<"' POR: '"<<compAuxDestino->getName()<<"'"<<endl;
+                    cout<< "Componente: '"<<compAux->getName()<<"' linha: '"<< compAux->getNumLinha() <<"' POR: '"<<compAuxDestino->getName()<<"' linha: '"<< compAuxDestino->getNumLinha() <<"'" <<endl;
                 }
             }
         }
