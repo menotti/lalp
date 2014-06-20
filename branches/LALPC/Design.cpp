@@ -535,104 +535,83 @@ void Design::ligaCompDependencia(){
     list<Componente*>::iterator i;
     list<Componente*>::iterator j;
     list<Ligacao*>::iterator    k;
-//    set<string> listAux;
     Componente* lastWE  = NULL;
     bool        debug   = false;
-    
     if(debug) cout << "--Ligar componentes DEPENDENTES:" << endl;
     
     for (i = this->ListaComp.begin(); i != this->ListaComp.end(); i++) {
         if ((*i)->tipo_comp != CompType::REF) continue;
         if ((*i)->getEIndice()) continue;
         if ((*i)->getComponenteRef()->tipo_comp == CompType::MEM) continue;
-        
-//        string NameComp = (*i)->getNumParalelLina()+"_"+(*i)->getNomeVarRef();
-        
-        //verificar se existe na lista aux
-//        if (listAux.find(NameComp) != listAux.end() == false){
-//            listAux.insert(NameComp);
-            
-            if(debug) cout<< " Componente (I): "<< (*i)->getName() << endl;
-            
-            //Verificar ultima ocorrencia deste no codigo
-            lastWE = NULL;
-            
-            for (j = this->ListaComp.begin(); j != this->ListaComp.end(); j++) {
-                if ((*j)->tipo_comp != CompType::REF) continue;
-                if ((*j)->getEIndice()) continue;
-                if ((*j)->getComponenteRef()->tipo_comp == CompType::MEM) continue;
-                if ((*i)->getNumParalelLina() != (*j)->getNumParalelLina()) continue;
+        if(debug) cout<< " Componente (I): "<< (*i)->getName() << endl;
+        //Verificar ultima ocorrencia deste no codigo
+        lastWE = NULL;
 
-                if ((*i)->getNomeVarRef() == (*j)->getNomeVarRef()) {
-                    if ((*j)->writeEnable == true) {
-                        lastWE = (*j);
-                        cout<< "WE: "<< lastWE->getName() <<  endl;
-                    }
+        for (j = this->ListaComp.begin(); j != this->ListaComp.end(); j++) {
+            if ((*j)->tipo_comp != CompType::REF) continue;
+            if ((*j)->getEIndice()) continue;
+            if ((*j)->getComponenteRef()->tipo_comp == CompType::MEM) continue;
+            if ((*i)->getNumParalelLina() != (*j)->getNumParalelLina()) continue;
+
+            if ((*i)->getNomeVarRef() == (*j)->getNomeVarRef()) {
+                if ((*j)->writeEnable == true) {
+                    lastWE = (*j);
                 }
             }
-            if(debug){
-                cout<< " Ultimo comp WE: '"<< lastWE->getName()<<"'"  << endl;
-            }
-            
-            if (lastWE == NULL) continue;
-            
-            if(debug) cout<< " Procurar Componentes que vao receber a ligacao "<< endl;
-            for (j = this->ListaComp.begin(); j != this->ListaComp.end(); j++) {
-                if ((*j)->tipo_comp != CompType::REF) continue;
-                if ((*j)->getComponenteRef()->tipo_comp == CompType::MEM) continue;
-                if ((*i)->getNumParalelLina() != (*j)->getNumParalelLina()) continue;
-                if (lastWE->getNumLinha() < (*j)->getNumLinha()) continue;
-                if ((*i)->node == (*j)->node) continue;
-                if ((*i)->getNomeVarRef() == (*j)->getNomeVarRef()) {
-                    if ((*j)->writeEnable == true) {
-                        break;
-                    } else {
-                        if ((*j)->getPortDataInOut("IN")->temLigacao() == false) {
-                            if(debug) cout<<"--Ligando componentes (dependencia): " << lastWE->getName() << " -> " << (*j)->getName() <<endl;
-                            
-                            cout <<"1"<< endl;
-                            //Pegar todas as ligacores da saida do componente que o compoente ORIGEM seja (*j)
-                            for (k = this->ListaLiga.begin(); k != this->ListaLiga.end(); k++) {
-                                if ((*k)->getOrigem() == (*j) && (*k)->getAtivo() == true){
-                                    cout <<"---11"<< endl;
-                                    (*j)->removeLigacao((*k));
-                                    (*k)->editOrig(lastWE);
-                                    (*k)->setPortOrigem(lastWE->getPortDataInOut("OUT"));
-                                    lastWE->addLigacao((*k));
-                                    lastWE->getPortDataInOut("OUT")->addLigacao((*k));
-                                    
-                                    (*k)->setBackEdge(true);
-                                    cout <<"---12"<< endl;
-                                }
+        }
+        if(debug){
+            cout<< " Ultimo comp WE: '"<< lastWE->getName()<<"'"  << endl;
+        }
+
+        if (lastWE == NULL) continue;
+
+        if(debug) cout<< " Procurar Componentes que vao receber a ligacao "<< endl;
+        for (j = this->ListaComp.begin(); j != this->ListaComp.end(); j++) {
+            if ((*j)->tipo_comp != CompType::REF) continue;
+            if ((*j)->getComponenteRef()->tipo_comp == CompType::MEM) continue;
+            if ((*i)->getNumParalelLina() != (*j)->getNumParalelLina()) continue;
+            if (lastWE->getNumLinha() < (*j)->getNumLinha()) continue;
+            if ((*i)->node == (*j)->node) continue;
+            if ((*i)->getNomeVarRef() == (*j)->getNomeVarRef()) {
+                if ((*j)->writeEnable == true) {
+                    break;
+                } else {
+                    if ((*j)->getPortDataInOut("IN")->temLigacao() == false) {
+                        if(debug) cout<<"--Ligando componentes (dependencia): " << lastWE->getName() << " -> " << (*j)->getName() <<endl;
+
+                        //Pegar todas as ligacores da saida do componente que o compoente ORIGEM seja (*j)
+                        for (k = this->ListaLiga.begin(); k != this->ListaLiga.end(); k++) {
+                            if ((*k)->getOrigem() == (*j) && (*k)->getAtivo() == true){
+
+                                (*j)->removeLigacao((*k));
+                                (*k)->editOrig(lastWE);
+                                (*k)->setPortOrigem(lastWE->getPortDataInOut("OUT"));
+                                lastWE->addLigacao((*k));
+                                lastWE->getPortDataInOut("OUT")->addLigacao((*k));
+
+                                (*k)->setBackEdge(true);
                             }
-                             cout <<"2"<< endl;
-//                            this->removeComponente((*j), NULL);
-                            (*j)->tipo_comp = CompType::DEL;
-                            cout << "REMOVENDO: "<< (*j)->getName() << endl;
-                            
-                            if((*j)->getPortOther("we")->temLigacao()){
-                                 cout <<"---21"<< endl;
-                                Ligacao*    lig = (*j)->getPortOther("we")->getLigacao2();
-                                lig->getOrigem()->removeLigacao(lig);
-                                lig->getDestino()->removeLigacao(lig);
-                                this->deletaLigacao(lig->getNome());
-                                
-                                Ligacao*    lig2= lig->getOrigem()->getPortDataInOut("IN")->getLigacao2();
-                                lig2->getOrigem()->removeLigacao(lig);
-                                lig2->getDestino()->removeLigacao(lig);
-                                this->deletaLigacao(lig2->getNome());
-                                
-                                lig->getOrigem()->tipo_comp = CompType::DEL;
-                                cout <<"---22"<< endl;
-                            } 
-                            cout <<"---3"<< endl;
-//                            break;
                         }
+
+                        (*j)->tipo_comp = CompType::DEL;
+
+                        if((*j)->getPortOther("we")->temLigacao()){
+                            Ligacao*    lig = (*j)->getPortOther("we")->getLigacao2();
+                            lig->getOrigem()->removeLigacao(lig);
+                            lig->getDestino()->removeLigacao(lig);
+                            this->deletaLigacao(lig->getNome());
+
+                            Ligacao*    lig2= lig->getOrigem()->getPortDataInOut("IN")->getLigacao2();
+                            lig2->getOrigem()->removeLigacao(lig);
+                            lig2->getDestino()->removeLigacao(lig);
+                            this->deletaLigacao(lig2->getNome());
+
+                            lig->getOrigem()->tipo_comp = CompType::DEL;
+                        } 
                     }
                 }
             }
-//        }
-            cout << "--------------------------" << endl;
+        }
     }
     if(debug) cout << "--Ligar componentes DEPENDENTES: OK" << endl;
 }
