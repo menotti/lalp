@@ -118,14 +118,17 @@ Core::Core(SgProject* project, list<SgNode*> lista) {
     this->dot->imprimeHWDOT(this->design->getListaComp(), this->design->getListaLiga(), "DOT/11_DEPOIS_SCHEDULE1.dot", false); 
 //    this->ligaCompDep();
     this->design->ligaCompDependencia();
-    this->dot->imprimeHWDOT(this->design->getListaComp(), this->design->getListaLiga(), "DOT/11_DEPOIS_SCHEDULE2.dot", false); 
+    this->dot->imprimeHWDOT(this->design->getListaComp(), this->design->getListaLiga(), "DOT/12_DEPOIS_LIGA_DEPS.dot", false); 
+//    sched->negativeBalance(this->design);
+    this->design = sched->getDesign();
+    this->dot->imprimeHWDOT(this->design->getListaComp(), this->design->getListaLiga(), "DOT/13_DEPOIS_BAL_NEGATIVO.dot", false); 
      
     //this->design->finalizaComponentesIF();
-    this->dot->imprimeHWDOT(this->design->getListaComp(), this->design->getListaLiga(), "DOT/12_DEPOIS_FINALIZA_IF.dot", false); 
-    
-    this->insereDelayLigBackEdge();
-    
-    this->dot->imprimeHWDOT(this->design->getListaComp(), this->design->getListaLiga(), "DOT/13_DEPOIS_DLAY_BACKEDGE.dot", false); 
+//    this->dot->imprimeHWDOT(this->design->getListaComp(), this->design->getListaLiga(), "DOT/12_DEPOIS_FINALIZA_IF.dot", false); 
+//    
+//    this->insereDelayLigBackEdge();
+//    
+//    this->dot->imprimeHWDOT(this->design->getListaComp(), this->design->getListaLiga(), "DOT/13_DEPOIS_DLAY_BACKEDGE.dot", false); 
     
     //Rodar processo para identificar componente fortemente conectado.
 //    this->rodarSCC();
@@ -1579,12 +1582,12 @@ Componente* Core::analisaExp(SgNode *nodoAtual, SgNode* pai, const string& aux, 
         if(dataWidhtDir < dataWidht) dataWidht = dataWidhtDir;
         
         // <editor-fold defaultstate="collapsed" desc="MENOR QUE">
-                if (lessThan != NULL) {
+        if (lessThan != NULL) {
 
-                    if_lt_op_s* ifComp = new if_lt_op_s(this->GetStrPointerAdd(nodoAtual), dataWidht);
-                    ifComp->setName("if_lt_op_s_" + FuncoesAux::IntToStr(this->design->ListaComp.size()));
-                    comp = ifComp;
-                }// </editor-fold>
+            if_lt_op_s* ifComp = new if_lt_op_s(this->GetStrPointerAdd(nodoAtual), dataWidht);
+            ifComp->setName("if_lt_op_s_" + FuncoesAux::IntToStr(this->design->ListaComp.size()));
+            comp = ifComp;
+        }// </editor-fold>
 
         // <editor-fold defaultstate="collapsed" desc="MAIOR QUE">
         if (greaterThan != NULL) {
@@ -1643,6 +1646,8 @@ Componente* Core::analisaExp(SgNode *nodoAtual, SgNode* pai, const string& aux, 
         lastId = this->design->ListaComp.size();
         
         compReturn = analisaExp(cond, NULL, "", lineParal, compFor);
+        compReturn->setNumLinha(cond->get_file_info()->get_line());
+        
         
         if(compReturn->tipo_comp != CompType::CND) compReturn->tipo_comp = CompType::CND;
         
@@ -1809,7 +1814,7 @@ Componente* Core::analisaExp(SgNode *nodoAtual, SgNode* pai, const string& aux, 
         pai = compReturn->getPai();
         if(node != NULL && pai != NULL) this->graph->addEdge(node, pai, "");
     }
-    
+
     return compReturn;
 }
 

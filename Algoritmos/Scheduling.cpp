@@ -289,6 +289,7 @@ void Scheduling::balanceAndSyncrhonize(){
                     if(strAux != ""){
                         dlyCtd = FuncoesAux::StrToInt(counter->getDelayValComp());
                     }
+                                        
                     if(distance > 1){
 
                         /*
@@ -473,6 +474,43 @@ void Scheduling::balanceAndSyncrhonize(){
     cout<<"*********************************"<<endl;
     cout<<"Balance And Synchronize...OK"<<endl;
     cout<<"*********************************"<<endl;
+}
+
+void Scheduling::negativeBalance(Design* desig){
+    this->design = desig;
+    list<Ligacao*>::iterator    k;
+    if(this->debug) cout<< "Processo para verificar balanceamento BACK EDGEs" << endl;
+    for(k=this->design->ListaLiga.begin(); k != this->design->ListaLiga.end(); k++){
+        if((*k)->getAtivo()    == false ) continue;
+        if((*k)->getBackEdge() == false ) continue;
+        Componente* orig = (*k)->getOrigem();
+        Componente* dest = (*k)->getDestino();
+        
+        if(orig->tipo_comp != CompType::REF && dest->tipo_comp != CompType::REF) continue;
+        
+        int sourceSched = this->calculateASAP(orig);
+        int destSched   = dest->getASAP();
+        int distance    = destSched - sourceSched;
+        distance *= -1;
+        cout << orig->getName() << " LINHA: " <<  orig->getNumLinha() << " -->  " << dest->getName() << " LINHA: " <<  dest->getNumLinha() << " DISTANCIA: " << distance << endl;
+        
+//        if(! (orig->getNomeCompVHDL() == "delay_op" || dest->getNomeCompVHDL() == "delay_op" || orig->getNomeCompVHDL() == "mux_m_op" || dest->getNomeCompVHDL() == "mux_m_op" || dest->getUserSync())) {
+//            int sourceSched = this->calculateASAP(orig);
+//            int destSched   = dest->getASAP();
+//            int distance    = destSched - sourceSched;
+            
+            if ( distance < 2 ) {
+//            if (distance >= 1) {
+                Componente* dly5 = this->design->insereDelay((*k), 2, dest->getASAP());
+
+                this->design->addComponent(dly5);
+                if(this->debug){
+                    cout<< "inserting '" << 2 << "' delay(s) on signal '"<< orig->getName()<< "' -> '" << dest->getName() <<"' (balance)" << endl;
+                }
+            }
+        
+    }
+    if(this->debug) cout<< "Processo para verificar balanceamento BACK EDGEs... OK" << endl;
 }
 
 void Scheduling::ALAP(){

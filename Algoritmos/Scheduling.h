@@ -16,6 +16,7 @@ class Scheduling {
 public:
     Scheduling(Design* design);
     Design*     getDesign();
+    void        negativeBalance(Design* desig);
     void        ALAP();
     void        balanceAndSyncrhonize();
     void        detectBackwardEdges();
