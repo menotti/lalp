@@ -135,10 +135,10 @@ void ArquivosDotHW::imprimeVHDL(list<Componente*> listaComp, list<Ligacao*> list
     this->ListaAux.clear();
     for(k=this->ListaLiga.begin(); k != this->ListaLiga.end(); k++){
         if((*k)->getAtivo() == false ) continue;
-        if((*k)->getPortOrigem()->getLigacao() != (*k)->getNome()){            
+        if((*k)->getPortOrigem()->getLigacao2()->getNome() != (*k)->getNome()){    
             (*k)->getPortDestino()->addLigacao((*k)->getPortOrigem()->getLigacao2());
+            (*k)->getPortDestino()->setLigacao((*k)->getPortOrigem()->getLigacao2()->getNome());
             (*k)->setName((*k)->getPortOrigem()->getLigacao2()->getNome());
-//            this->ListaAux.push_back((*k)->getNome());
         }
     }
    

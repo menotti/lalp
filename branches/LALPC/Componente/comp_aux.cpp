@@ -21,7 +21,7 @@ comp_aux::comp_aux(void*node,  const string& aux, int dataWidth) : Componente(no
     }        
     if(aux == "INPUT"){
         this->setNomeCompVHDL("input");
-        this->addPort(new Port("out","out"   ,"std_logic_vector","32", "OUT"));
+        this->addPort(new Port("out","out"   ,"std_logic_vector",FuncoesAux::IntToStr(this->dataWidth), "OUT"));
     }        
     if(aux == "TERMINATION"){
         this->setNomeCompVHDL("termination");
@@ -37,7 +37,7 @@ comp_aux::comp_aux(void*node,  const string& aux, int dataWidth) : Componente(no
     }        
     if(aux == "RESULT"){
         this->setNomeCompVHDL("result");
-        this->addPort(new Port("in" ,"in"   ,"std_logic_vector"     ,"32", "IN"));
+        this->addPort(new Port("in" ,"in"   ,"std_logic_vector"     ,FuncoesAux::IntToStr(this->dataWidth), "IN"));
     }    
 }
 void    comp_aux::setValAux(const string& aux){
