@@ -33,6 +33,7 @@ private:
     vector<string>      ListaAux;
     string              nomeArquivo;
     void                GeraMemoryVHDL();
+    void                geraTesteVHDL();
     vector<string>      split(const string& s, const string& delim);
     string              LPad(const string &val, int size);
     string              ConvertDecToBin(const string &val);

@@ -21,8 +21,13 @@ public:
     void    createAllGeneric(); //0
     string  geraCompVHDL();
     void    setValAux(const string& aux);
+    string  getValAux();
+//    bool    isIn();
+    bool    ehCompIn();
     virtual ~comp_aux();
 private:
+//    bool    isIn;
+    bool comIn;
     string valAux; //val aux que armazena valores necessarios
 };
 

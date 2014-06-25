@@ -70,6 +70,7 @@ Core::Core(SgProject* project, list<SgNode*> lista) {
     this->compForAux = NULL;
     this->DATA_WIDTH = 32;
     
+    
     //Identificar todos os pragmas no arquivo
     this->identificaPragmas();
     
@@ -648,10 +649,12 @@ void Core::identificaReturn() {
                 
                 
                 cout<< "- Criar e ligar RESULT "<< endl;
-                comp_aux* comp_return = new comp_aux(NULL,"RESULT");
+//                comp_aux* comp_return = new comp_aux(NULL,"RESULT");
+                comp_aux* comp_return = new comp_aux(NULL,"OUT", this->DATA_WIDTH);
                 comp_return->setName("result");
+//                comp_return->setGlobalComp(true);
                 comp_return->setNumIdComp(FuncoesAux::IntToStr(this->design->ListaComp.size()));
-                comp_return->setNumLinha(1000);
+//                comp_return->setNumLinha(1000);
 
                 //LIGACAO
                 Ligacao* newLig3 = new Ligacao(CompResult, comp_return, "s" + FuncoesAux::IntToStr(this->design->ListaLiga.size()));
@@ -684,32 +687,37 @@ void Core::identificaReturn() {
                 }
             }
             if(aux != NULL){
-                comp_aux* comp_return = new comp_aux(NULL,"RESULT");
+//                comp_aux* comp_return = new comp_aux(NULL,"RESULT");
+                comp_aux* comp_return = new comp_aux(NULL,"OUT", this->DATA_WIDTH);
                 comp_return->setName("result");
+//                comp_return->setGlobalComp(true);
                 comp_return->setNumIdComp(FuncoesAux::IntToStr(this->design->ListaComp.size()));
-                comp_return->setNumLinha(numLinha);
-
+//                comp_return->setNumLinha(numLinha);
+                this->design->addComponent(comp_return);
+                
+                this->design->insereLigacao(aux, comp_return);
+                
                 //LIGACAO
-                Ligacao* newLig = new Ligacao(aux, comp_return, "s" + FuncoesAux::IntToStr(this->design->ListaLiga.size()));
-                newLig->setPortDestino(comp_return->getPortDataInOut("IN"));
-                newLig->setPortOrigem(aux->getPortDataInOut("OUT"));
-                newLig->setWidth(aux->getPortDataInOut("OUT")->getWidth());
-                newLig->setTipo(aux->getPortDataInOut("OUT")->getType());
-
-                //ADICIONAR NOME LIGACAO NA PORTA
-                newLig->getPortDestino()->setLigacao(newLig->getNome());
-//                newLig->getPortDestino()->addLigacao(newLig);
-                newLig->getPortOrigem()->setLigacao(newLig->getNome());
-//                newLig->getPortOrigem()->addLigacao(newLig);
-
-                //ADICIONAR LIGACAO NO COMPONENTE
-                aux->addLigacao(newLig);
-                comp_return->addLigacao(newLig);
+//                Ligacao* newLig = new Ligacao(aux, comp_return, "s" + FuncoesAux::IntToStr(this->design->ListaLiga.size()));
+//                newLig->setPortDestino(comp_return->getPortDataInOut("IN"));
+//                newLig->setPortOrigem(aux->getPortDataInOut("OUT"));
+//                newLig->setWidth(aux->getPortDataInOut("OUT")->getWidth());
+//                newLig->setTipo(aux->getPortDataInOut("OUT")->getType());
+//
+//                //ADICIONAR NOME LIGACAO NA PORTA
+//                newLig->getPortDestino()->setLigacao(newLig->getNome());
+////                newLig->getPortDestino()->addLigacao(newLig);
+//                newLig->getPortOrigem()->setLigacao(newLig->getNome());
+////                newLig->getPortOrigem()->addLigacao(newLig);
+//
+//                //ADICIONAR LIGACAO NO COMPONENTE
+//                aux->addLigacao(newLig);
+//                comp_return->addLigacao(newLig);
 
                 //ADD LISTAS
-                this->design->ListaLiga.push_back(newLig);
+                //this->design->ListaLiga.push_back(newLig);
     //                this->design->ListaComp.push_back(comp_return);
-                this->design->addComponent(comp_return);
+                
             }
         }
     }
@@ -2374,13 +2382,15 @@ void Core::FinalizaComponentes(){
     // </editor-fold> 
        
     //Setar INICIALIZACAO
-    comp_aux* comp_init = new comp_aux(NULL,"INIT", this->DATA_WIDTH);
+    comp_aux* comp_init = new comp_aux(NULL,"IN", 1);
     comp_init->setName("init");
+//    comp_init->setGlobalComp(true);
     comp_init->setNumIdComp(FuncoesAux::IntToStr(this->design->ListaComp.size()));
     this->design->addComponent(comp_init); 
     
-    comp_aux* comp_done = new comp_aux(NULL, "DONE", this->DATA_WIDTH);
+    comp_aux* comp_done = new comp_aux(NULL, "OUT", 1);
     comp_done->setName("done");
+//    comp_done->setGlobalComp(true);
     comp_done->setNumIdComp(FuncoesAux::IntToStr(this->design->ListaComp.size()));
     this->design->addComponent(comp_done); 
     
@@ -3010,7 +3020,22 @@ void Core::geraArquivosDotHW(){
     string nome = string(fileVec2[0].c_str());
 
 //    this->imprimeAll();
+    //Criar ligacoes GLOBAIS clk, reset e clear
+    comp_aux* comp_clk  = new comp_aux(NULL, "IN", 1);
+    comp_clk->setGlobalComp(true);
+    comp_clk->setName("clk");
+    this->design->addComponent(comp_clk);
     
+    comp_aux* comp_reset= new comp_aux(NULL, "IN", 1);
+    comp_reset->setGlobalComp(true);
+    comp_reset->setName("reset");
+    this->design->addComponent(comp_reset);
+    
+    comp_aux* comp_clear= new comp_aux(NULL, "IN", 1);
+    comp_clear->setGlobalComp(true);
+    comp_clear->setName("clear");
+    this->design->addComponent(comp_clear);
+  
     this->dot->imprimeHWDOT(this->design->ListaComp, this->design->ListaLiga, "DOT/"+nome+"_HW.dot", false, this->design->getTemMemoria());
     this->dot->imprimeVHDL(this->design->ListaComp, this->design->ListaLiga, nome);
 }
