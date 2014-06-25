@@ -13,8 +13,10 @@
 #include <fstream>
 #include "CompType.h"
 #include "Aux/FuncoesAux.h"
+#include "Componente/Port.h"
 #include "Componente/counter.h"
 #include "Componente/block_ram.h"
+#include "Componente/comp_aux.h"
 #include <vector>
 #include <math.h>
 
@@ -76,18 +78,120 @@ void ArquivosDotHW::imprimeHWDOT(list<Componente*> listaComp, list<Ligacao*> lis
     if(debug) cout<<"------------------------------------"<<endl;
 }
 
+void ArquivosDotHW::geraTesteVHDL(){
+    list<Componente*>::iterator i;
+    const string& end_arquivo = "VHDL/t_"+this->nomeArquivo+".vhd";
+    const char * c = end_arquivo.c_str();
+    
+    std::ofstream fout(c);
+    
+    fout << "library IEEE; \n";
+    fout << "use IEEE.std_logic_1164.all; \n";
+    fout << "use IEEE.std_logic_arith.all; \n";
+    fout << "use IEEE.std_logic_unsigned.all; \n";
+    fout << "entity t_"+this->nomeArquivo+" is \n";
+    fout << "end t_"+this->nomeArquivo+"; \n";
+    fout << "architecture behavior of t_"+this->nomeArquivo+" is \n\n";
+    fout << "component "+this->nomeArquivo+" \n";
+
+    fout << "\tport (\n";
+    
+    string nome = "";
+    string OutIn= "";
+    string type = "";
+    string size = "";
+    bool dp     = false;
+    for(i=this->ListaComp.begin(); i != this->ListaComp.end(); i++){
+        if( (*i)->tipo_comp != CompType::AUX ) continue;
+        if( (*i)->getNomeCompVHDL() == "valor") continue;
+        comp_aux* compAUX = (comp_aux*)(*i);
+        nome  = compAUX->getName();
+        OutIn = "in";
+        if(!compAUX->ehCompIn()) OutIn = "out";
+        type  = "std_logic";
+        if(compAUX->getWidth() > 1) {
+            size =  FuncoesAux::IntToStr(compAUX->getWidth()-1);
+            type = "std_logic_vector("+size+" downto 0)";
+        }
+        if(dp){
+            fout << ";\n";
+        }else{
+            dp = true;
+        }
+        fout << "\t\t\\" + nome + "\\\t: " + OutIn + "\t" + type;
+    }
+    fout <<"\n\t);\n";
+    fout << "end component;\n\n";
+    
+    string init = "";
+    for(i=this->ListaComp.begin(); i != this->ListaComp.end(); i++){
+        if( (*i)->tipo_comp != CompType::AUX )  continue;
+        if( (*i)->getNomeCompVHDL() == "valor") continue;
+        comp_aux* compAUX = (comp_aux*)(*i);
+        nome  = compAUX->getName();
+
+        type  = "std_logic";
+        init  = "'0'";
+        if(compAUX->getWidth() > 1) {
+            size =  FuncoesAux::IntToStr(compAUX->getWidth()-1);
+            type = "std_logic_vector("+size+" downto 0)";
+            init = "(others => '0')";
+        }            
+        fout <<"signal \\" + nome + "\\\t: " + type + "\t:= " + init + ";\n";
+
+    }
+        
+    fout << "\nbegin\n\n";
+    fout << "\nuut: "+this->nomeArquivo+" \n";
+    fout << "port map ( \n";
+    dp = false;
+    for(i=this->ListaComp.begin(); i != this->ListaComp.end(); i++){
+        if( (*i)->tipo_comp != CompType::AUX ) continue;
+        if( (*i)->getNomeCompVHDL() == "valor") continue;
+        
+        if (dp) {
+            fout <<",\n";
+        }
+        else {
+            dp = true;
+        }
+        fout <<"\t\\" + (*i)->getName() + "\\ => \\" + (*i)->getName() + "\\";
+    }
+    fout << "\n);\n\n";
+    fout << "clock: process \n";
+    fout << "begin\n";
+    fout << "\twait for 5 ns; \n";
+    fout << "\t\\clk\\  <= not \\clk\\; \n";
+    fout << "end process clock; \n\n";
+
+    fout << "stimulus: process \n";
+    fout << "begin \n";
+    fout << "\t\\reset\\  <= '1'; \n";
+    fout << "\twait for 50 ns; \n";
+    fout << "\t\\reset\\  <= '0'; \n";
+    fout << "\twait for 50 ns; \n";
+    fout << "\t\\init\\  <= '1'; \n";
+    fout << "\twait; \n";
+    fout << "end process stimulus; \n";
+
+    fout << "end behavior;\n";
+
+}
+
 void ArquivosDotHW::imprimeVHDL(list<Componente*> listaComp, list<Ligacao*> listaLiga, const string& arquivo){
     this->ListaComp = listaComp;
     this->ListaLiga = listaLiga;  
     map<string, Componente*> ::iterator m;
     list<Componente*>::iterator i;
     list<Ligacao*>::iterator    k;
-    
+ 
     if(arquivo != ""){
         this->nomeArquivo = arquivo;
     }
     this->organizaListaNome();
     if(this->temMemoria) GeraMemoryVHDL();
+    
+    geraTesteVHDL();
 //    map<string, Componente*> ::iterator m;
 //    list<Componente*>::iterator i;
 //    list<Ligacao*>::iterator    k;
@@ -108,15 +212,34 @@ void ArquivosDotHW::imprimeVHDL(list<Componente*> listaComp, list<Ligacao*> list
     fout << "use IEEE.std_logic_arith.all; \n";
     fout << "use IEEE.std_logic_unsigned.all; \n";
     fout << "entity "+this->nomeArquivo+" is \n";
-    fout << "port ( \n";
-    fout << "\t\\clear\\  : in	 std_logic; \n";
-    fout << "\t\\clk\\    : in	 std_logic; \n";
-    fout << "\t\\done\\   : out std_logic; \n";
-    fout << "\t\\init\\   : in	 std_logic; \n";
-    fout << "\t\\reset\\  : in	 std_logic; \n";
-    fout << "\t\\result\\ : out std_logic_vector(31 downto 0) \n";
-//    fout << "\t\\reset\\  : in	 std_logic \n";
-    fout << "); \n";
+    fout << "\tport (\n";
+    
+    string nome = "";
+    string OutIn= "";
+    string type = "";
+    string size = "";
+    bool dp     = false;
+    
+    for(i=this->ListaComp.begin(); i != this->ListaComp.end(); i++){
+        if( (*i)->tipo_comp != CompType::AUX ) continue;
+        if( (*i)->getNomeCompVHDL() == "valor") continue;
+        comp_aux* compAUX = (comp_aux*)(*i);
+        nome  = compAUX->getName();
+        OutIn = "in";
+        if(!compAUX->ehCompIn()) OutIn = "out";
+        type  = "std_logic";
+        if(compAUX->getWidth() > 1) {
+            size =  FuncoesAux::IntToStr(compAUX->getWidth()-1);
+            type = "std_logic_vector("+size+" downto 0)";
+        }
+        if(dp){
+            fout << ";\n";
+        }else{
+            dp = true;
+        }
+        fout << "\t\t\\" + nome + "\\\t: " + OutIn + "\t" + type;
+    }
+    fout <<"\n\t);\n";
     fout << "end "+this->nomeArquivo+"; \n\n";
     fout << "architecture behavior of "+this->nomeArquivo+" is \n\n";
     
@@ -135,10 +258,15 @@ void ArquivosDotHW::imprimeVHDL(list<Componente*> listaComp, list<Ligacao*> list
     this->ListaAux.clear();
     for(k=this->ListaLiga.begin(); k != this->ListaLiga.end(); k++){
         if((*k)->getAtivo() == false ) continue;
-        if((*k)->getPortOrigem()->getLigacao2()->getNome() != (*k)->getNome()){    
+  
+        if((*k)->getPortOrigem()->getLigacao2()->getNome() != (*k)->getNome()){
             (*k)->getPortDestino()->addLigacao((*k)->getPortOrigem()->getLigacao2());
             (*k)->getPortDestino()->setLigacao((*k)->getPortOrigem()->getLigacao2()->getNome());
-            (*k)->setName((*k)->getPortOrigem()->getLigacao2()->getNome());
+ 
+            (*k)->getDestino()->removeLigacao((*k));
+
+            (*k)->getDestino()->addLigacao((*k));
+            (*k)->setAtivo(false);
         }
     }
    
@@ -168,10 +296,77 @@ void ArquivosDotHW::imprimeVHDL(list<Componente*> listaComp, list<Ligacao*> list
             fout << (*i)->geraCompVHDL();
         }
     }
+        
+    // IO ports attributions
+    bool debug = false;
+    if(debug){
+        cout << "criacao ligacoes IO" << endl;
+    }
+    string tipo = "";
+    list<Port*>::iterator ports;
+    list<Port*> ListaPortas;
+    Port* p;
+    Ligacao* lig;
     for(i=this->ListaComp.begin(); i != this->ListaComp.end(); i++){
         if ((*i)->tipo_comp != CompType::AUX ) continue;
-        fout << (*i)->geraCompVHDL();
+        if ((*i)->getGlobalComp() == true ) continue;
+        
+        comp_aux* compAux = (comp_aux*)(*i);
+        if(debug) cout << "Componente: " << compAux->getName() << endl;
+        ListaPortas.clear();
+        p           = NULL;
+        lig         = NULL;
+        
+        ListaPortas = (*i)->getPorts();
+        
+        if(ListaPortas.size() < 1) continue;
+        
+        for(ports=ListaPortas.begin(); ports != ListaPortas.end(); ports++){
+            p = (*ports);
+        }
+
+        lig = p->getLigacao2();
+        
+        
+        
+        if(lig != NULL && p != NULL){
+            if(p->getInput() == "in"){
+                if(p->getType() == lig->getTipo()){
+                    int ligWidth        = FuncoesAux::StrToInt(lig->getWidth());
+                    int porWidth        = FuncoesAux::StrToInt(p->getWidth());
+                    if (ligWidth == porWidth){
+                        fout << "\\" + compAux->getName() + "\\ <= " + lig->getNome()+ ";\n";
+                    }else{
+                        if (porWidth < ligWidth) {
+                            int newporWidth     = porWidth-1;
+                            string newPorWidth  = FuncoesAux::IntToStr(newporWidth);
+                            fout <<"\\" + compAux->getName() + "\\(" + newPorWidth + " downto 0) <= " + lig->getNome() + "(" + newPorWidth + " downto 0);\n";
+                        }
+                        else {
+                            int newligWidth     = ligWidth-1;
+                            string newLigWidth  = FuncoesAux::IntToStr(newligWidth);
+                            fout <<"\\" + compAux->getName() + "\\(" + newLigWidth + " downto 0) <= " + lig->getNome() + "(" + newLigWidth + " downto 0);\n";
+                        }
+                    }
+                }else{
+                    if (lig->getTipo() == "std_logic"){
+                        fout << "\\" + compAux->getName() + "\\(0) <= " + lig->getNome() + ";\n";
+                    }else{
+                        fout << "\\" + compAux->getName() + "\\ <= " + lig->getNome() + "(0);\n";
+                    }
+                }
+            }else {
+                fout << lig->getNome() + " <= ";
+                if(compAux->getNomeCompVHDL() != "valor"){
+                    fout << "\\" + compAux->getName() + "\\;\n";
+                }else{
+                    fout <<"conv_std_logic_vector(" + compAux->getValAux() + ", " + lig->getWidth() + ");\n";
+                }
+            }
+        }
+        if(debug) cout << "----" << endl;
     }
+      
     fout << "end behavior; ";
     
     //cout<<"------------------------------------"<<endl;

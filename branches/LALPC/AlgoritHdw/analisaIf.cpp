@@ -667,6 +667,7 @@ void analisaIf::criaComponenteMux(Componente* compIf, Componente* compAtual){
     //Pegar a primeira ocorrencia do COMP IDEPENDENTE SE e WE
     if (compAuxTrue == NULL) {
         compAuxTrue = this->getCompAntesIf(compIf , compAtual->getNomeVarRef());
+        deletaCompTrue = false;
     }
     
     //Pegar Componente do Body TRUE quando nao e WE isso ocorre quando nao satisfaz 
@@ -702,6 +703,7 @@ void analisaIf::criaComponenteMux(Componente* compIf, Componente* compAtual){
     }
     if (compAuxFalse == NULL) {
         compAuxFalse = this->getCompAntesIf(compIf , compAtual->getNomeVarRef());
+        deletaCompFalse = false;
     }
     
     //Pegar Componente do Body FALSE quando nao e WE isso ocorre quando nao satisfaz 
@@ -812,7 +814,7 @@ void analisaIf::criaComponenteMux(Componente* compIf, Componente* compAtual){
         comTrue = compAuxTrue;
         comFalse= compAuxFalse;
 
-        
+        cout<< "%%%%" << endl;
         if(compAuxTrue->getIfComp() == compIf && compAuxTrue->getIf() == true && deletaCompTrue == true){
             Ligacao* ligOrigemTrue = NULL;
             Componente* comOrigemTrue  = NULL;
@@ -846,24 +848,25 @@ void analisaIf::criaComponenteMux(Componente* compIf, Componente* compAtual){
             }
             this->design->removeComponente(compAuxTrue, NULL);
         }
-        
+        cout<< "%%%% fim do deleta true" << endl;
         if(compAuxFalse->getIfComp() == compIf && compAuxFalse->getIf() == true && deletaCompFalse == true){
             Ligacao* ligOrigemFalse  = NULL;
             Componente* comOrigemFalse  = NULL;
-            
+            cout<< "1" << endl;
             ligOrigemFalse = compAuxFalse->getPortDataInOut("IN")->getLigacao2();
-            
+            cout<< "2" << endl;
             comOrigemFalse = ligOrigemFalse->getOrigem();
-            
+            cout<< "3" << endl;
             comOrigemFalse->removeLigacao(ligOrigemFalse);
             compAuxFalse->removeLigacao(ligOrigemFalse);
             this->design->deletaLigacao(ligOrigemFalse->getNome());
-            
+            cout<< "4" << endl;
             if(comOrigemFalse != NULL) comFalse = comOrigemFalse;
-            
+            cout<< "5" << endl;
             //Pegar todos os componentes da saida 
             Componente* compAuxDest = NULL;
             string portAuxDest = "";
+            cout<< "6" << endl;
             for (k = this->design->ListaLiga.begin(); k != this->design->ListaLiga.end(); k++) {
                 if( (*k)->getAtivo() == false ) continue;
                 
@@ -878,9 +881,10 @@ void analisaIf::criaComponenteMux(Componente* compIf, Componente* compAtual){
                     this->design->insereLigacao(comOrigemFalse , compAuxDest, comOrigemFalse->getPortDataInOut("OUT")->getName(), portAuxDest );
                 }
             }
+            cout<< "7" << endl;
             this->design->removeComponente(compAuxFalse, NULL);
         }
-        
+        cout<< "%%%% fim do deleta False" << endl;
         
         this->design->insereLigacao(comTrue , ref, comTrue->getPortDataInOut("OUT")->getName()  , "I1"  );
         this->design->insereLigacao(comFalse, ref, comFalse->getPortDataInOut("OUT")->getName() , "I0"  );
@@ -902,6 +906,7 @@ void analisaIf::criaComponenteMux(Componente* compIf, Componente* compAtual){
                 cout << res << (*j)->getNumLinha() << endl; 
             }
             cout<< "++++++++++++++++++++++++++++++++++++++++" << endl;
+            cout<< "FIM" << endl;
         }
     }
     

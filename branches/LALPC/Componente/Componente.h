@@ -132,9 +132,12 @@ class Componente {
         
         void            setIfBody(bool val);
         bool            getIfBody();
+        
+        void            setGlobalComp(bool valor);
+        bool            getGlobalComp();
     private:
         int             valStepAux;
-   
+        bool            isGlobalComp;
         Componente*     compIf;
         Componente*     compFor;
         bool            isIf;

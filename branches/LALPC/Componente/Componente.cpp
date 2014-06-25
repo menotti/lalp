@@ -31,6 +31,7 @@ Componente::Componente(void* node/*=NULL*/, const string &aux/*=""*/,  int dataW
     if(aux == "WE"){
         this->writeEnable = true;
     }
+    this->isGlobalComp  = false;
     this->nodoPai       = NULL;
     this->sync          = true;
     this->userSync      = false;
@@ -53,6 +54,13 @@ Componente::Componente(void* node/*=NULL*/, const string &aux/*=""*/,  int dataW
     this->setDelayValComp("1");
 }
 
+void Componente::setGlobalComp(bool valor){
+    this->isGlobalComp = valor;
+}
+
+bool Componente::getGlobalComp(){
+    return this->isGlobalComp;
+}
 
 void Componente::setValStepAux(int val){
     this->valStepAux = val;
