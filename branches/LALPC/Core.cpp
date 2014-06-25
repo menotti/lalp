@@ -144,9 +144,26 @@ Core::Core(SgProject* project, list<SgNode*> lista) {
     
     this->setClkReset();
     this->identificaReturn();
+    this->defineSaidaOUT();
     this->corrigeRegSemValorInicial();
     this->geraArquivosDotHW();
 //    this->design->graph->geraDot();
+}
+
+void Core::defineSaidaOUT(){
+    list<Componente*>::iterator i;
+    for (i = this->design->ListaComp.begin(); i != this->design->ListaComp.end(); i++) {
+        if ((*i)->tipo_comp !=  CompType::REF) continue;
+        if(this->outRegList.find((*i)->getNomeVarRef()) != this->outRegList.end()){
+            comp_aux* comp_out = new comp_aux(NULL, "OUT", (*i)->getWidth());
+            comp_out->setName("out_"+FuncoesAux::IntToStr(this->design->ListaComp.size()));
+
+            comp_out->setNumIdComp(FuncoesAux::IntToStr(this->design->ListaComp.size()));
+            this->design->addComponent(comp_out);
+            
+            this->design->insereLigacao((*i), comp_out);
+        }
+    }
 }
 
 void Core::insereDelayLigBackEdge(){
@@ -340,6 +357,10 @@ void Core::identificaPragmas(){
                 const vector<string> words = FuncoesAux::split(pragma->get_pragma(), " ");
                 string val = string(words[1].c_str());
                 this->DATA_WIDTH = FuncoesAux::StrToInt(val);
+            }
+            if (pragma->get_pragma().find("out") == 0){
+                const vector<string> words = FuncoesAux::split(pragma->get_pragma(), " ");
+                this->outRegList.insert(string(words[1].c_str()));
             }
         }
     }

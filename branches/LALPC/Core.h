@@ -43,6 +43,7 @@ class Core {
         void setMaxSchedulingTime(int maxSchedulingTime);
         void* GetStrPointerAdd(SgNode* nodo);
     private:
+        void            defineSaidaOUT();
         void            aplicarDelayPragma();
         void            trataIfTernario(Componente* comp, SgNode* condicao);
         bool            existeSgNode(SgNode* node);
@@ -78,6 +79,7 @@ class Core {
         void            rodarSCC();
         void            insereDelayLigBackEdge();
         set<string>     bitRegList; //Lista com componentes marcados como BIT
+        set<string>     outRegList; //Lista com componentes saida
         int             DATA_WIDTH;
         Componente*     compForAux;
         SgProject*      project;
