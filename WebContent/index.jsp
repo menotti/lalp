@@ -1,3 +1,5 @@
+<%@page import="org.json.JSONObject"%>
+<%@page import="br.ufscar.dc.lalp.web.GoogleAuthHelper"%>
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
     pageEncoding="ISO-8859-1"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
@@ -6,6 +8,31 @@
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <link type="text/css" rel=StyleSheet href="css/style.css">
 <link type="image/ico" rel="icon" href="images/favicon.ico">
+
+<%
+			
+    final GoogleAuthHelper helper = new GoogleAuthHelper();
+    String given_name = "";
+    String family_name = "";
+    String email = "";
+            
+    if (request.getParameter("code") == null || request.getParameter("state") == null) 
+    {
+            session.setAttribute("state", helper.getStateToken());
+            response.sendRedirect("Default.jsp");
+    } 
+    else if (request.getParameter("code") != null && request.getParameter("state") != null
+                    && request.getParameter("state").equals(session.getAttribute("state"))) 
+    {
+            
+            JSONObject json = new JSONObject(session.getAttribute("ApplicationUserData").toString());
+            
+            given_name = json.getString("given_name");
+            family_name = json.getString("family_name");
+            email = json.getString("email");     
+    }
+%>
+
 
 <script type="text/javascript" src="js/jquery-1.11.1.min.js"></script>
 <script type="text/javascript" src="js/head.min.js"></script>
@@ -20,13 +47,25 @@
 			//"http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js",
 			//"http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.9/jquery-ui.min.js",	
 			);
+                
+        $(document).ready(function(){
+            document.getElementById('FirstName').innerHTML= "<%=given_name%>";
+            document.getElementById('LastName').innerHTML= "<%=family_name%>";
+            document.getElementById('email').innerHTML="<%=email%>";
+        });
 </script>
 
 
 <title>LALP - Compiler</title>
 </head>
 <body>
-	<div class='AllContent'>
+        <div class="Hide">
+            <span id="FirstName"></span>
+            <span id="LastName"></span>
+            <span id="email"></span>
+        </div>
+    
+	<div class='AllContent' id='AllContent'>
 		<jsp:include page="Template/Header.jsp"/>
 		<div class='PageContent'>
 		<!-- All the page content must to be placed here -->
@@ -73,7 +112,7 @@
 									<div class="CWCompile">
 										<input	type="button" id="compile" name="compile" value="Compile" onclick="toggle('CompilerContentBottom');" />
 									</div>
-									<div class="CWOptions">
+									<div class="CWOptions" id="CWOptions">
 										<div id="compOptions" class="compOptions">
 											<input name="check" type="checkbox" id="as" value="-as" checked  /> Run SCC algorithm<br />  
 											<input name="check" type="checkbox" id="ad" value="-ad" checked  /> Run Dijkstra algorithm<br />

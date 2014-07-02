@@ -1,3 +1,5 @@
+<%@page import="org.json.JSONObject"%>
+<%@page import="br.ufscar.dc.lalp.web.GoogleAuthHelper"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
@@ -10,68 +12,92 @@
 <link rel="stylesheet" type="text/css" href="css/jquery.svg.css"></link>
 <link type="text/css" rel=StyleSheet href="css/style.css">
 <link type="image/ico" rel="icon" href="images/favicon.ico">
-<title>LALP - Compiler</title>
 
+<!-- JSP Script -->
+<%
+			
+    final GoogleAuthHelper helper = new GoogleAuthHelper();
+    String given_name = "";
+    String family_name = "";
+    String email = "";
+            
+    if (request.getParameter("code") == null || request.getParameter("state") == null) 
+    {
+            session.setAttribute("state", helper.getStateToken());
+            response.sendRedirect("Default.jsp");
+    } 
+    else if (request.getParameter("code") != null && request.getParameter("state") != null
+                    && request.getParameter("state").equals(session.getAttribute("state"))) 
+    {
+            
+            JSONObject json = new JSONObject(session.getAttribute("ApplicationUserData").toString());
+            
+            given_name = json.getString("given_name");
+            family_name = json.getString("family_name");
+            email = json.getString("email");     
+    }
+%>
+
+
+<title>LALP - Compiler</title>
 <!-- SCRIPT AREA -->
 <script type="text/javascript" src="js/head.min.js"></script>
 <script type="text/javascript" src="js/jszip.js"></script>
+<script type="text/javascript" src="js/jquery-1.11.1.min.js"></script>
 <script>
 	head.js("js/jquery-1.6.4.min.js",
 			"js/jquery.svg.package-1.4.4/jquery.svg.js",	
 			"js/ajaxfileupload.js", "js/lalpArgs.js");
 </script>
 <script>
+//var path = "http://localhost:8080/"
+var path = "http://lalp.dc.ufscar.br:9180/lalp/";
 
-	/*var path = "http://localhost:9180/lalpProject/";*/
-var path = "http://projetos.ppgcc.dc.ufscar.br:9180/lalp/";
+//function getUrlVars() {
+//   	var vars = {};
+//   	var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
+//   	    vars[key] = value;
+//      });
+//     return vars;
+//}
 	
-	function getUrlVars() {
-   	 var vars = {};
-    	var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
-    	    vars[key] = value;
-  	  });
- 	   return vars;
-	}
-	
-	var lastName = getUrlVars()["openid.ext1.value.lastname"];
-	var firstName = getUrlVars()["openid.ext1.value.firstname"];
-	var email = getUrlVars()["openid.ext1.value.email"];
-	
-	if (email == null) {
-		window.location = path + "Default.jsp";
-	}
-	
-	email = email.replace('%40','@').replace('#', '');
-	
-	setTimeout(function() {checkUserRole();},200);
-	
-	function checkUserRole() {
-		$.ajax({
-			url : 'DATACheckServlet',
-			type : 'POST',
-			data : {
-				email : email,
-				index : "1"
-			},
-			error : function() {
-				window.location = path + "registeredUser.jsp";
-			},
-			success: function() {
-			}
-		});
-	}
+var lastName = "<%=family_name%>";
+var fistName = "<%=given_name%>";
+var emailD = "<%=email%>";
+
+    if (emailD === "") {
+            window.location = path + "Default.jsp";
+    }
+
+    setTimeout(function() {checkUserRole();},200);
+
+    function checkUserRole() {
+            $.ajax({
+                    url : 'DATACheckServlet',
+                    type : 'POST',
+                    data : {
+                            email : emailD,
+                            index : "1"
+                    },
+                    error : function() {
+                            window.location = path + "registeredUser.jsp";
+                    },
+                    success: function() {
+                    }
+            });
+    }
 </script>
 
 <script>
-	function FillUserInfo(){
-		document.getElementById('FirstName').innerHTML=firstName;
-		document.getElementById('LastName').innerHTML=lastName;
-		document.getElementById('email').innerHTML=email;
-	}
+	$(document).ready(function(){
+            document.getElementById('FirstName').innerHTML=fistName;
+            document.getElementById('LastName').innerHTML=lastName;
+            document.getElementById('email').innerHTML=emailD;
+        });
 </script>
 
 </head>
-<body onload="FillUserInfo()">
+<body>
 	<div class='AllContent'>
 		<jsp:include page="Template/Header.jsp"/>
 		<div class='PageContent'>
