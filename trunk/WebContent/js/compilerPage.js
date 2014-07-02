@@ -1,9 +1,19 @@
 /**
- * Conteúdo de script da página 'index.jsp' com o objetivo de reduzir a quantidade de código da página.
+ * Conteudo de script da pagina 'index.jsp' com o objetivo de reduzir a quantidade de codigo da pagina.
  */
 
-/*var path = "http://localhost:9180/lalpProject/";*/
-var path = "http://projetos.ppgcc.dc.ufscar.br:9180/lalp/";
+var path = "http://lalp.dc.ufscar.br:9180/lalp/";
+//var path = "http://localhost:8080/";
+
+var lastName = ""; 
+var fistName = "";
+var emailC = "";
+
+window.onload = function(){
+    lastName = document.getElementById('LastName').innerHTML;
+    fistName = document.getElementById('FirstName').innerHTML;
+    emailC = document.getElementById('email').innerHTML;
+};
 
 function newColor(color)
 {
@@ -32,15 +42,6 @@ function getUrlVars() {
     return vars;
 }
 
-var email = getUrlVars()["openid.ext1.value.email"];
-
-if (email == null) {
-	window.location = path + "Default.jsp";
-}
-
-email = email.replace('%40','@').replace('#', '');
-
-
 setTimeout(function() {checkUserRole();},200);
 
 function checkUserRole() {
@@ -48,7 +49,7 @@ function checkUserRole() {
 		url : 'DATACheckServlet',
 		type : 'POST',
 		data : {
-			email : email,
+			email : document.getElementById('email').innerHTML,
 			index : "0"
 		},
 		error : function() {
@@ -93,26 +94,8 @@ function dinamicButtons() {
 		url : 'DinamicExamples',
 		type : 'POST',
 		success : function(data) {
-			//alert("Sucesso");
 			examples = data;
 			
-//			var ex1 = getExpVars()["ex1"];
-//			var ex2 = getExpVars()["ex2"];
-//			var ex3 = getExpVars()["ex3"];
-//			var ex4 = getExpVars()["ex4"];
-//			var ex5 = getExpVars()["ex5"];
-//			var ex6 = getExpVars()["ex6"];
-//			var ex7 = getExpVars()["ex7"];
-//			
-//			if (ex1 != "null") add(ex1);
-//			if (ex2 != "null") add(ex2);
-//			if (ex3 != "null") add(ex3);
-//			if (ex4 != "null") add(ex4);
-//			if (ex5 != "null") add(ex5);
-//			if (ex6 != "null") add(ex6);
-//			if (ex7 != "null") add(ex7);
-
-			//Modificado para tornar dinamico o preenchimento dos exemplos
 			var ex = getExpVars()["ex0"];
 			var i = 0;
 			
@@ -140,19 +123,6 @@ function getExpVars() {
 
 function add(type) {
 	 
-//    var element = document.createElement("input");
-// 
-//    element.setAttribute("type", "button");
-//    element.setAttribute("value", type);
-//    element.setAttribute("name", type);
-//    element.setAttribute("onClick","loadExample('" + type + "');");
-// 
-// 
-//    var foo = document.getElementById("fooBar");
-// 
-//    foo.appendChild(element);
-	
-//Modificado para a implementação em forma de combobox.	
 	var element = document.createElement("option");
 	
 	element.setAttribute("value", type);
@@ -165,19 +135,26 @@ function add(type) {
 	document.getElementById(type).text=type;
 }
 
-//jQuery adicionado por Jefferson Alves
-// Exibe a janela de opções de compilação
 $(document).ready(function(){
 	$('#compOptions').hide();
-	  $('#hsOptions').click(function(){
-	    $('#compOptions').toggle();
+	$('#hsOptions').click(function(){
+		$('#compOptions').toggle();
 	  });
 	});
 
-//Exibe SVG em outra janela
+$(document).mouseup(function (e) {
+	var container = $('#compOptions');
+	
+	if (!container.is(e.target)                  // if the target of the click isn't the container...
+	    && container.has(e.target).length === 0) // ... nor a descendant of the container
+	{
+	    container.hide();
+	}
+});
+
 function openSVGWindow(id){
 	var divText = document.getElementById(id).outerHTML;
-	var myWindow = window.open('','','width=800px,height=600px');
+	var myWindow = window.open('','','scrollbars=yes,width=800px,height=600px');
 	var doc = myWindow.document;
 	
 	doc.open();

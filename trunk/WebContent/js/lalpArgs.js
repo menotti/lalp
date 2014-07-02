@@ -1,31 +1,21 @@
 /* global vars */
 
-/*var path = "http://localhost:9180/lalpProject/";*/
-var path = "http://projetos.ppgcc.dc.ufscar.br:9180/lalp/";
+//var path = "http://localhost:8080/";
+var path = "http://lalp.dc.ufscar.br:9180/lalp/";
 
 var selected = false;
 var args = new Array();
-var lastName = getUrlVars()["openid.ext1.value.lastname"];
-var fistName = getUrlVars()["openid.ext1.value.firstname"];
-var email = getUrlVars()["openid.ext1.value.email"];
+var lastName = ""; 
+var fistName = "";
+var emailL = "";
 var urlindex = window.location.href.replace('userData.jsp','index.jsp');
 
-email = email.replace('%40','@').replace('#', '');
+window.onload = function(){
+    lastName = document.getElementById('LastName').innerHTML;
+    fistName = document.getElementById('FirstName').innerHTML;
+    emailL = document.getElementById('email').innerHTML;
+};
 
-
-// user args not working yet
-/*
- * $('#graphMenu').hide(); var menuArgs = $('form input:radio[name=menu]');
- * menuArgs.click(function() { // select radio list option args[0] =
- * $(this).val(); if (args[0] == "-gv") { graphviz = true;
- * $('#graphType').val($('form input:radio[name=subMenu]').val());
- * $('#graphMenu').show(); } else { graphviz = false; $('#graphMenu').hide(); }
- * });
- * 
- * var graphMenuArgs = $('form input:radio[name=subMenu]');
- * graphMenuArgs.click(function() { // select radio list option
- * $('#graphType').val($(this).val()); });
- */
 
 // download source code
 $('#download').click(function() {
@@ -43,7 +33,7 @@ function sendUserData() {
 		data : {
 			first : fistName,
 			last : lastName,
-			email : email,
+			email : emailL,
 			org : $('#orgName').val(),
 			why : $('#why').val(),
 			url : urlindex
@@ -67,23 +57,23 @@ function getUrlVars() {
 
 $('#downloadVhd').click(function(e) {
     e.preventDefault(); 
-    location.href = './' + email + '/lalp/' + $('#fileName').val().replace(".alp", ".vhd");
+    location.href = './' + emailL + '/lalp/' + $('#fileName').val().replace(".alp", ".vhd");
     
 });
 
 $('#download_Vhd').click(function(e) {
     e.preventDefault();
-    location.href = './' + email + '/lalp/' + 't_' + $('#fileName').val().replace(".alp", ".vhd");
+    location.href = './' + emailL + '/lalp/' + 't_' + $('#fileName').val().replace(".alp", ".vhd");
 });
 
 $('#downloadMemo').click(function(e) {
     e.preventDefault();
-    location.href = './' + email + '/lalp/' + 'memory.vhd';
+    location.href = './' + emailL + '/lalp/' + 'memory.vhd';
 });
 
 $('#downloadZip').click(function(e) {
     e.preventDefault();
-    location.href = './' + email + '/' + 'LalpFiles.zip';
+    location.href = './' + emailL + '/' + 'LalpFiles.zip';
 });
 
 // download target code
@@ -158,9 +148,8 @@ function doLoad(){
 
 /* AJAX & SVG */
 function requestVHD() {
-	var user = getUrlVars()["openid.ext1.value.email"];
-	user = user.replace('%40','@');
-	user = user.replace('#', '');
+	var user = document.getElementById('email').innerHTML;
+
 	$.ajax({
 		url : 'LALPServlet',
 		type : 'POST',
@@ -168,7 +157,7 @@ function requestVHD() {
 			'args[]' : args,
 			fileName : $('#fileName').val(),
 			sourceCode : $('#sourceCodeArea').val(),
-			userEmail : email
+			userEmail : emailL
 		},
 		error : function() {
 			alert('AJAX: Response from server failed!');

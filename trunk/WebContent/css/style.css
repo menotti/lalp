@@ -227,7 +227,7 @@ a:visited {
 
 .LoginArea {
 	width: 250px;
-	height: 300px;
+	height: 50px;
 	background-color: #FFFFFF;
 	margin-left: 650px;
 	margin-top: 25px;
@@ -245,7 +245,7 @@ a:visited {
 
 .LoginFooter {
 	position: absolute;
-	margin-top: 75px;
+	margin-top: 155px;
 	margin-left: 175px;
 }
 
@@ -295,6 +295,11 @@ svg\:svg {
 .svg_error {
 	color: red;
 	font-weight: bold;
+}
+
+.Hide {
+    display: none;
+    visibility: hidden;
 }
 
 .CompilerContent {
@@ -410,7 +415,7 @@ svg\:svg {
 
 .version {
 	font-size: 8pt;
-	margin-left: 385px;
+	margin-left: 15px;
 }
 
 /* ----- PAGE FOOTER ----- */

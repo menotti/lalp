@@ -14,12 +14,11 @@
 	<div class='HeaderMenu'>
 		<ul>
 		   <li><a href='Default.jsp'><span>Home</span></a></li>
-		   <li><a href='#'><span>About</span></a></li>
 		   <li><a href='http://lalp.googlecode.com/'><span>Code Repository</span></a></li>
 		   <li><a href='http://lalp.dc.ufscar.br/doc/'><span>API</span></a></li>
 		   <li><a href='http://groups.google.com/group/lalp-l'><span>Forum</span></a></li>
 		   <li><a href='http://www.amazon.com/LALP-parallelism-exploitation-reconfigurable-computing/dp/3639339592'><span>Book</span></a></li>
-		   <li><a href='mailto:menotti@dc.ufscar.br'><span>Contact</span></a></li>
+		   <li><a href='http://www.google.com/recaptcha/mailhide/d?k=01sL_A15b3PJqVuyq60hSekg==&c=ujgPJDIYCO1VLVn_zXpmDwZmWO8ltRXqRiZZVZLk_ag='><span>Contact</span></a></li>
 		</ul>
 	</div>
 </div>
