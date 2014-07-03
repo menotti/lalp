@@ -169,8 +169,9 @@ void Scheduling::balanceAndSyncrhonize(){
     list<Ligacao*>::iterator    k;
     list<Ligacao*>::iterator    m;
 
-    Componente* counter = NULL;
-    Componente* firstCounter = NULL;
+    Componente* counter     = NULL;
+    Componente* firstCounter    = NULL;
+    Componente* lastCounter     = NULL;
     int mii = 0, ats = 0;
     
     for(i=this->design->ListaComp.begin(); i != this->design->ListaComp.end(); i++){
@@ -180,6 +181,7 @@ void Scheduling::balanceAndSyncrhonize(){
             if(firstCounter == NULL){
                 firstCounter = (*i);
             }
+            if(this->design->isLastCounter(counter)) lastCounter = counter;
             int step = 0;
             step = FuncoesAux::StrToInt(counter->getGenericMapVal("steps", "VAL"));
             
@@ -361,38 +363,38 @@ void Scheduling::balanceAndSyncrhonize(){
 
     Componente* comp_done = this->design->getComponent("done");
 
-    if (counter != NULL && comp_done != NULL && comp_done->getLigacaoInDefault() == NULL) {
-        int amount = this->design->getMaxSchedulingTime() - counter->getASAP(); // - 1;
+    if (lastCounter != NULL && comp_done != NULL && comp_done->getLigacaoInDefault() == NULL) {
+        int amount = this->design->getMaxSchedulingTime() - lastCounter->getASAP(); // - 1;
 
         //LIGACAO 
-        Ligacao* newLig4 = new Ligacao(firstCounter, comp_done, "s" + FuncoesAux::IntToStr(this->design->ListaLiga.size()));
-        newLig4->setPortOrigem(counter->getPortOther("done"));
+        Ligacao* newLig4 = new Ligacao(lastCounter, comp_done, "s" + FuncoesAux::IntToStr(this->design->ListaLiga.size()));
+        newLig4->setPortOrigem(lastCounter->getPortOther("done"));
         newLig4->setPortDestino(comp_done->getPortDataInOut("IN"));
-        newLig4->setWidth(counter->getPortOther("done")->getWidth());
-        newLig4->setTipo(counter->getPortOther("done")->getType());
+        newLig4->setWidth(lastCounter->getPortOther("done")->getWidth());
+        newLig4->setTipo(lastCounter->getPortOther("done")->getType());
 
         //ADICIONAR NOME LIGACAO NA PORTA
         newLig4->getPortDestino()->addLigacao(newLig4);
         newLig4->getPortOrigem()->addLigacao(newLig4);
 
         //ADICIONAR LIGACAO NO COMPONENTE
-        counter->addLigacao(newLig4);
+        lastCounter->addLigacao(newLig4);
         comp_done->addLigacao(newLig4);
 
         //ADD LISTAS LIGACAO
         this->design->ListaLiga.push_back(newLig4);
 
-        string strAux = counter->getDelayValComp();
+        string strAux = lastCounter->getDelayValComp();
         int dlyCtd = 0;
         if (strAux != "") {
-            dlyCtd = FuncoesAux::StrToInt(counter->getDelayValComp());
+            dlyCtd = FuncoesAux::StrToInt(lastCounter->getDelayValComp());
         }
         if (amount <= 0) amount = 1;
         ats++;
-        Componente* dly4 = this->design->insereDelay(newLig4, amount+1, counter->getASAP() + dlyCtd);
+        Componente* dly4 = this->design->insereDelay(newLig4, amount+1, lastCounter->getASAP() + dlyCtd);
         this->design->addComponent(dly4);
         if (this->debug) {
-            cout << "inserting " << amount+1<< " delay(s) on signal " << counter->getName() << "->" << comp_done->getName() << " (termination)" << endl;
+            cout << "inserting " << amount+1<< " delay(s) on signal " << lastCounter->getName() << "->" << comp_done->getName() << " (termination)" << endl;
         }
     } // </editor-fold>
 

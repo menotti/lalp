@@ -42,6 +42,7 @@ public:
     void                imprimeAllComp();
     string              getNomeCompRef(const string& name);
     void                zeraValorNumLinha();
+    bool                isLastCounter(Componente* destino);
     list<Ligacao*>      ListaLiga; 
     list<Componente*>   ListaComp;
 //    ProcessGraph*       graph;
@@ -53,6 +54,7 @@ public:
     void                substiuiComRecorente(Componente* origem, Componente* destino);
     void                finalizaComponentesIF();
     void                ligaCompDependencia();
+    void                finalizaCounters();
 private:
     bool                temMemoria;
     bool                sync;

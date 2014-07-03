@@ -616,7 +616,41 @@ void Design::ligaCompDependencia(){
     if(debug) cout << "--Ligar componentes DEPENDENTES: OK" << endl;
 }
 
+bool Design::isLastCounter(Componente* comp){
+    list<Componente*>::iterator i;
+    Componente* last = NULL;
+    bool res = false;
+    for (i = this->ListaComp.begin(); i != this->ListaComp.end(); i++) {
+        if((*i)->tipo_comp !=  CompType::CTD)continue;
+        if( last == NULL ) last = (*i);
+        Componente* forAux = (*i)->getForComp();
+        if(forAux == NULL && last != (*i)) {
+            last = (*i);
+        }
+    }
+    if (last == comp){
+        res = true;
+    }
+    return res;
+}
 
+void Design::finalizaCounters(){
+    list<Componente*>::iterator i;
+
+    for (i = this->ListaComp.begin(); i != this->ListaComp.end(); i++) {
+        if((*i)->tipo_comp !=  CompType::CTD)continue;
+        Componente* forAux = (*i)->getForComp();
+        if(forAux != NULL) {
+            if(forAux->getPortOther("clk_en")->temLigacao() == true){
+                Componente* comp = forAux->getPortOther("clk_en")->getLigacao2()->getOrigem();
+                if(comp != NULL){
+                    this->insereLigacao(comp, (*i), forAux->getPortOther("clk_en")->getLigacao2()->getPortOrigem()->getName(), "clk_en");
+                }
+            }
+        }
+    }
+    
+}
 
 Design::~Design() {
 }

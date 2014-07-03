@@ -39,7 +39,9 @@ public:
     string      getVarControlValIni();
     void        setVarControlValStop(const string &bits);
     string      getVarControlValStop();
+
 private:
+
     string  for_cond_var;  //variavel de condicao - EX.: (i) => i < 10
     string  for_ctr_val_ini;//Valor inicial da variavel de controle
     string  for_cond_val;   //valor de condicao - EX.: (10) => i < 10

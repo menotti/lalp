@@ -78,6 +78,8 @@ Core::Core(SgProject* project, list<SgNode*> lista) {
     
     this->identificaVariaveis();
     this->identificaFor();
+
+    this->analisaContadores();
     
     //Objeto para tratar mem'oria
     analisaMem* memHdr = new analisaMem(this->design);
@@ -141,13 +143,50 @@ Core::Core(SgProject* project, list<SgNode*> lista) {
 //    if(this->isParallel && this->gerarDual){
 //        this->analiseMemoriaDualPort();
 //    }
-    
+    this->design->finalizaCounters();
     this->setClkReset();
     this->identificaReturn();
     this->defineSaidaOUT();
     this->corrigeRegSemValorInicial();
     this->geraArquivosDotHW();
 //    this->design->graph->geraDot();
+}
+
+void Core::analisaContadores(){
+    list<Componente*>::iterator i;
+    Componente* firstAux = NULL;
+    for (i = this->design->ListaComp.begin(); i != this->design->ListaComp.end(); i++) {
+        if((*i)->tipo_comp !=  CompType::CTD)continue;
+        if(firstAux == NULL) firstAux = (*i);
+        Componente* forAux = (*i)->getForComp();
+        if(forAux != NULL) {
+            this->design->insereLigacao(forAux,(*i), "step", "load");
+        }else if( (*i)!= firstAux ) {
+            this->design->insereLigacao(firstAux,(*i), "done", "clk_en");
+            firstAux = (*i);
+        }
+    }
+}
+
+void Core::processoPrincipal(){
+    VariantVector vv (V_SgFunctionDefinition); 
+    Rose_STL_Container<SgNode*> loops = NodeQuery::queryMemoryPool(vv); 
+ 
+    for (Rose_STL_Container<SgNode*>::iterator iter = loops.begin(); iter!= loops.end(); iter++ )
+    {
+        SgFunctionDefinition* func = isSgFunctionDefinition(*iter);
+        if(func != NULL){
+            SgNode* body = func->get_body();
+            Rose_STL_Container<SgNode*> varLoopBody = NodeQuery::querySubTree(body,V_SgForStatement); 
+            for (Rose_STL_Container<SgNode*>::iterator ilb = varLoopBody.begin(); ilb != varLoopBody.end(); ilb++ ) 
+            {
+                SgForStatement* sgFor = isSgForStatement(*ilb);
+                if(sgFor != NULL && sgFor->get_parent() == body){
+                    analisaExp(sgFor, NULL, "", "0", NULL);
+                }
+            }
+        }
+    }
 }
 
 void Core::defineSaidaOUT(){
@@ -336,6 +375,7 @@ void Core::corrigeRegSemValorInicial(){
         }
     }
 }
+
 
 void Core::identificaPragmas(){
     cout<<"#--Ident Prgmas:                              #"<<endl;
@@ -846,7 +886,9 @@ void Core::identificaFor() {
             //ignore functions in system headers, Can keep them to test robustness
             if (defn->get_file_info()->get_filename()!=sageFile->get_file_info()->get_filename())
                 continue;
- 
+            
+            SgNode* bodyPrincipal = defn->get_body();
+            
             // For each loop 
             
             Rose_STL_Container<SgNode*> var = NodeQuery::querySubTree(defn,V_SgForStatement); 
@@ -862,7 +904,7 @@ void Core::identificaFor() {
             {
                 SgForStatement* cur_for = isSgForStatement(*i);
                 
-                if (cur_for != NULL){
+                if (cur_for != NULL && cur_for->get_parent() == bodyPrincipal){
                     ROSE_ASSERT(cur_for);
                     
                     counter* comp = new counter(this->GetStrPointerAdd(cur_for), this->DATA_WIDTH);
@@ -873,6 +915,7 @@ void Core::identificaFor() {
                     this->updateCounter(cur_for, comp);
                     comp->setNumLinha(cur_for->get_file_info()->get_line());
 
+                    
                     if(hadForParallel){
                         list<SgNode*>::iterator i;
                         for (i = this->ListaForParall.begin(); i != this->ListaForParall.end(); i++) {
@@ -1056,6 +1099,33 @@ Componente* Core::analisaExp(SgNode *nodoAtual, SgNode* pai, const string& aux, 
     if (sgExpEst != NULL) {
         SgNode* proxNodo = isSgNode(sgBasic);
         analisaExp(proxNodo, pai, aux, lineParal, compFor);
+    }
+    
+    SgForStatement* expFor = isSgForStatement(nodoAtual);
+    if(expFor != NULL){
+        counter* comp = new counter(this->GetStrPointerAdd(expFor), this->DATA_WIDTH);
+        this->compForAux = comp;
+        if(pai != NULL) comp->setPai(this->GetStrPointerAdd(pai));
+        comp->setNumIdComp(FuncoesAux::IntToStr(this->design->ListaComp.size()));
+        comp->setForComp(compFor);
+        this->design->addComponent(comp);                    
+        this->updateCounter(expFor, comp);
+        comp->setNumLinha(expFor->get_file_info()->get_line());
+        compReturn = comp;
+
+        SgStatement* loopBody   = expFor->get_loop_body();                    
+        SgNode* sg_basic        = NULL;
+        Rose_STL_Container<SgNode*> varLoopBody = NodeQuery::querySubTree(loopBody,V_SgNode); 
+        for (Rose_STL_Container<SgNode*>::iterator ilb = varLoopBody.begin(); ilb != varLoopBody.end(); ilb++ ) 
+        {
+            if(isSgBasicBlock(*ilb) && (*ilb)->get_parent() == expFor){
+                sg_basic = isSgNode(*ilb);
+            }
+            SgNode* expStmt = isSgNode(*ilb);
+            if(expStmt != NULL && sg_basic != NULL && expStmt->get_parent() == sg_basic){
+                analisaExp(expStmt, nodoAtual, aux, lineParal, comp);
+            }
+        }
     }
     
     // <editor-fold defaultstate="collapsed" desc="NOT VAR">
@@ -2172,13 +2242,13 @@ void Core::FinalizaComponentes(){
     cout<<"--Criando ligacoes basicas"<<endl;
     for (i = this->design->ListaComp.begin(); i != this->design->ListaComp.end(); i++) {
         for (j = this->design->ListaComp.begin(); j != this->design->ListaComp.end(); j++) {
-            if ((*i)->tipo_comp ==  CompType::REG || (*i)->tipo_comp == CompType::MEM || (*j)->tipo_comp == CompType::REG || (*j)->tipo_comp == CompType::MEM) continue;
+            if ((*i)->tipo_comp ==  CompType::REG || (*i)->tipo_comp == CompType::MEM ||(*i)->tipo_comp ==  CompType::CND  ||(*j)->tipo_comp ==  CompType::REG || (*j)->tipo_comp == CompType::REG || (*j)->tipo_comp == CompType::MEM) continue;
             if ((*i)->node == (*j)->node) continue;
             
             //TODO sem saber o motivo a funcao isParent ou getParent do boost do Rose nao esta funcionando
             //por isso a necessidade de se usar uma estrutura de arvore a parte
             if (this->graph->isParent((*i)->node, (*j)->node)) {
-
+                               
                 string str = FuncoesAux::IntToStr(this->design->ListaLiga.size());                   
                 string portIn = "IN";
                 Ligacao* lig = new Ligacao((*i), (*j), "s" + str);

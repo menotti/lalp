@@ -14,7 +14,7 @@ using namespace std;
 counter::counter(void*node, int dataWidth) : Componente(node) {
     this->setNomeCompVHDL("counter");
     this->tipo_comp = CompType::CTD;     
-    this->dataWidth     = dataWidth;
+    this->dataWidth = dataWidth;
     this->createAllPorts();
     this->createAllGeneric();    
 }
