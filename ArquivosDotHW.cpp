@@ -57,7 +57,11 @@ void ArquivosDotHW::imprimeHWDOT(list<Componente*> listaComp, list<Ligacao*> lis
     }
     this->ListaAux.clear();
     for(i=this->ListaComp.begin(); i != this->ListaComp.end(); i++){
-        if ((*i)->tipo_comp == CompType::REG || (*i)->tipo_comp == CompType::MEM || (*i)->tipo_comp == CompType::DEL ) continue;  
+        if ((*i)->tipo_comp == CompType::REG || (*i)->tipo_comp == CompType::MEM || (*i)->tipo_comp == CompType::DEL ) continue; 
+        if ((*i)->tipo_comp == CompType::AUX ){
+            comp_aux* compAUX = (comp_aux*)(*i);
+            if(compAUX->getGlobalComp() == true) continue;
+        }
         if(this->ExisteNaListaAux((*i)->getName()) == false){
             fout << (*i)->geraDOTComp();
             if(debug) cout << (*i)->geraDOTComp();

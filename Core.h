@@ -78,6 +78,8 @@ class Core {
         void            corrigeRegSemValorInicial();
         void            rodarSCC();
         void            insereDelayLigBackEdge();
+        void            processoPrincipal();
+        void            analisaContadores();
         set<string>     bitRegList; //Lista com componentes marcados como BIT
         set<string>     outRegList; //Lista com componentes saida
         int             DATA_WIDTH;
