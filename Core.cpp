@@ -83,7 +83,10 @@ Core::Core(SgProject* project, list<SgNode*> lista) {
     
     //Objeto para tratar mem'oria
     analisaMem* memHdr = new analisaMem(this->design);
-    
+    if (this->ramMultPort == false){
+        memHdr->insereStepMux();
+        this->design = memHdr->getDesign();
+    }
     //Apos gerar todos os componentes
     //trocar os nomes dos comp duplicados
     if(this->isParallel){
@@ -101,14 +104,7 @@ Core::Core(SgProject* project, list<SgNode*> lista) {
     this->aplicarDelayPragma();
     this->dot->imprimeHWDOT(this->design->getListaComp(), this->design->getListaLiga(), "DOT/7_APLICA_DLY_PRAGMA.dot", false);
 //    this->design->finalizaComponentesIF();
-    if (this->ramMultPort == false){
-        memHdr->insereStepMux();
-        this->design = memHdr->getDesign();
-    }else{
-        memHdr = new analisaMem(this->design);
-        memHdr->insereRamMultPort();
-        this->design = memHdr->getDesign();
-    }
+   
     this->dot->imprimeHWDOT(this->design->getListaComp(), this->design->getListaLiga(), "DOT/10_ANTES_SCHEDULE.dot", false);   
     //Processo de Scheduling
     this->design->zeraValorNumLinha();
@@ -116,9 +112,10 @@ Core::Core(SgProject* project, list<SgNode*> lista) {
     sched->detectBackwardEdges();
     sched->ALAP();
     sched->balanceAndSyncrhonize();
-    
     this->design = sched->getDesign();
     this->dot->imprimeHWDOT(this->design->getListaComp(), this->design->getListaLiga(), "DOT/11_DEPOIS_SCHEDULE1.dot", false); 
+
+
 //    this->ligaCompDep();
     this->design->ligaCompDependencia();
     this->dot->imprimeHWDOT(this->design->getListaComp(), this->design->getListaLiga(), "DOT/12_DEPOIS_LIGA_DEPS.dot", false); 
@@ -144,9 +141,15 @@ Core::Core(SgProject* project, list<SgNode*> lista) {
 //        this->analiseMemoriaDualPort();
 //    }
     this->design->finalizaCounters();
-    this->setClkReset();
     this->identificaReturn();
     this->defineSaidaOUT();
+    
+    if (this->ramMultPort == true){
+        memHdr = new analisaMem(this->design);
+        memHdr->insereRamMultPort();
+        this->design = memHdr->getDesign();
+    }
+    this->setClkReset();
     this->corrigeRegSemValorInicial();
     this->geraArquivosDotHW();
 //    this->design->graph->geraDot();

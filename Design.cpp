@@ -66,7 +66,7 @@ bool Design::verificarPrecisaMux(Componente* comp) {
     for (i = this->ListaComp.begin(); i != this->ListaComp.end(); i++) {
         if ((*i)->tipo_comp != CompType::REF) continue;
         if ((*i)->getEIndice()) continue;
-        if ((*i)->getWE()) continue;
+        //if ((*i)->getWE()) continue;
         comp_ref* comp = (comp_ref*) (*i);
         if (comp->getTipoVar() != "VET") continue;
 
@@ -81,14 +81,14 @@ bool Design::verificarPrecisaMux(Componente* comp) {
 }
 
 int Design::verificarQtdAcessoMem(Componente* comp) {
-    bool debug = true;
+    bool debug = false;
     list<Componente*>::iterator i;
     int aux = 0;
     if (debug) cout << "Verificando quantidade de acessos na memoria: '"<< comp->getName()<<"'" << endl;
     for (i = this->ListaComp.begin(); i != this->ListaComp.end(); i++) {
         if ((*i)->tipo_comp != CompType::REF) continue;
         if ((*i)->getEIndice()) continue;
-        if ((*i)->getWE()) continue;
+        //if ((*i)->getWE()) continue;
         comp_ref* compI = (comp_ref*) (*i);
         if (compI->getTipoVar() != "VET") continue;
         if ((*i)->getNomeVarRef() == comp->getNomeVarRef()) {

@@ -392,60 +392,54 @@ void ArquivosDotHW::GeraMemoryVHDL() {
     
     for(i=this->ListaComp.begin(); i != this->ListaComp.end(); i++){
         if((*i)->tipo_comp != CompType::MEM) continue;
+        if ((*i)->getNomeCompVHDL() == "block_ram") continue;
 //        block_ram* mem = (block_ram*)(*i); 
-        if( ((*i)->getEInicializado() == true) && ((*i)->getWE() == false) ){
+        
             int dataSize = (*i)->getWidth();
             int memoryWords =  (int) pow(2,(*i)->getAddressWidth());
 
             fout << (*i)->getMemoriaVHDLCab() ;
-            
-            int   intValues[(*i)->valores.size()];
-	    int aux1 = 0;
-//            cout<< " -------------------------- "<<endl;
-//            cout<< (*i)->getName() << " - " << (*i)->getNomeCompVHDL() <<endl;
-//            cout<< " -------------------------- "<<endl;
-            for(val=(*i)->valores.begin(); val != (*i)->valores.end(); val++){
-//                cout<< "["<< aux1 <<"] = " << (*val) <<endl;
-		intValues[aux1] = (*val);
-		aux1++;
-            }
-            string valPos = "";
-            string posVec;
-//            cout<< "VALOR VETOR QTD: " << (*i)->qtd_elem_vet << endl;
-//            cout<< "LIST SIZE : " << (*i)->valores.size() << endl;
-//            cout<< "DATA SIZE : " << dataSize << endl;
-//            cout<< "ADDRES WI : " << (*i)->getAddressWidth() << endl;
-//            cout<< "MEMORY WORD : " << memoryWords << endl;
-//            cout<< "-----------------------------------"<< endl;
-            for (int c = memoryWords-1; c >= 0; c--){
-                posVec = FuncoesAux::IntToStr(c);
-                int value;
-                string bin;
-                
-                if(c < (*i)->valores.size()){
-//                    value = this->LPad(this->ConvertDecToBin(values[c]),dataSize);
-//                    value = FuncoesAux::StrToInt(string(values[c].c_str()));
-                    value = intValues[c];
-                }else{
-                    value = 0;
+            if( ((*i)->getEInicializado() == true) && ((*i)->getWE() == false) ){
+                int   intValues[(*i)->valores.size()];
+                int aux1 = 0;
+
+                for(val=(*i)->valores.begin(); val != (*i)->valores.end(); val++){
+                    intValues[aux1] = (*val);
+                    aux1++;
                 }
-                
-                bin = FuncoesAux::LPad(FuncoesAux::ConvertDecToBin(FuncoesAux::IntToStr(value)),dataSize);
-                
-                valPos += "\t (\""+bin+"\")";
-                if (c == 0){
-                    valPos += ");";
-                }else{
-                    valPos += ",";
+                string valPos = "";
+                string posVec;
+                fout << "signal RAM : ram_type := ram_type'( \n";
+                for (int c = memoryWords-1; c >= 0; c--){
+                    posVec = FuncoesAux::IntToStr(c);
+                    int value;
+                    string bin;
+
+                    if(c < (*i)->valores.size()){
+        //                    value = this->LPad(this->ConvertDecToBin(values[c]),dataSize);
+        //                    value = FuncoesAux::StrToInt(string(values[c].c_str()));
+                        value = intValues[c];
+                    }else{
+                        value = 0;
+                    }
+
+                    bin = FuncoesAux::LPad(FuncoesAux::ConvertDecToBin(FuncoesAux::IntToStr(value)),dataSize);
+
+                    valPos += "\t (\""+bin+"\")";
+                    if (c == 0){
+                        valPos += ");";
+                    }else{
+                        valPos += ",";
+                    }
+
+                    valPos += "\t -- "+posVec+"\t"+FuncoesAux::IntToStr(value)+"\n";
+
                 }
-                
-                valPos += "\t -- "+posVec+"\t"+FuncoesAux::IntToStr(value)+"\n";
-                
+                fout << valPos << endl;   
+            }else{
+                fout << "signal RAM : ram_type; \n";
             }
-            fout << valPos << endl;
-           
-            fout << (*i)->getMemoriaVHDLRod();
-        }
+        fout << (*i)->getMemoriaVHDLRod();
     }
 }
 
