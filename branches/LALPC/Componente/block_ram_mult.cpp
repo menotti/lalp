@@ -19,11 +19,13 @@ block_ram_mult::block_ram_mult(void*node, const string &aux, int qtdElementos, i
     this->setNomeCompVHDL("block_ram_mult"); 
     this->dataWidth     = dataWidth;
     this->addressWidth  = 8;
-    this->qtdElementos = qtdElementos;
+    this->qtdElementos  = qtdElementos;
+    
 }
 
 block_ram_mult::~block_ram_mult() {
 }
+
 
 string block_ram_mult::getEstruturaComponenteVHDL(){
     string res = "";
@@ -170,8 +172,7 @@ string block_ram_mult::getMemoriaVHDLCab(){
         string val      = FuncoesAux::IntToStr(i);
         res += "signal read_"+val+" : std_logic_vector(address_width-1 downto 0); \n";
     }
-    res += "signal RAM : ram_type := ram_type'( \n";
-    
+        
     return res;
 }
 string block_ram_mult::getMemoriaVHDLRod(){

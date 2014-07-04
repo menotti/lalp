@@ -30,6 +30,7 @@ public:
     void        editQtdElementos(const string &qtd);
 private:
     int         qtdElementos;
+    int         qtdAcessos;
     string      tipo_var;
 };
 

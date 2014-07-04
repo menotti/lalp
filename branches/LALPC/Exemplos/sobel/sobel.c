@@ -11,13 +11,15 @@ int main() {
     84, 87, 82, 83, 84, 85, 86, 87, 28, 89, 
     95, 96, 92, 93, 94, 95, 96, 97, 38, 99
   };
+  #pragma out out
   int out[100]; 
   int H, O, V, i;
   int i00, i01, i02;
   int i10,      i12;
   int i20, i21, i22;
   
-  //#pragma multport
+  #pragma multport
+  #pragma unroll 2
   for (i = 0; i < 78; i++) {
 
     i00=in[i]; 
@@ -47,5 +49,5 @@ int main() {
 
     out[i] = O;
   }
-  return out; 
+  //return out; 
 }

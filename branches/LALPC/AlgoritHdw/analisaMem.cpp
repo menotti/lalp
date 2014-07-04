@@ -6,6 +6,7 @@
  */
 #include "analisaMem.h"
 #include <set>
+#include "../Componente/Port.h"
 #include "../Aux/FuncoesAux.h"
 #include "../Componente/comp_ref.h"
 #include "../Componente/mux_m_op.h"
@@ -41,7 +42,7 @@ int analisaMem::getNumLinhaMaxMem(Componente* comp){
     for (i = this->design->ListaComp.begin(); i != this->design->ListaComp.end(); i++) {
         if ((*i)->tipo_comp != CompType::REF) continue;
         if ((*i)->getEIndice()) continue;
-        if ((*i)->getWE()) continue;
+        //if ((*i)->getWE()) continue;
         comp_ref* comp = (comp_ref*) (*i);
         if (comp->getTipoVar() != "VET") continue;
 
@@ -107,7 +108,7 @@ void analisaMem::insereMux(){
     for (i = this->design->ListaComp.begin(); i != this->design->ListaComp.end(); i++) {
         if ((*i)->tipo_comp != CompType::REF) continue;
         if ((*i)->getEIndice()) continue;
-        if ((*i)->getWE()) continue;
+        //if ((*i)->getWE()) continue;
         comp_ref* comp = (comp_ref*) (*i);
         if (comp->getTipoVar() != "VET") continue;
         if (this->design->verificarPrecisaMux((*i)) == false) continue;
@@ -122,7 +123,7 @@ void analisaMem::insereMux(){
                 if ((*j)->tipo_comp != CompType::REF) continue;
                 comp_ref* compJ = (comp_ref*) (*j);
                 if (compJ->getTipoVar() != "VET") continue;
-                if ((*j)->getWE()) continue;
+                //if ((*j)->getWE()) continue;
                 if ((*i)->node == (*j)->node) continue;
                 if ((*i)->getNumParalelLina() != (*j)->getNumParalelLina()) continue;
                 if ((*i)->getNomeVarRef() != (*j)->getNomeVarRef()) continue;
@@ -236,20 +237,24 @@ void analisaMem::insereMux(){
 void analisaMem::insereRamMultPort(){
     //Fazer igual ao metodo anterior porem sem criar um mux
     set<string>ListaAuxString;
+    list<Port*>::iterator p;
     list<Componente*>::iterator i;
     list<Componente*>::iterator j;
     cout << "--Inserindo Block Ram Mult Port: " << endl;
     ListaAuxString.clear();
     Componente* compAux = NULL;
-
+    Componente* compAuxWE = NULL;
+    string      portAuxWE = "";
+   this->debug = false;
     for (i = this->design->ListaComp.begin(); i != this->design->ListaComp.end(); i++) {
         if ((*i)->tipo_comp != CompType::REF) continue;
         if ((*i)->getEIndice()) continue;
-        if ((*i)->getWE()) continue;
+        //if ((*i)->getWE()) continue;
         comp_ref* comp = (comp_ref*) (*i);
         if (comp->getTipoVar() != "VET") continue;
         if (this->design->verificarPrecisaMux((*i)) == false) continue;
-        
+        compAuxWE = NULL;
+        portAuxWE = "";
         if(this->debug) cout<< "1 - MEM: '" << comp->getName() << "' - '" << (*i)->getNomeVarRef()<<"'" << endl;
 //        if (ListaAuxString.find((*i)->getNomeVarRef()+(*i)->getNumParalelLina()) == ListaAuxString.end()) {
         if (ListaAuxString.find((*i)->getNomeVarRef()) == ListaAuxString.end()) {
@@ -262,7 +267,7 @@ void analisaMem::insereRamMultPort(){
                 if ((*j)->tipo_comp != CompType::REF) continue;
                 comp_ref* compJ = (comp_ref*) (*j);
                 if (compJ->getTipoVar() != "VET") continue;
-                if ((*j)->getWE()) continue;
+                //if ((*j)->getWE()) continue;
                 if ((*i)->node == (*j)->node) continue;
 //                if ((*i)->getNumParalelLina() != (*j)->getNumParalelLina()) continue;
                 if ((*i)->getNomeVarRef() != (*j)->getNomeVarRef()) continue;
@@ -290,87 +295,103 @@ void analisaMem::insereRamMultPort(){
                     
                     if(ram->getEInicializado() == true){
                         multRam->setEInicializado(true);
-                        multRam->setNomeCompVHDL("block_ram_mult_"+(*i)->getNomeVarRef());
                     }
+                    multRam->setNomeCompVHDL("block_ram_mult_"+(*i)->getNomeVarRef());
                     
                     if(this->debug) cout<< "4.1 - MULTRAM: '" << multRam->getName() << "' - QTD PORTS: '" << qtdMem<<"'" << endl;
                     
                     multRam->valores = ram->valores;
                     multRam->setQtdElementos(FuncoesAux::IntToStr(ram->qtd_elem_vet));
                     
+                    
                     ram->tipo_comp = CompType::DEL;
                     
                     comp->setComponenteRef(multRam);
                     comp->updateCompRef();
-                                       
-                    Ligacao* ligAddrI = (*i)->getPortOther("address")->getLigacao2();
-                    Ligacao* ligOutI = (*i)->getPortDataInOut("OUT")->getLigacao2();
-                    
-                    if(this->debug) cout<< "4.2 - LIG ADRESS: '" << ligAddrI->getNome()<<"'" << endl;
-                    if(this->debug) cout<< "4.2 - LIG OUT   : '" << ligOutI->getNome()<<"'" << endl;
 
-                    Componente* compOrigem  = ligAddrI->getOrigem();
-                    Componente* compDestino = ligOutI->getDestino();
-                    compOrigem->removeLigacao(ligAddrI);
-                    compDestino->removeLigacao(ligOutI);
-                    (*i)->removeLigacao(ligAddrI);
-                    (*i)->removeLigacao(ligOutI);
- 
-                    this->design->insereLigacao(compOrigem, comp, compOrigem->getPortDataInOut("OUT")->getName(), "address_0");
-                    this->design->insereLigacao(comp, compDestino, "data_out_0", ligOutI->getPortDestino()->getName());
-                    
-                    this->design->deletaLigacao(ligAddrI->getNome());
-                    this->design->deletaLigacao(ligOutI->getNome());
-                    
+                    list<Port*> portas = (*i)->getPorts();
+                    for(p= portas.begin(); p != portas.end(); p++){
+                        if((*i)->getPortOther((*p)->getName())->temLigacao() == false) continue;
+                        Ligacao* ligAux = (*i)->getPortOther((*p)->getName())->getLigacao2();
+                        (*i)->removeLigacao(ligAux);
+                        string portName = (*p)->getName()+"_0";
+                        
+                        if((*p)->getInput() == "in"){
+                            Componente* compOrigem  = ligAux->getOrigem();
+                            compOrigem->removeLigacao(ligAux);
+                            this->design->insereLigacao(compOrigem, comp, ligAux->getPortOrigem()->getName(), portName);
+                            if((*p)->getName() == "we"){
+                                compAuxWE = compOrigem;
+                                portAuxWE = ligAux->getPortOrigem()->getName();
+                            }
+                        }else{
+                            Componente* compDestino = ligAux->getDestino();
+                            compDestino->removeLigacao(ligAux);
+                            this->design->insereLigacao(comp, compDestino, portName, ligAux->getPortDestino()->getName());
+                        }
+                        this->design->deletaLigacao(ligAux->getNome());
+                    }
                     compAux = comp;
                     
-                    Ligacao* ligAddrJ = (*j)->getPortOther("address")->getLigacao2();
-                    Ligacao* ligOutJ = (*j)->getPortDataInOut("OUT")->getLigacao2();
-
-                    Componente* compOrigemJ = ligAddrJ->getOrigem();
-                    Componente* compDestJ = ligOutJ->getDestino();
-
-                    compOrigemJ->removeLigacao(ligAddrJ);
-                    compDestJ->removeLigacao(ligOutJ);
-
-                    (*j)->removeLigacao(ligAddrJ);
-                    (*j)->removeLigacao(ligOutJ);
-                    
-                    this->design->insereLigacao(compOrigemJ, comp, compOrigemJ->getPortDataInOut("OUT")->getName(), "address_1");
-                    this->design->insereLigacao(comp, compDestJ, "data_out_1", ligOutJ->getPortDestino()->getName());
-                    
-                    this->design->deletaLigacao(ligAddrJ->getNome());
-                    this->design->deletaLigacao(ligOutJ->getNome());
+                    list<Port*> portasJ = (*j)->getPorts();
+                    for(p= portasJ.begin(); p != portasJ.end(); p++){
+                        if((*j)->getPortOther((*p)->getName())->temLigacao() == false) continue;
+                        
+                        Ligacao* ligAux = (*j)->getPortOther((*p)->getName())->getLigacao2();
+                        (*j)->removeLigacao(ligAux);
+                        
+                        string portName = (*p)->getName()+"_1";
+                        
+                        if((*p)->getInput() == "in"){
+                            Componente* compOrigem  = ligAux->getOrigem();
+                            compOrigem->removeLigacao(ligAux);
+                            this->design->insereLigacao(compOrigem, comp, ligAux->getPortOrigem()->getName(), portName);
+                        }else{
+                            Componente* compDestino = ligAux->getDestino();
+                            compDestino->removeLigacao(ligAux);
+                            this->design->insereLigacao(comp, compDestino, portName, ligAux->getPortDestino()->getName());
+                        }
+                        this->design->deletaLigacao(ligAux->getNome());
+                    }
+                    if (compAuxWE != NULL){
+                        this->design->insereLigacao(compAuxWE, compAux, portAuxWE, "we_1");
+                    }
 
                     this->design->removeComponente((*j), NULL);
                     this->design->removeComponente((*i), NULL);
                 }else{
                     string auxVal = FuncoesAux::IntToStr(count);
-                    Ligacao* ligAddrJ = (*j)->getPortOther("address")->getLigacao2();
-                    Ligacao* ligOutJ = (*j)->getPortDataInOut("OUT")->getLigacao2();
-
-                    Componente* compOrigemJ = ligAddrJ->getOrigem();
-                    Componente* compDestJ = ligOutJ->getDestino();
-
-                    compOrigemJ->removeLigacao(ligAddrJ);
-                    compDestJ->removeLigacao(ligOutJ);
-
-                    (*j)->removeLigacao(ligAddrJ);
-                    (*j)->removeLigacao(ligOutJ);
                     
-                    string portaAdd = "address_"+auxVal;
-                    string portaOut = "data_out_"+auxVal;
-                    
-                    this->design->insereLigacao(compOrigemJ, compAux, compOrigemJ->getPortDataInOut("OUT")->getName(), portaAdd);
-                    this->design->insereLigacao(compAux, compDestJ, portaOut, ligOutJ->getPortDestino()->getName());
-                    
-                    this->design->deletaLigacao(ligAddrJ->getNome());
-                    this->design->deletaLigacao(ligOutJ->getNome());
-                    
+                    list<Port*> portasJ = (*j)->getPorts();
+                    for(p= portasJ.begin(); p != portasJ.end(); p++){
+                        if((*j)->getPortOther((*p)->getName())->temLigacao() == false) continue;
+                        
+                        Ligacao* ligAux = (*j)->getPortOther((*p)->getName())->getLigacao2();
+                        (*j)->removeLigacao(ligAux);
+                        
+                        string portName = (*p)->getName()+"_"+auxVal;
+                                
+                        if((*p)->getInput() == "in"){
+                            Componente* compOrigem  = ligAux->getOrigem();
+                            compOrigem->removeLigacao(ligAux);
+                            this->design->insereLigacao(compOrigem, compAux, ligAux->getPortOrigem()->getName(), portName);
+                        }else{
+                            Componente* compDestino = ligAux->getDestino();
+                            compDestino->removeLigacao(ligAux);
+                            this->design->insereLigacao(compAux, compDestino, portName, ligAux->getPortDestino()->getName());
+                        }
+                        
+                        this->design->deletaLigacao(ligAux->getNome());
+                    }
+                    if (compAuxWE != NULL){
+                        string portAuxWE = "we_"+auxVal;
+                        this->design->insereLigacao(compAuxWE, compAux, portAuxWE, portAuxWE);
+                    }
                     this->design->removeComponente((*j), NULL);
                 }
             }
         }
+        compAuxWE = NULL;
     }
     ListaAuxString.clear();
     cout << "--Inserindo Block Ram Mult Port: OK" << endl; // </editor-fold>
