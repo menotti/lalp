@@ -392,7 +392,7 @@ void ArquivosDotHW::GeraMemoryVHDL() {
     
     for(i=this->ListaComp.begin(); i != this->ListaComp.end(); i++){
         if((*i)->tipo_comp != CompType::MEM) continue;
-        if ((*i)->getNomeCompVHDL() == "block_ram") continue;
+        if ((*i)->getNomeCompVHDL() == "block_ram" ) continue;
 //        block_ram* mem = (block_ram*)(*i); 
         
             int dataSize = (*i)->getWidth();

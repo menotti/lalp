@@ -132,7 +132,6 @@ string block_ram::getMemoriaVHDLCab(){
     res += "of std_logic_vector (data_width-1 downto 0); \n\n";
 
     res += "signal read_a : std_logic_vector(address_width-1 downto 0); \n";
-    res += "signal RAM : ram_type := ram_type'( \n";
     
     return res;
 }
