@@ -719,27 +719,29 @@ void Core::identificaReturn() {
 //                comp_return->setGlobalComp(true);
                 comp_return->setNumIdComp(FuncoesAux::IntToStr(this->design->ListaComp.size()));
 //                comp_return->setNumLinha(1000);
-
-                //LIGACAO
-                Ligacao* newLig3 = new Ligacao(CompResult, comp_return, "s" + FuncoesAux::IntToStr(this->design->ListaLiga.size()));
-                newLig3->setPortDestino(comp_return->getPortDataInOut("IN"));
-                newLig3->setPortOrigem(CompResult->getPortDataInOut("OUT"));
-                newLig3->setWidth(CompResult->getPortDataInOut("OUT")->getWidth());
-                newLig3->setTipo(CompResult->getPortDataInOut("OUT")->getType());
-
-                //ADICIONAR NOME LIGACAO NA PORTA
-                newLig3->getPortDestino()->setLigacao(newLig3->getNome());
-//                newLig3->getPortDestino()->addLigacao(newLig3);
-                newLig3->getPortOrigem()->setLigacao(newLig3->getNome());
-//                newLig3->getPortOrigem()->addLigacao(newLig3);
-
-                //ADICIONAR LIGACAO NO COMPONENTE
-                CompResult->addLigacao(newLig3);
-                comp_return->addLigacao(newLig3);
-
-                //ADD LISTAS
-                this->design->ListaLiga.push_back(newLig3);
                 this->design->addComponent(comp_return);
+                this->design->insereLigacao(CompResult, comp_return);
+                
+                //LIGACAO
+//                Ligacao* newLig3 = new Ligacao(CompResult, comp_return, "s" + FuncoesAux::IntToStr(this->design->ListaLiga.size()));
+//                newLig3->setPortDestino(comp_return->getPortDataInOut("IN"));
+//                newLig3->setPortOrigem(CompResult->getPortDataInOut("OUT"));
+//                newLig3->setWidth(CompResult->getPortDataInOut("OUT")->getWidth());
+//                newLig3->setTipo(CompResult->getPortDataInOut("OUT")->getType());
+//
+//                //ADICIONAR NOME LIGACAO NA PORTA
+//                newLig3->getPortDestino()->setLigacao(newLig3->getNome());
+////                newLig3->getPortDestino()->addLigacao(newLig3);
+//                newLig3->getPortOrigem()->setLigacao(newLig3->getNome());
+////                newLig3->getPortOrigem()->addLigacao(newLig3);
+//
+//                //ADICIONAR LIGACAO NO COMPONENTE
+//                CompResult->addLigacao(newLig3);
+//                comp_return->addLigacao(newLig3);
+//
+//                //ADD LISTAS
+//                this->design->ListaLiga.push_back(newLig3);
+//                this->design->addComponent(comp_return);
                 cout<< "- Criar e ligar RESULT OK"<< endl;
             }
         }else{
