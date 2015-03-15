@@ -397,7 +397,8 @@ void ArquivosDotHW::GeraMemoryVHDL() {
         
             int dataSize = (*i)->getWidth();
             int memoryWords =  (int) pow(2,(*i)->getAddressWidth());
-
+            
+             
             fout << (*i)->getMemoriaVHDLCab() ;
             if( ((*i)->getEInicializado() == true) && ((*i)->getWE() == false) ){
                 int   intValues[(*i)->valores.size()];
@@ -424,7 +425,7 @@ void ArquivosDotHW::GeraMemoryVHDL() {
                     }
 
                     bin = FuncoesAux::LPad(FuncoesAux::ConvertDecToBin(FuncoesAux::IntToStr(value)),dataSize);
-
+                    
                     valPos += "\t (\""+bin+"\")";
                     if (c == 0){
                         valPos += ");";
@@ -457,7 +458,7 @@ bool ArquivosDotHW::ExisteNaListaAux(const string &val){
 void ArquivosDotHW::organizaListaNome(){
     list<Componente*>::iterator i;
     this->CompMap.clear();
-//    cout<<"#####################################"<<endl;
+
     for(i=this->ListaComp.begin(); i != this->ListaComp.end(); i++){
         if ((*i)->tipo_comp == CompType::REG || (*i)->tipo_comp == CompType::MEM || (*i)->tipo_comp == CompType::AUX || (*i)->tipo_comp == CompType::DEL ) continue;
         

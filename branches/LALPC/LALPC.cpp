@@ -19,6 +19,7 @@ int main (int argc, char** argv)
     SgProject* project = frontend(argc, argv);
     generateGraphOfAST(project,"DOT/AST");
     starParalel* para  = new starParalel(project, listaForParall);
+    backend(project);
     Core* core = new Core(project, para->getListaComp());    
     
 //    //generatePDF(project);

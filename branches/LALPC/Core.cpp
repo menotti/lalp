@@ -83,19 +83,24 @@ Core::Core(SgProject* project, list<SgNode*> lista) {
     
     //Objeto para tratar mem'oria
     analisaMem* memHdr = new analisaMem(this->design);
-    if (this->ramMultPort == false){
-        memHdr->insereStepMux();
-        this->design = memHdr->getDesign();
-    }
+//    if (this->ramMultPort == false){
+//        memHdr->insereStepMux();
+//        this->design = memHdr->getDesign();
+//    }
     //Apos gerar todos os componentes
     //trocar os nomes dos comp duplicados
     if(this->isParallel){
         this->preIdentificacaoCompParalelizados();
     }
     
+    
     this->FinalizaComponentes();
     if (this->ramMultPort == false){
+        this->dot->imprimeHWDOT(this->design->getListaComp(), this->design->getListaLiga(), "DOT/0001.dot", false);
         memHdr->insereMux();
+        this->dot->imprimeHWDOT(this->design->getListaComp(), this->design->getListaLiga(), "DOT/0002.dot", false);
+        memHdr->insereStepMux();
+        this->dot->imprimeHWDOT(this->design->getListaComp(), this->design->getListaLiga(), "DOT/0003.dot", false);
         this->design = memHdr->getDesign();
     }
     
