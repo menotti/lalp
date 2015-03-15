@@ -11,11 +11,11 @@
 
 using namespace std;
 
-op_simple::op_simple(void*node) : Componente(node) {
+op_simple::op_simple(void*node, int dataWidth) : Componente(node) {
+    this->dataWidth     = dataWidth;
     this->tipo_comp = CompType::OPE;
     this->createAllPorts();
     this->createAllGeneric();
-
 }
 
 op_simple::~op_simple() {

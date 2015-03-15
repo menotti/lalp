@@ -7,7 +7,7 @@
 //#include "../header/meuHeader.h"
 #include "op_mult_s.h"
 
-op_mult_s::op_mult_s(void*node, int dataWidth) : op_simple(node){
+op_mult_s::op_mult_s(void*node, int dataWidth) : op_simple(node, dataWidth){
     this->setNomeCompVHDL("mult_op_s");
     this->op_tipo       = "MUL";
     this->setSync(false);

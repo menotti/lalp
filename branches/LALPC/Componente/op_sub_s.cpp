@@ -7,7 +7,7 @@
 //#include "../header/meuHeader.h"
 #include "op_sub_s.h"
 
-op_sub_s::op_sub_s(void*node, int dataWidth) : op_simple(node){
+op_sub_s::op_sub_s(void*node, int dataWidth) : op_simple(node, dataWidth){
     this->setNomeCompVHDL("sub_op_s");
     this->op_tipo       = "SUB";
     this->setSync(false);
