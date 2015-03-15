@@ -66,20 +66,8 @@ string FuncoesAux::LPad(const string &val, int size){
 
 string FuncoesAux::ConvertDecToBin(const string &val){
     int dec = FuncoesAux::StrToInt(val);
-    bitset<32> binaryNumber;     
+    bitset<8> binaryNumber;     
     binaryNumber = dec;
-    /*
-     * As duas funcoes estao funfando
-    int i = dec; //my value
-    std::string result;
-    for (int bit = 0; bit < sizeof(int)*8; ++bit)
-    {
-       int bit_val = 1 & i;
-       result = (bit_val ? "1" : "0") + result;
-       i = i >> 1;
-    }
-     return result;
-     */
     
     return binaryNumber.to_string();
 }
