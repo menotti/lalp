@@ -9,6 +9,7 @@
 #include "add_reg_op_s.h"
 #include "string"
 #include "../Aux/FuncoesAux.h"
+#include <iostream>
 
 using namespace std;
 
