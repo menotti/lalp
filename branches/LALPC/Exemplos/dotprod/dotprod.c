@@ -5,7 +5,7 @@ int main() {
   int i;
   int sum = 0;
   //#pragma multport
-  //#pragma unroll 2
+  //#pragma unroll 4
   for (i=0; i<2048; i++){
     sum += a[i] * b[i];
   }
