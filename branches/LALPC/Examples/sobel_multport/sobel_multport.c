@@ -18,6 +18,7 @@ int main() {
   int i10,      i12;
   int i20, i21, i22;
   
+  #pragma multport
   for (i = 0; i < 78; i++) {
 
     i00=in[i]; 
