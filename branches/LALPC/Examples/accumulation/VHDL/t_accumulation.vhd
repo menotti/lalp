@@ -10,6 +10,7 @@ component accumulation
 	port (
 		\init\	: in	std_logic;
 		\done\	: out	std_logic;
+		\result\	: out	std_logic_vector(31 downto 0);
 		\clk\	: in	std_logic;
 		\reset\	: in	std_logic;
 		\clear\	: in	std_logic
@@ -18,6 +19,7 @@ end component;
 
 signal \init\	: std_logic	:= '0';
 signal \done\	: std_logic	:= '0';
+signal \result\	: std_logic_vector(31 downto 0)	:= (others => '0');
 signal \clk\	: std_logic	:= '0';
 signal \reset\	: std_logic	:= '0';
 signal \clear\	: std_logic	:= '0';
@@ -29,6 +31,7 @@ uut: accumulation
 port map ( 
 	\init\ => \init\,
 	\done\ => \done\,
+	\result\ => \result\,
 	\clk\ => \clk\,
 	\reset\ => \reset\,
 	\clear\ => \clear\
