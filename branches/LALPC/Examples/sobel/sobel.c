@@ -1,5 +1,4 @@
 int main() {
-  #pragma DATA_WIDTH 20
   int in[100] = {
     50, 65, 62, 83, 34, 45, 96, 67, 18, 29, 
     14, 14, 72, 13, 14, 15, 16, 17, 18, 39, 
@@ -19,7 +18,6 @@ int main() {
   int i10,      i12;
   int i20, i21, i22;
   
-  //#pragma multport
   for (i = 0; i < 78; i++) {
 
     i00=in[i]; 
