@@ -1,6 +1,7 @@
 // A função main() é obrigatória em todo programa C.
 void main()
 {
+#pragma DATA_WIDTH 64
   // Aqui foi necessário atribuir valores as variáveis a e b.
   int a = 0;
   int b = 1;

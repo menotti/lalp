@@ -3,14 +3,14 @@ use IEEE.std_logic_1164.all;
 use IEEE.std_logic_arith.all; 
 use IEEE.std_logic_unsigned.all; 
 entity dotprod_f2 is 
-   port ( 
-           \clear\  : in	 std_logic; 
-           \clk\    : in	 std_logic; 
-           \done\   : out std_logic; 
-           \init\   : in	 std_logic; 
-           \reset\  : in	 std_logic; 
-           \result\ : out std_logic_vector(31 downto 0) 
-); 
+	port (
+		\init\	: in	std_logic;
+		\done\	: out	std_logic;
+		\result\	: out	std_logic_vector(31 downto 0);
+		\clk\	: in	std_logic;
+		\reset\	: in	std_logic;
+		\clear\	: in	std_logic
+	);
 end dotprod_f2; 
 
 architecture behavior of dotprod_f2 is 
@@ -46,63 +46,43 @@ port (
 ); 
 end component; 
 
-component block_ram_a 
+component block_ram_mult_a 
 generic ( 
         data_width          : integer := 8; 
         address_width	: integer := 8 
 ); 
 port ( 
-        clk                 : in	std_logic; 
-        we                  : in	std_logic := '0'; 
-        oe                  : in	std_logic := '1'; 
-        address             : in	std_logic_vector(address_width-1 downto 0); 
-        data_in             : in	std_logic_vector(data_width-1 downto 0) := (others => '0'); 
-        data_out            : out	std_logic_vector(data_width-1 downto 0) 
+        address_0           :in     std_logic_vector (address_width-1 downto 0); 
+        data_in_0           :in     std_logic_vector (data_width-1 downto 0) := (others => '0'); 
+        data_out_0          :out    std_logic_vector (data_width-1 downto 0); 
+        we_0                :in     std_logic := '0'; 
+        oe_0                :in     std_logic := '1'; 
+        address_1           :in     std_logic_vector (address_width-1 downto 0); 
+        data_in_1           :in     std_logic_vector (data_width-1 downto 0) := (others => '0'); 
+        data_out_1          :out    std_logic_vector (data_width-1 downto 0); 
+        we_1                :in     std_logic := '0'; 
+        oe_1                :in     std_logic := '1'; 
+        clk                 :       in std_logic 
 ); 
 end component; 
 
-component block_ram_a_19 
+component block_ram_mult_b 
 generic ( 
         data_width          : integer := 8; 
         address_width	: integer := 8 
 ); 
 port ( 
-        clk                 : in	std_logic; 
-        we                  : in	std_logic := '0'; 
-        oe                  : in	std_logic := '1'; 
-        address             : in	std_logic_vector(address_width-1 downto 0); 
-        data_in             : in	std_logic_vector(data_width-1 downto 0) := (others => '0'); 
-        data_out            : out	std_logic_vector(data_width-1 downto 0) 
-); 
-end component; 
-
-component block_ram_b 
-generic ( 
-        data_width          : integer := 8; 
-        address_width	: integer := 8 
-); 
-port ( 
-        clk                 : in	std_logic; 
-        we                  : in	std_logic := '0'; 
-        oe                  : in	std_logic := '1'; 
-        address             : in	std_logic_vector(address_width-1 downto 0); 
-        data_in             : in	std_logic_vector(data_width-1 downto 0) := (others => '0'); 
-        data_out            : out	std_logic_vector(data_width-1 downto 0) 
-); 
-end component; 
-
-component block_ram_b_20 
-generic ( 
-        data_width          : integer := 8; 
-        address_width	: integer := 8 
-); 
-port ( 
-        clk                 : in	std_logic; 
-        we                  : in	std_logic := '0'; 
-        oe                  : in	std_logic := '1'; 
-        address             : in	std_logic_vector(address_width-1 downto 0); 
-        data_in             : in	std_logic_vector(data_width-1 downto 0) := (others => '0'); 
-        data_out            : out	std_logic_vector(data_width-1 downto 0) 
+        address_0           :in     std_logic_vector (address_width-1 downto 0); 
+        data_in_0           :in     std_logic_vector (data_width-1 downto 0) := (others => '0'); 
+        data_out_0          :out    std_logic_vector (data_width-1 downto 0); 
+        we_0                :in     std_logic := '0'; 
+        oe_0                :in     std_logic := '1'; 
+        address_1           :in     std_logic_vector (address_width-1 downto 0); 
+        data_in_1           :in     std_logic_vector (data_width-1 downto 0) := (others => '0'); 
+        data_out_1          :out    std_logic_vector (data_width-1 downto 0); 
+        we_1                :in     std_logic := '0'; 
+        oe_1                :in     std_logic := '1'; 
+        clk                 :       in std_logic 
 ); 
 end component; 
 
@@ -153,241 +133,194 @@ port (
 ); 
 end component; 
 
-component reg_op 
-generic ( 
-        w_in	: integer := 16; 
-        initial	: integer := 0 
-); 
-port ( 
-        clk         : in	std_logic; 
-        reset       : in	std_logic; 
-        we          : in	std_logic := '1'; 
-        I0          : in	std_logic_vector(w_in-1 downto 0); 
-        O0          : out	std_logic_vector(w_in-1 downto 0) 
-); 
-end component; 
-
-signal s6	: std_logic_vector(31 downto 0); 
-signal s1	: std_logic_vector(31 downto 0); 
-signal s22	: std_logic_vector(31 downto 0); 
-signal s3	: std_logic_vector(31 downto 0); 
 signal s4	: std_logic_vector(31 downto 0); 
-signal s5	: std_logic_vector(31 downto 0); 
-signal s7	: std_logic_vector(31 downto 0); 
 signal s8	: std_logic_vector(31 downto 0); 
-signal s23	: std_logic_vector(31 downto 0); 
-signal s10	: std_logic_vector(31 downto 0); 
-signal s11	: std_logic_vector(31 downto 0); 
-signal s13	: std_logic_vector(31 downto 0); 
+signal s12	: std_logic_vector(31 downto 0); 
+signal s14	: std_logic_vector(31 downto 0); 
 signal s15	: std_logic_vector(31 downto 0); 
-signal s17	: std_logic; 
-signal s20	: std_logic_vector(31 downto 0); 
-signal s21	: std_logic_vector(31 downto 0); 
+signal s17	: std_logic_vector(0 downto 0); 
+signal s18	: std_logic; 
+signal s19	: std_logic_vector(0 downto 0); 
+signal s20	: std_logic; 
+signal s21	: std_logic; 
+signal s22	: std_logic_vector(0 downto 0); 
+signal s23	: std_logic_vector(31 downto 0); 
 signal s24	: std_logic_vector(31 downto 0); 
-signal s30	: std_logic_vector(0 downto 0); 
-signal s27	: std_logic; 
-signal s28	: std_logic; 
-signal s29	: std_logic_vector(0 downto 0); 
+signal s25	: std_logic_vector(31 downto 0); 
+signal s27	: std_logic_vector(31 downto 0); 
+signal s29	: std_logic_vector(31 downto 0); 
+signal s30	: std_logic_vector(31 downto 0); 
+signal s31	: std_logic_vector(31 downto 0); 
+signal s32	: std_logic_vector(31 downto 0); 
+signal s33	: std_logic_vector(31 downto 0); 
 
 begin 
 
-	\i\: counter
-	generic map ( 
-		bits => 32,
-		condition => 1,
-		down => 0,
-		increment => 2,
-		steps => 1
-	)
-	port map ( 
-		clk => \clk\,
-		clk_en => s27,
-		done => s28,
-		input => s21,
-		output => s6,
-		reset => \reset\,
-		step => s17,
-		termination => s20
-	);
+\i\: counter
+generic map ( 
+	bits => 32,
+	condition => 1,
+	down => 0,
+	increment => 2,
+	steps => 1
+)
+port map ( 
+	clk => \clk\,
+	clk_en => s20,
+	done => s21,
+	input => s15,
+	output => s30,
+	reset => \reset\,
+	step => s18,
+	termination => s14
+);
 
-	\x\: reg_op
-	generic map ( 
-		initial => 0,
-		w_in => 32
-	)
-	port map ( 
-		clk => \clk\,
-		I0 => s6,
-		O0 => s13,
-		reset => \reset\,
-		we => s17
-	);
+\sum\: add_reg_op_s
+generic map ( 
+	initial => 0,
+	w_in1 => 32,
+	w_in2 => 32,
+	w_out => 32
+)
+port map ( 
+	I0 => s23,
+	I1 => s4,
+	O0 => s23,
+	clk => \clk\,
+	reset => \reset\,
+	we => s17(0)
+);
 
-	\sum\: add_reg_op_s
-	generic map ( 
-		initial => 0,
-		w_in1 => 32,
-		w_in2 => 32,
-		w_out => 32
-	)
-	port map ( 
-		I0 => s22,
-		I1 => s1,
-		O0 => s22,
-		clk => \clk\,
-		reset => \reset\,
-		we => s30(0)
-	);
+\a_mult_op_s_b\: mult_op_s
+generic map ( 
+	w_in1 => 32,
+	w_in2 => 32,
+	w_out => 32
+)
+port map ( 
+	I0 => s27,
+	I1 => s31,
+	O0 => s4
+);
 
-	\a_mult_op_s_b\: mult_op_s
-	generic map ( 
-		w_in1 => 32,
-		w_in2 => 32,
-		w_out => 32
-	)
-	port map ( 
-		I0 => s3,
-		I1 => s4,
-		O0 => s1
-	);
+\sum_12\: add_reg_op_s
+generic map ( 
+	initial => 0,
+	w_in1 => 32,
+	w_in2 => 32,
+	w_out => 32
+)
+port map ( 
+	I0 => s24,
+	I1 => s8,
+	O0 => s24,
+	clk => \clk\,
+	reset => \reset\,
+	we => s19(0)
+);
 
-	\a\: block_ram_a
-	generic map ( 
-		address_width => 11,
-		data_width => 32
-	)
-	port map ( 
-		address(10 downto 0) => s13(10 downto 0),
-		clk => \clk\,
-		data_out => s3
-	);
+\a_14_mult_op_s_b_18\: mult_op_s
+generic map ( 
+	w_in1 => 32,
+	w_in2 => 32,
+	w_out => 32
+)
+port map ( 
+	I0 => s29,
+	I1 => s33,
+	O0 => s8
+);
 
-	\b\: block_ram_b
-	generic map ( 
-		address_width => 11,
-		data_width => 32
-	)
-	port map ( 
-		address(10 downto 0) => s13(10 downto 0),
-		clk => \clk\,
-		data_out => s4
-	);
+\i_16_add_op_s_num_17\: add_op_s
+generic map ( 
+	w_in1 => 32,
+	w_in2 => 32,
+	w_out => 32
+)
+port map ( 
+	I0 => s30,
+	I1 => s12,
+	O0 => s32
+);
 
-	\x_13\: reg_op
-	generic map ( 
-		initial => 0,
-		w_in => 32
-	)
-	port map ( 
-		clk => \clk\,
-		I0 => s5,
-		O0 => s15,
-		reset => \reset\,
-		we => s17
-	);
+\dly_24\: delay_op
+generic map ( 
+	bits => 1,
+	delay => 2
+)
+port map ( 
+	a(0) => s18,
+	a_delayed => s17,
+	clk => \clk\,
+	reset => \reset\
+);
 
-	\i_15_add_op_s_c15\: add_op_s
-	generic map ( 
-		w_in1 => 32,
-		w_in2 => 32,
-		w_out => 32
-	)
-	port map ( 
-		I0 => s6,
-		I1 => s7,
-		O0 => s5
-	);
+\dly_25\: delay_op
+generic map ( 
+	bits => 1,
+	delay => 2
+)
+port map ( 
+	a(0) => s18,
+	a_delayed => s19,
+	clk => \clk\,
+	reset => \reset\
+);
 
-	\sum_17\: add_reg_op_s
-	generic map ( 
-		initial => 0,
-		w_in1 => 32,
-		w_in2 => 32,
-		w_out => 32
-	)
-	port map ( 
-		I0 => s23,
-		I1 => s8,
-		O0 => s23,
-		clk => \clk\,
-		reset => \reset\,
-		we => s30(0)
-	);
+\dly_26\: delay_op
+generic map ( 
+	bits => 1,
+	delay => 4
+)
+port map ( 
+	a(0) => s21,
+	a_delayed => s22,
+	clk => \clk\,
+	reset => \reset\
+);
 
-	\a_19_mult_op_s_b_20\: mult_op_s
-	generic map ( 
-		w_in1 => 32,
-		w_in2 => 32,
-		w_out => 32
-	)
-	port map ( 
-		I0 => s10,
-		I1 => s11,
-		O0 => s8
-	);
+\sum_add_op_s_sum_12\: add_op_s
+generic map ( 
+	w_in1 => 32,
+	w_in2 => 32,
+	w_out => 32
+)
+port map ( 
+	I0 => s23,
+	I1 => s24,
+	O0 => s25
+);
 
-	\a_19\: block_ram_a_19
-	generic map ( 
-		address_width => 11,
-		data_width => 32
-	)
-	port map ( 
-		address(10 downto 0) => s15(10 downto 0),
-		clk => \clk\,
-		data_out => s10
-	);
+\a\: block_ram_mult_a
+generic map ( 
+	address_width => 11,
+	data_width => 32
+)
+port map ( 
+	address_0(10 downto 0) => s30(10 downto 0),
+	data_out_0 => s27,
+	address_1(10 downto 0) => s32(10 downto 0),
+	data_out_1 => s29,
+	clk => \clk\
+);
 
-	\b_20\: block_ram_b_20
-	generic map ( 
-		address_width => 11,
-		data_width => 32
-	)
-	port map ( 
-		address(10 downto 0) => s15(10 downto 0),
-		clk => \clk\,
-		data_out => s11
-	);
+\b\: block_ram_mult_b
+generic map ( 
+	address_width => 11,
+	data_width => 32
+)
+port map ( 
+	address_0(10 downto 0) => s30(10 downto 0),
+	data_out_0 => s31,
+	address_1(10 downto 0) => s32(10 downto 0),
+	data_out_1 => s33,
+	clk => \clk\
+);
 
-	\sum_add_op_s_sum_17\: add_op_s
-	generic map ( 
-		w_in1 => 32,
-		w_in2 => 32,
-		w_out => 32
-	)
-	port map ( 
-		I0 => s22,
-		I1 => s23,
-		O0 => s24
-	);
-
-	\c30\: delay_op
-	generic map ( 
-		bits => 1,
-		delay => 3
-	)
-	port map ( 
-		a(0) => s17,
-		a_delayed => s30,
-		clk => \clk\,
-		reset => \reset\
-	);
-
-	\c32\: delay_op
-	generic map ( 
-		bits => 1,
-		delay => 7
-	)
-	port map ( 
-		a(0) => s28,
-		a_delayed => s29,
-		clk => \clk\,
-		reset => \reset\
-	);
-
-s7 <= conv_std_logic_vector(1, 32); 
-s27 <= \init\; 
-\done\ <= s29(0); 
-s20 <= conv_std_logic_vector(2047, 32); 
-s21 <= conv_std_logic_vector(0, 32); 
-\result\ <= s24; 
+s12 <= conv_std_logic_vector(1, 32);
+s20 <= \init\;
+\done\ <= s22(0);
+s14 <= conv_std_logic_vector(2047, 32);
+s15 <= conv_std_logic_vector(0, 32);
+\result\ <= s25;
 end behavior; 
