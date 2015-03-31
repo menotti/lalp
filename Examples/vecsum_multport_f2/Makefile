@@ -2,11 +2,12 @@
 ## Your translator
 TRANSLATOR=../../LALPC
 
+DIR = $(shell basename ${PWD})
+
 ## Input testcode for your translator
-TESTCODE=sobel.c
+TESTCODE=$(DIR).c
 
 #On Windows systems comment the line below and use: make TESTBENCH=t_<EntityName>
-DIR = $(shell basename ${PWD})
 TESTBENCH = `cd VHDL; ls -1 t_*.vhd | sed 's/\(.*\)\..*/\1/'`
 
 LALP_CMD = lalp
