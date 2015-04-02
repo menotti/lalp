@@ -9,7 +9,10 @@ entity accumulation_f2 is
 		\result\	: out	std_logic_vector(31 downto 0);
 		\clk\	: in	std_logic;
 		\reset\	: in	std_logic;
-		\clear\	: in	std_logic
+		\clear\	: in	std_logic;
+        address_2           :in     std_logic_vector (3 downto 0); 
+        data_in_2           :in     std_logic_vector (31 downto 0) := (others => '0'); 
+        we_2                :in     std_logic := '0'
 	);
 end accumulation_f2; 
 
@@ -62,6 +65,11 @@ port (
         data_out_1          :out    std_logic_vector (data_width-1 downto 0); 
         we_1                :in     std_logic := '0'; 
         oe_1                :in     std_logic := '1'; 
+        address_2           :in     std_logic_vector (address_width-1 downto 0); 
+        data_in_2           :in     std_logic_vector (data_width-1 downto 0) := (others => '0'); 
+        data_out_2          :out    std_logic_vector (data_width-1 downto 0); 
+        we_2                :in     std_logic := '0'; 
+        oe_2                :in     std_logic := '1'; 
         clk                 :       in std_logic 
 ); 
 end component; 
@@ -292,6 +300,9 @@ port map (
 	data_out_0 => s27,
 	address_1(3 downto 0) => s28(3 downto 0),
 	data_out_1 => s29,
+	address_2 => address_2,
+	data_in_2 => data_in_2,
+	we_2 => we_2,
 	clk => \clk\
 );
 
