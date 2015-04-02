@@ -9,7 +9,10 @@ entity accumulation is
 		\result\	: out	std_logic_vector(31 downto 0);
 		\clk\	: in	std_logic;
 		\reset\	: in	std_logic;
-		\clear\	: in	std_logic
+		\clear\	: in	std_logic;
+	data_in_1 : in std_logic_vector(31 downto 0); 
+	address_1 : in std_logic_vector(3 downto 0); 
+	we_1 : in std_logic
 	);
 end accumulation; 
 
@@ -46,19 +49,25 @@ port (
 ); 
 end component; 
 
-component block_ram_a 
-generic ( 
-        data_width          : integer := 8; 
-        address_width	: integer := 8 
+
+
+component block_ram_mult_a 
+generic( 
+	data_width : integer := 8; 
+	address_width : integer := 8 
 ); 
-port ( 
-        clk                 : in	std_logic; 
-        we                  : in	std_logic := '0'; 
-        oe                  : in	std_logic := '1'; 
-        address             : in	std_logic_vector(address_width-1 downto 0); 
-        data_in             : in	std_logic_vector(data_width-1 downto 0) := (others => '0'); 
-        data_out            : out	std_logic_vector(data_width-1 downto 0) 
-); 
+port( 
+	data_in_0 : in std_logic_vector(data_width-1 downto 0) := (others => '0'); 
+	address_0 : in std_logic_vector(address_width-1 downto 0); 
+	we_0 : in std_logic := '0'; 
+	oe_0 : in std_logic := '1'; 
+	data_out_0 : out std_logic_vector(data_width-1 downto 0); 
+	data_in_1 : in std_logic_vector(data_width-1 downto 0) := (others => '0'); 
+	address_1 : in std_logic_vector(address_width-1 downto 0); 
+	we_1 : in std_logic := '0'; 
+	oe_1 : in std_logic := '1'; 
+	data_out_1 : out std_logic_vector(data_width-1 downto 0); 
+	clk : in std_logic); 
 end component; 
 
 component counter 
@@ -157,15 +166,18 @@ port map (
 	O0 => s1
 );
 
-\a\: block_ram_a
+\a\: block_ram_mult_a
 generic map ( 
 	address_width => 4,
 	data_width => 32
 )
 port map ( 
-	address(3 downto 0) => s4(3 downto 0),
+	address_0(3 downto 0) => s4(3 downto 0),
 	clk => \clk\,
-	data_out => s3
+	data_out_0 => s3,
+	data_in_1 => data_in_1,
+	address_1 => address_1,
+	we_1 => we_1
 );
 
 \dly_14\: delay_op
